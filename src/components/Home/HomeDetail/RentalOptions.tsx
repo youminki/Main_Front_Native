@@ -9,6 +9,9 @@ interface DayBoxProps {
   reserved: boolean;
   isWeekend: boolean;
 }
+interface DayNameProps {
+  isWeekend: boolean;
+}
 
 interface ToggleButtonProps {
   active: boolean;
