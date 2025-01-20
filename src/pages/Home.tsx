@@ -5,10 +5,10 @@ import Notice from "../components/Home/Notice";
 import ItemList from "../components/Home/ItemList";
 import Theme from "../styles/Theme";
 import { useNavigate } from "react-router-dom";
-import TypeAnalysisIcon from "../assets/Header/HeaderTypeAnalysis.svg";
-import inventoryIcon from "../assets/Header/Headerinventory.svg";
-import SettlementIcon from "../assets/Header/HeaderCalculateDetail.svg";
-import DeliveryIcon from "../assets/Header/HeaderShippingDetail.svg";
+import TypeAnalysisIcon from "../assets/SubHeader/HeaderTypeAnalysis.svg";
+import inventoryIcon from "../assets/SubHeader/Headerinventory.svg";
+import SettlementIcon from "../assets/SubHeader/HeaderCalculateDetail.svg";
+import DeliveryIcon from "../assets/SubHeader/HeaderShippingDetail.svg";
 
 const Home: React.FC = () => {
   const homeIcons = [

@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Cookies from "js-cookie";
 
-import Alarm from "../assets/Home/Alarm.svg";
-import BasketIcon from "../assets/Home/Basket.svg";
-import MypageIcon from "../assets/Home/Mypage.svg";
+import Alarm from "../assets/Header/AlarmIcon.svg";
+import BasketIcon from "../assets/Header/BasketIcon.svg";
+import MypageIcon from "../assets/Header/MypageIcon.svg";
 import Logo from "../assets/Logo.svg";
 
 const Header: React.FC = () => {
@@ -133,7 +133,6 @@ const Nickname = styled.span`
   font-size: 18px;
   line-height: 20px;
   color: #000000;
-  margin-right: 5px;
 `;
 
 const LogoIcon = styled.img`
