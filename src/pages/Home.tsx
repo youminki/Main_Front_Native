@@ -14,7 +14,7 @@ import FilterIcon from "../assets/Home/FilterIcon.svg";
 const items = [
   {
     id: 1,
-    image: "https://via.placeholder.com/180x270",
+    image: "",
     brand: "SANDRO",
     description: "SNS21N9 / 원피스",
     category: "onepiece",
@@ -32,7 +32,7 @@ const items = [
   },
   {
     id: 3,
-    image: "https://via.placeholder.com/180x270",
+    image: "",
     brand: "MICHA",
     description: "MCH88T7 / 투피스",
     category: "twopiece",
