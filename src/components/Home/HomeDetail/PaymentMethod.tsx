@@ -40,13 +40,20 @@ const PaymentMethod: React.FC = () => {
 export default PaymentMethod;
 
 const PaymentMethodContainer = styled.div`
+  margin-top: 54px;
   margin-bottom: 24px;
 `;
 
 const PaymentMethodText = styled.div`
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 8px;
+  font-family: "NanumSquare Neo OTF";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 11px;
+  /* identical to box height */
+
+  color: #000000;
+  margin-bottom: 10px;
 `;
 
 const InstallmentOptions = styled.div`

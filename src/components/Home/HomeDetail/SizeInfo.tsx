@@ -1,7 +1,7 @@
-import React from 'react';
-import styled from 'styled-components';
-import Theme from '../../../styles/Theme';
-import SizeInfoImageSrc from '../../../assets/Home/HomeDetail/SizeInfo.svg';
+import React from "react";
+import styled from "styled-components";
+import Theme from "../../../styles/Theme";
+import SizeInfoImageSrc from "../../../assets/Home/HomeDetail/SizeInfo.svg";
 
 const SizeInfo: React.FC = () => {
   return (

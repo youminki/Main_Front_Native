@@ -13,12 +13,12 @@ const ServiceSelection: React.FC<ServiceSelectionProps> = ({
 }) => {
   return (
     <ServiceContainer>
-      <label>서비스 옵션 (선택)</label>
+      <label>서비스 방식 (선택)</label>
       <Select
         value={selectedService}
         onChange={(e) => setSelectedService(e.target.value)}
       >
-        <option value="">서비스 선택</option>
+        <option value="">서비스 선택 (대여 or 구매)</option>
         <option value="rental">대여</option>
         <option value="purchase">구매</option>
       </Select>
@@ -34,11 +34,14 @@ const ServiceContainer = styled.div`
   width: 100%;
 
   label {
+    font-family: "NanumSquare Neo OTF";
     font-style: normal;
     font-weight: 700;
     font-size: 10px;
     line-height: 11px;
-    color: ${Theme.colors.black};
+    /* identical to box height */
+
+    color: #000000;
     margin-bottom: 10px;
   }
 `;

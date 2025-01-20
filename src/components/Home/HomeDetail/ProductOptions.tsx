@@ -50,11 +50,14 @@ const OptionsContainer = styled.div`
   margin-bottom: 30px;
 
   label {
+    font-family: "NanumSquare Neo OTF";
     font-style: normal;
     font-weight: 700;
     font-size: 10px;
     line-height: 11px;
-    color: ${Theme.colors.black};
+    /* identical to box height */
+
+    color: #000000;
     margin-bottom: 10px;
   }
 `;
