@@ -6,32 +6,24 @@ type ModalProps = {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  width?: string;
-  height?: string;
+  actions?: React.ReactNode;
 };
 
 const ReusableModal: React.FC<ModalProps> = ({
   isOpen,
-  onClose,
+  // onClose,
   title,
   children,
-  width = "376px",
-  height = "360px",
+  actions,
 }) => {
   if (!isOpen) return null;
 
   return (
     <StyledModal>
-      <ModalContent width={width} height={height}>
-        {title && (
-          <ModalHeader>
-            <ModalTitle>{title}</ModalTitle>
-          </ModalHeader>
-        )}
-        <ModalBody>{children}</ModalBody>
-        <CloseButtonWrapper>
-          <CloseButton onClick={onClose}>확인</CloseButton>
-        </CloseButtonWrapper>
+      <ModalContent>
+        {title && <ModalTitle>{title}</ModalTitle>}
+        {children}
+        <ModalActions>{actions}</ModalActions>
       </ModalContent>
     </StyledModal>
   );
@@ -49,56 +41,26 @@ const StyledModal = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 27px;
+  padding: 20px;
   z-index: 9999;
 `;
 
-const ModalContent = styled.div<{ width: string; height: string }>`
+const ModalContent = styled.div`
   background-color: #ffffff;
   padding: 20px;
-  width: ${({ width }) => width};
-  height: ${({ height }) => height};
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  flex-direction: column;
+  width: 400px;
+  border-radius: 10px;
 `;
 
 const ModalTitle = styled.h2`
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
+  margin-bottom: 20px;
 `;
 
-const ModalBody = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  text-align: center;
-  max-height: 230px;
-  height: 100%;
+const ModalActions = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  border-top: 2px solid #e0e0e0;
-  border-bottom: 2px solid #e0e0e0;
-`;
-
-const CloseButtonWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const CloseButton = styled.button`
-  width: 100%;
-  height: 50px;
-  background-color: #000000;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
+  justify-content: flex-end;
+  margin-top: 20px;
+  gap: 10px;
 `;

@@ -19,7 +19,7 @@ const HomeDetail: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedService, setSelectedService] = useState<string>(""); // 서비스 선택 상태
-  const [selectedPeriod, setSelectedPeriod] = useState<string>(""); // 대여 기간 선택 상태
+  // const [selectedPeriod, setSelectedPeriod] = useState<string>(""); // 대여 기간 선택 상태
 
   const images = [ExIMG1, ExIMG2, ExIMG3];
 
@@ -96,8 +96,8 @@ const HomeDetail: React.FC = () => {
         <ConditionalContainer>
           {selectedService === "rental" && (
             <RentalOptions
-              selectedPeriod={selectedPeriod}
-              setSelectedPeriod={setSelectedPeriod}
+            // selectedPeriod={selectedPeriod}
+            // setSelectedPeriod={setSelectedPeriod}
             />
           )}
           {selectedService === "purchase" && <PaymentMethod />}
