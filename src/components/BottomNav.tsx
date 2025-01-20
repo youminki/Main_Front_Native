@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
-import HomeIcon from "../../assets/Home/Home.svg";
-import inventoryIcon from "../../assets/Home/inventory.svg";
-import PaymentDetailIcon from "../../assets/Home/PaymentDetail.svg";
-import StoreIcon from "../../assets/Home/Store.svg";
-import MenuIcon from "../../assets/Home/Menu.svg";
-import Theme from "../../styles/Theme";
+import HomeIcon from "../assets/Home/Home.svg";
+import inventoryIcon from "../assets/Home/inventory.svg";
+import PaymentDetailIcon from "../assets/Home/PaymentDetail.svg";
+import StoreIcon from "../assets/Home/Store.svg";
+import MenuIcon from "../assets/Home/Menu.svg";
+import Theme from "../styles/Theme";
 
 const BottomNav: React.FC = () => {
   const navigate = useNavigate();

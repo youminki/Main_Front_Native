@@ -14,7 +14,7 @@ import FindPassword from "./pages/FindPassword";
 import Home from "./pages/Home";
 import HomeDetail from "./pages/HomeDetail";
 import Analysis from "./pages/Analysis";
-import BottomNav from "./components/Home/BottomNav";
+import BottomNav from "./components/BottomNav";
 import Header from "./components/Header";
 
 const App: React.FC = () => {
