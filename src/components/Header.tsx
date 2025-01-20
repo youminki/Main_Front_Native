@@ -88,9 +88,10 @@ const HeaderWrapper = styled.div`
   right: 0;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 2rem;
   text-align: center;
   z-index: 1000;
+  background-color: #fff;
 `;
 
 const HeaderContainer = styled.header`

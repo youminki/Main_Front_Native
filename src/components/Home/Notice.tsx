@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import Arrow from '../../assets/Home/Arrow.svg';
+import React from "react";
+import styled from "styled-components";
+import Arrow from "../../assets/Home/Arrow.svg";
 
 const Notice: React.FC = () => {
   return (
@@ -21,35 +21,45 @@ const NoticeContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   background-color: #fff;
   border: 0.5px solid #ccc;
   border-radius: 6px;
-  padding: 25px 20px;
+  padding: 25px 0px;
 `;
 
 const NoticeTag = styled.div`
   background-color: #000;
-  color: #fff;
+
   padding: 5px 8px;
   border-radius: 4px;
+  font-family: "NanumSquare Neo OTF";
   font-style: normal;
   font-weight: 800;
   font-size: 10px;
   line-height: 11px;
+  /* identical to box height */
+  margin-left: 20px;
+
+  color: #ffffff;
 `;
 
 const NoticeText = styled.div`
   flex: 1;
   margin-left: 12px;
+  font-family: "NanumSquare Neo OTF";
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
   line-height: 15px;
+
+  color: #000000;
 `;
 
 const Icons = styled.div`
   font-size: 14px;
   color: #aaa;
+  padding: 0px 10px;
 `;
 
 const Icon = styled.img`

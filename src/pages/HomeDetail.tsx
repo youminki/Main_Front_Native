@@ -136,7 +136,7 @@ const DetailContainer = styled.div`
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
-  margin: 0 auto;
+
   padding-bottom: 80px;
 `;
 
