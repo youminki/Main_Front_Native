@@ -8,8 +8,8 @@ import OnepieceIcon from "../assets/SubHeader/OnepieceIcon.svg";
 import JumpsuitIcon from "../assets/SubHeader/JumpsuitIcon.svg";
 import TwopieceIcon from "../assets/SubHeader/TwopieceIcon.svg";
 import BlouseIcon from "../assets/SubHeader/BlouseIcon.svg";
+import FilterIcon from "../assets/Home/FilterIcon.svg";
 
-// 아이템 데이터
 const items = [
   {
     id: 1,
@@ -40,7 +40,6 @@ const items = [
   },
 ];
 
-// 아이콘 데이터
 const homeIcons = [
   { src: AllClosetIcon, alt: "전체 옷장", category: "all" },
   { src: OnepieceIcon, alt: "원피스", category: "onepiece" },
@@ -51,8 +50,8 @@ const homeIcons = [
 
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [seasonToggle, setSeasonToggle] = useState<boolean>(false);
 
-  // 선택된 카테고리의 아이템 필터링
   const filteredItems =
     selectedCategory === "all"
       ? items
@@ -61,10 +60,8 @@ const Home: React.FC = () => {
   return (
     <MainContainer>
       <ContentWrapper>
-        {/* 공지 사항 */}
         <Notice />
 
-        {/* 아이콘 섹션 */}
         <HeaderContainer>
           {homeIcons.map((icon) => (
             <IconContainer
@@ -77,10 +74,25 @@ const Home: React.FC = () => {
             </IconContainer>
           ))}
         </HeaderContainer>
+        <FilterContainer>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <SeasonToggle
+              onClick={() => setSeasonToggle(!seasonToggle)}
+              isActive={seasonToggle}
+            >
+              <ToggleCircle isActive={seasonToggle} />
+              <ToggleText isActive={seasonToggle}>
+                {seasonToggle ? "켜짐" : "꺼짐"}
+              </ToggleText>
+            </SeasonToggle>
+            <ToggleLabel>계절감</ToggleLabel>
+          </div>
+          <FilterIconContainer>
+            <span>필터</span>
+            <img src={FilterIcon} alt="필터" />
+          </FilterIconContainer>
+        </FilterContainer>
 
-        <Divider />
-
-        {/* 필터링된 아이템 리스트 */}
         <Content>
           <ItemList items={filteredItems} />
         </Content>
@@ -88,10 +100,8 @@ const Home: React.FC = () => {
     </MainContainer>
   );
 };
-
 export default Home;
 
-// 스타일 정의
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -105,10 +115,95 @@ const ContentWrapper = styled.div`
   flex-direction: column;
 `;
 
+const FilterContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 47px;
+  margin-bottom: 20px;
+`;
+
+const FilterIconContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "NanumSquare Neo OTF";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 13px;
+  color: #000;
+  cursor: pointer;
+
+  img {
+    width: 24px;
+    height: 24px;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease;
+  }
+
+  &:hover img {
+    background-color: #e6e6e6;
+  }
+
+  span {
+    margin-right: 5px;
+  }
+`;
+
+const SeasonToggle = styled.div<{ isActive: boolean }>`
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 60px;
+  height: 30px;
+  background-color: ${({ isActive }) => (isActive ? "#222" : "#D9D9D9")};
+  border-radius: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+`;
+
+const ToggleCircle = styled.div<{ isActive: boolean }>`
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background: #fff;
+  border-radius: 50%;
+  left: ${({ isActive }) => (isActive ? "32px" : "2px")};
+  transition: left 0.3s ease;
+`;
+
+const ToggleText = styled.span<{ isActive: boolean }>`
+  font-family: "NanumSquare Neo OTF";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 11px;
+
+  color: #000;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: ${({ isActive }) => (isActive ? "8px" : "unset")};
+  left: ${({ isActive }) => (!isActive ? "8px" : "unset")};
+`;
+const ToggleLabel = styled.span`
+  font-family: "NanumSquare Neo OTF";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 13px;
+  color: #000000;
+
+  margin-left: 10px;
+`;
 const HeaderContainer = styled.div`
   display: flex;
   justify-content: space-around;
-  padding: 30px 10px 0;
+  padding: 10px 0;
 `;
 
 const IconContainer = styled.div<{ isSelected: boolean }>`
@@ -133,11 +228,6 @@ const Icon = styled.img`
 const IconText = styled.span`
   font-size: 12px;
   color: #333;
-`;
-
-const Divider = styled.div`
-  border: 1px solid #ddd;
-  margin: 15px 0;
 `;
 
 const Content = styled.div`
