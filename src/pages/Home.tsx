@@ -105,7 +105,7 @@ export default Home;
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 40px auto;
+
   height: 100vh;
 `;
 
