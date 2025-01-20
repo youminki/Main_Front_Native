@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Theme from '../../../styles/Theme';
+import React, { useState } from "react";
+import styled from "styled-components";
+import Theme from "../../../styles/Theme";
 
 const PaymentMethod: React.FC = () => {
-  const [selectedOption, setSelectedOption] = useState<string>('12');
+  const [selectedOption, setSelectedOption] = useState<string>("12");
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
@@ -13,14 +13,14 @@ const PaymentMethod: React.FC = () => {
     <PaymentMethodContainer>
       <PaymentMethodText>결제방식 (선택)</PaymentMethodText>
       <InstallmentOptions>
-        <NowOptionWrapper onClick={() => handleOptionClick('NOW')}>
-          <NowOption active={selectedOption === 'NOW'}>
-            {selectedOption === 'NOW' && <Circle />}
+        <NowOptionWrapper onClick={() => handleOptionClick("NOW")}>
+          <NowOption active={selectedOption === "NOW"}>
+            {selectedOption === "NOW" && <Circle />}
             <OptionText>NOW</OptionText>
           </NowOption>
         </NowOptionWrapper>
         <OptionContainer>
-          {['6', '12', '18', '24', '36'].map((option) => (
+          {["6", "12", "18", "24", "36"].map((option) => (
             <OptionWrapper
               key={option}
               onClick={() => handleOptionClick(option)}
@@ -64,7 +64,7 @@ const NowOptionWrapper = styled.div`
 `;
 
 const NowOption = styled.div<{ active: boolean }>`
-  padding: 10px 20px;
+  padding: 0px 20px;
   color: ${Theme.colors.black};
   background-color: ${Theme.colors.gray3};
   border: 1px solid ${Theme.colors.gray1};
@@ -116,7 +116,7 @@ const Option = styled.div<{ active: boolean }>`
 const OptionText = styled.div`
   position: relative;
   z-index: 2;
-  font-family: 'NanumSquare Neo OTF';
+  font-family: "NanumSquare Neo OTF";
   font-style: normal;
   font-weight: 800;
   font-size: 14px;
