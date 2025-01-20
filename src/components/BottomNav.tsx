@@ -34,17 +34,17 @@ const BottomNav: React.FC = () => {
       case "/home":
         updateTab("home");
         break;
-      case "/inventory":
-        updateTab("inventory");
+      case "/brand":
+        updateTab("brand");
         break;
-      case "/payment":
-        updateTab("payment");
+      case "/LockerRoom":
+        updateTab("LockerRoom");
         break;
-      case "/store":
-        updateTab("store");
+      case "/CustomerService":
+        updateTab("CustomerService");
         break;
-      case "/menu":
-        updateTab("menu");
+      case "/Melpik":
+        updateTab("Melpik");
         break;
       default:
         setActiveTab(null);
@@ -65,40 +65,6 @@ const BottomNav: React.FC = () => {
     <ThemeProvider theme={Theme}>
       <BottomNavContainer ref={navRef}>
         <NavItem
-          data-tab="inventory"
-          isActive={activeTab === "inventory"}
-          onClick={() => handleClick("inventory", "/inventory")}
-        >
-          <Icon
-            src={BrandIcon}
-            alt="인벤토리"
-            isActive={activeTab === "inventory"}
-          />
-          <NavLabel isActive={activeTab === "inventory"}>인벤토리</NavLabel>
-          {activeTab === "inventory" && (
-            <IndicatorContainer>
-              <Light isActive={showYellowGlow} />
-            </IndicatorContainer>
-          )}
-        </NavItem>
-        <NavItem
-          data-tab="payment"
-          isActive={activeTab === "payment"}
-          onClick={() => handleClick("payment", "/payment")}
-        >
-          <Icon
-            src={CustomerServiceIcon}
-            alt="결제내역"
-            isActive={activeTab === "payment"}
-          />
-          <NavLabel isActive={activeTab === "payment"}>결제내역</NavLabel>
-          {activeTab === "payment" && (
-            <IndicatorContainer>
-              <Light isActive={showYellowGlow} />
-            </IndicatorContainer>
-          )}
-        </NavItem>
-        <NavItem
           data-tab="home"
           isActive={activeTab === "home"}
           onClick={() => handleClick("home", "/home")}
@@ -112,35 +78,68 @@ const BottomNav: React.FC = () => {
           )}
         </NavItem>
         <NavItem
-          data-tab="store"
-          isActive={activeTab === "store"}
-          onClick={() => handleClick("store", "/store")}
+          data-tab="brand"
+          isActive={activeTab === "brand"}
+          onClick={() => handleClick("brand", "/brand")}
         >
-          <Icon
-            src={LockerRoomIcon}
-            alt="구매마켓"
-            isActive={activeTab === "store"}
-          />
-          <NavLabel isActive={activeTab === "store"}>구매마켓</NavLabel>
-          {activeTab === "store" && (
+          <Icon src={BrandIcon} alt="브랜드" isActive={activeTab === "brand"} />
+          <NavLabel isActive={activeTab === "brand"}>브랜드</NavLabel>
+          {activeTab === "brand" && (
             <IndicatorContainer>
               <Light isActive={showYellowGlow} />
             </IndicatorContainer>
           )}
         </NavItem>
         <NavItem
-          data-tab="menu"
-          isActive={activeTab === "menu"}
-          onClick={() => handleClick("menu", "/menu")}
+          data-tab="Melpik"
+          isActive={activeTab === "Melpik"}
+          onClick={() => handleClick("Melpik", "/Melpik")}
         >
-          <Icon src={MelpikIcon} alt="전체" isActive={activeTab === "menu"} />
-          <NavLabel isActive={activeTab === "menu"}>전체</NavLabel>
-          {activeTab === "menu" && (
+          <Icon src={MelpikIcon} alt="전체" isActive={activeTab === "Melpik"} />
+          <NavLabel isActive={activeTab === "Melpik"}>멜픽</NavLabel>
+          {activeTab === "Melpik" && (
             <IndicatorContainer>
               <Light isActive={showYellowGlow} />
             </IndicatorContainer>
           )}
         </NavItem>
+        <NavItem
+          data-tab="LockerRoom"
+          isActive={activeTab === "LockerRoom"}
+          onClick={() => handleClick("LockerRoom", "/LockerRoom")}
+        >
+          <Icon
+            src={LockerRoomIcon}
+            alt="락커룸"
+            isActive={activeTab === "LockerRoom"}
+          />
+          <NavLabel isActive={activeTab === "LockerRoom"}>락커룸</NavLabel>
+          {activeTab === "LockerRoom" && (
+            <IndicatorContainer>
+              <Light isActive={showYellowGlow} />
+            </IndicatorContainer>
+          )}
+        </NavItem>
+        <NavItem
+          data-tab="CustomerService"
+          isActive={activeTab === "CustomerService"}
+          onClick={() => handleClick("CustomerService", "/CustomerService")}
+        >
+          <Icon
+            src={CustomerServiceIcon}
+            alt="고객센터"
+            isActive={activeTab === "CustomerService"}
+          />
+          <NavLabel isActive={activeTab === "CustomerService"}>
+            고객센터
+          </NavLabel>
+          {activeTab === "CustomerService" && (
+            <IndicatorContainer>
+              <Light isActive={showYellowGlow} />
+            </IndicatorContainer>
+          )}
+        </NavItem>
+
         <Bar style={{ left: `${barPosition}px` }} />
       </BottomNavContainer>
     </ThemeProvider>
