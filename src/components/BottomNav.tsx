@@ -196,7 +196,7 @@ const Light = styled.div<{ isActive: boolean }>`
   border-radius: 50%;
   filter: blur(20px);
   opacity: ${({ isActive }) => (isActive ? "0.8" : "0")};
-  top: -8px;
+  top: -15px;
   transition: opacity 0.5s ease-in-out;
   clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
 `;
@@ -212,8 +212,8 @@ const NavItem = styled.div<{ isActive: boolean }>`
 `;
 
 const Icon = styled.img<{ isActive: boolean }>`
-  width: 24px;
-  height: 24px;
+  width: auto;
+  height: auto;
   filter: ${({ isActive }) => (isActive ? "brightness(0) invert(1)" : "none")};
 `;
 
@@ -222,6 +222,6 @@ const NavLabel = styled.span<{ isActive: boolean }>`
     isActive ? theme.colors.white : theme.colors.gray};
   font-size: 12px;
   font-weight: 600;
-  margin-top: 5px;
+  margin-top: 11px;
   transition: color 0.3s ease;
 `;
