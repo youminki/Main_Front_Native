@@ -9,9 +9,6 @@ interface DayBoxProps {
   reserved: boolean;
   isWeekend: boolean;
 }
-interface DayNameProps {
-  isWeekend: boolean;
-}
 
 interface ToggleButtonProps {
   active: boolean;
@@ -20,10 +17,24 @@ interface ToggleButtonProps {
 const RentalOptions: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<string>(""); // 대여 기간
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedDates, setSelectedDates] = useState<number[]>([]); // 선택된 날짜
-  const [yearMonth, setYearMonth] = useState<string>("2025-01"); // 연도-월
+  const [selectedDates, setSelectedDates] = useState<{
+    [key: string]: number[];
+  }>({}); // 연도-월별 선택된 날짜
+  const [yearMonth, setYearMonth] = useState<string>("2025-01"); // 현재 선택된 연도-월
   const reservedDates = [22, 23, 24]; // 예약된 날짜
   const [isAddingDates, setIsAddingDates] = useState<boolean>(false); // 일정 추가 여부
+
+  const getYearMonthList = () => {
+    const years = Array.from({ length: 5 }, (_, i) => 2025 + i);
+    const months = Array.from({ length: 12 }, (_, i) => i + 1);
+    const yearMonthList: string[] = [];
+    years.forEach((year) => {
+      months.forEach((month) => {
+        yearMonthList.push(`${year}-${String(month).padStart(2, "0")}`);
+      });
+    });
+    return yearMonthList;
+  };
 
   const toggleModal = () => {
     if (selectedPeriod) {
@@ -33,24 +44,29 @@ const RentalOptions: React.FC = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedDates([]);
+    setSelectedDates({});
   };
 
   const handleDateClick = (day: number) => {
+    const currentDates = selectedDates[yearMonth] || [];
     if (!reservedDates.includes(day)) {
       if (isAddingDates) {
-        setSelectedDates((prevSelected) =>
-          prevSelected.includes(day)
-            ? prevSelected.filter((d) => d !== day)
-            : [...prevSelected, day]
-        );
+        setSelectedDates((prev) => ({
+          ...prev,
+          [yearMonth]: currentDates.includes(day)
+            ? currentDates.filter((d) => d !== day)
+            : [...currentDates, day],
+        }));
       } else {
-        const periodDays = selectedPeriod === "3박4일" ? 4 : 6; // 대여 옵션에 따른 기간 설정
+        const periodDays = selectedPeriod === "3박4일" ? 4 : 6;
         const newSelectedDates = Array.from(
           { length: periodDays },
           (_, i) => day + i
         ).filter((date) => date <= getDaysInMonth());
-        setSelectedDates(newSelectedDates);
+        setSelectedDates((prev) => ({
+          ...prev,
+          [yearMonth]: newSelectedDates,
+        }));
       }
     }
   };
@@ -63,21 +79,23 @@ const RentalOptions: React.FC = () => {
   const renderCalendar = () => {
     const daysInMonth = getDaysInMonth();
     const [year, month] = yearMonth.split("-").map(Number);
-    const firstDay = new Date(year, month - 1, 1).getDay(); // 해당 월의 첫 번째 날
+    const firstDay = new Date(year, month - 1, 1).getDay();
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
     const emptyDays = Array.from({ length: firstDay }, (_, i) => (
       <EmptyDay key={i} />
     ));
 
+    const currentDates = selectedDates[yearMonth] || [];
+
     return [
       ...emptyDays,
       ...days.map((day) => {
-        const dayIndex = (firstDay + day - 1) % 7; // 해당 날짜의 요일 인덱스 계산
-        const isWeekend = dayIndex === 0 || dayIndex === 6; // 일요일(0) 또는 토요일(6)
+        const dayIndex = (firstDay + day - 1) % 7;
+        const isWeekend = dayIndex === 0 || dayIndex === 6;
         return (
           <DayBox
             key={day}
-            selected={selectedDates.includes(day)}
+            selected={currentDates.includes(day)}
             reserved={reservedDates.includes(day)}
             isWeekend={isWeekend}
             onClick={() => handleDateClick(day)}
@@ -132,7 +150,7 @@ const RentalOptions: React.FC = () => {
                 value={yearMonth}
                 onChange={(e) => setYearMonth(e.target.value)}
               >
-                {["2025-01", "2025-02", "2025-03", "2025-04"].map((ym) => (
+                {getYearMonthList().map((ym) => (
                   <option key={ym} value={ym}>
                     {ym.replace("-", ".")}월
                   </option>
@@ -169,6 +187,8 @@ const RentalOptions: React.FC = () => {
 };
 
 export default RentalOptions;
+
+// 스타일 정의 생략 (기존 코드와 동일)
 
 // 스타일 정의
 const Container = styled.div`
