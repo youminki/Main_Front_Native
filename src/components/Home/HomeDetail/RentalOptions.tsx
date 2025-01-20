@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import ReusableModal from "../../../components/ReusableModal";
 import RentalSelectDateIcon from "../../../assets/Home/HomeDetail/RentalSelectDateIcon.svg";
+import Theme from "../../../styles/Theme";
 
 const RentalOptions = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState<string>(""); // 대여 기간
+  const [selectedPeriod, setSelectedPeriod] = useState(""); // 대여 기간
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDates, setSelectedDates] = useState<number[]>([]); // 선택된 날짜
+  const [selectedDates, setSelectedDates] = useState([]); // 선택된 날짜
+  const reservedDates = [22, 23, 24]; // 예약된 날짜
 
   const toggleModal = () => {
     if (selectedPeriod) {
@@ -16,19 +18,48 @@ const RentalOptions = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedDates([]); // 모달 닫을 때 선택된 날짜 초기화
+    setSelectedDates([]);
   };
 
-  const handleDateClick = (day: number) => {
-    const periodDays = selectedPeriod === "3박4일" ? 4 : 5;
+  const handleDateClick = (day) => {
+    if (!reservedDates.includes(day)) {
+      setSelectedDates((prevSelected) => {
+        const newSelected = [...prevSelected, day];
+        return newSelected.length > 2 ? newSelected.slice(-2) : newSelected;
+      });
+    }
+  };
 
-    // 선택된 날짜를 기준으로 대여 기간만큼 선택
-    const newSelectedDates = Array.from(
-      { length: periodDays },
-      (_, i) => day + i
-    ).filter((date) => date <= 31); // 최대 날짜는 31일까지만 포함
+  const renderCalendar = () => {
+    const daysInMonth = 31;
+    const firstDay = 4; // 예시: 목요일 시작
+    const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    const emptyDays = Array.from({ length: firstDay }, (_, i) => (
+      <EmptyDay key={i} />
+    ));
 
-    setSelectedDates(newSelectedDates);
+    const [startDate, endDate] = selectedDates;
+    const isWithinRange = (day) => {
+      if (startDate && endDate) {
+        return day > startDate && day < endDate;
+      }
+      return false;
+    };
+
+    return [
+      ...emptyDays,
+      ...days.map((day) => (
+        <DayBox
+          key={day}
+          selected={selectedDates.includes(day)}
+          reserved={reservedDates.includes(day)}
+          inRange={isWithinRange(day)}
+          onClick={() => handleDateClick(day)}
+        >
+          {day}
+        </DayBox>
+      )),
+    ];
   };
 
   return (
@@ -68,15 +99,12 @@ const RentalOptions = () => {
           }
         >
           <CalendarContainer>
-            {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-              <DayBox
-                key={day}
-                selected={selectedDates.includes(day)}
-                onClick={() => handleDateClick(day)}
-              >
-                {day}
-              </DayBox>
+            {["일", "월", "화", "수", "목", "금", "토"].map((name, index) => (
+              <DayName key={index} isWeekend={index === 0 || index === 6}>
+                {name}
+              </DayName>
             ))}
+            {renderCalendar()}
           </CalendarContainer>
           <Notice>
             ※ 서비스 시작일 전에 받아보실 수 있게 발송해 드립니다.
@@ -112,29 +140,23 @@ const Wrapper = styled.div`
 
 const Select = styled.select`
   flex: 1;
-  padding: 8px;
-  height: 50px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 10px;
+  border: 1px solid ${Theme.colors.gray4};
+  border-radius: 5px;
 `;
 
-const Button = styled.button<{ disabled: boolean }>`
+const Button = styled.button`
   flex: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 15px;
   height: 50px;
-  border: 1px solid #ccc;
+  background-color: ${({ disabled }) =>
+    disabled ? Theme.colors.gray3 : "#ffffff"};
+  border: 1px solid ${Theme.colors.gray4};
   border-radius: 4px;
-  background-color: ${({ disabled }) => (disabled ? "#ccc" : "#ffffff")};
-  color: ${({ disabled }) => (disabled ? "#666" : "#000")};
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: ${({ disabled }) => (disabled ? "#ccc" : "#f6f6f6")};
-  }
 `;
 
 const Icon = styled.img`
@@ -149,21 +171,42 @@ const CalendarContainer = styled.div`
   margin-top: 20px;
 `;
 
-const DayBox = styled.div<{ selected: boolean }>`
-  width: 40px;
+const DayName = styled.div`
+  text-align: center;
+  font-weight: bold;
+  color: ${(props) => (props.isWeekend ? Theme.colors.gray1 : "black")};
+`;
+
+const EmptyDay = styled.div``;
+
+const DayBox = styled.div`
+  border: 1px solid
+    ${(props) => (props.inRange ? Theme.colors.yellow : Theme.colors.gray4)};
+  background-color: ${(props) =>
+    props.reserved
+      ? Theme.colors.gray3
+      : props.selected
+        ? Theme.colors.yellow
+        : "#fff"};
+  color: ${(props) =>
+    props.selected ? "#fff" : props.reserved ? "#fff" : "#000"};
+  width: 100%;
+  min-width: 40px;
   height: 40px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  border: 1px solid ${({ selected }) => (selected ? "#f6ae24" : "#ccc")};
-  background-color: ${({ selected }) => (selected ? "#f6ae24" : "#fff")};
-  color: ${({ selected }) => (selected ? "#fff" : "#000")};
-  border-radius: 4px;
-  cursor: pointer;
+  justify-content: center;
+  cursor: ${(props) => (props.reserved ? "default" : "pointer")};
+  font-family: "NanumSquare Neo OTF";
+  font-weight: 800;
+  font-size: 12px;
+`;
 
-  &:hover {
-    background-color: ${({ selected }) => (selected ? "#e6951b" : "#eee")};
-  }
+const Notice = styled.p`
+  margin-top: 20px;
+  font-size: 12px;
+  color: ${Theme.colors.gray1};
+  line-height: 1.5;
 `;
 
 const CancelButton = styled.button`
@@ -185,11 +228,4 @@ const ConfirmButton = styled.button`
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
-`;
-
-const Notice = styled.p`
-  font-size: 12px;
-  color: #888;
-  margin-top: 20px;
-  line-height: 1.5;
 `;
