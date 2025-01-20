@@ -22,48 +22,52 @@ const Header: React.FC<HeaderProps> = ({
     navigate("/login"); // /login 페이지로 이동
   };
 
+  const handleBasketClick = () => {
+    navigate("/basket"); // /basket 페이지로 이동
+  };
+
   return (
     <HeaderWrapper>
       <HeaderContainer>
-        {isLoggedIn ? (
-          <>
-            <LeftSection>
-              <Profile>
-                <ProfileImage
-                  src="https://via.placeholder.com/44"
-                  alt="User profile"
-                />
-                <Greeting>
-                  <GreetingText>
-                    <span>{nickname}</span> 님 안녕하세요!
-                  </GreetingText>
-                </Greeting>
-              </Profile>
-            </LeftSection>
-            <RightSection>
+        {/* 왼쪽 섹션 */}
+        <LeftSection>
+          {isLoggedIn ? (
+            <Greeting>
+              <ProfileImage
+                src="https://via.placeholder.com/44"
+                alt="User profile"
+              />
+              <GreetingText>
+                <span>{nickname}</span> 님 안녕하세요!
+              </GreetingText>
+            </Greeting>
+          ) : (
+            <LogoIcon src={Logo} alt="Logo" />
+          )}
+        </LeftSection>
+
+        {/* 오른쪽 섹션 */}
+        <RightSection>
+          {isLoggedIn ? (
+            <>
               <Icon
                 src={BasketIcon}
                 alt="Basket"
-                onClick={() => navigate("/Basket")}
+                onClick={handleBasketClick} // 장바구니 클릭 시 이동
               />
               <Icon src={Alarm} alt="알림" />
-            </RightSection>
-          </>
-        ) : (
-          <>
-            <LeftSection>
-              <Icon src={Logo} alt="Login Logo" />
-            </LeftSection>
-            <RightSection>
+            </>
+          ) : (
+            <>
               <Icon
                 src={MypageIcon}
                 alt="마이페이지"
-                onClick={handleMypageClick} // 클릭 시 /login 페이지로 이동
+                onClick={handleMypageClick} // 마이페이지 클릭 시 이동
               />
               <Icon src={Alarm} alt="알림" />
-            </RightSection>
-          </>
-        )}
+            </>
+          )}
+        </RightSection>
       </HeaderContainer>
     </HeaderWrapper>
   );
@@ -74,7 +78,6 @@ export default Header;
 const HeaderWrapper = styled.div`
   min-width: 340px;
   background-color: #e60000;
-  padding: 0 27px 27px;
   position: fixed;
   top: 0;
   left: 0;
@@ -103,11 +106,6 @@ const RightSection = styled.div`
   gap: 15px;
 `;
 
-const Profile = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
 const ProfileImage = styled.img`
   width: 44px;
   height: 44px;
@@ -117,19 +115,25 @@ const ProfileImage = styled.img`
 
 const Greeting = styled.div`
   display: flex;
-  flex-direction: column;
+  align-items: center;
 `;
 
 const GreetingText = styled.span`
   font-family: "NanumSquare Neo OTF", sans-serif;
   font-style: normal;
-  color: #000000;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 18px;
 
   & > span {
-    font-weight: 500;
-    font-size: 24px;
+    font-weight: 700;
     margin-right: 5px;
   }
+`;
+
+const LogoIcon = styled.img`
+  width: auto;
+  height: auto;
 `;
 
 const Icon = styled.img`
