@@ -124,13 +124,14 @@ const Bar = styled.div`
 const Mark = styled.div`
   position: absolute;
   top: -8px;
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
 
   border: 3px solid ${Theme.colors.yellow};
   border-radius: 50%;
   transition: left 0.3s ease;
   transform: translateX(-50%);
+  background-color: #ffffff;
 `;
 
 const Options = styled.div`
