@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
-import HomeIcon from "../assets/Home/Home.svg";
-import inventoryIcon from "../assets/Home/inventory.svg";
-import PaymentDetailIcon from "../assets/Home/PaymentDetail.svg";
-import StoreIcon from "../assets/Home/Store.svg";
-import MenuIcon from "../assets/Home/Menu.svg";
+import HomeIcon from "../assets/BottomNav/HomeIcon.svg";
+import BrandIcon from "../assets/BottomNav/BrandIcon.svg";
+import CustomerServiceIcon from "../assets/BottomNav/CustomerServiceIcon.svg";
+import LockerRoomIcon from "../assets/BottomNav/LockerRoomIcon.svg";
+import MelpikIcon from "../assets/BottomNav/MelpikIcon.svg";
 import Theme from "../styles/Theme";
 
 const BottomNav: React.FC = () => {
@@ -70,7 +70,7 @@ const BottomNav: React.FC = () => {
           onClick={() => handleClick("inventory", "/inventory")}
         >
           <Icon
-            src={inventoryIcon}
+            src={BrandIcon}
             alt="인벤토리"
             isActive={activeTab === "inventory"}
           />
@@ -87,7 +87,7 @@ const BottomNav: React.FC = () => {
           onClick={() => handleClick("payment", "/payment")}
         >
           <Icon
-            src={PaymentDetailIcon}
+            src={CustomerServiceIcon}
             alt="결제내역"
             isActive={activeTab === "payment"}
           />
@@ -117,7 +117,7 @@ const BottomNav: React.FC = () => {
           onClick={() => handleClick("store", "/store")}
         >
           <Icon
-            src={StoreIcon}
+            src={LockerRoomIcon}
             alt="구매마켓"
             isActive={activeTab === "store"}
           />
@@ -133,7 +133,7 @@ const BottomNav: React.FC = () => {
           isActive={activeTab === "menu"}
           onClick={() => handleClick("menu", "/menu")}
         >
-          <Icon src={MenuIcon} alt="전체" isActive={activeTab === "menu"} />
+          <Icon src={MelpikIcon} alt="전체" isActive={activeTab === "menu"} />
           <NavLabel isActive={activeTab === "menu"}>전체</NavLabel>
           {activeTab === "menu" && (
             <IndicatorContainer>
