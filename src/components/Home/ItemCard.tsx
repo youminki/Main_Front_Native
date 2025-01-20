@@ -1,8 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import Theme from '../../styles/Theme';
-import ImgAdd from '../../assets/Store/ImgAdd.svg';
+import React from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import Theme from "../../styles/Theme";
+import ImgAdd from "../../assets/Store/ImgAdd.svg";
 
 type ItemCardProps = {
   id: string;
@@ -41,7 +41,7 @@ const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 100%;
+
   cursor: pointer;
   margin: 6px;
   &:first-child {
@@ -64,7 +64,6 @@ const Description = styled.p`
 
 const ImageWrapper = styled.div`
   position: relative;
-  width: 100%;
 `;
 
 const Image = styled.img`

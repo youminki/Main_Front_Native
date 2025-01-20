@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 type ModalProps = {
   isOpen: boolean;
@@ -15,8 +15,8 @@ const ReusableModal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
-  width = '376px',
-  height = '360px',
+  width = "376px",
+  height = "360px",
 }) => {
   if (!isOpen) return null;
 
@@ -54,7 +54,7 @@ const StyledModal = styled.div`
 `;
 
 const ModalContent = styled.div<{ width: string; height: string }>`
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: #ffffff;
   padding: 20px;
   width: ${({ width }) => width};
   height: ${({ height }) => height};
@@ -82,8 +82,8 @@ const ModalBody = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  border-top: 2px solid ${({ theme }) => theme.colors.gray0};
-  border-bottom: 2px solid ${({ theme }) => theme.colors.gray0};
+  border-top: 2px solid #e0e0e0;
+  border-bottom: 2px solid #e0e0e0;
 `;
 
 const CloseButtonWrapper = styled.div`

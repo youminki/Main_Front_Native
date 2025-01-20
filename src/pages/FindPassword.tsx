@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { schemaFindPassword } from '../hooks/ValidationYup';
-import styled, { ThemeProvider } from 'styled-components';
-import BackButton from '../components/BackButton';
-import Button from '../components/Button01';
-import InputField from '../components/InputField';
-import Theme from '../styles/Theme';
-import ReusableModal from '../components/ReusableModal';
+import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { schemaFindPassword } from "../hooks/ValidationYup";
+import styled, { ThemeProvider } from "styled-components";
+import BackButton from "../components/BackButton";
+import Button from "../components/Button01";
+import InputField from "../components/InputField";
+import Theme from "../styles/Theme";
+import ReusableModal from "../components/ReusableModal";
 
 type FormValues = {
   email: string;
@@ -22,11 +22,11 @@ const FindPassword: React.FC = () => {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: yupResolver(schemaFindPassword),
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues: {
-      email: '',
-      nickname: '',
-      birthdate: '',
+      email: "",
+      nickname: "",
+      birthdate: "",
     },
   });
 
@@ -88,7 +88,7 @@ const FindPassword: React.FC = () => {
           onClose={closeModal}
           title="비밀번호 찾기 - 조회결과"
         >
-          등록하신 계정으로{' '}
+          등록하신 계정으로{" "}
           <span className="highlighted-text">메일이 발송</span> 되었습니다.
         </ReusableModal>
       </Container>
@@ -118,7 +118,7 @@ const HeaderWrapper = styled.div`
 const BackButtonWrapper = styled.div``;
 
 const Title = styled.h2`
-  font-family: 'NanumSquare Neo OTF';
+  font-family: "NanumSquare Neo OTF";
   font-style: normal;
   font-weight: 700;
   font-size: 20px;

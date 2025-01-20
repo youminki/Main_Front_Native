@@ -1,7 +1,7 @@
-import React from 'react';
-import styled from 'styled-components';
-import Theme from '../../../styles/Theme';
-import { useSwipeable } from 'react-swipeable';
+import React from "react";
+import styled from "styled-components";
+import Theme from "../../../styles/Theme";
+import { useSwipeable } from "react-swipeable";
 
 type ImageSliderProps = {
   images: string[];
@@ -47,7 +47,6 @@ export default ImageSlider;
 const ImageWrapper = styled.div`
   position: relative;
   width: 100%;
-  max-width: 600px;
 `;
 
 const ImageContainer = styled.div`

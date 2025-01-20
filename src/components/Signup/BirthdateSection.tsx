@@ -1,6 +1,6 @@
 // src/components/BirthdateSection.tsx
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import styled from "styled-components";
 
 interface BirthdateSectionProps {
   onChange?: (birthdate: { year: string; month: string; day: string }) => void; // 생년월일 선택 시 호출되는 콜백
@@ -8,9 +8,9 @@ interface BirthdateSectionProps {
 }
 
 const BirthdateSection: React.FC<BirthdateSectionProps> = ({ onChange }) => {
-  const [birthYear, setBirthYear] = useState('');
-  const [birthMonth, setBirthMonth] = useState('');
-  const [birthDay, setBirthDay] = useState('');
+  const [birthYear, setBirthYear] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthDay, setBirthDay] = useState("");
 
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
@@ -106,7 +106,7 @@ const BirthdateWrapper = styled.div`
 `;
 
 const Label = styled.label`
-  font-family: 'NanumSquare Neo OTF';
+  font-family: "NanumSquare Neo OTF";
   font-size: 14px;
   font-weight: 700;
   line-height: 1.5;
@@ -134,7 +134,6 @@ const StyledSelect = styled.select`
   transition: all 0.3s ease;
 
   &:focus {
-    border-color: ${({ theme }) => theme.colors.primary};
     outline: none;
   }
 

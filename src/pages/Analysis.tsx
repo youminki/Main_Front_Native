@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import Content from '../components/Analysis/AnalysisContent.tsx';
-import Theme from '../styles/Theme.js';
+import styled from "styled-components";
+import Content from "../components/Analysis/AnalysisContent";
+import Theme from "../styles/Theme";
 
 const Analysis = () => {
   return (

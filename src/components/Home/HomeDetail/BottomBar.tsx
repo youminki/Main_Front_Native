@@ -1,12 +1,11 @@
-/ㅜㅍㅡ
-import styled from 'styled-components';
-import ShoppingBasket from '../../../assets/Home/HomeDetail/ShoppingBasket.svg';
+import styled from "styled-components";
+import ShoppingBasket from "../../../assets/Home/HomeDetail/ShoppingBasket.svg";
 
 const BottomBar = () => {
   return (
     <BottomBarContainer>
       <CartButton>
-        <CartImage src={ShoppingBasket} alt='Shopping Basket' />
+        <CartImage src={ShoppingBasket} alt="Shopping Basket" />
       </CartButton>
       <OrderButton>제품 주문하기</OrderButton>
     </BottomBarContainer>
@@ -21,14 +20,19 @@ const BottomBarContainer = styled.div`
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 600px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+
   background-color: #eeeeee;
-  margin-top: 10px;
+
   z-index: 9999;
+
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
 `;
 
 const CartButton = styled.button`

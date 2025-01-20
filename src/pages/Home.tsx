@@ -1,24 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
-import styled, { ThemeProvider } from 'styled-components';
-import Header from '../components/Header';
-import Notice from '../components/Home/Notice';
-import ItemList from '../components/Home/ItemList';
-import Theme from '../styles/Theme';
-import { useNavigate } from 'react-router-dom';
-import TypeAnalysisIcon from '../assets/Header/HeaderTypeAnalysis.svg';
-import inventoryIcon from '../assets/Header/Headerinventory.svg';
-import SettlementIcon from '../assets/Header/HeaderCalculateDetail.svg';
-import DeliveryIcon from '../assets/Header/HeaderShippingDetail.svg';
+import React, { useState, useRef } from "react";
+import styled, { ThemeProvider } from "styled-components";
+
+import Notice from "../components/Home/Notice";
+import ItemList from "../components/Home/ItemList";
+import Theme from "../styles/Theme";
+import { useNavigate } from "react-router-dom";
+import TypeAnalysisIcon from "../assets/Header/HeaderTypeAnalysis.svg";
+import inventoryIcon from "../assets/Header/Headerinventory.svg";
+import SettlementIcon from "../assets/Header/HeaderCalculateDetail.svg";
+import DeliveryIcon from "../assets/Header/HeaderShippingDetail.svg";
 
 const Home: React.FC = () => {
   const homeIcons = [
-    { src: TypeAnalysisIcon, alt: '페이지 설정', route: '/pageSettings' },
-    { src: inventoryIcon, alt: '통계분석', route: '/statisticalAnalysis' },
-    { src: SettlementIcon, alt: '결제내역', route: '/payment' },
-    { src: DeliveryIcon, alt: '배송현황', route: '/delivery' },
+    { src: TypeAnalysisIcon, alt: "페이지 설정", route: "/pageSettings" },
+    { src: inventoryIcon, alt: "통계분석", route: "/statisticalAnalysis" },
+    { src: SettlementIcon, alt: "결제내역", route: "/payment" },
+    { src: DeliveryIcon, alt: "배송현황", route: "/delivery" },
   ];
   const [, setSelectedIconIndex] = useState<number>(0);
 
+  // 타입을 명시적으로 지정
   const iconRefs = useRef<(HTMLDivElement | null)[]>([]);
   const navigate = useNavigate();
 
@@ -56,7 +57,6 @@ const Home: React.FC = () => {
   return (
     <ThemeProvider theme={Theme}>
       <MainContainer>
-        <Header />
         <ContentWrapper>
           <Notice />
           <HeaderContainer>
@@ -64,7 +64,9 @@ const Home: React.FC = () => {
               <IconContainer
                 key={icon.alt}
                 onClick={() => handleIconClick(index, icon.route)}
-                ref={(el) => (iconRefs.current[index] = el)}
+                ref={(el: HTMLDivElement | null) => {
+                  iconRefs.current[index] = el; // 값을 설정만 하고 반환하지 않음
+                }}
               >
                 <Icon src={icon.src} alt={icon.alt} />
                 <IconText>{icon.alt}</IconText>
@@ -94,12 +96,11 @@ const Home: React.FC = () => {
 
 export default Home;
 
+// 스타일 컴포넌트 정의
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
-
   margin: 0 auto;
-
   height: 100vh;
   padding: 25px 27px 0 27px;
 `;

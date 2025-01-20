@@ -1,7 +1,7 @@
 // src/components/InputField.tsx
-import React from 'react';
-import styled from 'styled-components';
-import Button02 from './Button02';
+import React from "react";
+import styled from "styled-components";
+import Button02 from "./Button02";
 
 type InputFieldProps = {
   label: string;
@@ -28,26 +28,41 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
       prefix,
       as,
       isEmailField,
+      onChange, // 명시적으로 분리
       ...rest
     },
     ref
   ) => (
     <InputContainer>
       <Label htmlFor={id} isEmpty={!label}>
-        {label.split('(')[0] || '​'}
-        {label.includes('(') && (
-          <GrayText>{`(${label.split('(')[1]}`}</GrayText>
+        {label.split("(")[0] || "​"}
+        {label.includes("(") && (
+          <GrayText>{`(${label.split("(")[1]}`}</GrayText>
         )}
       </Label>
-      {type === 'password' ? (
+      {type === "password" ? (
         <PasswordWrapper>
-          <Input as={as} type={type} id={id} ref={ref} {...rest} />
+          <Input
+            as={as}
+            type={type}
+            id={id}
+            ref={ref}
+            onChange={onChange} // 명시적으로 전달
+            {...rest}
+          />
         </PasswordWrapper>
       ) : (
         <InputRow>
           {prefix && <PrefixText>{prefix}</PrefixText>}
           <InputWrapper>
-            <Input as={as} type={type} id={`${id}-local`} ref={ref} {...rest} />
+            <Input
+              as={as}
+              type={type}
+              id={`${id}-local`}
+              ref={ref}
+              onChange={onChange} // 명시적으로 전달
+              {...rest}
+            />
             {buttonLabel && (
               <ButtonWrapper>
                 <Button02 onClick={onButtonClick}>{buttonLabel}</Button02>
@@ -71,7 +86,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
   )
 );
 
-InputField.displayName = 'InputField';
+InputField.displayName = "InputField";
 
 export default InputField;
 
@@ -84,13 +99,13 @@ const InputContainer = styled.div`
 
 const Label = styled.label<{ isEmpty: boolean }>`
   margin-bottom: 10px;
-  font-family: 'NanumSquare Neo OTF';
+  font-family: "NanumSquare Neo OTF";
   font-size: 10px;
   font-weight: 700;
   line-height: 11.05px;
 
   text-align: left;
-  visibility: ${({ isEmpty }) => (isEmpty ? 'hidden' : 'visible')};
+  visibility: ${({ isEmpty }) => (isEmpty ? "hidden" : "visible")};
 `;
 
 const GrayText = styled.span`
@@ -129,6 +144,26 @@ const InputWrapper = styled.div`
   overflow: hidden;
   flex: 1;
   position: relative;
+
+  select {
+    font-family: "NanumSquare Neo OTF";
+    font-style: normal;
+    font-weight: 800;
+    font-size: 13px;
+    line-height: 14px;
+
+    color: #000000;
+  }
+
+  option {
+    font-family: "NanumSquare Neo OTF";
+    font-style: normal;
+    font-weight: 800;
+    font-size: 13px;
+    line-height: 14px;
+
+    color: #000000;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -159,7 +194,7 @@ const Input = styled.input`
   width: 100%;
 
   &::placeholder {
-    font-family: 'NanumSquare Neo OTF';
+    font-family: "NanumSquare Neo OTF";
     font-size: 13px;
 
     font-weight: 400;

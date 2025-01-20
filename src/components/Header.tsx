@@ -1,12 +1,11 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import { useLocation } from 'react-router-dom';
-import Alarm from '../assets/Home/Alarm.svg';
-import ScheduleIcon from '../assets/Home/Schedule.svg';
-import Basket from '../assets/Home/Basket.svg';
-import Mycloset from '../assets/Home/Mycloset.svg';
-import Mypage from '../assets/Home/Mypage.svg';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+
+import Alarm from "../assets/Home/Alarm.svg";
+import BasketIcon from "../assets/Home/Basket.svg";
+import MypageIcon from "../assets/Home/Mypage.svg";
+import Logo from "../assets/Logo.svg";
 
 type HeaderProps = {
   nickname?: string;
@@ -14,57 +13,57 @@ type HeaderProps = {
 };
 
 const Header: React.FC<HeaderProps> = ({
-  nickname = 'Mr J',
+  nickname = "Mr J",
   isLoggedIn = false,
 }) => {
-  const location = useLocation();
   const navigate = useNavigate();
 
   const handleMypageClick = () => {
-    window.location.href = 'https://api.stylewh.com/oauth/instagram';
+    navigate("/login"); // /login 페이지로 이동
   };
 
   return (
     <HeaderWrapper>
       <HeaderContainer>
-        <Profile>
-          <ProfileImage
-            src="https://via.placeholder.com/44"
-            alt="User profile"
-          />
-          <Greeting>
-            <GreetingText>
-              <span>{nickname}</span> 님 안녕하세요!
-            </GreetingText>
-          </Greeting>
-        </Profile>
-        <Icons>
-          {location.pathname === '/store' ? (
-            <>
-              <Icon src={Basket} alt="장바구니" />
-              <Icon src={Mycloset} alt="내 옷장" />
-            </>
-          ) : isLoggedIn ? (
-            <>
+        {isLoggedIn ? (
+          <>
+            <LeftSection>
+              <Profile>
+                <ProfileImage
+                  src="https://via.placeholder.com/44"
+                  alt="User profile"
+                />
+                <Greeting>
+                  <GreetingText>
+                    <span>{nickname}</span> 님 안녕하세요!
+                  </GreetingText>
+                </Greeting>
+              </Profile>
+            </LeftSection>
+            <RightSection>
               <Icon
-                src={ScheduleIcon}
-                alt="스케줄"
-                onClick={() => navigate('/schedule')}
+                src={BasketIcon}
+                alt="Basket"
+                onClick={() => navigate("/Basket")}
               />
               <Icon src={Alarm} alt="알림" />
-            </>
-          ) : (
-            <>
+            </RightSection>
+          </>
+        ) : (
+          <>
+            <LeftSection>
+              <Icon src={Logo} alt="Login Logo" />
+            </LeftSection>
+            <RightSection>
               <Icon
-                src={ScheduleIcon}
-                alt="스케줄"
-                onClick={() => navigate('/schedule')}
+                src={MypageIcon}
+                alt="마이페이지"
+                onClick={handleMypageClick} // 클릭 시 /login 페이지로 이동
               />
-              <Icon src={Mypage} alt="마이페이지" onClick={handleMypageClick} />
               <Icon src={Alarm} alt="알림" />
-            </>
-          )}
-        </Icons>
+            </RightSection>
+          </>
+        )}
       </HeaderContainer>
     </HeaderWrapper>
   );
@@ -74,14 +73,16 @@ export default Header;
 
 const HeaderWrapper = styled.div`
   min-width: 340px;
-
-  margin: 0 auto;
-  background-color: white;
+  background-color: #e60000;
   padding: 0 27px 27px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
   z-index: 1000;
 `;
 
@@ -89,8 +90,17 @@ const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 10px;
-  /* height: 125px; */
+`;
+
+const LeftSection = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const RightSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
 `;
 
 const Profile = styled.div`
@@ -111,7 +121,7 @@ const Greeting = styled.div`
 `;
 
 const GreetingText = styled.span`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+  font-family: "NanumSquare Neo OTF", sans-serif;
   font-style: normal;
   color: #000000;
 
@@ -120,12 +130,6 @@ const GreetingText = styled.span`
     font-size: 24px;
     margin-right: 5px;
   }
-`;
-
-const Icons = styled.div`
-  display: flex;
-  gap: 15px;
-  margin-left: auto;
 `;
 
 const Icon = styled.img`

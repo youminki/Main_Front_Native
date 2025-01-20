@@ -1,17 +1,32 @@
-import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { schemaFindId } from '../hooks/ValidationYup';
-import styled, { ThemeProvider } from 'styled-components';
-import BackButton from '../components/BackButton';
-import Button from '../components/Button01';
-import InputField from '../components/InputField';
-import Theme from '../styles/Theme.tsx';
-import ReusableModal from '../components/ReusableModal';
+import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import styled, { ThemeProvider } from "styled-components";
+import BackButton from "../components/BackButton";
+import Button from "../components/Button01";
+import InputField from "../components/InputField";
+import Theme from "../styles/Theme";
+import ReusableModal from "../components/ReusableModal";
 
-const years = Array.from({ length: 100 }, (_, i) =>
-  String(new Date().getFullYear() - i)
-);
+// 수정된 유효성 검증 스키마
+export const schemaFindId = yup.object({
+  nickname: yup
+    .string()
+    .required("닉네임을 입력해주세요.")
+    .matches(
+      /^[가-힣a-zA-Z0-9]{2,16}$/,
+      "닉네임은 2~16자 사이로 입력해주세요."
+    ),
+  name: yup
+    .string()
+    .required("이름을 입력해주세요.")
+    .max(10, "이름은 10자 이내로 입력해주세요."),
+  birthYear: yup
+    .string()
+    .required("태어난 해를 선택해주세요.")
+    .matches(/^\d{4}$/, "태어난 해는 4자리 숫자로 입력해주세요."),
+});
 
 type FormValues = {
   name: string;
@@ -19,9 +34,13 @@ type FormValues = {
   birthYear: string;
 };
 
+const years = Array.from({ length: 100 }, (_, i) =>
+  String(new Date().getFullYear() - i)
+);
+
 const FindId: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [userEmail, setUserEmail] = useState(''); // 모달에 표시될 이메일
+  const [userEmail, setUserEmail] = useState(""); // 모달에 표시될 이메일
 
   const {
     control,
@@ -29,28 +48,25 @@ const FindId: React.FC = () => {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: yupResolver(schemaFindId),
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues: {
-      name: '',
-      nickname: '',
-      birthYear: '',
+      name: "",
+      nickname: "",
+      birthYear: "",
     },
   });
 
   const maskEmail = (email: string) => {
-    const [localPart, domain] = email.split('@');
-    const maskedLocalPart = localPart.slice(0, 2) + '*****';
+    const [localPart, domain] = email.split("@");
+    const maskedLocalPart = localPart.slice(0, 2) + "*****";
     return `${maskedLocalPart}@${domain}`;
   };
 
   const handleFindAccount = (data: FormValues) => {
+    console.log("입력된 데이터:", data); // 디버깅용 출력
     // 서버에서 계정을 찾았다고 가정하고 이메일을 세팅
-    const foundEmail = 'goexample21@gmail.com';
+    const foundEmail = "goexample21@gmail.com"; // 실제 서버 로직 대체 가능
     setUserEmail(maskEmail(foundEmail));
-    setIsModalOpen(true);
-  };
-
-  const openModal = () => {
     setIsModalOpen(true);
   };
 
@@ -102,27 +118,24 @@ const FindId: React.FC = () => {
                 control={control}
                 name="birthYear"
                 render={({ field }) => (
-                  <SelectWrapper>
-                    <Label>태어난 해</Label>
-                    <Select {...field}>
-                      <option value="">선택하세요</option>
-                      {years.map((year) => (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      ))}
-                    </Select>
-                    {errors.birthYear && (
-                      <Error>{errors.birthYear.message}</Error>
-                    )}
-                  </SelectWrapper>
+                  <InputField
+                    label="태어난 해"
+                    id="birthYear"
+                    as="select"
+                    error={errors.birthYear?.message}
+                    {...field}
+                  >
+                    <option value="">선택하세요</option>
+                    {years.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </InputField>
                 )}
               />
             </Row>
-
-            <Button type="button" onClick={openModal}>
-              아이디 찾기
-            </Button>
+            <Button type="submit">아이디 찾기</Button>
           </FormWrapper>
         </ContentWrapper>
 
@@ -142,6 +155,7 @@ const FindId: React.FC = () => {
 
 export default FindId;
 
+// 스타일 컴포넌트 정의
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -157,30 +171,27 @@ const HeaderWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  box-sizing: border-box;
   height: 105px;
 `;
 
 const BackButtonWrapper = styled.div``;
 
 const Title = styled.h2`
-  font-family: 'NanumSquare Neo OTF';
+  font-family: "NanumSquare Neo OTF";
   font-style: normal;
   font-weight: 700;
   font-size: 20px;
   line-height: 22px;
   text-align: center;
-  color: ${({ theme }) => theme.primary};
-  flex-grow: 1;
-  margin-left: -50px;
+  color: #000000;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 `;
 
 const ContentWrapper = styled.div`
-  border-radius: 10px;
-  background-color: ${({ theme }) => theme.white};
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
 `;
 
@@ -192,37 +203,5 @@ const FormWrapper = styled.form`
 
 const Row = styled.div`
   display: flex;
-  justify-content: space-between;
   gap: 10px;
-`;
-
-const SelectWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
-
-const Label = styled.label`
-  margin-bottom: 10px;
-  font-family: 'NanumSquare Neo OTF';
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 11.05px;
-
-  text-align: left;
-`;
-
-const Select = styled.select`
-  padding: 20px;
-
-  border: 1px solid ${({ theme }) => theme.gray2};
-  border-radius: 5px;
-  padding-left: 3px;
-  color: ${({ theme }) => theme.colors.gray2};
-`;
-
-const Error = styled.span`
-  font-size: 12px;
-  color: ${({ theme }) => theme.error};
-  margin-top: 5px;
 `;

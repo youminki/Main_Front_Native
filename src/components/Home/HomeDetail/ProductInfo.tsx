@@ -1,7 +1,7 @@
-import React from 'react';
-import styled from 'styled-components';
-import Theme from '../../../styles/Theme';
-import AddTekImage from '../../../assets/Home/HomeDetail/AddTek.svg';
+import React from "react";
+import styled from "styled-components";
+import Theme from "../../../styles/Theme";
+import AddTekImage from "../../../assets/ClosetIcon.svg";
 
 type ProductInfoProps = {
   item: {
@@ -17,7 +17,8 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ item }) => {
   return (
     <InfoContainer>
       <CategoryText>
-        패션 &gt; 브랜드 &gt; <BrandText>{item.brand}</BrandText>
+        브랜드 <span className="gt">&gt;</span>{" "}
+        <BrandText>{item.brand}</BrandText>
       </CategoryText>
 
       <ContentContainer>
@@ -47,30 +48,42 @@ export default ProductInfo;
 
 const InfoContainer = styled.div`
   width: 100%;
+  margin-bottom: 30px;
 `;
 
 const CategoryText = styled.p`
-  color: ${Theme.colors.black};
+  font-family: "NanumSquare Neo OTF";
   font-style: normal;
   font-weight: 400;
   font-size: 10px;
   line-height: 11px;
-  margin-top: 20px;
 
-  span {
+  color: #000000;
+
+  & > span {
+    font-family: "NanumSquare Neo OTF";
     font-style: normal;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 10px;
     line-height: 11px;
+    color: #000000;
+  }
+
+  & > span.gt {
+    color: #dddddd;
+    padding: 0 4px;
   }
 `;
 
 const BrandText = styled.span`
-  color: ${Theme.colors.black};
+  font-family: "NanumSquare Neo OTF";
   font-style: normal;
   font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
+  font-size: 16px;
+  line-height: 18px;
+  /* identical to box height */
+
+  color: #000000;
 `;
 
 const ContentContainer = styled.div`
@@ -115,13 +128,14 @@ const PriceContainer = styled.div`
 `;
 
 const OriginalPrice = styled.span`
-  color: ${Theme.colors.gray2};
-  text-decoration: line-through;
-  margin-right: 8px;
+  font-family: "NanumSquare Neo OTF";
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 13px;
+  text-decoration-line: line-through;
+
+  color: #999999;
 `;
 
 const DiscountRow = styled.div`
