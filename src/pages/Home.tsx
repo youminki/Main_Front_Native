@@ -4,12 +4,12 @@ import Notice from "../components/Home/Notice";
 import ItemList from "../components/Home/ItemList";
 import Footer from "../components/Home/Footer";
 
-import AllClosetIcon from "@/assets/SubHeader/AllClosetIcon.svg";
-import OnepieceIcon from "@/assets/SubHeader/OnepieceIcon.svg";
-import JumpsuitIcon from "@/assets/SubHeader/JumpsuitIcon.svg";
-import TwopieceIcon from "@/assets/SubHeader/TwopieceIcon.svg";
-import BlouseIcon from "@/assets/SubHeader/BlouseIcon.svg";
-import FilterIcon from "@/assets/Home/FilterIcon.svg";
+import AllClosetIcon from "../assets/SubHeader/AllClosetIcon.svg";
+import OnepieceIcon from "../assets/SubHeader/OnepieceIcon.svg";
+import JumpsuitIcon from "../assets/SubHeader/JumpsuitIcon.svg";
+import TwopieceIcon from "../assets/SubHeader/TwopieceIcon.svg";
+import BlouseIcon from "../assets/SubHeader/BlouseIcon.svg";
+import FilterIcon from "../assets/FilterIcon.svg
 
 const items = [
   {
