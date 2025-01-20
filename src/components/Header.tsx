@@ -1,69 +1,77 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import Cookies from "js-cookie";
 
-import Alarm from "../assets/Home/Alarm.svg";
-import BasketIcon from "../assets/Home/Basket.svg";
-import MypageIcon from "../assets/Home/Mypage.svg";
+import Alarm from "../assets/Header/AlarmIcon.svg";
+import BasketIcon from "../assets/Header/BasketIcon.svg";
+import MypageIcon from "../assets/Header/MypageIcon.svg";
 import Logo from "../assets/Logo.svg";
 
-type HeaderProps = {
-  nickname?: string;
-  isLoggedIn?: boolean;
-};
-
-const Header: React.FC<HeaderProps> = ({
-  nickname = "Mr J",
-  isLoggedIn = false,
-}) => {
+// Header 컴포넌트 정의
+const Header: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleMypageClick = () => {
-    navigate("/login"); // /login 페이지로 이동
+  // 상태 정의
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [nickname, setNickname] = useState<string>("");
+
+  // useEffect로 쿠키 가져오기
+  useEffect(() => {
+    const userNickname = Cookies.get("nickname"); // 쿠키에서 "nickname" 가져오기
+    if (userNickname) {
+      setIsLoggedIn(true);
+      setNickname(userNickname);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, []);
+
+  // 이벤트 핸들러
+  const handleMypageClick = (): void => {
+    navigate("/login");
+  };
+
+  const handleBasketClick = (): void => {
+    navigate("/basket");
   };
 
   return (
     <HeaderWrapper>
       <HeaderContainer>
-        {isLoggedIn ? (
-          <>
-            <LeftSection>
-              <Profile>
-                <ProfileImage
-                  src="https://via.placeholder.com/44"
-                  alt="User profile"
-                />
-                <Greeting>
-                  <GreetingText>
-                    <span>{nickname}</span> 님 안녕하세요!
-                  </GreetingText>
-                </Greeting>
-              </Profile>
-            </LeftSection>
-            <RightSection>
-              <Icon
-                src={BasketIcon}
-                alt="Basket"
-                onClick={() => navigate("/Basket")}
+        <LeftSection>
+          {isLoggedIn ? (
+            <Greeting>
+              <ProfileImage
+                src="https://via.placeholder.com/44"
+                alt="User profile"
               />
+              <GreetingText>
+                <Nickname>{nickname}</Nickname> 님 안녕하세요!
+              </GreetingText>
+            </Greeting>
+          ) : (
+            <LogoIcon src={Logo} alt="Logo" />
+          )}
+        </LeftSection>
+
+        <RightSection>
+          {isLoggedIn ? (
+            <>
+              <Icon src={BasketIcon} alt="Basket" onClick={handleBasketClick} />
               <Icon src={Alarm} alt="알림" />
-            </RightSection>
-          </>
-        ) : (
-          <>
-            <LeftSection>
-              <Icon src={Logo} alt="Login Logo" />
-            </LeftSection>
-            <RightSection>
+            </>
+          ) : (
+            <>
               <Icon
                 src={MypageIcon}
                 alt="마이페이지"
-                onClick={handleMypageClick} // 클릭 시 /login 페이지로 이동
+                onClick={handleMypageClick}
               />
               <Icon src={Alarm} alt="알림" />
-            </RightSection>
-          </>
-        )}
+            </>
+          )}
+        </RightSection>
       </HeaderContainer>
     </HeaderWrapper>
   );
@@ -71,10 +79,9 @@ const Header: React.FC<HeaderProps> = ({
 
 export default Header;
 
+// 스타일 정의
 const HeaderWrapper = styled.div`
   min-width: 340px;
-  background-color: #e60000;
-  padding: 0 27px 27px;
   position: fixed;
   top: 0;
   left: 0;
@@ -103,11 +110,6 @@ const RightSection = styled.div`
   gap: 15px;
 `;
 
-const Profile = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
 const ProfileImage = styled.img`
   width: 44px;
   height: 44px;
@@ -117,19 +119,30 @@ const ProfileImage = styled.img`
 
 const Greeting = styled.div`
   display: flex;
-  flex-direction: column;
+  align-items: center;
 `;
 
-const GreetingText = styled.span`
-  font-family: "NanumSquare Neo OTF", sans-serif;
+const GreetingText = styled.div`
+  font-family: "NanumSquare Neo OTF";
   font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 13px;
   color: #000000;
+`;
 
-  & > span {
-    font-weight: 500;
-    font-size: 24px;
-    margin-right: 5px;
-  }
+const Nickname = styled.span`
+  font-family: "NanumSquare Neo OTF";
+  font-style: normal;
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 20px;
+  color: #000000;
+`;
+
+const LogoIcon = styled.img`
+  width: auto;
+  height: auto;
 `;
 
 const Icon = styled.img`
