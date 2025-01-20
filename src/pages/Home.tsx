@@ -9,7 +9,7 @@ import OnepieceIcon from "../assets/SubHeader/OnepieceIcon.svg";
 import JumpsuitIcon from "../assets/SubHeader/JumpsuitIcon.svg";
 import TwopieceIcon from "../assets/SubHeader/TwopieceIcon.svg";
 import BlouseIcon from "../assets/SubHeader/BlouseIcon.svg";
-import FilterIcon from "../assets/FilterIcon.svg
+import FilterIcon from "../assets/FilterIcon.svg";
 
 const items = [
   {
