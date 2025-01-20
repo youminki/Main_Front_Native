@@ -74,7 +74,7 @@ export default AppWrapper;
 const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 100px 0 200px 0;
+  margin: 100px 0 300px 0;
   height: 100vh;
 `;
 
