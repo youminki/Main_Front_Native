@@ -8,13 +8,17 @@ import BasketIcon from "../assets/Header/BasketIcon.svg";
 import MypageIcon from "../assets/Header/MypageIcon.svg";
 import Logo from "../assets/Logo.svg";
 
+// Header 컴포넌트 정의
 const Header: React.FC = () => {
   const navigate = useNavigate();
+
+  // 상태 정의
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [nickname, setNickname] = useState<string>("");
 
+  // useEffect로 쿠키 가져오기
   useEffect(() => {
-    const userNickname = Cookies.get("nickname");
+    const userNickname = Cookies.get("nickname"); // 쿠키에서 "nickname" 가져오기
     if (userNickname) {
       setIsLoggedIn(true);
       setNickname(userNickname);
@@ -23,11 +27,12 @@ const Header: React.FC = () => {
     }
   }, []);
 
-  const handleMypageClick = () => {
+  // 이벤트 핸들러
+  const handleMypageClick = (): void => {
     navigate("/login");
   };
 
-  const handleBasketClick = () => {
+  const handleBasketClick = (): void => {
     navigate("/basket");
   };
 
@@ -74,9 +79,9 @@ const Header: React.FC = () => {
 
 export default Header;
 
+// 스타일 정의
 const HeaderWrapper = styled.div`
   min-width: 340px;
-  background-color: #e60000;
   position: fixed;
   top: 0;
   left: 0;
