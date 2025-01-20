@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Notice from "../components/Home/Notice";
 import ItemList from "../components/Home/ItemList";
@@ -52,6 +52,18 @@ const homeIcons = [
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [seasonToggle, setSeasonToggle] = useState<boolean>(false);
+  const [barPosition, setBarPosition] = useState<number>(0);
+
+  useEffect(() => {
+    const selectedElement = document.querySelector(
+      `[data-category="${selectedCategory}"]`
+    ) as HTMLElement;
+
+    if (selectedElement) {
+      const { offsetLeft, offsetWidth } = selectedElement;
+      setBarPosition(offsetLeft + offsetWidth / 2 - 25);
+    }
+  }, [selectedCategory]);
 
   const filteredItems =
     selectedCategory === "all"
@@ -62,18 +74,22 @@ const Home: React.FC = () => {
     <MainContainer>
       <ContentWrapper>
         <Notice />
-
         <SubHeaderContainer>
-          {homeIcons.map((icon) => (
-            <IconContainer
-              key={icon.category}
-              isSelected={selectedCategory === icon.category}
-              onClick={() => setSelectedCategory(icon.category)}
-            >
-              <Icon src={icon.src} alt={icon.alt} />
-              <IconText>{icon.alt}</IconText>
-            </IconContainer>
-          ))}
+          <SubHeader>
+            {homeIcons.map((icon) => (
+              <IconContainer
+                key={icon.category}
+                isSelected={selectedCategory === icon.category}
+                data-category={icon.category}
+                onClick={() => setSelectedCategory(icon.category)}
+              >
+                <Icon src={icon.src} alt={icon.alt} />
+                <IconText>{icon.alt}</IconText>
+              </IconContainer>
+            ))}
+          </SubHeader>
+          <Divider />
+          <Bar style={{ left: `${barPosition}px` }} />
         </SubHeaderContainer>
         <FilterContainer>
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -93,7 +109,6 @@ const Home: React.FC = () => {
             <img src={FilterIcon} alt="필터" />
           </FilterIconContainer>
         </FilterContainer>
-
         <Content>
           <ItemList items={filteredItems} />
         </Content>
@@ -104,10 +119,10 @@ const Home: React.FC = () => {
 };
 export default Home;
 
+// Styled Components
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
-
   height: 100vh;
 `;
 
@@ -117,11 +132,72 @@ const ContentWrapper = styled.div`
   flex-direction: column;
 `;
 
+const SubHeaderContainer = styled.div`
+  position: relative;
+  margin-bottom: 30px;
+`;
+
+const SubHeader = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 20px;
+`;
+
+const Divider = styled.div`
+  position: absolute;
+  bottom: -15px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: #e0e0e0;
+`;
+
+const IconContainer = styled.div<{ isSelected: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+
+  ${({ isSelected }) =>
+    isSelected &&
+    `
+    color: #000;
+  `}
+
+  &:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+  }
+`;
+
+const Icon = styled.img`
+  width: 40px;
+  height: 40px;
+  margin-bottom: 5px;
+`;
+
+const IconText = styled.span`
+  font-size: 12px;
+  color: #333;
+`;
+
+const Bar = styled.div`
+  position: absolute;
+  bottom: -15px;
+  width: 50px;
+  height: 3px;
+
+  background-color: #000;
+  border-radius: 3px;
+  transition: left 0.3s ease-in-out;
+`;
+
 const FilterContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   margin-bottom: 20px;
 `;
 
@@ -130,7 +206,6 @@ const FilterIconContainer = styled.div`
   align-items: center;
   gap: 5px;
   font-family: "NanumSquare Neo OTF";
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 13px;
@@ -149,10 +224,6 @@ const FilterIconContainer = styled.div`
 
   &:hover img {
     background-color: #e6e6e6;
-  }
-
-  span {
-    margin-right: 5px;
   }
 `;
 
@@ -180,11 +251,9 @@ const ToggleCircle = styled.div<{ isActive: boolean }>`
 
 const ToggleText = styled.span<{ isActive: boolean }>`
   font-family: "NanumSquare Neo OTF";
-  font-style: normal;
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
-
   color: #000;
   position: absolute;
   top: 50%;
@@ -192,45 +261,13 @@ const ToggleText = styled.span<{ isActive: boolean }>`
   right: ${({ isActive }) => (isActive ? "8px" : "unset")};
   left: ${({ isActive }) => (!isActive ? "8px" : "unset")};
 `;
+
 const ToggleLabel = styled.span`
   font-family: "NanumSquare Neo OTF";
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
-  line-height: 13px;
-  color: #000000;
-
+  color: #000;
   margin-left: 10px;
-`;
-const SubHeaderContainer = styled.div`
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
-  margin-bottom: 30px;
-`;
-
-const IconContainer = styled.div<{ isSelected: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-
-  ${({ isSelected }) =>
-    isSelected &&
-    `
-    border-bottom: 2px solid #000;
-  `}
-`;
-
-const Icon = styled.img`
-  width: 40px;
-  height: 40px;
-  margin-bottom: 5px;
-`;
-
-const IconText = styled.span`
-  font-size: 12px;
-  color: #333;
 `;
 
 const Content = styled.div`
