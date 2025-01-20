@@ -23,10 +23,13 @@ const RentalOptions = () => {
 
   const handleDateClick = (day) => {
     if (!reservedDates.includes(day)) {
-      setSelectedDates((prevSelected) => {
-        const newSelected = [...prevSelected, day];
-        return newSelected.length > 2 ? newSelected.slice(-2) : newSelected;
-      });
+      const periodDays = selectedPeriod === "3박4일" ? 4 : 6; // 대여 옵션에 따른 기간 설정
+      const newSelectedDates = Array.from(
+        { length: periodDays },
+        (_, i) => day + i
+      ).filter((date) => date <= 31); // 31일까지만 선택 가능
+
+      setSelectedDates(newSelectedDates);
     }
   };
 
@@ -38,14 +41,6 @@ const RentalOptions = () => {
       <EmptyDay key={i} />
     ));
 
-    const [startDate, endDate] = selectedDates;
-    const isWithinRange = (day) => {
-      if (startDate && endDate) {
-        return day > startDate && day < endDate;
-      }
-      return false;
-    };
-
     return [
       ...emptyDays,
       ...days.map((day) => (
@@ -53,7 +48,6 @@ const RentalOptions = () => {
           key={day}
           selected={selectedDates.includes(day)}
           reserved={reservedDates.includes(day)}
-          inRange={isWithinRange(day)}
           onClick={() => handleDateClick(day)}
         >
           {day}
@@ -181,22 +175,17 @@ const EmptyDay = styled.div``;
 
 const DayBox = styled.div`
   border: 1px solid
-    ${(props) => (props.inRange ? Theme.colors.yellow : Theme.colors.gray4)};
+    ${(props) => (props.selected ? Theme.colors.yellow : Theme.colors.gray4)};
   background-color: ${(props) =>
-    props.reserved
-      ? Theme.colors.gray3
-      : props.selected
-        ? Theme.colors.yellow
-        : "#fff"};
-  color: ${(props) =>
-    props.selected ? "#fff" : props.reserved ? "#fff" : "#000"};
+    props.selected ? Theme.colors.yellow : "#fff"};
+  color: ${(props) => (props.selected ? "#fff" : "#000")};
   width: 100%;
   min-width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: ${(props) => (props.reserved ? "default" : "pointer")};
+  cursor: pointer;
   font-family: "NanumSquare Neo OTF";
   font-weight: 800;
   font-size: 12px;
