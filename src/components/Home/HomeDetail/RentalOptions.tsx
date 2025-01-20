@@ -4,13 +4,26 @@ import ReusableModal from "../../../components/ReusableModal";
 import RentalSelectDateIcon from "../../../assets/Home/HomeDetail/RentalSelectDateIcon.svg";
 import Theme from "../../../styles/Theme";
 
-const RentalOptions = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState(""); // 대여 기간
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDates, setSelectedDates] = useState([]); // 선택된 날짜
-  const [yearMonth, setYearMonth] = useState("2025-01"); // 연도-월
+interface DayBoxProps {
+  selected: boolean;
+  reserved: boolean;
+  isWeekend: boolean;
+}
+interface DayNameProps {
+  isWeekend: boolean;
+}
+
+interface ToggleButtonProps {
+  active: boolean;
+}
+
+const RentalOptions: React.FC = () => {
+  const [selectedPeriod, setSelectedPeriod] = useState<string>(""); // 대여 기간
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedDates, setSelectedDates] = useState<number[]>([]); // 선택된 날짜
+  const [yearMonth, setYearMonth] = useState<string>("2025-01"); // 연도-월
   const reservedDates = [22, 23, 24]; // 예약된 날짜
-  const [isAddingDates, setIsAddingDates] = useState(false); // 일정 추가 여부
+  const [isAddingDates, setIsAddingDates] = useState<boolean>(false); // 일정 추가 여부
 
   const toggleModal = () => {
     if (selectedPeriod) {
@@ -23,7 +36,7 @@ const RentalOptions = () => {
     setSelectedDates([]);
   };
 
-  const handleDateClick = (day) => {
+  const handleDateClick = (day: number) => {
     if (!reservedDates.includes(day)) {
       if (isAddingDates) {
         setSelectedDates((prevSelected) =>
@@ -42,7 +55,7 @@ const RentalOptions = () => {
     }
   };
 
-  const getDaysInMonth = () => {
+  const getDaysInMonth = (): number => {
     const [year, month] = yearMonth.split("-").map(Number);
     return new Date(year, month, 0).getDate();
   };
@@ -58,16 +71,21 @@ const RentalOptions = () => {
 
     return [
       ...emptyDays,
-      ...days.map((day) => (
-        <DayBox
-          key={day}
-          selected={selectedDates.includes(day)}
-          reserved={reservedDates.includes(day)}
-          onClick={() => handleDateClick(day)}
-        >
-          {day}
-        </DayBox>
-      )),
+      ...days.map((day) => {
+        const dayIndex = (firstDay + day - 1) % 7; // 해당 날짜의 요일 인덱스 계산
+        const isWeekend = dayIndex === 0 || dayIndex === 6; // 일요일(0) 또는 토요일(6)
+        return (
+          <DayBox
+            key={day}
+            selected={selectedDates.includes(day)}
+            reserved={reservedDates.includes(day)}
+            isWeekend={isWeekend}
+            onClick={() => handleDateClick(day)}
+          >
+            {day}
+          </DayBox>
+        );
+      }),
     ];
   };
 
@@ -197,15 +215,20 @@ const CalendarContainer = styled.div`
   margin-top: 20px;
 `;
 
-const DayName = styled.div`
+const DayName = styled.div<DayNameProps>`
   text-align: center;
   font-weight: bold;
   color: ${(props) => (props.isWeekend ? Theme.colors.gray1 : "black")};
 `;
 
-const DayBox = styled.div`
+const DayBox = styled.div<DayBoxProps>`
   border: 1px solid
-    ${(props) => (props.selected ? Theme.colors.yellow : Theme.colors.gray4)};
+    ${(props) =>
+      props.selected
+        ? Theme.colors.yellow
+        : props.isWeekend
+          ? Theme.colors.gray3
+          : Theme.colors.gray4};
   background-color: ${(props) =>
     props.selected ? Theme.colors.yellow : "#fff"};
   color: ${(props) => (props.selected ? "#fff" : "#000")};
@@ -249,7 +272,6 @@ const ConfirmButton = styled.button`
   cursor: pointer;
 `;
 
-// 스타일 정의
 const MenuBar = styled.div`
   display: flex;
   justify-content: space-between;
@@ -282,7 +304,7 @@ const Label = styled.label`
   display: block;
 `;
 
-const ToggleButton = styled.button`
+const ToggleButton = styled.button<ToggleButtonProps>`
   width: 90%;
   height: 57px;
   background-color: ${({ active }) =>
