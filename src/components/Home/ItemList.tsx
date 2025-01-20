@@ -42,7 +42,6 @@ export default ItemList;
 const ListContainer = styled.div`
   background-color: #fff;
   overflow: hidden;
-  padding: 16px;
 `;
 
 const ItemsWrapper = styled.div`
