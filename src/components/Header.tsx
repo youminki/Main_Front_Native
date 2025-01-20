@@ -91,6 +91,7 @@ const HeaderWrapper = styled.div`
   padding: 1rem;
   text-align: center;
   z-index: 1000;
+  background-color: #fff;
 `;
 
 const HeaderContainer = styled.header`
