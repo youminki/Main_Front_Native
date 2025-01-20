@@ -8,7 +8,9 @@ const RentalOptions = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(""); // 대여 기간
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDates, setSelectedDates] = useState([]); // 선택된 날짜
+  const [yearMonth, setYearMonth] = useState("2025-01"); // 연도-월
   const reservedDates = [22, 23, 24]; // 예약된 날짜
+  const [isAddingDates, setIsAddingDates] = useState(false); // 일정 추가 여부
 
   const toggleModal = () => {
     if (selectedPeriod) {
@@ -23,19 +25,32 @@ const RentalOptions = () => {
 
   const handleDateClick = (day) => {
     if (!reservedDates.includes(day)) {
-      const periodDays = selectedPeriod === "3박4일" ? 4 : 6; // 대여 옵션에 따른 기간 설정
-      const newSelectedDates = Array.from(
-        { length: periodDays },
-        (_, i) => day + i
-      ).filter((date) => date <= 31); // 31일까지만 선택 가능
-
-      setSelectedDates(newSelectedDates);
+      if (isAddingDates) {
+        setSelectedDates((prevSelected) =>
+          prevSelected.includes(day)
+            ? prevSelected.filter((d) => d !== day)
+            : [...prevSelected, day]
+        );
+      } else {
+        const periodDays = selectedPeriod === "3박4일" ? 4 : 6; // 대여 옵션에 따른 기간 설정
+        const newSelectedDates = Array.from(
+          { length: periodDays },
+          (_, i) => day + i
+        ).filter((date) => date <= getDaysInMonth());
+        setSelectedDates(newSelectedDates);
+      }
     }
   };
 
+  const getDaysInMonth = () => {
+    const [year, month] = yearMonth.split("-").map(Number);
+    return new Date(year, month, 0).getDate();
+  };
+
   const renderCalendar = () => {
-    const daysInMonth = 31;
-    const firstDay = 4; // 예시: 목요일 시작
+    const daysInMonth = getDaysInMonth();
+    const [year, month] = yearMonth.split("-").map(Number);
+    const firstDay = new Date(year, month - 1, 1).getDay(); // 해당 월의 첫 번째 날
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
     const emptyDays = Array.from({ length: firstDay }, (_, i) => (
       <EmptyDay key={i} />
@@ -92,6 +107,30 @@ const RentalOptions = () => {
             </>
           }
         >
+          <MenuBar>
+            <DropdownContainer>
+              <Label>일정 선택</Label>
+              <Dropdown
+                value={yearMonth}
+                onChange={(e) => setYearMonth(e.target.value)}
+              >
+                {["2025-01", "2025-02", "2025-03", "2025-04"].map((ym) => (
+                  <option key={ym} value={ym}>
+                    {ym.replace("-", ".")}월
+                  </option>
+                ))}
+              </Dropdown>
+            </DropdownContainer>
+            <DropdownContainer>
+              <Label>일정 추가 (선택)</Label>
+              <ToggleButton
+                onClick={() => setIsAddingDates((prev) => !prev)}
+                active={isAddingDates}
+              >
+                {isAddingDates ? "추가 중" : "추가 없음"}
+              </ToggleButton>
+            </DropdownContainer>
+          </MenuBar>
           <CalendarContainer>
             {["일", "월", "화", "수", "목", "금", "토"].map((name, index) => (
               <DayName key={index} isWeekend={index === 0 || index === 6}>
@@ -118,13 +157,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 20px;
-`;
-
-const Label = styled.label`
-  font-family: "NanumSquare Neo OTF";
-  font-weight: 700;
-  font-size: 12px;
-  margin-bottom: 10px;
 `;
 
 const Wrapper = styled.div`
@@ -171,8 +203,6 @@ const DayName = styled.div`
   color: ${(props) => (props.isWeekend ? Theme.colors.gray1 : "black")};
 `;
 
-const EmptyDay = styled.div``;
-
 const DayBox = styled.div`
   border: 1px solid
     ${(props) => (props.selected ? Theme.colors.yellow : Theme.colors.gray4)};
@@ -218,3 +248,52 @@ const ConfirmButton = styled.button`
   border-radius: 4px;
   cursor: pointer;
 `;
+
+// 스타일 정의
+const MenuBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 42px;
+`;
+
+const DropdownContainer = styled.div`
+  position: relative;
+  width: 100%;
+  margin: 20px 0;
+`;
+
+const Dropdown = styled.select`
+  width: 100%;
+  height: 57px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: "NanumSquare Neo OTF";
+  font-weight: 800;
+  font-size: 13px;
+`;
+
+const Label = styled.label`
+  font-family: "NanumSquare Neo OTF";
+  font-weight: 700;
+  font-size: 10px;
+  margin-bottom: 5px;
+  display: block;
+`;
+
+const ToggleButton = styled.button`
+  width: 90%;
+  height: 57px;
+  background-color: ${({ active }) =>
+    active ? Theme.colors.yellow : "#ffffff"};
+  color: ${({ active }) => (active ? "#fff" : "#000")};
+  border: 1px solid #000000;
+  border-radius: 4px;
+  font-weight: 800;
+  cursor: pointer;
+
+  margin-left: 20px;
+`;
+
+const EmptyDay = styled.div``;
