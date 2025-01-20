@@ -62,7 +62,7 @@ const Home: React.FC = () => {
       <ContentWrapper>
         <Notice />
 
-        <HeaderContainer>
+        <SubHeaderContainer>
           {homeIcons.map((icon) => (
             <IconContainer
               key={icon.category}
@@ -73,7 +73,7 @@ const Home: React.FC = () => {
               <IconText>{icon.alt}</IconText>
             </IconContainer>
           ))}
-        </HeaderContainer>
+        </SubHeaderContainer>
         <FilterContainer>
           <div style={{ display: "flex", alignItems: "center" }}>
             <SeasonToggle
@@ -119,7 +119,7 @@ const FilterContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 47px;
+
   margin-bottom: 20px;
 `;
 
@@ -200,10 +200,11 @@ const ToggleLabel = styled.span`
 
   margin-left: 10px;
 `;
-const HeaderContainer = styled.div`
+const SubHeaderContainer = styled.div`
   display: flex;
   justify-content: space-around;
-  padding: 10px 0;
+  margin-top: 20px;
+  margin-bottom: 30px;
 `;
 
 const IconContainer = styled.div<{ isSelected: boolean }>`
