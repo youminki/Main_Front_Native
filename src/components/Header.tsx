@@ -1,35 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import Cookies from "js-cookie";
 
 import Alarm from "../assets/Home/Alarm.svg";
 import BasketIcon from "../assets/Home/Basket.svg";
 import MypageIcon from "../assets/Home/Mypage.svg";
 import Logo from "../assets/Logo.svg";
 
-type HeaderProps = {
-  nickname?: string;
-  isLoggedIn?: boolean;
-};
-
-const Header: React.FC<HeaderProps> = ({
-  nickname = "Mr J",
-  isLoggedIn = false,
-}) => {
+const Header: React.FC = () => {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [nickname, setNickname] = useState<string>("");
+
+  useEffect(() => {
+    const userNickname = Cookies.get("nickname");
+    if (userNickname) {
+      setIsLoggedIn(true);
+      setNickname(userNickname);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, []);
 
   const handleMypageClick = () => {
-    navigate("/login"); // /login 페이지로 이동
+    navigate("/login");
   };
 
   const handleBasketClick = () => {
-    navigate("/basket"); // /basket 페이지로 이동
+    navigate("/basket");
   };
 
   return (
     <HeaderWrapper>
       <HeaderContainer>
-        {/* 왼쪽 섹션 */}
         <LeftSection>
           {isLoggedIn ? (
             <Greeting>
@@ -38,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({
                 alt="User profile"
               />
               <GreetingText>
-                <span>{nickname}</span> 님 안녕하세요!
+                <Nickname>{nickname}</Nickname> 님 안녕하세요!
               </GreetingText>
             </Greeting>
           ) : (
@@ -46,15 +50,10 @@ const Header: React.FC<HeaderProps> = ({
           )}
         </LeftSection>
 
-        {/* 오른쪽 섹션 */}
         <RightSection>
           {isLoggedIn ? (
             <>
-              <Icon
-                src={BasketIcon}
-                alt="Basket"
-                onClick={handleBasketClick} // 장바구니 클릭 시 이동
-              />
+              <Icon src={BasketIcon} alt="Basket" onClick={handleBasketClick} />
               <Icon src={Alarm} alt="알림" />
             </>
           ) : (
@@ -62,7 +61,7 @@ const Header: React.FC<HeaderProps> = ({
               <Icon
                 src={MypageIcon}
                 alt="마이페이지"
-                onClick={handleMypageClick} // 마이페이지 클릭 시 이동
+                onClick={handleMypageClick}
               />
               <Icon src={Alarm} alt="알림" />
             </>
@@ -118,17 +117,23 @@ const Greeting = styled.div`
   align-items: center;
 `;
 
-const GreetingText = styled.span`
-  font-family: "NanumSquare Neo OTF", sans-serif;
+const GreetingText = styled.div`
+  font-family: "NanumSquare Neo OTF";
   font-style: normal;
-  color: #ffffff;
-  font-weight: 500;
-  font-size: 18px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 13px;
+  color: #000000;
+`;
 
-  & > span {
-    font-weight: 700;
-    margin-right: 5px;
-  }
+const Nickname = styled.span`
+  font-family: "NanumSquare Neo OTF";
+  font-style: normal;
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 20px;
+  color: #000000;
+  margin-right: 5px;
 `;
 
 const LogoIcon = styled.img`
