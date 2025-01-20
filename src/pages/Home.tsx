@@ -100,9 +100,8 @@ export default Home;
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
+  margin: 20px auto;
   height: 100vh;
-  padding: 25px 27px 0 27px;
 `;
 
 const ContentWrapper = styled.div`
