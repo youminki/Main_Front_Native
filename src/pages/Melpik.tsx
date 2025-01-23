@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Theme from "../styles/Theme";
 import { ThemeProvider } from "styled-components";
 import BrnadIcon from "/src/assets/BottomNav/Melpik/BrnadIcon.svg";
+import { Link } from "react-router-dom";
 
 const MelpikPage: React.FC = () => {
   return (
@@ -34,18 +35,26 @@ const MelpikPage: React.FC = () => {
         </StatsSection>
         <Divider />
         <CardGrid>
-          <Card>
-            <CardText>멜픽 생성</CardText>
-          </Card>
-          <Card>
-            <CardText>판매 스케줄</CardText>
-          </Card>
-          <Card>
-            <CardText>판매 정산</CardText>
-          </Card>
-          <Card>
-            <CardText>멜픽 설정</CardText>
-          </Card>
+          <Link to="/create-melpik">
+            <Card>
+              <CardText>멜픽 생성</CardText>
+            </Card>
+          </Link>
+          <Link to="/sales-schedule">
+            <Card>
+              <CardText>판매 스케줄</CardText>
+            </Card>
+          </Link>
+          <Link to="/sales-settlement">
+            <Card>
+              <CardText>판매 정산</CardText>
+            </Card>
+          </Link>
+          <Link to="/melpik-settings">
+            <Card>
+              <CardText>멜픽 설정</CardText>
+            </Card>
+          </Link>
         </CardGrid>
       </Container>
     </ThemeProvider>
@@ -183,6 +192,11 @@ const CardGrid = styled.div`
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   width: 100%;
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 `;
 
 const Card = styled.div`

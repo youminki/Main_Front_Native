@@ -15,6 +15,7 @@ import Home from "./pages/Home";
 import HomeDetail from "./pages/HomeDetail";
 import Analysis from "./pages/Analysis";
 import Melpik from "./pages/Melpik";
+import CreateMelpik from "./pages/Melpik/CreateMelpik";
 
 import BottomNav from "./components/BottomNav";
 import Header from "./components/Header";
@@ -59,6 +60,7 @@ const App: React.FC = () => {
           <Route path="/findPassword" element={<FindPassword />} />
           <Route path="/analysis" element={<Analysis />} />
           <Route path="/melpik" element={<Melpik />} />
+          <Route path="/create-melpik" element={<CreateMelpik />} />
         </Routes>
       </ContentContainer>
       {!excludeBottomNav && <BottomNav />}
