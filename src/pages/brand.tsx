@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Theme from "../styles/Theme";
 import { ThemeProvider } from "styled-components";
-import MenuIcon from "../assets/Home/Menu.svg";
+import BrnadIcon from "/src/assets/BottomNav/Brand/BrnadIcon.svg";
 
 const BrandPage: React.FC = () => {
   return (
@@ -29,7 +29,7 @@ const BrandPage: React.FC = () => {
             </StatBox>
           </StatsContainer>
           <ImageWrapper>
-            <MenuImage src={MenuIcon} alt="메뉴 이미지" />
+            <MenuImage src={BrnadIcon} alt="메뉴 이미지" />
           </ImageWrapper>
         </StatsSection>
         <Divider />
