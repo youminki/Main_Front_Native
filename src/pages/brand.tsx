@@ -14,11 +14,11 @@ const BrandPage: React.FC = () => {
         </Header>
         <StatsSection>
           <StatsContainer>
-            <StatBox>
+            <StatBox white>
               <StatNumber>174</StatNumber>
               <StatLabel>방문수</StatLabel>
             </StatBox>
-            <StatBox>
+            <StatBox gray>
               <StatNumber>26</StatNumber>
               <StatLabel>판매된 제품수</StatLabel>
             </StatBox>
@@ -54,15 +54,17 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 414px;
+
   margin: 0 auto;
   background-color: #fff;
   font-family: "NanumSquare Neo OTF", sans-serif;
-  padding: 20px;
 `;
 
 const Header = styled.div`
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
   margin-bottom: 20px;
 `;
 
@@ -89,17 +91,21 @@ const StatsSection = styled.div`
 
 const StatsContainer = styled.div`
   display: flex;
-  flex: 1;
-  gap: 10px;
+  gap: 0;
 `;
 
-const StatBox = styled.div`
+const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
   flex: 1;
-  background: #f6f6f6;
+  background: ${({ white, gray }) =>
+    white ? "#fff" : gray ? "#f6f6f6" : "#fff"};
   border: 1px solid #ddd;
-  border-radius: 10px;
+
   text-align: center;
-  padding: 10px 0;
+  padding: 20px;
+
+  &:not(:last-child) {
+    margin-right: 0px;
+  }
 `;
 
 const StatNumber = styled.div`
@@ -124,13 +130,6 @@ const ImageWrapper = styled.div`
 const MenuImage = styled.img`
   width: 64px;
   height: 58px;
-`;
-
-const DateLabel = styled.div`
-  font-size: 12px;
-  font-weight: 400;
-  color: #555;
-  margin-bottom: 20px;
 `;
 
 const Divider = styled.div`
