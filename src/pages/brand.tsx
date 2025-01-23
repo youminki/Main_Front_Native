@@ -15,12 +15,17 @@ const BrandPage: React.FC = () => {
         <StatsSection>
           <StatsContainer>
             <StatBox white>
-              <StatNumber>174</StatNumber>
-              <StatLabel>방문수</StatLabel>
+              <Row>
+                <StatLabel>방문수</StatLabel>
+                <StatNumber>174</StatNumber>
+              </Row>
             </StatBox>
             <StatBox gray>
-              <StatNumber>26</StatNumber>
-              <StatLabel>판매된 제품수</StatLabel>
+              <Row>
+                <StatLabel>판매된 제품수</StatLabel>
+                <StatNumber>26</StatNumber>
+              </Row>
+              <DateLabel>2025.01.06 ~ 01.10</DateLabel>
             </StatBox>
           </StatsContainer>
           <ImageWrapper>
@@ -54,8 +59,6 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-
-  margin: 0 auto;
   background-color: #fff;
   font-family: "NanumSquare Neo OTF", sans-serif;
 `;
@@ -86,12 +89,13 @@ const StatsSection = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 20px;
+  position: relative;
 `;
 
 const StatsContainer = styled.div`
   display: flex;
   gap: 0;
+  width: 80%;
 `;
 
 const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
@@ -99,25 +103,58 @@ const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
   background: ${({ white, gray }) =>
     white ? "#fff" : gray ? "#f6f6f6" : "#fff"};
   border: 1px solid #ddd;
-
+  border-radius: ${({ white, gray }) =>
+    white ? "10px 0 0 0" : gray ? "0 0 10px 0" : "0"};
   text-align: center;
-  padding: 20px;
+  padding: 10px 0;
+  position: relative;
 
   &:not(:last-child) {
     margin-right: 0px;
   }
 `;
 
+const Row = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
+
 const StatNumber = styled.div`
+  font-family: "NanumSquare Neo OTF";
+  font-style: normal;
+  font-weight: 800;
   font-size: 12px;
-  font-weight: 700;
-  color: #000;
+  line-height: 13px;
+  color: #f6ae24;
 `;
 
 const StatLabel = styled.div`
-  font-size: 10px;
-  font-weight: 400;
-  color: #555;
+  font-family: "NanumSquare Neo OTF";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 13px;
+  color: #000000;
+  margin-right: 5px;
+`;
+
+const DateLabel = styled.div`
+  position: absolute;
+  width: 62px;
+  height: 7px;
+  top: -5px;
+  right: 10px;
+  font-family: "NanumSquare Neo OTF";
+  font-style: normal;
+  font-weight: 900;
+  font-size: 6px;
+  line-height: 7px;
+  color: #fff;
+  background: #f6ae24;
+  text-align: center;
+  padding: 3px;
 `;
 
 const ImageWrapper = styled.div`
@@ -125,6 +162,8 @@ const ImageWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 48px;
+  margin-right: 15px;
 `;
 
 const MenuImage = styled.img`
@@ -135,28 +174,24 @@ const MenuImage = styled.img`
 const Divider = styled.div`
   width: 100%;
   height: 1px;
-  background: #ddd;
-  margin: 20px 0;
+  background: #dddddd;
+  margin: 30px 0;
 `;
 
 const CardGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
   width: 100%;
 `;
 
 const Card = styled.div`
-  flex: 1;
-  max-width: calc(50% - 10px);
-  height: 180px;
+  aspect-ratio: 1 / 1;
   background: #fff;
   border: 1px solid #ccc;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
   cursor: pointer;
   transition: box-shadow 0.2s;
 
