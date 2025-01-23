@@ -95,23 +95,22 @@ const StatsSection = styled.div`
 const StatsContainer = styled.div`
   display: flex;
   gap: 0;
-  width: 80%;
+  width: 100%;
 `;
 
 const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
-  flex: 1;
+  display: inline-flex; /* 텍스트 크기에 맞게 박스 크기를 설정 */
+  align-items: center;
+  justify-content: center;
   background: ${({ white, gray }) =>
     white ? "#fff" : gray ? "#f6f6f6" : "#fff"};
   border: 1px solid #ddd;
   border-radius: ${({ white, gray }) =>
     white ? "10px 0 0 0" : gray ? "0 0 10px 0" : "0"};
   text-align: center;
-  padding: 10px 0;
+  padding: 15px 20px; /* 상하 10px, 좌우 20px의 패딩 추가 */
   position: relative;
-
-  &:not(:last-child) {
-    margin-right: 0px;
-  }
+  margin-right: 0px; /* 필요 없는 margin 제거 */
 `;
 
 const Row = styled.div`
@@ -138,6 +137,7 @@ const StatLabel = styled.div`
   line-height: 13px;
   color: #000000;
   margin-right: 5px;
+  width: 100%;
 `;
 
 const DateLabel = styled.div`
@@ -162,7 +162,7 @@ const ImageWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 48px;
+
   margin-right: 15px;
 `;
 
