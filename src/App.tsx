@@ -14,7 +14,7 @@ import FindPassword from "./pages/FindPassword";
 import Home from "./pages/Home";
 import HomeDetail from "./pages/HomeDetail";
 import Analysis from "./pages/Analysis";
-import Brand from "./pages/brand";
+import Melpik from "./pages/Melpik";
 
 import BottomNav from "./components/BottomNav";
 import Header from "./components/Header";
@@ -58,7 +58,7 @@ const App: React.FC = () => {
           <Route path="/findid" element={<FindId />} />
           <Route path="/findPassword" element={<FindPassword />} />
           <Route path="/analysis" element={<Analysis />} />
-          <Route path="/brand" element={<Brand />} />
+          <Route path="/melpik" element={<Melpik />} />
         </Routes>
       </ContentContainer>
       {!excludeBottomNav && <BottomNav />}

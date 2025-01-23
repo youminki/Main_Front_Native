@@ -2,9 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import Theme from "../styles/Theme";
 import { ThemeProvider } from "styled-components";
-import BrnadIcon from "/src/assets/BottomNav/Brand/BrnadIcon.svg";
+import BrnadIcon from "/src/assets/BottomNav/Melpik/BrnadIcon.svg";
 
-const BrandPage: React.FC = () => {
+const MelpikPage: React.FC = () => {
   return (
     <ThemeProvider theme={Theme}>
       <Container>
@@ -52,7 +52,7 @@ const BrandPage: React.FC = () => {
   );
 };
 
-export default BrandPage;
+export default MelpikPage;
 
 const Container = styled.div`
   display: flex;
@@ -99,7 +99,7 @@ const StatsContainer = styled.div`
 `;
 
 const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
-  display: inline-flex; /* 텍스트 크기에 맞게 박스 크기를 설정 */
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   background: ${({ white, gray }) =>
@@ -108,9 +108,9 @@ const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
   border-radius: ${({ white, gray }) =>
     white ? "10px 0 0 0" : gray ? "0 0 10px 0" : "0"};
   text-align: center;
-  padding: 15px 20px; /* 상하 10px, 좌우 20px의 패딩 추가 */
+  padding: 15px 20px;
   position: relative;
-  margin-right: 0px; /* 필요 없는 margin 제거 */
+  margin-right: 0px;
 `;
 
 const Row = styled.div`
