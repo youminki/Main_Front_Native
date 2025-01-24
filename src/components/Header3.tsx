@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import CancleIconIcon from '../assets/Header/CancleIcon.svg';
 
-// Header 컴포넌트 정의
 interface HeaderProps {
-  title?: string;
+  title?: string; // 선택적 속성으로 변경
 }
 
-const Header: React.FC<HeaderProps> = ({ title = '제목을 입력하세요' }) => {
+const Header: React.FC<HeaderProps> = ({ title }) => {
   const navigate = useNavigate();
 
   // 뒤로가기 버튼 클릭 핸들러
@@ -28,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ title = '제목을 입력하세요' }) 
         </LeftSection>
 
         <CenterSection>
-          <Title isDefault={title === '제목을 입력하세요'}>{title}</Title>
+          <Title>{title || ''}</Title>
         </CenterSection>
       </HeaderContainer>
     </HeaderWrapper>
@@ -75,15 +74,12 @@ const CenterSection = styled.div`
   align-items: center;
 `;
 
-const Title = styled.h1<{ isDefault: boolean }>`
+const Title = styled.h1`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 20px;
   line-height: 22px;
-  /* identical to box height */
   text-align: center;
-
-  color: ${({ isDefault }) => (isDefault ? '#aaa' : '#333')};
   margin: 0;
 `;

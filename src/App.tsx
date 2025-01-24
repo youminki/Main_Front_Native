@@ -20,6 +20,7 @@ import CreateMelpik from './pages/Melpik/CreateMelpik';
 import BottomNav from './components/BottomNav';
 import Header1 from './components/Header1';
 import Header2 from './components/Header2';
+import Header3 from './components/Header3';
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -31,7 +32,10 @@ const App: React.FC = () => {
   const header1Paths = ['/home', '/melpik'];
 
   // Header2가 포함될 경로 패턴
-  const header2Paths = ['/item/:id', '/create-melpik'];
+  const header2Paths = ['/create-melpik'];
+
+  // Header3가 포함될 경로 패턴
+  const header3Paths = ['/item/:id'];
 
   // 현재 경로가 BottomNavPaths와 일치하는지 확인
   const includeBottomNav = bottomNavPaths.some((path) =>
@@ -48,10 +52,16 @@ const App: React.FC = () => {
     matchPath({ path, end: true }, location.pathname)
   );
 
+  // 현재 경로가 Header3Paths와 일치하는지 확인
+  const includeHeader3 = header3Paths.some((path) =>
+    matchPath({ path, end: true }, location.pathname)
+  );
+
   return (
     <AppContainer>
       {includeHeader1 && <Header1 />}
       {includeHeader2 && <Header2 />}
+      {includeHeader3 && <Header3 />}
       <ContentContainer>
         <Routes>
           <Route path='/home' element={<Home />} />
