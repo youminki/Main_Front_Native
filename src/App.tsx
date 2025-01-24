@@ -18,37 +18,40 @@ import Melpik from './pages/Melpik';
 import CreateMelpik from './pages/Melpik/CreateMelpik';
 
 import BottomNav from './components/BottomNav';
-import Header from './components/Header';
+import Header1 from './components/Header1';
+import Header2 from './components/Header2';
 
 const App: React.FC = () => {
   const location = useLocation();
 
-  // 헤더가 제외될 경로 패턴
-  const noHeaderPaths = ['/', '/login', '/signup', '/findid', '/findPassword'];
+  // BottomNav가 포함될 경로 패턴
+  const bottomNavPaths = ['/home', '/melpik'];
 
-  // BottomNav가 제외될 경로 패턴
-  const noBottomNavPaths = [
-    '/',
-    '/login',
-    '/signup',
-    '/findid',
-    '/findPassword',
-    '/item/:id',
-  ];
+  // Header1이 포함될 경로 패턴
+  const header1Paths = ['/home', '/melpik'];
 
-  // 현재 경로가 noHeaderPaths와 일치하는지 확인
-  const excludeHeader = noHeaderPaths.some((path) =>
+  // Header2가 포함될 경로 패턴
+  const header2Paths = ['/item/:id', '/create-melpik'];
+
+  // 현재 경로가 BottomNavPaths와 일치하는지 확인
+  const includeBottomNav = bottomNavPaths.some((path) =>
     matchPath({ path, end: true }, location.pathname)
   );
 
-  // 현재 경로가 noBottomNavPaths와 일치하는지 확인
-  const excludeBottomNav = noBottomNavPaths.some((path) =>
+  // 현재 경로가 Header1Paths와 일치하는지 확인
+  const includeHeader1 = header1Paths.some((path) =>
+    matchPath({ path, end: true }, location.pathname)
+  );
+
+  // 현재 경로가 Header2Paths와 일치하는지 확인
+  const includeHeader2 = header2Paths.some((path) =>
     matchPath({ path, end: true }, location.pathname)
   );
 
   return (
     <AppContainer>
-      {!excludeHeader && <Header />}
+      {includeHeader1 && <Header1 />}
+      {includeHeader2 && <Header2 />}
       <ContentContainer>
         <Routes>
           <Route path='/home' element={<Home />} />
@@ -63,7 +66,7 @@ const App: React.FC = () => {
           <Route path='/create-melpik' element={<CreateMelpik />} />
         </Routes>
       </ContentContainer>
-      {!excludeBottomNav && <BottomNav />}
+      {includeBottomNav && <BottomNav />}
     </AppContainer>
   );
 };
