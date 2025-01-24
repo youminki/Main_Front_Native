@@ -1,39 +1,35 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-
-import BackButtonIcon from '../assets/BackButton.svg';
-import Alarm from '../assets/Header/AlarmIcon.svg';
-import BasketIcon from '../assets/Header/BasketIcon.svg';
+import CancleIconIcon from '../assets/Header/CancleIcon.svg';
 
 // Header 컴포넌트 정의
-const Header: React.FC = () => {
+interface HeaderProps {
+  title?: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ title = '제목을 입력하세요' }) => {
   const navigate = useNavigate();
 
-  // 이벤트 핸들러
+  // 뒤로가기 버튼 클릭 핸들러
   const handleBackClick = (): void => {
-    navigate(-1); // 뒤로가기
-  };
-
-  const handleBasketClick = (): void => {
-    navigate('/basket');
+    navigate(-1);
   };
 
   return (
     <HeaderWrapper>
       <HeaderContainer>
         <LeftSection>
-          <BackButton
-            src={BackButtonIcon}
+          <CancleIcon
+            src={CancleIconIcon}
             alt='뒤로가기'
             onClick={handleBackClick}
           />
         </LeftSection>
 
-        <RightSection>
-          <Icon src={BasketIcon} alt='장바구니' onClick={handleBasketClick} />
-          <Icon src={Alarm} alt='알림' />
-        </RightSection>
+        <CenterSection>
+          <Title isDefault={title === '제목을 입력하세요'}>{title}</Title>
+        </CenterSection>
       </HeaderContainer>
     </HeaderWrapper>
   );
@@ -66,20 +62,28 @@ const LeftSection = styled.div`
   align-items: center;
 `;
 
-const RightSection = styled.div`
+const CancleIcon = styled.img`
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+`;
+
+const CenterSection = styled.div`
+  flex: 1;
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 15px;
 `;
 
-const BackButton = styled.img`
-  width: auto;
-  height: auto;
-  cursor: pointer;
-`;
+const Title = styled.h1<{ isDefault: boolean }>`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 22px;
+  /* identical to box height */
+  text-align: center;
 
-const Icon = styled.img`
-  width: auto;
-  height: auto;
-  cursor: pointer;
+  color: ${({ isDefault }) => (isDefault ? '#aaa' : '#333')};
+  margin: 0;
 `;
