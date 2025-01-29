@@ -16,6 +16,7 @@ interface Brand {
 const Brand: React.FC = () => {
   const [filter, setFilter] = useState<string>('');
   const [sortBy, setSortBy] = useState<'group' | 'category'>('group');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const brands: Brand[] = [
     { name: 'SANDRO', category: '컨템포러리', group: 'A', company: '아이디룩' },
@@ -42,9 +43,13 @@ const Brand: React.FC = () => {
     { name: 'ZOOC', category: '캐릭터', group: 'B', company: '대현' },
   ];
 
-  const filteredBrands: Brand[] = filter
-    ? brands.filter((brand) => brand.category === filter)
-    : brands;
+  const filteredBrands: Brand[] = brands.filter(
+    (brand) =>
+      (!filter || brand.category === filter) &&
+      (!searchTerm ||
+        brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        brand.company.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const groupedBrands: Record<string, Brand[]> = filteredBrands.reduce(
     (acc: Record<string, Brand[]>, brand) => {
@@ -95,7 +100,11 @@ const Brand: React.FC = () => {
             <Controltext>정렬</Controltext>
           </ButtonContainer>
           <SearchBar>
-            <SearchInput placeholder='검색' />
+            <SearchInput
+              placeholder='검색'
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <SearchIcon src={SearchIconImage} alt='검색 아이콘' />
           </SearchBar>
         </ControlSection>
