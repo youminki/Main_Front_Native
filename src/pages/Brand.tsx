@@ -14,7 +14,7 @@ interface Brand {
 }
 
 const Brand: React.FC = () => {
-  const [filter, setFilter] = useState<string>('');
+  const [filter] = useState<string>('');
   const [sortBy, setSortBy] = useState<'group' | 'category'>('group');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
