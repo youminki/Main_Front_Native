@@ -1,7 +1,10 @@
-import React from 'react';
+// src/components/Home/BrandDetail.tsx
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import StatsSection from '../../components/Brand/StatsSection';
+import SubHeader from '../../components/Home/SubHeader';
+import ItemList from '../../components/Home/ItemList';
 import BrandIcon from '/src/assets/BrandIcon.svg';
 
 interface Brand {
@@ -9,7 +12,7 @@ interface Brand {
   category: string;
   group: string;
   company: string;
-  productCount: number; // 브랜드별 제품 개수
+  productCount: number;
 }
 
 const brands: Brand[] = [
@@ -64,11 +67,57 @@ const brands: Brand[] = [
   },
 ];
 
+const items = [
+  {
+    id: 1,
+    image: '',
+    brand: 'SANDRO',
+    description: 'SNS21N9 / 원피스',
+    category: 'onepiece',
+    price: 460000,
+    discount: 10,
+  },
+  {
+    id: 2,
+    image: '',
+    brand: 'ZOOC',
+    description: 'ZSC14B1 / 블라우스',
+    category: 'blouse',
+    price: 380000,
+    discount: 15,
+  },
+  {
+    id: 3,
+    image: '',
+    brand: 'MICHA',
+    description: 'MCH88T7 / 투피스',
+    category: 'twopiece',
+    price: 540000,
+    discount: 20,
+  },
+];
+
 const BrandDetail: React.FC = () => {
   const { brandName } = useParams<{ brandName: string }>();
-
-  // 현재 URL의 brandName과 일치하는 브랜드 정보 찾기
   const brand = brands.find((b) => b.name === brandName);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [barPosition, setBarPosition] = useState<number>(0);
+
+  useEffect(() => {
+    const selectedElement = document.querySelector(
+      `[data-category="${selectedCategory}"]`
+    ) as HTMLElement;
+
+    if (selectedElement) {
+      const { offsetLeft, offsetWidth } = selectedElement;
+      setBarPosition(offsetLeft + offsetWidth / 2 - 25);
+    }
+  }, [selectedCategory]);
+
+  const filteredItems =
+    selectedCategory === 'all'
+      ? items
+      : items.filter((item) => item.category === selectedCategory);
 
   if (!brand) {
     return (
@@ -92,6 +141,14 @@ const BrandDetail: React.FC = () => {
         BrandIcon={BrandIcon}
       />
       <Divider />
+      <SubHeader
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        barPosition={barPosition}
+      />
+      <Content>
+        <ItemList items={filteredItems} />
+      </Content>
     </Container>
   );
 };
@@ -101,7 +158,6 @@ export default BrandDetail;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
   background-color: #fff;
 `;
@@ -126,9 +182,14 @@ const Subtitle = styled.p`
   font-weight: 400;
   color: #ccc;
 `;
+
 const Divider = styled.div`
   width: 100%;
   height: 1px;
   background: #dddddd;
-  margin: 30px 0;
+  margin-top: 30px;
+`;
+
+const Content = styled.div`
+  flex: 1;
 `;

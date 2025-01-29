@@ -36,7 +36,7 @@ const App: React.FC = () => {
   const header1Paths = ['/home', '/melpik', '/brand'];
 
   // Header2가 포함될 경로 패턴
-  const header2Paths = ['/create-melpik'];
+  const header2Paths = ['/create-melpik', '/brand/:brandNamel'];
 
   // Header3가 포함될 경로 패턴
   const header3Paths = ['/item/:id'];
