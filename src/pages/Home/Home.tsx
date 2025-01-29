@@ -1,15 +1,11 @@
+// src/components/Home/Home.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Notice from '../../components/Home/Notice';
 import ItemList from '../../components/Home/ItemList';
 import Footer from '../../components/Home/Footer';
-
-import AllClosetIcon from '../../assets/SubHeader/AllClosetIcon.svg';
-import OnepieceIcon from '../../assets/SubHeader/OnepieceIcon.svg';
-import JumpsuitIcon from '../../assets/SubHeader/JumpsuitIcon.svg';
-import TwopieceIcon from '../../assets/SubHeader/TwopieceIcon.svg';
-import BlouseIcon from '../../assets/SubHeader/BlouseIcon.svg';
-import FilterIcon from '../../assets/FilterIcon.svg';
+import FilterContainer from '../../components/Home/FilterContainer';
+import SubHeader from '../../components/Home/SubHeader';
 
 const items = [
   {
@@ -41,14 +37,6 @@ const items = [
   },
 ];
 
-const homeIcons = [
-  { src: AllClosetIcon, alt: '전체 옷장', category: 'all' },
-  { src: OnepieceIcon, alt: '원피스', category: 'onepiece' },
-  { src: JumpsuitIcon, alt: '점프수트', category: 'jumpsuit' },
-  { src: TwopieceIcon, alt: '투피스', category: 'twopiece' },
-  { src: BlouseIcon, alt: '블라우스', category: 'blouse' },
-];
-
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [seasonToggle, setSeasonToggle] = useState<boolean>(false);
@@ -74,41 +62,15 @@ const Home: React.FC = () => {
     <MainContainer>
       <ContentWrapper>
         <Notice />
-        <SubHeaderContainer>
-          <SubHeader>
-            {homeIcons.map((icon) => (
-              <IconContainer
-                key={icon.category}
-                $isSelected={selectedCategory === icon.category}
-                data-category={icon.category}
-                onClick={() => setSelectedCategory(icon.category)}
-              >
-                <Icon src={icon.src} alt={icon.alt} />
-                <IconText>{icon.alt}</IconText>
-              </IconContainer>
-            ))}
-          </SubHeader>
-          <Divider />
-          <Bar style={{ left: `${barPosition}px` }} />
-        </SubHeaderContainer>
-        <FilterContainer>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <SeasonToggle
-              onClick={() => setSeasonToggle(!seasonToggle)}
-              $isActive={seasonToggle}
-            >
-              <ToggleCircle $isActive={seasonToggle} />
-              <ToggleText $isActive={seasonToggle}>
-                {seasonToggle ? '켜짐' : '꺼짐'}
-              </ToggleText>
-            </SeasonToggle>
-            <ToggleLabel>계절감</ToggleLabel>
-          </div>
-          <FilterIconContainer>
-            <span>필터</span>
-            <img src={FilterIcon} alt='필터' />
-          </FilterIconContainer>
-        </FilterContainer>
+        <SubHeader
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          barPosition={barPosition}
+        />
+        <FilterContainer
+          seasonToggle={seasonToggle}
+          setSeasonToggle={setSeasonToggle}
+        />
         <Content>
           <ItemList items={filteredItems} />
         </Content>
@@ -117,6 +79,7 @@ const Home: React.FC = () => {
     </MainContainer>
   );
 };
+
 export default Home;
 
 // Styled Components
@@ -132,138 +95,6 @@ const ContentWrapper = styled.div`
   flex-direction: column;
 `;
 
-const SubHeaderContainer = styled.div`
-  position: relative;
-  margin-bottom: 30px;
-`;
-
-const SubHeader = styled.div`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin-top: 20px;
-`;
-
-const Divider = styled.div`
-  position: absolute;
-  bottom: -15px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background-color: #e0e0e0;
-`;
-
-const IconContainer = styled.div<{ $isSelected: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  position: relative;
-
-  ${({ $isSelected }) =>
-    $isSelected &&
-    `
-    color: #000;
-  `}
-
-  &:hover {
-    transform: scale(1.1);
-    transition: transform 0.3s ease;
-  }
-`;
-
-const Icon = styled.img`
-  width: 40px;
-  height: 40px;
-  margin-bottom: 5px;
-`;
-
-const IconText = styled.span`
-  font-size: 12px;
-  color: #333;
-`;
-
-const Bar = styled.div`
-  position: absolute;
-  bottom: -15px;
-  width: 50px;
-  height: 3px;
-  background-color: #000;
-  border-radius: 3px;
-  transition: left 0.3s ease-in-out;
-`;
-
-const FilterContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-`;
-
-const SeasonToggle = styled.div<{ $isActive: boolean }>`
-  display: flex;
-  align-items: center;
-  position: relative;
-  width: 60px;
-  height: 30px;
-  background-color: ${({ $isActive }) => ($isActive ? '#222' : '#D9D9D9')};
-  border-radius: 15px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-`;
-
-const ToggleCircle = styled.div<{ $isActive: boolean }>`
-  position: absolute;
-  width: 28px;
-  height: 28px;
-  background: #fff;
-  border-radius: 50%;
-  left: ${({ $isActive }) => ($isActive ? '32px' : '2px')};
-  transition: left 0.3s ease;
-`;
-
-const ToggleText = styled.span<{ $isActive: boolean }>`
-  font-size: 10px;
-  color: #000;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: ${({ $isActive }) => ($isActive ? '8px' : 'unset')};
-  left: ${({ $isActive }) => (!$isActive ? '8px' : 'unset')};
-`;
-
-const ToggleLabel = styled.span`
-  font-size: 12px;
-  color: #000;
-  margin-left: 10px;
-`;
-
 const Content = styled.div`
   flex: 1;
-`;
-
-const FilterIconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: 'NanumSquare Neo OTF';
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-  color: #000;
-  cursor: pointer;
-
-  img {
-    width: 24px;
-    height: 24px;
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    transition: background-color 0.3s ease;
-  }
-
-  &:hover img {
-    background-color: #e6e6e6;
-  }
 `;
