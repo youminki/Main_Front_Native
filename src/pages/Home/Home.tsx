@@ -79,7 +79,7 @@ const Home: React.FC = () => {
             {homeIcons.map((icon) => (
               <IconContainer
                 key={icon.category}
-                isSelected={selectedCategory === icon.category}
+                $isSelected={selectedCategory === icon.category}
                 data-category={icon.category}
                 onClick={() => setSelectedCategory(icon.category)}
               >
@@ -95,10 +95,10 @@ const Home: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <SeasonToggle
               onClick={() => setSeasonToggle(!seasonToggle)}
-              isActive={seasonToggle}
+              $isActive={seasonToggle}
             >
-              <ToggleCircle isActive={seasonToggle} />
-              <ToggleText isActive={seasonToggle}>
+              <ToggleCircle $isActive={seasonToggle} />
+              <ToggleText $isActive={seasonToggle}>
                 {seasonToggle ? '켜짐' : '꺼짐'}
               </ToggleText>
             </SeasonToggle>
@@ -153,15 +153,15 @@ const Divider = styled.div`
   background-color: #e0e0e0;
 `;
 
-const IconContainer = styled.div<{ isSelected: boolean }>`
+const IconContainer = styled.div<{ $isSelected: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   cursor: pointer;
   position: relative;
 
-  ${({ isSelected }) =>
-    isSelected &&
+  ${({ $isSelected }) =>
+    $isSelected &&
     `
     color: #000;
   `}
@@ -188,7 +188,6 @@ const Bar = styled.div`
   bottom: -15px;
   width: 50px;
   height: 3px;
-
   background-color: #000;
   border-radius: 3px;
   transition: left 0.3s ease-in-out;
@@ -199,6 +198,48 @@ const FilterContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+`;
+
+const SeasonToggle = styled.div<{ $isActive: boolean }>`
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 60px;
+  height: 30px;
+  background-color: ${({ $isActive }) => ($isActive ? '#222' : '#D9D9D9')};
+  border-radius: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+`;
+
+const ToggleCircle = styled.div<{ $isActive: boolean }>`
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background: #fff;
+  border-radius: 50%;
+  left: ${({ $isActive }) => ($isActive ? '32px' : '2px')};
+  transition: left 0.3s ease;
+`;
+
+const ToggleText = styled.span<{ $isActive: boolean }>`
+  font-size: 10px;
+  color: #000;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: ${({ $isActive }) => ($isActive ? '8px' : 'unset')};
+  left: ${({ $isActive }) => (!$isActive ? '8px' : 'unset')};
+`;
+
+const ToggleLabel = styled.span`
+  font-size: 12px;
+  color: #000;
+  margin-left: 10px;
+`;
+
+const Content = styled.div`
+  flex: 1;
 `;
 
 const FilterIconContainer = styled.div`
@@ -225,51 +266,4 @@ const FilterIconContainer = styled.div`
   &:hover img {
     background-color: #e6e6e6;
   }
-`;
-
-const SeasonToggle = styled.div<{ isActive: boolean }>`
-  display: flex;
-  align-items: center;
-  position: relative;
-  width: 60px;
-  height: 30px;
-  background-color: ${({ isActive }) => (isActive ? '#222' : '#D9D9D9')};
-  border-radius: 15px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-`;
-
-const ToggleCircle = styled.div<{ isActive: boolean }>`
-  position: absolute;
-  width: 28px;
-  height: 28px;
-  background: #fff;
-  border-radius: 50%;
-  left: ${({ isActive }) => (isActive ? '32px' : '2px')};
-  transition: left 0.3s ease;
-`;
-
-const ToggleText = styled.span<{ isActive: boolean }>`
-  font-family: 'NanumSquare Neo OTF';
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-  color: #000;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: ${({ isActive }) => (isActive ? '8px' : 'unset')};
-  left: ${({ isActive }) => (!isActive ? '8px' : 'unset')};
-`;
-
-const ToggleLabel = styled.span`
-  font-family: 'NanumSquare Neo OTF';
-  font-weight: 700;
-  font-size: 12px;
-  color: #000;
-  margin-left: 10px;
-`;
-
-const Content = styled.div`
-  flex: 1;
 `;
