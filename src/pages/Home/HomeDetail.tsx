@@ -1,24 +1,24 @@
-import React, { useState, useCallback } from "react";
-import styled from "styled-components";
-import ExIMG1 from "../assets/Home/ExIMG1.svg";
-import ExIMG2 from "../assets/Home/ExIMG2.svg";
-import ExIMG3 from "../assets/Home/ExIMG3.svg";
-import ImageSlider from "../components/Home/HomeDetail/ImageSlider";
-import ProductInfo from "../components/Home/HomeDetail/ProductInfo";
-import ProductOptions from "../components/Home/HomeDetail/ProductOptions";
-import PaymentMethod from "../components/Home/HomeDetail/PaymentMethod";
-import SizeInfo from "../components/Home/HomeDetail/SizeInfo";
-import MaterialInfo from "../components/Home/HomeDetail/MaterialInfo";
-import ProductDetails from "../components/Home/HomeDetail/ProductDetails";
-import BottomBar from "../components/Home/HomeDetail/BottomBar";
-import ServiceSelection from "../components/Home/HomeDetail/ServiceSelection";
-import RentalOptions from "../components/Home/HomeDetail/RentalOptions";
+import React, { useState, useCallback } from 'react';
+import styled from 'styled-components';
+import ExIMG1 from '../../assets/Home/ExIMG1.svg';
+import ExIMG2 from '../../assets/Home/ExIMG2.svg';
+import ExIMG3 from '../../assets/Home/ExIMG3.svg';
+import ImageSlider from '../../components/Home/HomeDetail/ImageSlider';
+import ProductInfo from '../../components/Home/HomeDetail/ProductInfo';
+import ProductOptions from '../../components/Home/HomeDetail/ProductOptions';
+import PaymentMethod from '../../components/Home/HomeDetail/PaymentMethod';
+import SizeInfo from '../../components/Home/HomeDetail/SizeInfo';
+import MaterialInfo from '../../components/Home/HomeDetail/MaterialInfo';
+import ProductDetails from '../../components/Home/HomeDetail/ProductDetails';
+import BottomBar from '../../components/Home/HomeDetail/BottomBar';
+import ServiceSelection from '../../components/Home/HomeDetail/ServiceSelection';
+import RentalOptions from '../../components/Home/HomeDetail/RentalOptions';
 
 const HomeDetail: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
-  const [selectedSize, setSelectedSize] = useState<string>("");
-  const [selectedColor, setSelectedColor] = useState<string>("");
-  const [selectedService, setSelectedService] = useState<string>(""); // 서비스 선택 상태
+  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [selectedColor, setSelectedColor] = useState<string>('');
+  const [selectedService, setSelectedService] = useState<string>(''); // 서비스 선택 상태
   // const [selectedPeriod, setSelectedPeriod] = useState<string>(""); // 대여 기간 선택 상태
 
   const images = [ExIMG1, ExIMG2, ExIMG3];
@@ -46,24 +46,24 @@ const HomeDetail: React.FC = () => {
         } else {
           handleSwipeLeft();
         }
-        window.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("mouseup", handleMouseUp);
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
       }
     };
 
     const handleMouseUp = () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
   }, []);
 
   const item = {
     image: images[currentImageIndex],
-    brand: "산드로(SANDRO)",
-    description: "SNS21N9 / 원피스",
+    brand: '산드로(SANDRO)',
+    description: 'SNS21N9 / 원피스',
     originalPrice: 760000,
     discountPrice: 608000,
     discountPercent: 20,
@@ -94,14 +94,14 @@ const HomeDetail: React.FC = () => {
 
         {/* 조건부 렌더링 */}
         <ConditionalContainer>
-          {selectedService === "rental" && (
+          {selectedService === 'rental' && (
             <RentalOptions
             // selectedPeriod={selectedPeriod}
             // setSelectedPeriod={setSelectedPeriod}
             />
           )}
-          {selectedService === "purchase" && <PaymentMethod />}
-          {selectedService === "" && <Message>서비스를 선택하세요</Message>}
+          {selectedService === 'purchase' && <PaymentMethod />}
+          {selectedService === '' && <Message>서비스를 선택하세요</Message>}
         </ConditionalContainer>
 
         <LinContainer />

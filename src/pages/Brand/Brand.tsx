@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Theme from '../styles/Theme';
+import Theme from '../../styles/Theme';
 import { ThemeProvider } from 'styled-components';
 import BrandIcon from '/src/assets/BrandIcon.svg';
-import { BrandList } from '../components/Brand/BrandList';
-import { ControlSection } from '../components/Brand/ControlSection';
-import StatsSection from '../components/Brand/StatsSection';
+import { BrandList } from '../../components/Brand/BrandList';
+import { ControlSection } from '../../components/Brand/ControlSection';
+import StatsSection from '../../components/Brand/StatsSection';
 
 interface Brand {
   name: string;

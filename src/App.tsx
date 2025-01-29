@@ -11,14 +11,14 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FindId from './pages/FindId';
 import FindPassword from './pages/FindPassword';
-import Home from './pages/Home';
-import HomeDetail from './pages/HomeDetail';
+import Home from './pages/Home/Home';
+import HomeDetail from './pages/Home/HomeDetail';
 import Analysis from './pages/Analysis';
 
-import Brand from './pages/Brand';
+import Brand from './pages/Brand/Brand';
 import BrandDetail from './pages/Brand/BrandDetail';
 
-import Melpik from './pages/Melpik';
+import Melpik from './pages/Melpik/Melpik';
 import CreateMelpik from './pages/Melpik/CreateMelpik';
 
 import BottomNav from './components/BottomNav';
