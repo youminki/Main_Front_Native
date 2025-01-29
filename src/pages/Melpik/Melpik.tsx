@@ -1,9 +1,9 @@
-import React from "react";
-import styled from "styled-components";
-import Theme from "../styles/Theme";
-import { ThemeProvider } from "styled-components";
-import BrnadIcon from "/src/assets/BottomNav/Melpik/BrnadIcon.svg";
-import { Link } from "react-router-dom";
+import React from 'react';
+import styled from 'styled-components';
+import Theme from '../../styles/Theme';
+import { ThemeProvider } from 'styled-components';
+import MelpikIcon from '/src/assets/MelpikIcon.svg';
+import { Link } from 'react-router-dom';
 
 const MelpikPage: React.FC = () => {
   return (
@@ -30,27 +30,27 @@ const MelpikPage: React.FC = () => {
             </StatBox>
           </StatsContainer>
           <ImageWrapper>
-            <MenuImage src={BrnadIcon} alt="메뉴 이미지" />
+            <MenuImage src={MelpikIcon} alt='메뉴 이미지' />
           </ImageWrapper>
         </StatsSection>
         <Divider />
         <CardGrid>
-          <Link to="/create-melpik">
+          <Link to='/create-melpik'>
             <Card>
               <CardText>멜픽 생성</CardText>
             </Card>
           </Link>
-          <Link to="/sales-schedule">
+          <Link to='/sales-schedule'>
             <Card>
               <CardText>판매 스케줄</CardText>
             </Card>
           </Link>
-          <Link to="/sales-settlement">
+          <Link to='/sales-settlement'>
             <Card>
               <CardText>판매 정산</CardText>
             </Card>
           </Link>
-          <Link to="/melpik-settings">
+          <Link to='/melpik-settings'>
             <Card>
               <CardText>멜픽 설정</CardText>
             </Card>
@@ -69,7 +69,7 @@ const Container = styled.div`
   align-items: center;
   width: 100%;
   background-color: #fff;
-  font-family: "NanumSquare Neo OTF", sans-serif;
+  font-family: 'NanumSquare Neo OTF', sans-serif;
 `;
 
 const Header = styled.div`
@@ -77,17 +77,17 @@ const Header = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 6px;
 `;
 
 const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
   color: #000;
+  margin-bottom: 0px;
 `;
 
 const Subtitle = styled.p`
-  margin-top: 5px;
   font-size: 12px;
   font-weight: 400;
   color: #ccc;
@@ -112,10 +112,10 @@ const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
   align-items: center;
   justify-content: center;
   background: ${({ white, gray }) =>
-    white ? "#fff" : gray ? "#f6f6f6" : "#fff"};
+    white ? '#fff' : gray ? '#f6f6f6' : '#fff'};
   border: 1px solid #ddd;
   border-radius: ${({ white, gray }) =>
-    white ? "10px 0 0 0" : gray ? "0 0 10px 0" : "0"};
+    white ? '10px 0 0 0' : gray ? '0 0 10px 0' : '0'};
   text-align: center;
   padding: 15px 20px;
   position: relative;
@@ -130,7 +130,7 @@ const Row = styled.div`
 `;
 
 const StatNumber = styled.div`
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 12px;
@@ -139,7 +139,7 @@ const StatNumber = styled.div`
 `;
 
 const StatLabel = styled.div`
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -155,7 +155,7 @@ const DateLabel = styled.div`
   height: 7px;
   top: -5px;
   right: 10px;
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
   font-size: 6px;

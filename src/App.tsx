@@ -11,10 +11,14 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FindId from './pages/FindId';
 import FindPassword from './pages/FindPassword';
-import Home from './pages/Home';
-import HomeDetail from './pages/HomeDetail';
+import Home from './pages/Home/Home';
+import HomeDetail from './pages/Home/HomeDetail';
 import Analysis from './pages/Analysis';
-import Melpik from './pages/Melpik';
+
+import Brand from './pages/Brand/Brand';
+import BrandDetail from './pages/Brand/BrandDetail';
+
+import Melpik from './pages/Melpik/Melpik';
 import CreateMelpik from './pages/Melpik/CreateMelpik';
 
 import BottomNav from './components/BottomNav';
@@ -26,10 +30,10 @@ const App: React.FC = () => {
   const location = useLocation();
 
   // BottomNav가 포함될 경로 패턴
-  const bottomNavPaths = ['/home', '/melpik'];
+  const bottomNavPaths = ['/home', '/melpik', '/brand'];
 
   // Header1이 포함될 경로 패턴
-  const header1Paths = ['/home', '/melpik'];
+  const header1Paths = ['/home', '/melpik', '/brand'];
 
   // Header2가 포함될 경로 패턴
   const header2Paths = ['/create-melpik'];
@@ -72,6 +76,10 @@ const App: React.FC = () => {
           <Route path='/findid' element={<FindId />} />
           <Route path='/findPassword' element={<FindPassword />} />
           <Route path='/analysis' element={<Analysis />} />
+
+          <Route path='/brand' element={<Brand />} />
+          <Route path='/brand/:brandName' element={<BrandDetail />} />
+
           <Route path='/melpik' element={<Melpik />} />
           <Route path='/create-melpik' element={<CreateMelpik />} />
         </Routes>
