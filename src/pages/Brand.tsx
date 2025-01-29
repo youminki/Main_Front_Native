@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import Theme from '../styles/Theme';
 import { ThemeProvider } from 'styled-components';
 import BrandIcon from '/src/assets/BrandIcon.svg';
-import SearchIconImage from '/src/assets/BottomNav/SearchIcon.svg';
-import GroupButtonIcon from '/src/assets/BottomNav/GroupButtonIcon.svg';
+import { BrandList } from '../components/Brand/BrandList';
+import { ControlSection } from '../components/Brand/ControlSection';
+import StatsSection from '../components/Brand/StatsSection';
 
 interface Brand {
   name: string;
@@ -64,6 +65,7 @@ const Brand: React.FC = () => {
   const toggleSort = () => {
     setSortBy((prevSort) => (prevSort === 'group' ? 'category' : 'group'));
   };
+
   return (
     <ThemeProvider theme={Theme}>
       <Container>
@@ -71,62 +73,23 @@ const Brand: React.FC = () => {
           <Title>브랜드</Title>
           <Subtitle>새로운 시즌 제품들을 내 손안에!</Subtitle>
         </Header>
-        <StatsSection>
-          <StatsContainer>
-            <StatBox white>
-              <Row>
-                <StatLabel>브랜드</StatLabel>
-                <StatNumber>{brands.length}</StatNumber>
-              </Row>
-            </StatBox>
-            <StatBox gray>
-              <Row>
-                <StatLabel>등록 상품수</StatLabel>
-                <StatNumber>9480</StatNumber>
-              </Row>
-            </StatBox>
-          </StatsContainer>
-          <ImageWrapper>
-            <MenuImage src={BrandIcon} alt='메뉴 이미지' />
-          </ImageWrapper>
-        </StatsSection>
-        <Divider />
-        <ControlSection>
-          <ButtonContainer>
-            <ControlButton onClick={toggleSort}>
-              <Icon src={GroupButtonIcon} alt='그룹별 아이콘' />
-              {sortBy === 'group' ? '그룹별' : '카테고리별'}
-            </ControlButton>
-            <Controltext>정렬</Controltext>
-          </ButtonContainer>
-          <SearchBar>
-            <SearchInput
-              placeholder='검색'
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <SearchIcon src={SearchIconImage} alt='검색 아이콘' />
-          </SearchBar>
-        </ControlSection>
 
-        <BrandList>
-          {Object.keys(groupedBrands).map((group) => (
-            <GroupSection key={group}>
-              <GroupTitle>{group}</GroupTitle>
-              {groupedBrands[group].map((brand, index) => (
-                <BrandItem key={index}>
-                  <BrandDetails>
-                    <BrandName>{brand.name}</BrandName>
-                    <BrandCompany>{brand.company}</BrandCompany>
-                  </BrandDetails>
-                  <BrandCategoryWrapper>
-                    <BrandCategory>{brand.category}</BrandCategory>
-                  </BrandCategoryWrapper>
-                </BrandItem>
-              ))}
-            </GroupSection>
-          ))}
-        </BrandList>
+        <StatsSection
+          brandCount={brands.length}
+          productCount={9480}
+          BrandIcon={BrandIcon}
+        />
+
+        <Divider />
+
+        <ControlSection
+          toggleSort={toggleSort}
+          sortBy={sortBy}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
+
+        <BrandList groupedBrands={groupedBrands} />
       </Container>
     </ThemeProvider>
   );
@@ -140,7 +103,6 @@ const Container = styled.div`
   align-items: center;
   width: 100%;
   background-color: #fff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
 `;
 
 const Header = styled.div`
@@ -164,227 +126,9 @@ const Subtitle = styled.p`
   color: #ccc;
 `;
 
-const StatsSection = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  position: relative;
-`;
-
-const StatsContainer = styled.div`
-  display: flex;
-  gap: 0;
-  width: 100%;
-`;
-
-const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: ${({ white, gray }) =>
-    white ? '#fff' : gray ? '#f6f6f6' : '#fff'};
-  border: 1px solid #ddd;
-  border-radius: ${({ white, gray }) =>
-    white ? '10px 0 0 0' : gray ? '0 0 10px 0' : '0'};
-  text-align: center;
-  padding: 15px 20px;
-  position: relative;
-  margin-right: 0px;
-`;
-
-const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-`;
-
-const StatNumber = styled.div`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 800;
-  font-size: 12px;
-  line-height: 13px;
-  color: #f6ae24;
-`;
-
-const StatLabel = styled.div`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-  color: #000000;
-  margin-right: 5px;
-  width: 100%;
-`;
-
-const ImageWrapper = styled.div`
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 15px;
-`;
-
-const MenuImage = styled.img`
-  width: 64px;
-  height: 58px;
-`;
-
 const Divider = styled.div`
   width: 100%;
   height: 1px;
   background: #dddddd;
   margin: 30px 0;
-`;
-
-const ControlSection = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 20px;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 10px;
-  width: 100%;
-`;
-
-const ControlButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 10px;
-  background: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  min-width: 72px;
-  cursor: pointer;
-  &:hover {
-    background: #f6ae24;
-    color: #fff;
-  }
-
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-
-  color: #000000;
-`;
-const Controltext = styled.p`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-
-  color: #000000;
-`;
-const Icon = styled.img`
-  width: 13px;
-  height: 16px;
-`;
-
-const SearchBar = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 40px;
-  border: 1px solid #ccc;
-  background: #fff;
-`;
-
-const SearchInput = styled.input`
-  flex: 1;
-  border: none;
-  padding: 10px;
-  font-size: 14px;
-  outline: none;
-`;
-
-const SearchIcon = styled.img`
-  width: 16px;
-  height: 16px;
-  padding: 10px;
-`;
-
-const BrandList = styled.div`
-  width: 100%;
-`;
-
-const GroupSection = styled.section`
-  margin-bottom: 0px;
-`;
-
-const GroupTitle = styled.h2`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 900;
-  font-size: 14px;
-  line-height: 15px;
-  background-color: #555555;
-  padding: 12px 20px;
-  color: white;
-
-  margin: 0px;
-`;
-
-const BrandItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border: 1px solid #ddd;
-`;
-
-const BrandDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const BrandName = styled.span`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 900;
-  font-size: 14px;
-  line-height: 15px;
-
-  color: #000000;
-
-  margin-bottom: 4px;
-`;
-
-const BrandCompany = styled.span`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 8px;
-  line-height: 9px;
-
-  color: #999999;
-`;
-
-const BrandCategoryWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: right;
-  flex: 1;
-`;
-
-const BrandCategory = styled.span`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 10px;
-  line-height: 11px;
-
-  color: #999999;
 `;
