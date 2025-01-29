@@ -6,23 +6,59 @@ import BrandIcon from '/src/assets/BrandIcon.svg';
 import SearchIconImage from '/src/assets/BottomNav/SearchIcon.svg';
 import GroupButtonIcon from '/src/assets/BottomNav/GroupButtonIcon.svg';
 
-const Brand: React.FC = () => {
-  const [filter, setFilter] = useState('');
+interface Brand {
+  name: string;
+  category: string;
+  group: string;
+  company: string;
+}
 
-  const brands = [
-    { name: 'SANDRO', category: '컨템포러리' },
-    { name: 'MAJE', category: '컨템포러리' },
-    { name: 'MICHA', category: '컨템포러리' },
-    { name: 'it MICHA', category: '캐릭터' },
-    { name: 'MOJO.S.PHINE', category: '컨템포러리' },
-    { name: 'DEW L', category: '컨템포러리' },
-    { name: 'ZOOC', category: '캐릭터' },
+const Brand: React.FC = () => {
+  const [filter, setFilter] = useState<string>('');
+  const [sortBy, setSortBy] = useState<'group' | 'category'>('group');
+
+  const brands: Brand[] = [
+    { name: 'SANDRO', category: '컨템포러리', group: 'A', company: '아이디룩' },
+    { name: 'MAJE', category: '컨템포러리', group: 'A', company: '아이디룩' },
+    {
+      name: 'MICHA',
+      category: '컨템포러리',
+      group: 'A',
+      company: '시선인터내셔널',
+    },
+    {
+      name: 'it MICHA',
+      category: '캐릭터',
+      group: 'A',
+      company: '시선인터내셔널',
+    },
+    {
+      name: 'MOJO.S.PHINE',
+      category: '컨템포러리',
+      group: 'B',
+      company: '대현',
+    },
+    { name: 'DEW L', category: '컨템포러리', group: 'B', company: '대현' },
+    { name: 'ZOOC', category: '캐릭터', group: 'B', company: '대현' },
   ];
 
-  const filteredBrands = filter
+  const filteredBrands: Brand[] = filter
     ? brands.filter((brand) => brand.category === filter)
     : brands;
 
+  const groupedBrands: Record<string, Brand[]> = filteredBrands.reduce(
+    (acc: Record<string, Brand[]>, brand) => {
+      const key = brand[sortBy];
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(brand);
+      return acc;
+    },
+    {} as Record<string, Brand[]>
+  );
+
+  const toggleSort = () => {
+    setSortBy((prevSort) => (prevSort === 'group' ? 'category' : 'group'));
+  };
   return (
     <ThemeProvider theme={Theme}>
       <Container>
@@ -52,9 +88,9 @@ const Brand: React.FC = () => {
         <Divider />
         <ControlSection>
           <ButtonContainer>
-            <ControlButton onClick={() => setFilter('')}>
+            <ControlButton onClick={toggleSort}>
               <Icon src={GroupButtonIcon} alt='그룹별 아이콘' />
-              그룹별
+              {sortBy === 'group' ? '그룹별' : '카테고리별'}
             </ControlButton>
             <Controltext>정렬</Controltext>
           </ButtonContainer>
@@ -65,16 +101,21 @@ const Brand: React.FC = () => {
         </ControlSection>
 
         <BrandList>
-          {filteredBrands.map((brand, index) => (
-            <BrandItem key={index}>
-              <BrandDetails>
-                <BrandName>{brand.name}</BrandName>
-                <BrandCategory>{brand.category}</BrandCategory>
-              </BrandDetails>
-              <BrandType>
-                {brand.category === '컨템포러리' ? 'Contemporary' : 'Character'}
-              </BrandType>
-            </BrandItem>
+          {Object.keys(groupedBrands).map((group) => (
+            <GroupSection key={group}>
+              <GroupTitle>{group}</GroupTitle>
+              {groupedBrands[group].map((brand, index) => (
+                <BrandItem key={index}>
+                  <BrandDetails>
+                    <BrandName>{brand.name}</BrandName>
+                    <BrandCompany>{brand.company}</BrandCompany>
+                  </BrandDetails>
+                  <BrandCategoryWrapper>
+                    <BrandCategory>{brand.category}</BrandCategory>
+                  </BrandCategoryWrapper>
+                </BrandItem>
+              ))}
+            </GroupSection>
           ))}
         </BrandList>
       </Container>
@@ -230,7 +271,7 @@ const ControlButton = styled.button`
 const Controltext = styled.p`
   display: flex;
   align-items: center;
-
+  width: 100%;
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
@@ -251,8 +292,6 @@ const SearchBar = styled.div`
   height: 40px;
   border: 1px solid #ccc;
   background: #fff;
-
-  margin-left: 93px;
 `;
 
 const SearchInput = styled.input`
@@ -270,20 +309,31 @@ const SearchIcon = styled.img`
 `;
 
 const BrandList = styled.div`
-  display: flex;
-  flex-direction: column;
   width: 100%;
-  gap: 10px;
+`;
+
+const GroupSection = styled.section`
+  margin-bottom: 0px;
+`;
+
+const GroupTitle = styled.h2`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 900;
+  font-size: 14px;
+  line-height: 15px;
+  background-color: #555555;
+  padding: 12px 20px;
+  color: white;
+
+  margin: 0px;
 `;
 
 const BrandItem = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
+  padding: 16px 20px;
   border: 1px solid #ddd;
-  border-radius: 5px;
-  background: #fff;
 `;
 
 const BrandDetails = styled.div`
@@ -291,20 +341,41 @@ const BrandDetails = styled.div`
   flex-direction: column;
 `;
 
-const BrandName = styled.div`
+const BrandName = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 900;
   font-size: 14px;
-  font-weight: 700;
+  line-height: 15px;
+
+  color: #000000;
+
+  margin-bottom: 4px;
 `;
 
-const BrandCategory = styled.div`
-  font-size: 12px;
+const BrandCompany = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
   font-weight: 400;
-  color: #999;
+  font-size: 8px;
+  line-height: 9px;
+
+  color: #999999;
 `;
 
-const BrandType = styled.div`
-  font-size: 12px;
+const BrandCategoryWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  flex: 1;
+`;
+
+const BrandCategory = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
   font-weight: 400;
-  color: #999;
-  text-align: right;
+  font-size: 10px;
+  line-height: 11px;
+
+  color: #999999;
 `;
