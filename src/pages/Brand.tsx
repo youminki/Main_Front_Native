@@ -2,8 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Theme from '../styles/Theme';
 import { ThemeProvider } from 'styled-components';
-import MelpikIcon from '/src/assets/BottomNav/Melpik/MelpikIcon.svg';
-import { Link } from 'react-router-dom';
+import BrandIcon from '/src/assets/BrandIcon.svg';
 
 const Brand: React.FC = () => {
   return (
@@ -17,45 +16,23 @@ const Brand: React.FC = () => {
           <StatsContainer>
             <StatBox white>
               <Row>
-                <StatLabel>방문수</StatLabel>
+                <StatLabel>브랜드</StatLabel>
                 <StatNumber>174</StatNumber>
               </Row>
             </StatBox>
             <StatBox gray>
               <Row>
-                <StatLabel>판매된 제품수</StatLabel>
+                <StatLabel>등록 상품수</StatLabel>
                 <StatNumber>26</StatNumber>
               </Row>
               <DateLabel>2025.01.06 ~ 01.10</DateLabel>
             </StatBox>
           </StatsContainer>
           <ImageWrapper>
-            <MenuImage src={MelpikIcon} alt='메뉴 이미지' />
+            <MenuImage src={BrandIcon} alt='메뉴 이미지' />
           </ImageWrapper>
         </StatsSection>
         <Divider />
-        <CardGrid>
-          <Link to='/create-melpik'>
-            <Card>
-              <CardText>멜픽 생성</CardText>
-            </Card>
-          </Link>
-          <Link to='/sales-schedule'>
-            <Card>
-              <CardText>판매 스케줄</CardText>
-            </Card>
-          </Link>
-          <Link to='/sales-settlement'>
-            <Card>
-              <CardText>판매 정산</CardText>
-            </Card>
-          </Link>
-          <Link to='/melpik-settings'>
-            <Card>
-              <CardText>멜픽 설정</CardText>
-            </Card>
-          </Link>
-        </CardGrid>
       </Container>
     </ThemeProvider>
   );
@@ -77,17 +54,17 @@ const Header = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 6px;
 `;
 
 const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
   color: #000;
+  margin-bottom: 0px;
 `;
 
 const Subtitle = styled.p`
-  margin-top: 5px;
   font-size: 12px;
   font-weight: 400;
   color: #ccc;
@@ -185,38 +162,4 @@ const Divider = styled.div`
   height: 1px;
   background: #dddddd;
   margin: 30px 0;
-`;
-
-const CardGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  width: 100%;
-
-  a {
-    text-decoration: none;
-    color: inherit;
-  }
-`;
-
-const Card = styled.div`
-  aspect-ratio: 1 / 1;
-  background: #fff;
-  border: 1px solid #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: box-shadow 0.2s;
-
-  &:hover {
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const CardText = styled.div`
-  font-size: 12px;
-  font-weight: 400;
-  text-align: center;
-  color: #000;
 `;

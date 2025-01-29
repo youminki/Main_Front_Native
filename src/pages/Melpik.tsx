@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Theme from '../styles/Theme';
 import { ThemeProvider } from 'styled-components';
-import MelpikIcon from '/src/assets/BottomNav/Melpik/MelpikIcon.svg';
+import MelpikIcon from '/src/assets/MelpikIcon.svg';
 import { Link } from 'react-router-dom';
 
 const MelpikPage: React.FC = () => {
@@ -77,17 +77,17 @@ const Header = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 6px;
 `;
 
 const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
   color: #000;
+  margin-bottom: 0px;
 `;
 
 const Subtitle = styled.p`
-  margin-top: 5px;
   font-size: 12px;
   font-weight: 400;
   color: #ccc;
