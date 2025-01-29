@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 interface Brand {
   name: string;
@@ -8,8 +9,14 @@ interface Brand {
 }
 
 const BrandItem: React.FC<{ brand: Brand }> = ({ brand }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/brand/${encodeURIComponent(brand.name)}`);
+  };
+
   return (
-    <Container>
+    <Container onClick={handleClick}>
       <BrandDetails>
         <BrandName>{brand.name}</BrandName>
         <BrandCompany>{brand.company}</BrandCompany>
@@ -28,6 +35,12 @@ const Container = styled.div`
   justify-content: space-between;
   padding: 16px 20px;
   border: 1px solid #ddd;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #f9f9f9;
+  }
 `;
 
 const BrandDetails = styled.div`
