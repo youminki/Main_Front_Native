@@ -24,7 +24,7 @@ import ContemporarySettings from './pages/Melpik/ContemporarySettings';
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
 
-import BottomNav from './components/BottomNav';
+import BottomNav from './components/BottomNav1';
 import Header1 from './components/Header1';
 import Header2 from './components/Header2';
 import Header3 from './components/Header3';

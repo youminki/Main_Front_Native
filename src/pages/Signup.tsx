@@ -7,7 +7,7 @@ import BackButton from '../components/BackButton';
 import InputField from '../components/InputField';
 import AgreementSection from '../components/Signup/AgreementSection';
 import Theme from '../styles/Theme';
-import BottomBar from '../components/Signup/BottomBar';
+import BottomBar from '../components/BottomNav2';
 import ResetButtonIcon from '../assets/ResetButton.png';
 
 type SignupFormData = {

@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Theme from '../../../styles/Theme';
 import ExIMG1 from '../../../assets/Melpik/ExIMG1.svg';
-import BottomBar from '../../../components/Signup/BottomBar';
+import BottomBar from '../../../components/BottomNav2';
 import DeleteButtonIcon from '../../../assets/DeleteButtonIcon.svg';
 
 interface Item {
