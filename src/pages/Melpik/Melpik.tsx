@@ -7,6 +7,14 @@ import CardGrid from '../../components/Melpik/CardGrid.tsx';
 import MelpikIcon from '/src/assets/Melpik/MelpikIcon.svg';
 
 const MelpikPage: React.FC = () => {
+  // 동적 데이터 (프롭스로 전달할 값)
+  const visits = 174;
+  const sales = 26;
+  const dateRange = '2025.01.06 ~ 01.10';
+
+  const visitLabel = '방문수';
+  const salesLabel = '판매된 제품수';
+
   return (
     <ThemeProvider theme={Theme}>
       <Container>
@@ -14,8 +22,15 @@ const MelpikPage: React.FC = () => {
           <Title>멜픽</Title>
           <Subtitle>내 채널을 통해 나는 브랜드가 된다</Subtitle>
         </Header>
+
         <StatsRow>
-          <StatsSection />
+          <StatsSection
+            visits={visits}
+            sales={sales}
+            dateRange={dateRange}
+            visitLabel={visitLabel}
+            salesLabel={salesLabel}
+          />
           <ImageWrapper>
             <MenuImage src={MelpikIcon} alt='메뉴 이미지' />
           </ImageWrapper>
