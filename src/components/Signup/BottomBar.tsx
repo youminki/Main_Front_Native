@@ -1,7 +1,6 @@
-// src/components/BottomBar.tsx
 import React from 'react';
 import styled from 'styled-components';
-import ResetButton from '../../assets/ResetButton.png';
+import Theme from '../../styles/Theme';
 
 type BottomBarProps = {
   buttonText?: string;
@@ -17,7 +16,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
   return (
     <BottomBarContainer>
       <CartButton>
-        <CartImage src={imageSrc || ResetButton} alt='icon' />
+        {imageSrc && <CartImage src={imageSrc} alt='icon' />}
       </CartButton>
       <OrderButton onClick={onClick}>{buttonText}</OrderButton>
     </BottomBarContainer>
@@ -30,7 +29,7 @@ const BottomBarContainer = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background-color: #1d1d1b;
+  background-color: ${Theme.colors.gray4};
   width: 100%;
   position: fixed;
   bottom: 0;
@@ -41,14 +40,13 @@ const BottomBarContainer = styled.div`
   margin: 0 auto;
   padding: 1rem;
   text-align: center;
-  background-color: ${({ theme }) => theme.colors.gray4};
 `;
 
 const CartButton = styled.button`
   width: 75px;
   height: 56px;
-  background-color: ${({ theme }) => theme.colors.gray4};
-  border: 1px solid ${({ theme }) => theme.colors.gray};
+  background-color: ${Theme.colors.gray4};
+  border: 1px solid ${Theme.colors.gray};
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -62,10 +60,10 @@ const CartImage = styled.img``;
 const OrderButton = styled.button`
   width: 100%;
   height: 56px;
-  background-color: ${({ theme }) => theme.colors.yellow};
+  background-color: ${Theme.colors.black};
   border: none;
   border-radius: 6px;
-  color: ${({ theme }) => theme.colors.white};
+  color: ${Theme.colors.white};
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
