@@ -1,14 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import BackButton from '../../../components/BackButton';
 import Theme from '../../../styles/Theme';
 import ScheduleIcon from '../../../assets/Melpik/schedule.svg';
 import BletIcon from '../../../assets/Melpik/blet.svg';
-
-const handleBackClick = (): void => {
-  window.history.back();
-};
 
 const Schedule: React.FC = () => {
   const navigate = useNavigate();

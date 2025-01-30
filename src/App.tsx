@@ -38,7 +38,11 @@ const App: React.FC = () => {
   const header1Paths = ['/home', '/melpik', '/brand'];
 
   // Header2가 포함될 경로 패턴
-  const header2Paths = ['/create-melpik', '/brand/:brandNamel'];
+  const header2Paths = [
+    '/create-melpik',
+    '/brand/:brandNamel',
+    '/sales-schedule',
+  ];
 
   // Header3가 포함될 경로 패턴
   const header3Paths = ['/item/:id', '/createMelpik/settings'];
@@ -60,11 +64,21 @@ const App: React.FC = () => {
 
   // 현재 경로가 Header3Paths와 일치하는지 확인
   const includeHeader3 = header3Paths.some((path) =>
-    matchPath({ path, end: true }, location.pathname)
+    matchPath({ path, end: false }, location.pathname)
   );
+
   const getHeader3Title = () => {
-    if (matchPath('/createMelpik/settings', location.pathname))
+    if (
+      matchPath(
+        { path: '/createMelpik/settings', end: true },
+        location.pathname
+      )
+    ) {
       return '컨템포러리';
+    }
+    if (matchPath({ path: '/sales-schedule', end: true }, location.pathname)) {
+      return '판매 스케줄';
+    }
     return '';
   };
 
