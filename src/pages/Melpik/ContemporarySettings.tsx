@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { schemaSignup } from '../../hooks/ValidationYup';
+import { schemaSignupContemporary } from '../../hooks/ValidationYup';
 import InputField from '../../components/InputField';
 import AgreementSection from '../../components/Melpik/CreateMelpik/Settings/AgreementSection';
 import Theme from '../../styles/Theme';
@@ -27,7 +27,7 @@ const ContemporarySettings: React.FC = () => {
     setValue,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: yupResolver(schemaSignup),
+    resolver: yupResolver(schemaSignupContemporary),
     mode: 'all',
   });
 

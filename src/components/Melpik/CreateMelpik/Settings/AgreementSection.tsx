@@ -20,7 +20,7 @@ const AgreementSection = () => {
     });
   };
 
-  const handleIndividualCheck = (e) => {
+  const handleIndividualCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, checked } = e.target;
     setIndividualChecks((prev) => ({
       ...prev,
@@ -28,7 +28,7 @@ const AgreementSection = () => {
     }));
   };
 
-  const handleViewDetails = (content) => {
+  const handleViewDetails = (content: string) => {
     setModalContent(content);
     setModalVisible(true);
   };

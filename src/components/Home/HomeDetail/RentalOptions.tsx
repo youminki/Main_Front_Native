@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import ReusableModal from "../../../components/ReusableModal";
-import RentalSelectDateIcon from "../../../assets/Home/HomeDetail/RentalSelectDateIcon.svg";
-import Theme from "../../../styles/Theme";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import ReusableModal from '../../../components/ReusableModal';
+import RentalSelectDateIcon from '../../../assets/Home/HomeDetail/RentalSelectDateIcon.svg';
+import Theme from '../../../styles/Theme';
 
 interface DayBoxProps {
   selected: boolean;
@@ -18,12 +18,12 @@ interface ToggleButtonProps {
 }
 
 const RentalOptions: React.FC = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState<string>(""); // 대여 기간
+  const [selectedPeriod, setSelectedPeriod] = useState<string>(''); // 대여 기간
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedDates, setSelectedDates] = useState<{
     [key: string]: number[];
   }>({}); // 연도-월별 선택된 날짜
-  const [yearMonth, setYearMonth] = useState<string>("2025-01"); // 현재 선택된 연도-월
+  const [yearMonth, setYearMonth] = useState<string>('2025-01'); // 현재 선택된 연도-월
   const reservedDates = [22, 23, 24]; // 예약된 날짜
   const [isAddingDates, setIsAddingDates] = useState<boolean>(false); // 일정 추가 여부
 
@@ -33,7 +33,7 @@ const RentalOptions: React.FC = () => {
     const yearMonthList: string[] = [];
     years.forEach((year) => {
       months.forEach((month) => {
-        yearMonthList.push(`${year}-${String(month).padStart(2, "0")}`);
+        yearMonthList.push(`${year}-${String(month).padStart(2, '0')}`);
       });
     });
     return yearMonthList;
@@ -61,7 +61,7 @@ const RentalOptions: React.FC = () => {
             : [...currentDates, day],
         }));
       } else {
-        const periodDays = selectedPeriod === "3박4일" ? 4 : 6;
+        const periodDays = selectedPeriod === '3박4일' ? 4 : 6;
         const newSelectedDates = Array.from(
           { length: periodDays },
           (_, i) => day + i
@@ -75,13 +75,13 @@ const RentalOptions: React.FC = () => {
   };
 
   const getDaysInMonth = (): number => {
-    const [year, month] = yearMonth.split("-").map(Number);
+    const [year, month] = yearMonth.split('-').map(Number);
     return new Date(year, month, 0).getDate();
   };
 
   const renderCalendar = () => {
     const daysInMonth = getDaysInMonth();
-    const [year, month] = yearMonth.split("-").map(Number);
+    const [year, month] = yearMonth.split('-').map(Number);
     const firstDay = new Date(year, month - 1, 1).getDay();
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
     const emptyDays = Array.from({ length: firstDay }, (_, i) => (
@@ -118,13 +118,13 @@ const RentalOptions: React.FC = () => {
           value={selectedPeriod}
           onChange={(e) => setSelectedPeriod(e.target.value)}
         >
-          <option value="">대여기간 선택</option>
-          <option value="3박4일">3박4일</option>
-          <option value="5박6일">5박6일</option>
+          <option value=''>대여기간 선택</option>
+          <option value='3박4일'>3박4일</option>
+          <option value='5박6일'>5박6일</option>
         </Select>
         <Button onClick={toggleModal} disabled={!selectedPeriod}>
           <span>대여일정 선택</span>
-          <Icon src={RentalSelectDateIcon} alt="대여일정 아이콘" />
+          <Icon src={RentalSelectDateIcon} alt='대여일정 아이콘' />
         </Button>
       </Wrapper>
       {isModalOpen && (
@@ -137,7 +137,7 @@ const RentalOptions: React.FC = () => {
               <CancelButton onClick={closeModal}>취소</CancelButton>
               <ConfirmButton
                 onClick={() => {
-                  console.log("선택된 날짜:", selectedDates);
+                  console.log('선택된 날짜:', selectedDates);
                   closeModal();
                 }}
               >
@@ -155,7 +155,7 @@ const RentalOptions: React.FC = () => {
               >
                 {getYearMonthList().map((ym) => (
                   <option key={ym} value={ym}>
-                    {ym.replace("-", ".")}월
+                    {ym.replace('-', '.')}월
                   </option>
                 ))}
               </Dropdown>
@@ -166,12 +166,12 @@ const RentalOptions: React.FC = () => {
                 onClick={() => setIsAddingDates((prev) => !prev)}
                 active={isAddingDates}
               >
-                {isAddingDates ? "추가 중" : "추가 없음"}
+                {isAddingDates ? '추가 중' : '추가 없음'}
               </ToggleButton>
             </DropdownContainer>
           </MenuBar>
           <CalendarContainer>
-            {["일", "월", "화", "수", "목", "금", "토"].map((name, index) => (
+            {['일', '월', '화', '수', '목', '금', '토'].map((name, index) => (
               <DayName key={index} isWeekend={index === 0 || index === 6}>
                 {name}
               </DayName>
@@ -220,10 +220,10 @@ const Button = styled.button`
   padding: 0 15px;
   height: 50px;
   background-color: ${({ disabled }) =>
-    disabled ? Theme.colors.gray3 : "#ffffff"};
+    disabled ? Theme.colors.gray3 : '#ffffff'};
   border: 1px solid ${Theme.colors.gray4};
   border-radius: 4px;
-  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 `;
 
 const Icon = styled.img`
@@ -241,7 +241,7 @@ const CalendarContainer = styled.div`
 const DayName = styled.div<DayNameProps>`
   text-align: center;
   font-weight: bold;
-  color: ${(props) => (props.isWeekend ? Theme.colors.gray1 : "black")};
+  color: ${(props) => (props.isWeekend ? Theme.colors.gray1 : 'black')};
 `;
 
 const DayBox = styled.div<DayBoxProps>`
@@ -253,8 +253,8 @@ const DayBox = styled.div<DayBoxProps>`
           ? Theme.colors.gray3
           : Theme.colors.gray4};
   background-color: ${(props) =>
-    props.selected ? Theme.colors.yellow : "#fff"};
-  color: ${(props) => (props.selected ? "#fff" : "#000")};
+    props.selected ? Theme.colors.yellow : '#fff'};
+  color: ${(props) => (props.selected ? '#fff' : '#000')};
   width: 100%;
   min-width: 40px;
   height: 40px;
@@ -262,7 +262,7 @@ const DayBox = styled.div<DayBoxProps>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 12px;
 `;
@@ -314,13 +314,13 @@ const Dropdown = styled.select`
   border: 1px solid #000000;
   border-radius: 4px;
   padding: 10px;
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 13px;
 `;
 
 const Label = styled.label`
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 10px;
   margin-bottom: 5px;
@@ -331,8 +331,8 @@ const ToggleButton = styled.button<ToggleButtonProps>`
   width: 90%;
   height: 57px;
   background-color: ${({ active }) =>
-    active ? Theme.colors.yellow : "#ffffff"};
-  color: ${({ active }) => (active ? "#fff" : "#000")};
+    active ? Theme.colors.yellow : '#ffffff'};
+  color: ${({ active }) => (active ? '#fff' : '#000')};
   border: 1px solid #000000;
   border-radius: 4px;
   font-weight: 800;

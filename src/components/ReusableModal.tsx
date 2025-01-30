@@ -8,6 +8,7 @@ type ModalProps = {
   children: React.ReactNode;
   width?: string;
   height?: string;
+  actions?: React.ReactNode;
 };
 
 const ReusableModal: React.FC<ModalProps> = ({
@@ -17,6 +18,7 @@ const ReusableModal: React.FC<ModalProps> = ({
   children,
   width = '376px',
   height = '360px',
+  actions,
 }) => {
   if (!isOpen) return null;
 
@@ -29,6 +31,7 @@ const ReusableModal: React.FC<ModalProps> = ({
           </ModalHeader>
         )}
         <ModalBody>{children}</ModalBody>
+        {actions && <ModalActions>{actions}</ModalActions>}
         <CloseButtonWrapper>
           <CloseButton onClick={onClose}>확인</CloseButton>
         </CloseButtonWrapper>
@@ -101,4 +104,11 @@ const CloseButton = styled.button`
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
+`;
+
+const ModalActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 `;
