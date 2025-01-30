@@ -31,8 +31,8 @@ const ContemporarySettings: React.FC = () => {
     mode: 'all',
   });
 
-  const [productCount, setProductCount] = useState<string>('상품 6개');
-  const [exposureFrequency, setExposureFrequency] = useState<string>('월 2회');
+  const [productCount] = useState<string>('상품 6개');
+  const [exposureFrequency] = useState<string>('월 2회');
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
@@ -132,7 +132,6 @@ const ContemporarySettings: React.FC = () => {
               id='productCount'
               as='select'
               value={productCount}
-              onChange={(e) => setProductCount(e.target.value)}
               error={errors.productCount}
               {...register('productCount')}
               required
@@ -146,7 +145,6 @@ const ContemporarySettings: React.FC = () => {
               id='exposureFrequency'
               as='select'
               value={exposureFrequency}
-              onChange={(e) => setExposureFrequency(e.target.value)}
               error={errors.exposureFrequency}
               {...register('exposureFrequency')}
               required
