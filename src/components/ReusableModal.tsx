@@ -1,5 +1,5 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 
 type ModalProps = {
   isOpen: boolean;
@@ -11,7 +11,7 @@ type ModalProps = {
 
 const ReusableModal: React.FC<ModalProps> = ({
   isOpen,
-  // onClose,
+  onClose,
   title,
   children,
   actions,
@@ -19,48 +19,106 @@ const ReusableModal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <StyledModal>
-      <ModalContent>
-        {title && <ModalTitle>{title}</ModalTitle>}
-        {children}
-        <ModalActions>{actions}</ModalActions>
-      </ModalContent>
-    </StyledModal>
+    <Container>
+      <Background onClick={onClose} />
+      <Box>
+        {title && <Title>{title}</Title>}
+        <Separator />
+        <Content>{children}</Content>
+        <Actions>
+          <Button onClick={onClose}>아니요</Button>
+          {actions}
+        </Actions>
+      </Box>
+    </Container>
   );
 };
 
 export default ReusableModal;
 
-const StyledModal = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+const Container = styled.div`
+  position: absolute;
+  width: 430px;
+  height: 932px;
+  left: 0px;
+  top: 0px;
+`;
+
+const Background = styled.div`
+  position: absolute;
+  width: 430px;
+  height: 932px;
+  left: 0px;
+  top: 0px;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+`;
+
+const Box = styled.div`
+  position: absolute;
+  width: 376px;
+  height: 329px;
+  left: 27px;
+  top: 288px;
+  background: #ffffff;
+  border-radius: 12px;
+  z-index: 20;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   padding: 20px;
-  z-index: 9999;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
-const ModalContent = styled.div`
-  background-color: #ffffff;
-  padding: 20px;
-  width: 400px;
-  border-radius: 10px;
-`;
-
-const ModalTitle = styled.h2`
+const Title = styled.h2`
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 500;
   margin-bottom: 20px;
 `;
 
-const ModalActions = styled.div`
-  display: flex;
-  justify-content: flex-end;
+const Separator = styled.div`
+  position: absolute;
+  width: 336px;
+  height: 1px;
+  left: 20px;
+  top: 80px;
+  background: #eeeeee;
+`;
+
+const Content = styled.div`
   margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+`;
+
+const Actions = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
   gap: 10px;
+`;
+
+const Button = styled.button`
+  background-color: #e0e0e0;
+  color: #333;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #d6d6d6;
+  }
+
+  &:last-child {
+    background-color: #000;
+    color: #fff;
+
+    &:hover {
+      background-color: #333;
+    }
+  }
 `;
