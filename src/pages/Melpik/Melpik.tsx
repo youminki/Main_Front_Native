@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Theme from '../../styles/Theme';
 import { ThemeProvider } from 'styled-components';
-import MelpikIcon from '/src/assets/MelpikIcon.svg';
+import MelpikIcon from '/src/assets/Melpik/MelpikIcon.svg';
 import { Link } from 'react-router-dom';
 
 const MelpikPage: React.FC = () => {
