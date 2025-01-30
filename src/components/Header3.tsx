@@ -46,7 +46,7 @@ const HeaderWrapper = styled.div`
   margin: 0 auto;
   padding: 3rem;
   text-align: center;
-  z-index: 1000;
+  z-index: 100;
   background-color: #fff;
 `;
 

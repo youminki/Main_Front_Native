@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Theme from '../../../../styles/Theme';
-import ReusableModal from '../../../../components/ReusableModal.tsx';
+import ReusableModal2 from '../../../../components/ReusableModal2.tsx';
 
 interface ModalProps {
   isOpen: boolean;
@@ -25,10 +25,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSelect }) => {
   ];
 
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [warningModalVisible, setWarningModalVisible] =
-    useState<boolean>(false);
+  const [warningModalVisible, setWarningModalVisible] = useState(false);
   const [cancelConfirmationVisible, setCancelConfirmationVisible] =
-    useState<boolean>(false);
+    useState(false);
 
   const handleBrandSelect = (brand: string) => {
     const isSelected = selectedBrands.includes(brand);
@@ -52,11 +51,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSelect }) => {
     setCancelConfirmationVisible(true);
   };
 
-  const confirmCancel = () => {
-    setCancelConfirmationVisible(false);
-    onClose();
-  };
-
   return (
     <>
       {isOpen && (
@@ -71,9 +65,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSelect }) => {
 
             <ModalBody>
               <BrandSelectionGrid>
-                {brands.map((brand, index) => (
+                {brands.map((brand) => (
                   <BrandOption
-                    key={index}
+                    key={brand}
                     selected={selectedBrands.includes(brand)}
                     onClick={() => handleBrandSelect(brand)}
                   >
@@ -95,35 +89,23 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSelect }) => {
       )}
 
       {/* 3가지 브랜드 선택 경고 모달 */}
-      <ReusableModal
+      <ReusableModal2
         isOpen={warningModalVisible}
         onClose={() => setWarningModalVisible(false)}
         title='경고'
-        actions={
-          <ConfirmButton onClick={() => setWarningModalVisible(false)}>
-            확인
-          </ConfirmButton>
-        }
       >
         <p>3가지 브랜드를 선택해야 합니다.</p>
-      </ReusableModal>
+      </ReusableModal2>
 
       {/* 취소 확인 모달 */}
-      <ReusableModal
+      <ReusableModal2
         isOpen={cancelConfirmationVisible}
         onClose={() => setCancelConfirmationVisible(false)}
+        onConfirm={onClose} // ✅ 네 버튼 클릭 시 onClose 실행
         title='선택 취소'
-        actions={
-          <ButtonRow>
-            <CancelButton onClick={() => setCancelConfirmationVisible(false)}>
-              아니요
-            </CancelButton>
-            <ConfirmButton onClick={confirmCancel}>예</ConfirmButton>
-          </ButtonRow>
-        }
       >
         <p>설정하신 내용을 취소 하시겠습니까?</p>
-      </ReusableModal>
+      </ReusableModal2>
     </>
   );
 };

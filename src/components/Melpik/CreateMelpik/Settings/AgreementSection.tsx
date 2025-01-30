@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 const AgreementSection = () => {
@@ -128,7 +128,7 @@ export default AgreementSection;
 const AgreementWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
   margin-bottom: 20px;
-  z-index: 10;
+  z-index: 110;
 `;
 
 const AllAgreeWrapper = styled.div`
