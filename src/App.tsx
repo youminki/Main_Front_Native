@@ -21,8 +21,10 @@ import BrandDetail from './pages/Brand/BrandDetail';
 import Melpik from './pages/Melpik/Melpik';
 import CreateMelpik from './pages/Melpik/CreateMelpik';
 import ContemporarySettings from './pages/Melpik/ContemporarySettings';
+import Scedule from './pages/Melpik/Schedule/Scedule';
+import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
 
-import BottomNav from './components/BottomNav';
+import BottomNav from './components/BottomNav1';
 import Header1 from './components/Header1';
 import Header2 from './components/Header2';
 import Header3 from './components/Header3';
@@ -37,33 +39,42 @@ const App: React.FC = () => {
   const header1Paths = ['/home', '/melpik', '/brand'];
 
   // Header2가 포함될 경로 패턴
-  const header2Paths = ['/create-melpik', '/brand/:brandNamel'];
+  const header2Paths = [
+    '/create-melpik',
+    '/brand/:brandName',
+    '/sales-schedule',
+  ];
 
   // Header3가 포함될 경로 패턴
-  const header3Paths = ['/item/:id', '/createMelpik/settings'];
+  const header3Paths = [
+    '/item/:id',
+    '/createMelpik/settings',
+    '/schedule/confirmation',
+  ];
 
-  // 현재 경로가 BottomNavPaths와 일치하는지 확인
   const includeBottomNav = bottomNavPaths.some((path) =>
-    matchPath({ path, end: true }, location.pathname)
+    matchPath(path, location.pathname)
   );
-
-  // 현재 경로가 Header1Paths와 일치하는지 확인
   const includeHeader1 = header1Paths.some((path) =>
-    matchPath({ path, end: true }, location.pathname)
+    matchPath(path, location.pathname)
   );
-
-  // 현재 경로가 Header2Paths와 일치하는지 확인
   const includeHeader2 = header2Paths.some((path) =>
-    matchPath({ path, end: true }, location.pathname)
+    matchPath(path, location.pathname)
+  );
+  const includeHeader3 = header3Paths.some((path) =>
+    matchPath(path, location.pathname)
   );
 
-  // 현재 경로가 Header3Paths와 일치하는지 확인
-  const includeHeader3 = header3Paths.some((path) =>
-    matchPath({ path, end: true }, location.pathname)
-  );
   const getHeader3Title = () => {
-    if (matchPath('/createMelpik/settings', location.pathname))
+    if (matchPath('/createMelpik/settings', location.pathname)) {
       return '컨템포러리';
+    }
+    if (matchPath('/sales-schedule', location.pathname)) {
+      return '판매 스케줄';
+    }
+    if (matchPath('/schedule/confirmation', location.pathname)) {
+      return '예약 스케줄 확인';
+    }
     return '';
   };
 
@@ -91,6 +102,11 @@ const App: React.FC = () => {
           <Route
             path='/createMelpik/settings'
             element={<ContemporarySettings />}
+          />
+          <Route path='/sales-schedule' element={<Scedule />} />
+          <Route
+            path='/schedule/confirmation'
+            element={<ScheduleConfirmation />}
           />
         </Routes>
       </ContentContainer>

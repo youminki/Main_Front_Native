@@ -6,7 +6,7 @@ import { schemaSignupContemporary } from '../../hooks/ValidationYup';
 import InputField from '../../components/InputField';
 import AgreementSection from '../../components/Melpik/CreateMelpik/Settings/AgreementSection';
 import Theme from '../../styles/Theme';
-import BottomBar from '../../components/Signup/BottomBar';
+import BottomBar from '../../components/BottomNav2';
 import Modal from '../../components/Melpik/CreateMelpik/Settings/Modal';
 
 interface FormData {
