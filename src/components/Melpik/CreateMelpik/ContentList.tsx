@@ -125,7 +125,6 @@ const ScrollableContent = styled.div`
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  padding-top: 10px;
   scrollbar-width: none;
 
   &::-webkit-scrollbar {

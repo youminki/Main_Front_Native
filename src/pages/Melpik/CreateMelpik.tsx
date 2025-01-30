@@ -25,6 +25,7 @@ const CreateMelpik: React.FC = () => {
         visitLabel={visitLabel}
         salesLabel={salesLabel}
       />
+      <Divider />
       <ContentWrapper>
         <ContentList />
       </ContentWrapper>
@@ -75,5 +76,12 @@ const ContentWrapper = styled.div`
   width: 100%;
   overflow-x: hidden;
   position: relative;
+  margin-top: 30px;
+`;
+
+const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+  background: #dddddd;
   margin-top: 30px;
 `;
