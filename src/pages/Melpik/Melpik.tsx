@@ -4,6 +4,10 @@ import Theme from '../../styles/Theme';
 import { ThemeProvider } from 'styled-components';
 import MelpikIcon from '/src/assets/Melpik/MelpikIcon.svg';
 import { Link } from 'react-router-dom';
+import MelpikCreateIcon from '/src/assets/Melpik/MelpikCreateIcon.svg';
+import MelpikScheduelerIcon from '/src/assets/Melpik/MelpikScheduelerIcon.svg';
+import MelpikCalculateIcon from '/src/assets/Melpik/MelpikcalculateIcon.svg';
+import MelpikOptionIcon from '/src/assets/Melpik/MelpikOptionIcon.svg';
 
 const MelpikPage: React.FC = () => {
   return (
@@ -37,22 +41,42 @@ const MelpikPage: React.FC = () => {
         <CardGrid>
           <Link to='/create-melpik'>
             <Card>
+              <CardIcon src={MelpikCreateIcon} alt='멜픽 생성 아이콘' />
               <CardText>멜픽 생성</CardText>
+              <PickButton>
+                PICK
+                <Arrow>→</Arrow>
+              </PickButton>
             </Card>
           </Link>
           <Link to='/sales-schedule'>
             <Card>
+              <CardIcon src={MelpikScheduelerIcon} alt='판매 스케줄 아이콘' />
               <CardText>판매 스케줄</CardText>
+              <PickButton>
+                PICK
+                <Arrow>→</Arrow>
+              </PickButton>
             </Card>
           </Link>
           <Link to='/sales-settlement'>
             <Card>
+              <CardIcon src={MelpikCalculateIcon} alt='판매 정산 아이콘' />
               <CardText>판매 정산</CardText>
+              <PickButton>
+                PICK
+                <Arrow>→</Arrow>
+              </PickButton>
             </Card>
           </Link>
           <Link to='/melpik-settings'>
             <Card>
+              <CardIcon src={MelpikOptionIcon} alt='멜픽 설정 아이콘' />
               <CardText>멜픽 설정</CardText>
+              <PickButton>
+                PICK
+                <Arrow>→</Arrow>
+              </PickButton>
             </Card>
           </Link>
         </CardGrid>
@@ -204,8 +228,10 @@ const Card = styled.div`
   background: #fff;
   border: 1px solid #ccc;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 30px;
   cursor: pointer;
   transition: box-shadow 0.2s;
 
@@ -214,9 +240,57 @@ const Card = styled.div`
   }
 `;
 
+const CardIcon = styled.img`
+  max-width: 150px;
+  max-height: 150px;
+
+  width: 50%;
+  height: 50%;
+  margin-bottom: 10px;
+`;
+
 const CardText = styled.div`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 700;
   font-size: 12px;
-  font-weight: 400;
+  line-height: 13px;
   text-align: center;
-  color: #000;
+  color: #000000;
+`;
+
+const PickButton = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 5px; /* PICK과 화살표 사이 간격 */
+  width: auto;
+  height: auto;
+  padding: 10px 20px;
+  background: #ffffff;
+  border: 1px solid #cccccc;
+
+  margin-top: 20px;
+
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 900;
+  font-size: 10px;
+  line-height: 11px;
+  color: #000000;
+  cursor: pointer;
+  position: relative; /* 필요시 위치 조정 가능 */
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #f6f6f6;
+  }
+`;
+
+const Arrow = styled.span`
+  font-size: 30px;
+  font-weight: bold;
+  color: #cccccc;
+  display: inline-block;
 `;
