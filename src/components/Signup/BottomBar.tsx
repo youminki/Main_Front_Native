@@ -27,17 +27,20 @@ const BottomBar: React.FC<BottomBarProps> = ({
 export default BottomBar;
 
 const BottomBarContainer = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #1d1d1b;
+  width: 100%;
   position: fixed;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 100%;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px 10px 34px;
-
+  z-index: 1000;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
   background-color: ${({ theme }) => theme.colors.gray4};
 `;
 
