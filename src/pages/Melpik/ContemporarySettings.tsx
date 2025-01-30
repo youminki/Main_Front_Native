@@ -36,10 +36,6 @@ const ContemporarySettings: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
-  const handleBackClick = () => {
-    window.history.back();
-  };
-
   const onSubmit: SubmitHandler<FormData> = (data) => {
     console.log('Form Data: ', data);
   };

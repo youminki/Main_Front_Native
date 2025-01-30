@@ -28,7 +28,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
       prefix,
       as,
       isEmailField,
-      onChange, // 명시적으로 분리
+      onChange,
       ...rest
     },
     ref
@@ -47,7 +47,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
             type={type}
             id={id}
             ref={ref}
-            onChange={onChange} // 명시적으로 전달
+            onChange={onChange}
             {...rest}
           />
         </PasswordWrapper>
@@ -60,7 +60,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
               type={type}
               id={`${id}-local`}
               ref={ref}
-              onChange={onChange} // 명시적으로 전달
+              onChange={onChange}
               {...rest}
             />
             {buttonLabel && (

@@ -7,6 +7,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (brands: string[]) => void;
+  selectedBrands: string[];
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSelect }) => {
