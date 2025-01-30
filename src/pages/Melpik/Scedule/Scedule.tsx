@@ -22,12 +22,6 @@ const Schedule: React.FC = () => {
 
   return (
     <ScheduleContainer>
-      <Header>
-        <BackButtonWrapper>
-          <BackButton onClick={handleBackClick} />
-        </BackButtonWrapper>
-        <Title>예약 스케줄 목록</Title>
-      </Header>
       <ScheduleContent>
         <ScheduleList>
           {['reserved', 'inProgress', 'notStarted'].map((status, index) => (
@@ -112,28 +106,6 @@ const Container = styled.div`
   min-width: 290px;
   width: 100%;
   height: 220px;
-`;
-
-const Header = styled.header`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  height: 105px;
-`;
-
-const BackButtonWrapper = styled.div`
-  position: absolute;
-  left: 0;
-`;
-
-const Title = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 22px;
-  text-align: center;
 `;
 
 const ScheduleContent = styled.div`
