@@ -10,7 +10,12 @@ interface ModalProps {
   selectedBrands: string[];
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSelect }) => {
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  onSelect,
+  selectedBrands: initialSelectedBrands,
+}) => {
   const brands = [
     'CC Collect',
     'CLUB Monaco',
@@ -25,7 +30,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSelect }) => {
     'LINE',
   ];
 
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(
+    initialSelectedBrands
+  );
   const [warningModalVisible, setWarningModalVisible] = useState(false);
   const [cancelConfirmationVisible, setCancelConfirmationVisible] =
     useState(false);
@@ -102,7 +109,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSelect }) => {
       <ReusableModal2
         isOpen={cancelConfirmationVisible}
         onClose={() => setCancelConfirmationVisible(false)}
-        onConfirm={onClose} // ✅ 네 버튼 클릭 시 onClose 실행
+        onConfirm={onClose}
         title='선택 취소'
       >
         <p>설정하신 내용을 취소 하시겠습니까?</p>
@@ -171,17 +178,24 @@ const BrandSelectionGrid = styled.div`
 
 const BrandOption = styled.div<{ selected: boolean }>`
   padding: 10px;
-  background-color: ${(props) =>
-    props.selected ? Theme.colors.yellow : Theme.colors.white};
+  background-color: ${Theme.colors.white};
   color: ${(props) =>
-    props.selected ? Theme.colors.white : Theme.colors.black};
-  border: 1px solid ${Theme.colors.gray1};
+    props.selected ? Theme.colors.yellow : Theme.colors.black};
+  border: ${(props) =>
+    props.selected
+      ? `3px solid ${Theme.colors.yellow}`
+      : `1px solid ${Theme.colors.gray1}`};
   text-align: center;
   cursor: pointer;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 13px;
 `;
 
 const ButtonRow = styled.div`
@@ -206,16 +220,4 @@ const CancelButton = styled.button`
 
 const CompleteButton = styled(CancelButton)`
   background-color: ${Theme.colors.black};
-`;
-
-const ConfirmButton = styled.button`
-  width: 100%;
-  height: 40px;
-  background-color: ${Theme.colors.black};
-  color: ${Theme.colors.white};
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 800;
-  font-size: 16px;
 `;

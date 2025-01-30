@@ -17,7 +17,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
   return (
     <BottomBarContainer>
       <CartButton>
-        <CartImage src={imageSrc || ResetButton} alt="icon" />
+        <CartImage src={imageSrc || ResetButton} alt='icon' />
       </CartButton>
       <OrderButton onClick={onClick}>{buttonText}</OrderButton>
     </BottomBarContainer>
