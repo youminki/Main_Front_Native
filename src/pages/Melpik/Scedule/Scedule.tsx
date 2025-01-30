@@ -4,8 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import Theme from '../../../styles/Theme';
 import ScheduleIcon from '../../../assets/Melpik/schedule.svg';
 import BletIcon from '../../../assets/Melpik/blet.svg';
+import StatsSection from '../../../components/Melpik/StatsSection';
 
 const Schedule: React.FC = () => {
+  // 동적 데이터 (프롭스로 전달할 값)
+  const visits = 4;
+  const sales = 2;
+  const dateRange = '2025.01.06 ~ 01.10';
+
+  const visitLabel = '총 스케줄';
+  const salesLabel = '진행중인 스케줄';
   const navigate = useNavigate();
 
   const handleIconClick = (): void => {
@@ -17,6 +25,20 @@ const Schedule: React.FC = () => {
 
   return (
     <ScheduleContainer>
+      <Header>
+        <Title>판매 스케줄</Title>
+        <Subtitle>내 채널을 통해 나는 브랜드가 된다</Subtitle>
+      </Header>
+      <StatsRow>
+        <StatsSection
+          visits={visits}
+          sales={sales}
+          dateRange={dateRange}
+          visitLabel={visitLabel}
+          salesLabel={salesLabel}
+        />
+      </StatsRow>
+      <Divider />
       <ScheduleContent>
         <ScheduleList>
           {['reserved', 'inProgress', 'notStarted'].map((status, index) => (
@@ -91,10 +113,28 @@ interface ScheduleItemProps {
 const ScheduleContainer = styled.div`
   display: flex;
   flex-direction: column;
-
   width: 100%;
   background-color: #fff;
   font-family: 'NanumSquare Neo OTF', sans-serif;
+`;
+const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 6px;
+`;
+
+const Title = styled.h1`
+  font-size: 24px;
+  font-weight: 800;
+  color: #000;
+  margin-bottom: 0px;
+`;
+const Subtitle = styled.p`
+  font-size: 12px;
+  font-weight: 400;
+  color: #ccc;
 `;
 
 const Container = styled.div`
@@ -278,4 +318,18 @@ const OrderButton = styled.button`
 
 const BeenContainer = styled.div`
   height: 100px;
+`;
+
+const StatsRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+  background: #dddddd;
+  margin: 30px 0;
 `;
