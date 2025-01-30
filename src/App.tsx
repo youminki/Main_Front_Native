@@ -21,6 +21,7 @@ import BrandDetail from './pages/Brand/BrandDetail';
 import Melpik from './pages/Melpik/Melpik';
 import CreateMelpik from './pages/Melpik/CreateMelpik';
 import ContemporarySettings from './pages/Melpik/ContemporarySettings';
+import Scedule from './pages/Melpik/Scedule/Scedule';
 
 import BottomNav from './components/BottomNav';
 import Header1 from './components/Header1';
@@ -92,6 +93,7 @@ const App: React.FC = () => {
             path='/createMelpik/settings'
             element={<ContemporarySettings />}
           />
+          <Route path='/sales-schedule' element={<Scedule />} />
         </Routes>
       </ContentContainer>
       {includeBottomNav && <BottomNav />}
