@@ -20,6 +20,7 @@ import BrandDetail from './pages/Brand/BrandDetail';
 
 import Melpik from './pages/Melpik/Melpik';
 import CreateMelpik from './pages/Melpik/CreateMelpik';
+import ContemporarySettings from './pages/Melpik/ContemporarySettings';
 
 import BottomNav from './components/BottomNav';
 import Header1 from './components/Header1';
@@ -39,7 +40,7 @@ const App: React.FC = () => {
   const header2Paths = ['/create-melpik', '/brand/:brandNamel'];
 
   // Header3가 포함될 경로 패턴
-  const header3Paths = ['/item/:id'];
+  const header3Paths = ['/item/:id', '/createMelpik/settings'];
 
   // 현재 경로가 BottomNavPaths와 일치하는지 확인
   const includeBottomNav = bottomNavPaths.some((path) =>
@@ -60,12 +61,17 @@ const App: React.FC = () => {
   const includeHeader3 = header3Paths.some((path) =>
     matchPath({ path, end: true }, location.pathname)
   );
+  const getHeader3Title = () => {
+    if (matchPath('/createMelpik/settings', location.pathname))
+      return '컨템포러리';
+    return '';
+  };
 
   return (
     <AppContainer>
       {includeHeader1 && <Header1 />}
       {includeHeader2 && <Header2 />}
-      {includeHeader3 && <Header3 />}
+      {includeHeader3 && <Header3 title={getHeader3Title()} />}
       <ContentContainer>
         <Routes>
           <Route path='/home' element={<Home />} />
@@ -82,6 +88,10 @@ const App: React.FC = () => {
 
           <Route path='/melpik' element={<Melpik />} />
           <Route path='/create-melpik' element={<CreateMelpik />} />
+          <Route
+            path='/createMelpik/settings'
+            element={<ContemporarySettings />}
+          />
         </Routes>
       </ContentContainer>
       {includeBottomNav && <BottomNav />}

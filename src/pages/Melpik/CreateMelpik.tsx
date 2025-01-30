@@ -1,7 +1,87 @@
-import React from "react";
+import React from 'react';
+import styled from 'styled-components';
+import StatsSection from '../../components/Melpik/StatsSection';
+import ContentList from '../../components/Melpik/CreateMelpik/ContentList';
+
+// 동적 데이터
+const visitLabel = '인스타 계정';
+const salesLabel = '나만의 코드';
+const visits = '@styleweex';
+const sales = 'ENFJ';
+const dateRange = '2025.01.06 ~ 01.10';
 
 const CreateMelpik: React.FC = () => {
-  return <div>멜픽 생성 페이지</div>;
+  return (
+    <CreateMelpikContainer>
+      <Header>
+        <Title>멜픽 생성</Title>
+        <Subtitle>내 채널을 통해 나는 브랜드가 된다</Subtitle>
+      </Header>
+
+      <StatsSection
+        visits={visits}
+        sales={sales}
+        dateRange={dateRange}
+        visitLabel={visitLabel}
+        salesLabel={salesLabel}
+      />
+      <Divider />
+      <ContentWrapper>
+        <ContentList />
+      </ContentWrapper>
+    </CreateMelpikContainer>
+  );
 };
 
 export default CreateMelpik;
+
+const CreateMelpikContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background-color: #fff;
+  font-family: 'NanumSquare Neo OTF', sans-serif;
+`;
+
+const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 6px;
+`;
+
+const Title = styled.h1`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 27px;
+  /* identical to box height */
+
+  color: #000000;
+  margin-bottom: 0px;
+`;
+
+const Subtitle = styled.p`
+  font-size: 12px;
+  font-weight: 400;
+  color: #ccc;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+  margin-top: 30px;
+`;
+
+const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+  background: #dddddd;
+  margin-top: 30px;
+`;
