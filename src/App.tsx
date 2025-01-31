@@ -126,10 +126,12 @@ export default AppWrapper;
 const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 100px 0 1000px 0;
+
   height: 100vh;
 `;
 
 const ContentContainer = styled.div`
   flex: 1;
+  padding: 108px 0 70px 0;
+  overflow-y: auto;
 `;
