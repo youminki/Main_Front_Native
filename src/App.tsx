@@ -56,6 +56,7 @@ const App: React.FC = () => {
     '/createMelpik/settings',
     '/schedule/confirmation',
     '/signup',
+    '/schedule/reservation1',
   ];
 
   const header4Paths = ['/signup', '/findid', 'findPassword'];
@@ -86,6 +87,9 @@ const App: React.FC = () => {
     if (matchPath('/schedule/confirmation', location.pathname)) {
       return '예약 스케줄 확인';
     }
+    if (matchPath('/schedule/reservation1', location.pathname)) {
+      return '스케줄 예약하기';
+    }
 
     return '';
   };
@@ -100,6 +104,7 @@ const App: React.FC = () => {
     if (matchPath('/findPassword', location.pathname)) {
       return '비밀번호찾기';
     }
+
     return '';
   };
 

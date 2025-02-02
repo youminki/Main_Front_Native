@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import BackButton from '../../../components/BackButton';
 import Theme from '../../../styles/Theme';
 import { useNavigate } from 'react-router-dom';
 
@@ -33,10 +32,6 @@ const ScheduleReservation1: React.FC = () => {
         return newSelected.length > 2 ? newSelected.slice(-2) : newSelected;
       });
     }
-  };
-
-  const handleBackClick = (): void => {
-    window.history.back();
   };
 
   const renderCalendar = (): React.ReactElement[] => {
@@ -89,13 +84,6 @@ const ScheduleReservation1: React.FC = () => {
 
   return (
     <Container>
-      <Header>
-        <BackButtonWrapper>
-          <BackButton onClick={handleBackClick} />
-        </BackButtonWrapper>
-        <Title>스케줄 예약하기</Title>
-      </Header>
-
       <Stepper>
         <Step completed={true}>1</Step>
         <StepLine />
@@ -172,32 +160,12 @@ const ScheduleReservation1: React.FC = () => {
 export default ScheduleReservation1;
 
 const Container = styled.div`
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 0 27px;
-  border: 1px solid ${Theme.colors.gray1};
-  height: 100%;
-  position: relative;
-`;
-
-const Header = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  position: relative;
-  height: 105px;
-`;
+  align-items: center;
 
-const BackButtonWrapper = styled.div`
-  position: absolute;
-  left: 0;
-`;
-
-const Title = styled.h1`
-  font-size: 20px;
-  font-weight: bold;
-  text-align: center;
+  margin: 0 auto;
 `;
 
 const Stepper = styled.div`
@@ -229,6 +197,7 @@ const StepLine = styled.div`
 
 const DateSelection = styled.div`
   margin-bottom: 20px;
+  width: 100%;
 `;
 
 const Label = styled.label`
@@ -269,6 +238,7 @@ const CalendarContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
+
   margin-top: 39px;
 `;
 
@@ -313,6 +283,7 @@ const Summary = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 10px;
+  width: 100%;
 `;
 
 const ScheduleInfo = styled.div`
@@ -320,6 +291,7 @@ const ScheduleInfo = styled.div`
 `;
 
 const InfoText = styled.div`
+  min-width: 150px;
   height: 57px;
   padding: 10px;
   margin-top: 10px;
