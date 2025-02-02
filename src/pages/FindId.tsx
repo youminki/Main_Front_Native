@@ -3,13 +3,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import styled, { ThemeProvider } from 'styled-components';
-import BackButton from '../components/BackButton';
 import Button from '../components/Button01';
 import InputField from '../components/InputField';
 import Theme from '../styles/Theme';
 import ReusableModal from '../components/ReusableModal';
 
-// 수정된 유효성 검증 스키마
 export const schemaFindId = yup.object({
   nickname: yup
     .string()
@@ -40,7 +38,7 @@ const years = Array.from({ length: 100 }, (_, i) =>
 
 const FindId: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [userEmail, setUserEmail] = useState(''); // 모달에 표시될 이메일
+  const [userEmail, setUserEmail] = useState('');
 
   const {
     control,
@@ -63,9 +61,9 @@ const FindId: React.FC = () => {
   };
 
   const handleFindAccount = (data: FormValues) => {
-    console.log('입력된 데이터:', data); // 디버깅용 출력
-    // 서버에서 계정을 찾았다고 가정하고 이메일을 세팅
-    const foundEmail = 'goexample21@gmail.com'; // 실제 서버 로직 대체 가능
+    console.log('입력된 데이터:', data);
+
+    const foundEmail = 'goexample21@gmail.com';
     setUserEmail(maskEmail(foundEmail));
     setIsModalOpen(true);
   };
@@ -77,12 +75,6 @@ const FindId: React.FC = () => {
   return (
     <ThemeProvider theme={Theme}>
       <Container>
-        <HeaderWrapper>
-          <BackButtonWrapper>
-            <BackButton />
-          </BackButtonWrapper>
-          <Title>아이디 찾기</Title>
-        </HeaderWrapper>
         <ContentWrapper>
           <FormWrapper onSubmit={handleSubmit(handleFindAccount)}>
             <Controller
@@ -163,29 +155,6 @@ const Container = styled.div`
   align-items: center;
 
   margin: 0 auto;
-`;
-
-const HeaderWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 105px;
-`;
-
-const BackButtonWrapper = styled.div``;
-
-const Title = styled.h2`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 22px;
-  text-align: center;
-  color: #000000;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
 `;
 
 const ContentWrapper = styled.div`

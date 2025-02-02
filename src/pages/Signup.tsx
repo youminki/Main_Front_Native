@@ -3,7 +3,6 @@ import styled, { ThemeProvider } from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { schemaSignup } from '../hooks/ValidationYup';
-import BackButton from '../components/BackButton';
 import InputField from '../components/InputField';
 import AgreementSection from '../components/Signup/AgreementSection';
 import Theme from '../styles/Theme';
@@ -86,11 +85,6 @@ const Signup: React.FC = () => {
   return (
     <ThemeProvider theme={Theme}>
       <Container>
-        <Header>
-          <BackButton onClick={handleBackClick} />
-          <Title>회원가입</Title>
-          <Placeholder />
-        </Header>
         <Form onSubmit={handleSubmit(onSubmit)}>
           <AgreementSection />
           <InputField
@@ -295,9 +289,7 @@ const Title = styled.h1`
   font-weight: 700;
   font-size: 20px;
   line-height: 22px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  /* width: 100%; */
 `;
 
 const RowLabel = styled.div`

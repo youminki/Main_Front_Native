@@ -58,7 +58,6 @@ const Title = styled.h1`
   font-weight: 800;
   font-size: 24px;
   line-height: 27px;
-  /* identical to box height */
 
   color: #000000;
   margin-bottom: 0px;

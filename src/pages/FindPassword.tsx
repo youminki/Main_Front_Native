@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { schemaFindPassword } from '../hooks/ValidationYup';
 import styled, { ThemeProvider } from 'styled-components';
-import BackButton from '../components/BackButton';
+
 import Button from '../components/Button01';
 import InputField from '../components/InputField';
 import Theme from '../styles/Theme';
@@ -42,12 +42,6 @@ const FindPassword: React.FC = () => {
     <ThemeProvider theme={Theme}>
       <Container>
         <ContentWrapper>
-          <HeaderWrapper>
-            <BackButtonWrapper>
-              <BackButton />
-            </BackButtonWrapper>
-            <Title>비밀번호 찾기</Title>
-          </HeaderWrapper>
           <FormWrapper>
             <Controller
               control={control}
@@ -105,30 +99,6 @@ const Container = styled.div`
   align-items: center;
 
   margin: 0 auto;
-`;
-
-const HeaderWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  box-sizing: border-box;
-  height: 105px;
-`;
-
-const BackButtonWrapper = styled.div``;
-
-const Title = styled.h2`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 22px;
-  text-align: center;
-  color: #000000;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
 `;
 
 const ContentWrapper = styled.div`

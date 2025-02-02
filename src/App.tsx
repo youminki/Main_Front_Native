@@ -28,6 +28,7 @@ import BottomNav from './components/BottomNav1';
 import Header1 from './components/Header1';
 import Header2 from './components/Header2';
 import Header3 from './components/Header3';
+import Header4 from './components/Header4';
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -50,7 +51,10 @@ const App: React.FC = () => {
     '/item/:id',
     '/createMelpik/settings',
     '/schedule/confirmation',
+    '/signup',
   ];
+
+  const header4Paths = ['/signup', '/findid', 'findPassword'];
 
   const includeBottomNav = bottomNavPaths.some((path) =>
     matchPath(path, location.pathname)
@@ -64,6 +68,9 @@ const App: React.FC = () => {
   const includeHeader3 = header3Paths.some((path) =>
     matchPath(path, location.pathname)
   );
+  const includeHeader4 = header4Paths.some((path) =>
+    matchPath(path, location.pathname)
+  );
 
   const getHeader3Title = () => {
     if (matchPath('/createMelpik/settings', location.pathname)) {
@@ -75,6 +82,20 @@ const App: React.FC = () => {
     if (matchPath('/schedule/confirmation', location.pathname)) {
       return '예약 스케줄 확인';
     }
+
+    return '';
+  };
+
+  const getHeader4Title = () => {
+    if (matchPath('/signup', location.pathname)) {
+      return '회원가입';
+    }
+    if (matchPath('/findid', location.pathname)) {
+      return '아이디찾기';
+    }
+    if (matchPath('/findPassword', location.pathname)) {
+      return '비밀번호찾기';
+    }
     return '';
   };
 
@@ -83,6 +104,7 @@ const App: React.FC = () => {
       {includeHeader1 && <Header1 />}
       {includeHeader2 && <Header2 />}
       {includeHeader3 && <Header3 title={getHeader3Title()} />}
+      {includeHeader4 && <Header4 title={getHeader4Title()} />}
       <ContentContainer>
         <Routes>
           <Route path='/home' element={<Home />} />
