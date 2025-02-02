@@ -24,6 +24,10 @@ import ContemporarySettings from './pages/Melpik/ContemporarySettings';
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
 
+import ScheduleReservation1 from './pages/Melpik/Schedule/ScheduleReservation1';
+// import ScheduleReservation2 from './pages/Melpik/Schedule/ScheduleReservation1';
+// import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
+
 import BottomNav from './components/BottomNav1';
 import Header1 from './components/Header1';
 import Header2 from './components/Header2';
@@ -130,6 +134,18 @@ const App: React.FC = () => {
             path='/schedule/confirmation'
             element={<ScheduleConfirmation />}
           />
+          <Route
+            path='/schedule/reservation1'
+            element={<ScheduleReservation1 />}
+          />
+          {/* <Route
+            path='/schedule/reservation2'
+            element={<ScheduleReservation2 />}
+          />
+          <Route
+            path='/schedule/reservation3'
+            element={<ScheduleReservation3 />}
+          /> */}
         </Routes>
       </ContentContainer>
       {includeBottomNav && <BottomNav />}
