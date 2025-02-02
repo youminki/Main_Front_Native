@@ -24,6 +24,10 @@ import ContemporarySettings from './pages/Melpik/ContemporarySettings';
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
 
+import ScheduleReservation1 from './pages/Melpik/Schedule/ScheduleReservation1';
+import ScheduleReservation2 from './pages/Melpik/Schedule/ScheduleReservation2';
+import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
+
 import BottomNav from './components/BottomNav1';
 import Header1 from './components/Header1';
 import Header2 from './components/Header2';
@@ -52,6 +56,9 @@ const App: React.FC = () => {
     '/createMelpik/settings',
     '/schedule/confirmation',
     '/signup',
+    '/schedule/reservation1',
+    '/schedule/reservation2',
+    '/schedule/reservation3',
   ];
 
   const header4Paths = ['/signup', '/findid', 'findPassword'];
@@ -82,7 +89,15 @@ const App: React.FC = () => {
     if (matchPath('/schedule/confirmation', location.pathname)) {
       return '예약 스케줄 확인';
     }
-
+    if (matchPath('/schedule/reservation1', location.pathname)) {
+      return '스케줄 예약하기';
+    }
+    if (matchPath('/schedule/reservation2', location.pathname)) {
+      return '스케줄 예약하기';
+    }
+    if (matchPath('/schedule/reservation3', location.pathname)) {
+      return '스케줄 예약하기';
+    }
     return '';
   };
 
@@ -96,6 +111,7 @@ const App: React.FC = () => {
     if (matchPath('/findPassword', location.pathname)) {
       return '비밀번호찾기';
     }
+
     return '';
   };
 
@@ -130,6 +146,18 @@ const App: React.FC = () => {
             path='/schedule/confirmation'
             element={<ScheduleConfirmation />}
           />
+          <Route
+            path='/schedule/reservation1'
+            element={<ScheduleReservation1 />}
+          />
+          <Route
+            path='/schedule/reservation2'
+            element={<ScheduleReservation2 />}
+          />
+          <Route
+            path='/schedule/reservation3'
+            element={<ScheduleReservation3 />}
+          />
         </Routes>
       </ContentContainer>
       {includeBottomNav && <BottomNav />}
@@ -153,5 +181,4 @@ const AppContainer = styled.div`
 const ContentContainer = styled.div`
   flex: 1;
   padding: 108px 0 70px 0;
-  overflow-y: auto;
 `;
