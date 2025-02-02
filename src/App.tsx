@@ -26,7 +26,7 @@ import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
 
 import ScheduleReservation1 from './pages/Melpik/Schedule/ScheduleReservation1';
 import ScheduleReservation2 from './pages/Melpik/Schedule/ScheduleReservation2';
-// import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
+import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
 
 import BottomNav from './components/BottomNav1';
 import Header1 from './components/Header1';
@@ -58,6 +58,7 @@ const App: React.FC = () => {
     '/signup',
     '/schedule/reservation1',
     '/schedule/reservation2',
+    '/schedule/reservation3',
   ];
 
   const header4Paths = ['/signup', '/findid', 'findPassword'];
@@ -94,7 +95,9 @@ const App: React.FC = () => {
     if (matchPath('/schedule/reservation2', location.pathname)) {
       return '스케줄 예약하기';
     }
-
+    if (matchPath('/schedule/reservation3', location.pathname)) {
+      return '스케줄 예약하기';
+    }
     return '';
   };
 
@@ -151,10 +154,10 @@ const App: React.FC = () => {
             path='/schedule/reservation2'
             element={<ScheduleReservation2 />}
           />
-          {/* <Route
+          <Route
             path='/schedule/reservation3'
             element={<ScheduleReservation3 />}
-          /> */}
+          />
         </Routes>
       </ContentContainer>
       {includeBottomNav && <BottomNav />}
