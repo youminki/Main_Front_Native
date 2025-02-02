@@ -64,7 +64,7 @@ const Login: React.FC = () => {
     <ThemeProvider theme={Theme}>
       <Container>
         <LoginContainer>
-          <Logo src={MelpikLogo} alt="멜픽 로고" />
+          <Logo src={MelpikLogo} alt='멜픽 로고' />
           <SubContent>
             <NormalText>
               이젠 <Highlighted>멜픽</Highlighted>을 통해
@@ -76,14 +76,14 @@ const Login: React.FC = () => {
             <InputFieldRow>
               <Controller
                 control={control}
-                name="email"
+                name='email'
                 render={({ field }) => (
                   <InputField
-                    label="계정(이메일)"
-                    id="email"
-                    type="text"
+                    label='계정(이메일)'
+                    id='email'
+                    type='text'
                     error={errors.email?.message}
-                    placeholder="계정을 입력하세요"
+                    placeholder='계정을 입력하세요'
                     isEmailField={true}
                     {...field}
                   />
@@ -93,14 +93,14 @@ const Login: React.FC = () => {
             <InputFieldRow>
               <Controller
                 control={control}
-                name="password"
+                name='password'
                 render={({ field }) => (
                   <InputField
-                    label="비밀번호"
-                    id="password"
-                    type="password"
+                    label='비밀번호'
+                    id='password'
+                    type='password'
                     error={errors.password?.message}
-                    placeholder="비밀번호를 입력하세요"
+                    placeholder='비밀번호를 입력하세요'
                     {...field}
                   />
                 )}
@@ -109,11 +109,11 @@ const Login: React.FC = () => {
 
             <CheckboxWrapper>
               <CheckboxLabel>
-                <CheckboxInput type="checkbox" />
+                <CheckboxInput type='checkbox' />
                 <CheckboxText>자동 로그인</CheckboxText>
               </CheckboxLabel>
             </CheckboxWrapper>
-            <LoginButton type="submit">로그인</LoginButton>
+            <LoginButton type='submit'>로그인</LoginButton>
           </LoginForm>
           <ExtraLinks>
             <Link onClick={() => navigate('/findid')}>아이디 찾기</Link>
@@ -128,13 +128,13 @@ const Login: React.FC = () => {
           </SnsTextWrapper>
           <IconWrapper>
             <IconButton>
-              <Icon src={KakaoImg} alt="Kakao" />
+              <Icon src={KakaoImg} alt='Kakao' />
             </IconButton>
             <IconButton>
-              <Icon src={NaverImg} alt="Naver" />
+              <Icon src={NaverImg} alt='Naver' />
             </IconButton>
             <IconButton>
-              <Icon src={GoogleImg} alt="Google" />
+              <Icon src={GoogleImg} alt='Google' />
             </IconButton>
           </IconWrapper>
 
@@ -157,10 +157,11 @@ export default Login;
 
 const Container = styled.div`
   display: flex;
-  height: 100vh;
-  max-width: 600px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
   margin: 0 auto;
-  margin-top: 150px;
 `;
 
 const LoginContainer = styled.div`
@@ -169,7 +170,6 @@ const LoginContainer = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 100vh;
 `;
 
 const Logo = styled.img`

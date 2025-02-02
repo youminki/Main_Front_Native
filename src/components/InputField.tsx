@@ -142,6 +142,7 @@ const InputWrapper = styled.div`
   border-radius: 4px;
   height: 57px;
   overflow: hidden;
+
   flex: 1;
   position: relative;
 

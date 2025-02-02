@@ -261,10 +261,20 @@ const Signup: React.FC = () => {
 export default Signup;
 
 const Container = styled.div`
-  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
   margin: 0 auto;
-  padding: 0 27px;
-  height: 100vh;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
 `;
 
 const Placeholder = styled.div`
@@ -288,12 +298,6 @@ const Title = styled.h1`
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
 `;
 
 const RowLabel = styled.div`
@@ -358,7 +362,7 @@ const PhoneField = styled.div`
 
   input {
     flex: 1;
-    padding-right: 120px; /* Ensure space for button */
+    padding-right: 120px;
   }
 `;
 
