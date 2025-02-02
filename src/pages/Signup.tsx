@@ -38,10 +38,6 @@ const Signup: React.FC = () => {
     useState<string>('여성');
   const [melpickAddress, setMelpickAddress] = useState<string>('');
 
-  const handleBackClick = (): void => {
-    window.history.back();
-  };
-
   const handleGenderChange = (selectedGender: string): void => {
     setGender(selectedGender);
     setSelectedGenderButton(selectedGender);
@@ -269,27 +265,6 @@ const Form = styled.form`
   flex-direction: column;
   gap: 15px;
   width: 100%;
-`;
-
-const Placeholder = styled.div`
-  width: 24px;
-  padding: 0 37px;
-`;
-
-const Header = styled.header`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 105px;
-  position: relative;
-`;
-
-const Title = styled.h1`
-  font-style: normal;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 22px;
-  /* width: 100%; */
 `;
 
 const RowLabel = styled.div`
