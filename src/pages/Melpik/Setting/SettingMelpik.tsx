@@ -5,7 +5,6 @@ import Theme from '../../../styles/Theme';
 import StatsSection from '../../../components/Melpik/StatsSection';
 
 const SettingMelpik: React.FC = () => {
-  // 동적 데이터 (프롭스로 전달할 값)
   const visits = '@styleweex';
   const sales = '4개';
   const dateRange = '2025.01.06 ~ 01.10';
@@ -74,18 +73,6 @@ const StatsRow = styled.div`
   justify-content: space-between;
   width: 100%;
   padding: 0 20px;
-`;
-
-const ImageWrapper = styled.div`
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const MenuImage = styled.img`
-  width: 64px;
-  height: 58px;
 `;
 
 const Divider = styled.div`
