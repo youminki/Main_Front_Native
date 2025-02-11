@@ -19,8 +19,9 @@ import Brand from './pages/Brand/Brand';
 import BrandDetail from './pages/Brand/BrandDetail';
 
 import Melpik from './pages/Melpik/Melpik';
-import CreateMelpik from './pages/Melpik/CreateMelpik';
-import ContemporarySettings from './pages/Melpik/ContemporarySettings';
+import CreateMelpik from './pages/Melpik/Create/CreateMelpik';
+import ContemporarySettings from './pages/Melpik/Create/ContemporarySettings';
+import Setting from './pages/Melpik/Setting/SettingMelpik.tsx';
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
 
@@ -141,6 +142,7 @@ const App: React.FC = () => {
             path='/createMelpik/settings'
             element={<ContemporarySettings />}
           />
+          <Route path='/melpik-settings' element={<Setting />} />
           <Route path='/sales-schedule' element={<Scedule />} />
           <Route
             path='/schedule/confirmation'
