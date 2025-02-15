@@ -72,8 +72,14 @@ const ToggleText = styled.span<{ $isActive: boolean }>`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  right: ${({ $isActive }) => ($isActive ? '8px' : 'unset')};
-  left: ${({ $isActive }) => (!$isActive ? '8px' : 'unset')};
+  right: ${({ $isActive }) => ($isActive ? '6px' : 'unset')};
+  left: ${({ $isActive }) => (!$isActive ? '6px' : 'unset')};
+
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 11px;
 `;
 
 const ToggleLabel = styled.span`
