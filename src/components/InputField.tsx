@@ -6,15 +6,18 @@ import { SeasonToggle } from '../components/Home/FilterContainer';
 type InputFieldProps = {
   label: string;
   id: string;
-  type: string;
+  type?: string;
   error?: { message: string };
   buttonLabel?: string;
   buttonColor?: 'yellow' | 'black';
   onButtonClick?: () => void;
   prefix?: string;
+  prefixcontent?: string;
   as?: React.ElementType;
   isEmailField?: boolean;
   useToggle?: boolean;
+  options?: string[];
+  onSelectChange?: (value: string) => void;
   [key: string]: any;
 };
 
@@ -23,20 +26,33 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     {
       label,
       id,
-      type,
+      type = 'text',
       error,
       buttonLabel,
       buttonColor = 'yellow',
       onButtonClick,
       prefix,
+      prefixcontent,
       as,
       isEmailField,
       useToggle = false,
+      options,
+      onSelectChange,
       ...rest
     },
     ref
   ) => {
     const [toggle, setToggle] = useState(false);
+    const [selectedOption, setSelectedOption] = useState(
+      options ? options[0] : ''
+    );
+
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setSelectedOption(e.target.value);
+      if (onSelectChange) {
+        onSelectChange(e.target.value);
+      }
+    };
 
     return (
       <InputContainer>
@@ -49,7 +65,24 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         <InputRow>
           {prefix && <PrefixText>{prefix}</PrefixText>}
           <InputWrapper>
-            <Input as={as} type={type} id={`${id}-local`} ref={ref} {...rest} />
+            {prefixcontent && (
+              <PrefixcontentText>{prefixcontent}</PrefixcontentText>
+            )}
+            {options ? (
+              <Select
+                id={id}
+                value={selectedOption}
+                onChange={handleSelectChange}
+              >
+                {options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </Select>
+            ) : (
+              <Input as={as} type={type} id={id} ref={ref} {...rest} />
+            )}
             {buttonLabel && (
               <ButtonWrapper>
                 <Button02 onClick={onButtonClick} color={buttonColor}>
@@ -67,13 +100,6 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             )}
           </InputWrapper>
           {isEmailField && <AtSymbol>@</AtSymbol>}
-          {isEmailField && (
-            <EmailDropdown id={`${id}-domain`} defaultValue='naver.com'>
-              <option value='gmail.com'>gmail.com</option>
-              <option value='naver.com'>naver.com</option>
-              <option value='daum.net'>daum.net</option>
-            </EmailDropdown>
-          )}
         </InputRow>
         {error && <ErrorMessage>{error.message}</ErrorMessage>}
       </InputContainer>
@@ -83,6 +109,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
 
 export default InputField;
 
+// ✅ 스타일 정의
 const InputContainer = styled.div`
   margin-bottom: 20px;
   display: flex;
@@ -103,8 +130,6 @@ const Label = styled.label<{ isEmpty: boolean }>`
 const GrayText = styled.span`
   padding-left: 3px;
   color: ${({ theme }) => theme.colors.gray2};
-  font-style: normal;
-  font-weight: 400;
   font-size: 10px;
   line-height: 14px;
 `;
@@ -119,6 +144,17 @@ const PrefixText = styled.span`
   font-size: 16px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.black};
+`;
+
+const PrefixcontentText = styled.span`
+  margin-left: 10px;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 14px;
+
+  color: #000000;
 `;
 
 const InputWrapper = styled.div`
@@ -141,6 +177,15 @@ const ButtonWrapper = styled.div`
   align-items: center;
 `;
 
+const ToggleWrapper = styled.div`
+  position: absolute;
+  right: 10px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+`;
+
 const AtSymbol = styled.span`
   margin: 0 10px;
   font-size: 16px;
@@ -154,38 +199,20 @@ const Input = styled.input`
   flex: 1;
   height: 100%;
   width: 100%;
-
-  &::placeholder {
-    font-family: 'NanumSquare Neo OTF';
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 14.37px;
-    text-align: left;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none;
-  }
 `;
 
-const EmailDropdown = styled.select`
+const Select = styled.select`
   font-size: 16px;
   border: none;
   padding: 0 11px;
   flex: 1;
   height: 100%;
   background-color: ${({ theme }) => theme.colors.white};
+  cursor: pointer;
 `;
 
 const ErrorMessage = styled.span`
   color: blue;
   font-size: 12px;
   margin-top: 5px;
-`;
-
-const ToggleWrapper = styled.div`
-  position: absolute;
-  right: 10px;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
 `;

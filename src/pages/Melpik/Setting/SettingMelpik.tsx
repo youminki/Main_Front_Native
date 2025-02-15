@@ -3,6 +3,7 @@ import styled, { ThemeProvider } from 'styled-components';
 import Theme from '../../../styles/Theme';
 import StatsSection from '../../../components/Melpik/StatsSection';
 import InputField from '../../../components/InputField';
+import ReusableModal from '../../../components/ReusableModal';
 import DeleteIcon from '../../../assets/Melpik/DeleteIcon.svg';
 
 const SettingMelpik: React.FC = () => {
@@ -13,29 +14,53 @@ const SettingMelpik: React.FC = () => {
   const visitLabel = '인스타 계정';
   const salesLabel = '등록된 링크';
 
+  // ✅ 계좌 및 링크 정보 상태 관리
+  const [accountInfo, setAccountInfo] = useState({
+    bank: '국민은행',
+    accountNumber: '',
+    accountOwner: '',
+  });
+
+  const [linkInfo, setLinkInfo] = useState({
+    linkName: '',
+    linkUrl: '',
+  });
+
+  // ✅ 모달 상태 관리
+  const [isAccountModalOpen, setAccountModalOpen] = useState(false);
+  const [isLinkModalOpen, setLinkModalOpen] = useState(false);
+
+  // ✅ 계좌번호 마스킹 처리 함수
+  const maskAccountNumber = (number: string) => {
+    if (number.length > 5) {
+      return `${number.slice(0, 5)} ****`;
+    }
+    return number;
+  };
+  // ✅ 링크 데이터
   const [links, setLinks] = useState([
     {
       id: 1,
       label: '링크 1',
-      url: 'youtu.be/Kw482drmWqw',
+      url: 'https://youtu.be/Kw482drmWqw',
       title: '밍또의 세상',
     },
     {
       id: 2,
       label: '링크 2',
-      url: 'youtu.be/UfLf_60xa2a',
+      url: 'https://youtu.be/UfLf_60xa2a',
       title: '서비스 소개 링크',
     },
     {
       id: 3,
       label: '링크 3',
-      url: 'myteatime.kr/con...',
+      url: 'https://myteatime.kr/con...',
       title: '2024 티타임지 인터뷰',
     },
     {
       id: 4,
       label: '링크 4',
-      url: 'myteatime.kr/cont1...',
+      url: 'https://myteatime.kr/cont1...',
       title: '2024 네이버 인터뷰',
     },
   ]);
@@ -77,29 +102,40 @@ const SettingMelpik: React.FC = () => {
           />
 
           <InputField
-            placeholder='등록하실 링크를 추가하세요'
+            prefixcontent='이용상태 | 구독자'
             label='멜픽 자동생성 설정'
             id='auto-create-toggle'
             type='text'
+            readOnly
             useToggle={true}
           />
 
           <InputField
-            placeholder='등록하실 링크를 추가하세요'
+            label='정산 계좌정보 (필수)'
+            id='account-info'
+            type='text'
+            placeholder={
+              accountInfo.accountNumber
+                ? `${maskAccountNumber(accountInfo.accountNumber)} (${accountInfo.bank})`
+                : '등록하실 계좌 정보를 입력하세요'
+            }
             buttonLabel='등록/변경'
             buttonColor='yellow'
-            label='정산 계좌정보 (필수)'
-            id='personal-link'
-            type='text'
+            onButtonClick={() => setAccountModalOpen(true)}
           />
 
           <InputField
-            placeholder='등록하실 링크를 추가하세요'
-            buttonLabel='링크등록'
-            buttonColor='black'
             label='개인 링크 설정 (선택)'
             id='personal-link'
             type='text'
+            placeholder={
+              linkInfo.linkName
+                ? `${linkInfo.linkName} (${linkInfo.linkUrl})`
+                : '등록하실 링크를 추가하세요'
+            }
+            buttonLabel='링크등록'
+            buttonColor='black'
+            onButtonClick={() => setLinkModalOpen(true)}
           />
         </Section>
 
@@ -111,13 +147,15 @@ const SettingMelpik: React.FC = () => {
                 <LinkContent>
                   <LinkTitle>{link.title}</LinkTitle>
                   <Separator>|</Separator>
-                  <LinkUrl>{link.url}</LinkUrl>
+                  <LinkUrl
+                    href={link.url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    {link.url}
+                  </LinkUrl>
                   <DeleteButton onClick={() => handleDelete(link.id)}>
-                    <img
-                      src={DeleteIcon}
-                      alt='Delete'
-                      style={{ marginLeft: 'auto' }}
-                    />
+                    <img src={DeleteIcon} alt='Delete' />
                   </DeleteButton>
                 </LinkContent>
               </LinkItem>
@@ -125,6 +163,82 @@ const SettingMelpik: React.FC = () => {
           </LinkList>
         </Section>
       </Container>
+
+      <ReusableModal
+        isOpen={isAccountModalOpen}
+        onClose={() => setAccountModalOpen(false)}
+        title='정산 계좌등록'
+      >
+        <ModalContent>
+          <InputField
+            label='계좌번호 *'
+            id='account-number'
+            type='text'
+            placeholder='계좌번호를 입력하세요'
+            value={accountInfo.accountNumber}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setAccountInfo({ ...accountInfo, accountNumber: e.target.value })
+            }
+          />
+          <FlexRow>
+            <InputField
+              label='은행 선택 *'
+              id='bank-select'
+              options={[
+                '국민은행',
+                '신한은행',
+                '하나은행',
+                '우리은행',
+                '카카오뱅크',
+              ]}
+              onSelectChange={(value: string) =>
+                setAccountInfo({ ...accountInfo, bank: value })
+              }
+              defaultValue={accountInfo.bank}
+            />
+            <InputField
+              label='예금주 입력 *'
+              id='account-owner'
+              type='text'
+              placeholder='예금주를 입력하세요'
+              value={accountInfo.accountOwner}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setAccountInfo({ ...accountInfo, accountOwner: e.target.value })
+              }
+            />
+          </FlexRow>
+        </ModalContent>
+      </ReusableModal>
+
+      {/* ✅ 개인 링크등록 모달 */}
+      <ReusableModal
+        isOpen={isLinkModalOpen}
+        onClose={() => setLinkModalOpen(false)}
+        title='개인 링크등록'
+      >
+        <ModalContent>
+          <InputField
+            label='링크명 *'
+            id='link-name'
+            type='text'
+            placeholder='등록할 링크명을 입력하세요'
+            value={linkInfo.linkName}
+            onChange={(e) =>
+              setLinkInfo({ ...linkInfo, linkName: e.target.value })
+            }
+          />
+          <InputField
+            label='URL 입력 *'
+            id='link-url'
+            type='text'
+            placeholder='등록할 URL을 입력하세요'
+            value={linkInfo.linkUrl}
+            onChange={(e) =>
+              setLinkInfo({ ...linkInfo, linkUrl: e.target.value })
+            }
+          />
+        </ModalContent>
+      </ReusableModal>
     </ThemeProvider>
   );
 };
@@ -167,6 +281,17 @@ const Section = styled.div`
   padding: 10px 0;
 `;
 
+const FlexRow = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+
 const LinkList = styled.ul`
   margin-top: 10px;
   list-style: none;
@@ -181,14 +306,14 @@ const LinkItem = styled.li`
   margin-bottom: 10px;
 `;
 
-const Label = styled.span`
+const Label = styled.label<{ $isEmpty: boolean }>`
+  margin-bottom: 10px;
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 900;
-  font-size: 12px;
-  line-height: 16px;
-
-  color: #000000;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 11.05px;
+  text-align: left;
+  visibility: ${({ $isEmpty }) => ($isEmpty ? 'hidden' : 'visible')};
 `;
 
 const LinkContent = styled.div`
