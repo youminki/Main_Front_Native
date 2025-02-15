@@ -187,6 +187,7 @@ const Label = styled.span`
   font-weight: 900;
   font-size: 12px;
   line-height: 16px;
+
   color: #000000;
 `;
 
@@ -195,7 +196,7 @@ const LinkContent = styled.div`
   align-items: center;
   border: 1px solid ${Theme.colors.gray1};
   padding: 10px;
-  margin-left: 14px;
+  margin-left: 11px;
   flex-grow: 1;
 `;
 
@@ -216,9 +217,10 @@ const Separator = styled.span`
 const LinkUrl = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 800;
   font-size: 12px;
   line-height: 16px;
+
   color: #000000;
 `;
 
