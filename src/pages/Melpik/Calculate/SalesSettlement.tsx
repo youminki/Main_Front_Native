@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/Melpik/StatsSection';
+import FixedBottomBar from '../../../components/ FixedBottomBar';
 
 const SalesSettlement: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(6);
@@ -143,10 +144,11 @@ const SalesSettlement: React.FC = () => {
           ))}
         </SettlementList>
       </Section>
-      {/* 하단 고정 정산 신청 버튼 */}
-      <FixedBottomBar>
-        <SettleButton>정산 신청</SettleButton>
-      </FixedBottomBar>
+      <FixedBottomBar
+        text='정산 신청'
+        color='black'
+        onClick={() => alert('정산 신청이 완료되었습니다!')}
+      />
     </Container>
   );
 };
@@ -362,25 +364,4 @@ const Deduction = styled.p`
 
   color: #999999;
   margin-top: 0px;
-`;
-
-const FixedBottomBar = styled.div`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #fff;
-  padding: 16px;
-  text-align: center;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-`;
-
-const SettleButton = styled.button`
-  width: 90%;
-  padding: 14px;
-  background-color: black;
-  color: white;
-  font-size: 16px;
-  border-radius: 6px;
-  cursor: pointer;
 `;
