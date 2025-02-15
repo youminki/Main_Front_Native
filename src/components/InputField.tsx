@@ -1,95 +1,115 @@
-// src/components/InputField.tsx
-import React from 'react';
+import React, { useState, forwardRef } from 'react';
 import styled from 'styled-components';
 import Button02 from './Button02';
+import { SeasonToggle } from '../components/Home/FilterContainer';
 
 type InputFieldProps = {
   label: string;
   id: string;
-  type: string;
+  type?: string;
   error?: { message: string };
   buttonLabel?: string;
+  buttonColor?: 'yellow' | 'black';
   onButtonClick?: () => void;
   prefix?: string;
+  prefixcontent?: string;
   as?: React.ElementType;
   isEmailField?: boolean;
+  useToggle?: boolean;
+  options?: string[];
+  onSelectChange?: (value: string) => void;
   [key: string]: any;
 };
 
-const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
+const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
   (
     {
       label,
       id,
-      type,
+      type = 'text',
       error,
       buttonLabel,
+      buttonColor = 'yellow',
       onButtonClick,
       prefix,
+      prefixcontent,
       as,
       isEmailField,
-      onChange,
+      useToggle = false,
+      options,
+      onSelectChange,
       ...rest
     },
     ref
-  ) => (
-    <InputContainer>
-      <Label htmlFor={id} isEmpty={!label}>
-        {label.split('(')[0] || '​'}
-        {label.includes('(') && (
-          <GrayText>{`(${label.split('(')[1]}`}</GrayText>
-        )}
-      </Label>
-      {type === 'password' ? (
-        <PasswordWrapper>
-          <Input
-            as={as}
-            type={type}
-            id={id}
-            ref={ref}
-            onChange={onChange}
-            {...rest}
-          />
-        </PasswordWrapper>
-      ) : (
+  ) => {
+    const [toggle, setToggle] = useState(false);
+    const [selectedOption, setSelectedOption] = useState(
+      options ? options[0] : ''
+    );
+
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setSelectedOption(e.target.value);
+      if (onSelectChange) {
+        onSelectChange(e.target.value);
+      }
+    };
+
+    return (
+      <InputContainer>
+        <Label htmlFor={id} isEmpty={!label}>
+          {label.split('(')[0] || '​'}
+          {label.includes('(') && (
+            <GrayText>{`(${label.split('(')[1]}`}</GrayText>
+          )}
+        </Label>
         <InputRow>
           {prefix && <PrefixText>{prefix}</PrefixText>}
           <InputWrapper>
-            <Input
-              as={as}
-              type={type}
-              id={`${id}-local`}
-              ref={ref}
-              onChange={onChange}
-              {...rest}
-            />
+            {prefixcontent && (
+              <PrefixcontentText>{prefixcontent}</PrefixcontentText>
+            )}
+            {options ? (
+              <Select
+                id={id}
+                value={selectedOption}
+                onChange={handleSelectChange}
+              >
+                {options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </Select>
+            ) : (
+              <Input as={as} type={type} id={id} ref={ref} {...rest} />
+            )}
             {buttonLabel && (
               <ButtonWrapper>
-                <Button02 onClick={onButtonClick}>{buttonLabel}</Button02>
+                <Button02 onClick={onButtonClick} color={buttonColor}>
+                  {buttonLabel}
+                </Button02>
               </ButtonWrapper>
+            )}
+            {useToggle && (
+              <ToggleWrapper>
+                <SeasonToggle
+                  isActive={toggle}
+                  toggle={() => setToggle(!toggle)}
+                />
+              </ToggleWrapper>
             )}
           </InputWrapper>
           {isEmailField && <AtSymbol>@</AtSymbol>}
-          {isEmailField && (
-            <InputWrapper>
-              <EmailDropdown id={`${id}-domain`} defaultValue='naver.com'>
-                <option value='gmail.com'>gmail.com</option>
-                <option value='naver.com'>naver.com</option>
-                <option value='daum.net'>daum.net</option>
-              </EmailDropdown>
-            </InputWrapper>
-          )}
         </InputRow>
-      )}
-      {error && <ErrorMessage>{error.message}</ErrorMessage>}
-    </InputContainer>
-  )
+        {error && <ErrorMessage>{error.message}</ErrorMessage>}
+      </InputContainer>
+    );
+  }
 );
-
-InputField.displayName = 'InputField';
 
 export default InputField;
 
+// ✅ 스타일 정의
 const InputContainer = styled.div`
   margin-bottom: 20px;
   display: flex;
@@ -103,7 +123,6 @@ const Label = styled.label<{ isEmpty: boolean }>`
   font-size: 10px;
   font-weight: 700;
   line-height: 11.05px;
-
   text-align: left;
   visibility: ${({ isEmpty }) => (isEmpty ? 'hidden' : 'visible')};
 `;
@@ -111,8 +130,6 @@ const Label = styled.label<{ isEmpty: boolean }>`
 const GrayText = styled.span`
   padding-left: 3px;
   color: ${({ theme }) => theme.colors.gray2};
-  font-style: normal;
-  font-weight: 400;
   font-size: 10px;
   line-height: 14px;
 `;
@@ -129,10 +146,15 @@ const PrefixText = styled.span`
   color: ${({ theme }) => theme.colors.black};
 `;
 
-const AtSymbol = styled.span`
-  margin: 0 10px;
-  font-size: 16px;
-  color: ${({ theme }) => theme.colors.black};
+const PrefixcontentText = styled.span`
+  margin-left: 10px;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 14px;
+
+  color: #000000;
 `;
 
 const InputWrapper = styled.div`
@@ -142,29 +164,8 @@ const InputWrapper = styled.div`
   border-radius: 4px;
   height: 57px;
   overflow: hidden;
-
   flex: 1;
   position: relative;
-
-  select {
-    font-family: 'NanumSquare Neo OTF';
-    font-style: normal;
-    font-weight: 800;
-    font-size: 13px;
-    line-height: 14px;
-
-    color: #000000;
-  }
-
-  option {
-    font-family: 'NanumSquare Neo OTF';
-    font-style: normal;
-    font-weight: 800;
-    font-size: 13px;
-    line-height: 14px;
-
-    color: #000000;
-  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -174,16 +175,21 @@ const ButtonWrapper = styled.div`
   bottom: 0;
   display: flex;
   align-items: center;
-  padding-right: 10px;
 `;
 
-const PasswordWrapper = styled.div`
+const ToggleWrapper = styled.div`
+  position: absolute;
+  right: 10px;
+  top: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
-  border: 1px solid ${({ theme }) => theme.colors.gray1};
-  border-radius: 4px;
-  height: 57px;
-  overflow: hidden;
+`;
+
+const AtSymbol = styled.span`
+  margin: 0 10px;
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.black};
 `;
 
 const Input = styled.input`
@@ -193,26 +199,16 @@ const Input = styled.input`
   flex: 1;
   height: 100%;
   width: 100%;
-
-  &::placeholder {
-    font-family: 'NanumSquare Neo OTF';
-    font-size: 13px;
-
-    font-weight: 400;
-    line-height: 14.37px;
-    text-align: left;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none;
-  }
 `;
 
-const EmailDropdown = styled.select`
+const Select = styled.select`
   font-size: 16px;
   border: none;
   padding: 0 11px;
   flex: 1;
   height: 100%;
   background-color: ${({ theme }) => theme.colors.white};
+  cursor: pointer;
 `;
 
 const ErrorMessage = styled.span`

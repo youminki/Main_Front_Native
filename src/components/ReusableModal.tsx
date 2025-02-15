@@ -16,7 +16,7 @@ const ReusableModal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
-  width = '376px',
+  width = '100%',
   height = '360px',
   actions,
 }) => {

@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { schemaSignupContemporary } from '../../hooks/ValidationYup';
-import InputField from '../../components/InputField';
-import AgreementSection from '../../components/Melpik/CreateMelpik/Settings/AgreementSection';
-import Theme from '../../styles/Theme';
-import BottomBar from '../../components/BottomNav2';
-import Modal from '../../components/Melpik/CreateMelpik/Settings/Modal';
+import { schemaSignupContemporary } from '../../../hooks/ValidationYup';
+import InputField from '../../../components/InputField';
+import AgreementSection from '../../../components/Melpik/CreateMelpik/Settings/AgreementSection';
+import Theme from '../../../styles/Theme';
+import BottomBar from '../../../components/BottomNav2';
+import Modal from '../../../components/Melpik/CreateMelpik/Settings/Modal';
 
 interface FormData {
   height: string;

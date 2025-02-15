@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import StatsSection from '../../components/Melpik/StatsSection';
-import ContentList from '../../components/Melpik/CreateMelpik/ContentList';
+import StatsSection from '../../../components/Melpik/StatsSection';
+import ContentList from '../../../components/Melpik/CreateMelpik/ContentList';
 
 // 동적 데이터
 const visitLabel = '인스타 계정';

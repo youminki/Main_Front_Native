@@ -54,6 +54,8 @@ const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
   padding: 15px 20px;
   position: relative;
   margin-right: 0px;
+
+  white-space: nowrap;
 `;
 
 const Row = styled.div`
@@ -61,6 +63,8 @@ const Row = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
+
+  white-space: nowrap;
 `;
 
 const StatNumber = styled.div`
@@ -70,6 +74,8 @@ const StatNumber = styled.div`
   font-size: 12px;
   line-height: 13px;
   color: #f6ae24;
+
+  white-space: nowrap;
 `;
 
 const StatLabel = styled.div`
@@ -80,7 +86,8 @@ const StatLabel = styled.div`
   line-height: 13px;
   color: #000000;
   margin-right: 5px;
-  width: 100%;
+
+  white-space: nowrap;
 `;
 
 const DateLabel = styled.div`
@@ -98,4 +105,6 @@ const DateLabel = styled.div`
   background: #f6ae24;
   text-align: center;
   padding: 3px;
+
+  white-space: nowrap;
 `;
