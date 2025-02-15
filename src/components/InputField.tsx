@@ -74,7 +74,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                 value={selectedOption}
                 onChange={handleSelectChange}
               >
-                {options.map((option) => (
+                {options.map((option: string) => (
                   <option key={option} value={option}>
                     {option}
                   </option>

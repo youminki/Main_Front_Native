@@ -143,7 +143,7 @@ const SettingMelpik: React.FC = () => {
           <LinkList>
             {links.map((link) => (
               <LinkItem key={link.id}>
-                <Label>{link.label}</Label>
+                <Label $isEmpty={links.length === 0}>{link.label}</Label>
                 <LinkContent>
                   <LinkTitle>{link.title}</LinkTitle>
                   <Separator>|</Separator>
@@ -223,7 +223,7 @@ const SettingMelpik: React.FC = () => {
             type='text'
             placeholder='등록할 링크명을 입력하세요'
             value={linkInfo.linkName}
-            onChange={(e) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setLinkInfo({ ...linkInfo, linkName: e.target.value })
             }
           />
@@ -233,7 +233,7 @@ const SettingMelpik: React.FC = () => {
             type='text'
             placeholder='등록할 URL을 입력하세요'
             value={linkInfo.linkUrl}
-            onChange={(e) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setLinkInfo({ ...linkInfo, linkUrl: e.target.value })
             }
           />
