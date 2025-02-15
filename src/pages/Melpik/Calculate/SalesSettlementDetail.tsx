@@ -9,7 +9,7 @@ const SalesSettlementDetail: React.FC = () => {
   const settlements = [
     {
       id: 1,
-      date: '2025-01 (2차)',
+      date: '2025-01-15',
       time: '2025년 1월 24일 (금) - 18:30:40',
       amount: '86,400원',
       deduction: '-3,600원',
@@ -98,7 +98,7 @@ const SalesSettlementDetail: React.FC = () => {
                 <ProductName isBold={sale.product.includes('JNS2219')}>
                   {sale.product}
                 </ProductName>
-                <SubInfo>{`${settlement.date} - 구매자: ${sale.buyer}`}</SubInfo>
+                <SubInfo>{`${settlement.date} - (구매자: ${sale.buyer})`}</SubInfo>
               </TdLeft>
               <TdRight>
                 {sale.price}

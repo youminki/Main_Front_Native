@@ -36,7 +36,7 @@ const BottomBar = styled.div`
 
 const SettleButton = styled.button<{ color: 'yellow' | 'black' }>`
   width: 90%;
-  padding: 14px;
+  padding: 20px;
   font-size: 16px;
   border-radius: 6px;
   cursor: pointer;
