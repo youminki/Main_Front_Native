@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import Theme from '../../../styles/Theme';
-import AgreementSection from '../../../components/Signup/AgreementSection';
+import AgreementSection from '../../../components/Melpik/settlement/SettlementAgreementSection';
 import InputField from '../../../components/InputField';
 import FixedBottomBar from '../../../components/FixedBottomBar';
 
