@@ -1,6 +1,6 @@
 // src/components/AgreementSection.tsx
-import React, { useState } from "react";
-import styled from "styled-components";
+import React, { useState } from 'react';
+import styled from 'styled-components';
 
 type AgreementSectionProps = {};
 
@@ -17,7 +17,7 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
   });
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalContent, setModalContent] = useState("");
+  const [modalContent, setModalContent] = useState('');
 
   const handleAllChecked = () => {
     const newValue = !allChecked;
@@ -49,24 +49,24 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
     <AgreementWrapper>
       <AllAgreeWrapper>
         <Checkbox
-          type="checkbox"
-          id="agreeAll"
+          type='checkbox'
+          id='agreeAll'
           checked={allChecked}
           onChange={handleAllChecked}
         />
-        <Label htmlFor="agreeAll">전체동의</Label>
+        <Label htmlFor='agreeAll'>전체동의</Label>
       </AllAgreeWrapper>
 
       <ContentContainer>
         <CheckboxWrapper>
           <Checkbox
-            type="checkbox"
-            id="agree1"
+            type='checkbox'
+            id='agree1'
             required
             checked={individualChecks.agree1}
             onChange={handleIndividualCheck}
           />
-          <Label htmlFor="agree1">
+          <Label htmlFor='agree1'>
             이용약관 동의 <RequiredText>(필수)</RequiredText>
           </Label>
         </CheckboxWrapper>
@@ -86,13 +86,13 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
         </InputWrapper>
         <CheckboxWrapper>
           <Checkbox
-            type="checkbox"
-            id="agree2"
+            type='checkbox'
+            id='agree2'
             required
             checked={individualChecks.agree2}
             onChange={handleIndividualCheck}
           />
-          <Label htmlFor="agree2">
+          <Label htmlFor='agree2'>
             개인정보수집 동의 <RequiredText>(필수)</RequiredText>
           </Label>
         </CheckboxWrapper>
@@ -101,7 +101,7 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
             <Description>서비스 이용에 필요한 개인정보 수집 안내.</Description>
           </DescriptionWrapper>
           <ViewDetailsButton
-            onClick={() => handleViewDetails("개인정보수집 내용")}
+            onClick={() => handleViewDetails('개인정보수집 내용')}
           >
             전체보기
           </ViewDetailsButton>
@@ -136,6 +136,7 @@ export default AgreementSection;
 const AgreementWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
   margin-bottom: 20px;
+  width: 100%;
 `;
 
 const AllAgreeWrapper = styled.div`
@@ -188,7 +189,7 @@ const Checkbox = styled.input`
   }
 
   &:checked::after {
-    content: "";
+    content: '';
     position: absolute;
     top: 3px;
     left: 3px;
@@ -280,7 +281,7 @@ const ModalHeader = styled.div`
 `;
 
 const ModalTitle = styled.p`
-  font-family: "NanumSquare Neo OTF", sans-serif;
+  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 800;
   font-size: 16px;
   line-height: 16px;
@@ -288,7 +289,7 @@ const ModalTitle = styled.p`
 `;
 
 const SectionTitle = styled.p`
-  font-family: "NanumSquare Neo OTF", sans-serif;
+  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 12px;
   line-height: 13.26px;
@@ -296,7 +297,7 @@ const SectionTitle = styled.p`
 `;
 
 const SubTitle = styled.p`
-  font-family: "NanumSquare Neo OTF", sans-serif;
+  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 12px;
   line-height: 13.26px;
@@ -305,7 +306,7 @@ const SubTitle = styled.p`
 
 const Text = styled.p`
   height: 386px;
-  font-family: "NanumSquare Neo OTF", sans-serif;
+  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 12px;
   line-height: 13.26px;

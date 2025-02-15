@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import StatsSection from '../../../components/Melpik/StatsSection';
-import FixedBottomBar from '../../../components/ FixedBottomBar';
+import FixedBottomBar from '../../../components/FixedBottomBar';
 
 const SalesSettlement: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(6);
@@ -154,7 +154,7 @@ const SalesSettlement: React.FC = () => {
       <FixedBottomBar
         text='정산 신청'
         color='black'
-        onClick={() => alert('정산 신청이 완료되었습니다!')}
+        onClick={() => navigate(`/settlement-request`)}
       />
     </Container>
   );
