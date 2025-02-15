@@ -54,13 +54,13 @@ const SettingMelpik: React.FC = () => {
     {
       id: 3,
       label: '링크 3',
-      url: 'https://myteatime.kr/con...',
+      url: 'https://myteatime.kr/conm',
       title: '2024 티타임지 인터뷰',
     },
     {
       id: 4,
       label: '링크 4',
-      url: 'https://myteatime.kr/cont1...',
+      url: 'https://myteatime.kr/cont1m',
       title: '2024 네이버 인터뷰',
     },
   ]);
@@ -298,31 +298,37 @@ const LinkList = styled.ul`
   padding: 0;
 `;
 
+const Label = styled.label<{ $isEmpty: boolean }>`
+  margin-bottom: 10px;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 16px;
+
+  color: #000000;
+  text-align: left;
+
+  flex-shrink: 0;
+`;
 const LinkItem = styled.li`
   display: flex;
   align-items: center;
   justify-content: space-between;
-
+  width: 100%;
   margin-bottom: 10px;
-`;
-
-const Label = styled.label<{ $isEmpty: boolean }>`
-  margin-bottom: 10px;
-  font-family: 'NanumSquare Neo OTF';
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 11.05px;
-  text-align: left;
-  visibility: ${({ $isEmpty }) => ($isEmpty ? 'hidden' : 'visible')};
 `;
 
 const LinkContent = styled.div`
   display: flex;
   align-items: center;
-  border: 1px solid ${Theme.colors.gray1};
-  padding: 10px;
-  margin-left: 11px;
   flex-grow: 1;
+  margin-left: 11px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 10px;
+  border: 1px solid ${Theme.colors.gray1};
 `;
 
 const LinkTitle = styled.span`
@@ -339,27 +345,33 @@ const Separator = styled.span`
   margin: 0 5px;
 `;
 
-const LinkUrl = styled.span`
+const LinkUrl = styled.a`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  display: inline-block;
+  text-decoration: none;
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 12px;
   line-height: 16px;
-
-  color: #000000;
-`;
-
-const StatsRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0 20px;
 `;
 
 const DeleteButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
+  padding-left: 10px;
+  display: flex;
+  align-items: center;
   margin-left: auto;
+`;
+const StatsRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 20px;
 `;
