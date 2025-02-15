@@ -182,5 +182,5 @@ const AppContainer = styled.div`
 
 const ContentContainer = styled.div`
   flex: 1;
-  padding: 108px 0 70px 0;
+  padding: 88px 0 70px 0;
 `;
