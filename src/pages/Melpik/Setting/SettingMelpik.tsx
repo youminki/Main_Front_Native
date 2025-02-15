@@ -8,7 +8,7 @@ import DeleteIcon from '../../../assets/Melpik/DeleteIcon.svg';
 const SettingMelpik: React.FC = () => {
   const visits = '@styleweex';
   const sales = '4개';
-  const dateRange = '2025.01.06 ~ 01.10';
+  const dateRange = '개인 등록 링크';
 
   const visitLabel = '인스타 계정';
   const salesLabel = '등록된 링크';
