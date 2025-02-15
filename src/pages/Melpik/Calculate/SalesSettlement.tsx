@@ -312,7 +312,7 @@ const StatusTag = styled.span<{ pending?: boolean; confirmed?: boolean }>`
   font-weight: 900;
   font-size: 8px;
   line-height: 9px;
-  padding: 4px 8px;
+  padding: 2px;
 
   border: 1px solid
     ${({ pending, confirmed }) =>
