@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ThemeProvider } from 'styled-components';
 import Theme from '../../../styles/Theme';
 import StatsSection from '../../../components/Melpik/StatsSection';
 import InputField from '../../../components/InputField';
-import Button02 from '../../../components/Button02';
+import DeleteIcon from '../../../assets/Melpik/DeleteIcon.svg'; // SVG 아이콘 임포트
 
 const SettingMelpik: React.FC = () => {
   const visits = '@styleweex';
@@ -13,6 +13,37 @@ const SettingMelpik: React.FC = () => {
 
   const visitLabel = '인스타 계정';
   const salesLabel = '등록된 링크';
+
+  const [links, setLinks] = useState([
+    {
+      id: 1,
+      label: '링크 1',
+      url: 'youtu.be/Kw482drmWqw',
+      title: '밍또의 세상',
+    },
+    {
+      id: 2,
+      label: '링크 2',
+      url: 'youtu.be/UfLf_60xa2a',
+      title: '서비스 소개 링크',
+    },
+    {
+      id: 3,
+      label: '링크 3',
+      url: 'myteatime.kr/con...',
+      title: '2024 티타임지 인터뷰',
+    },
+    {
+      id: 4,
+      label: '링크 4',
+      url: 'myteatime.kr/cont1...',
+      title: '2024 네이버 인터뷰',
+    },
+  ]);
+
+  const handleDelete = (linkId) => {
+    setLinks(links.filter((link) => link.id !== linkId));
+  };
 
   return (
     <ThemeProvider theme={Theme}>
@@ -48,19 +79,19 @@ const SettingMelpik: React.FC = () => {
 
           <InputField
             placeholder='등록하실 링크를 추가하세요'
-            buttonLabel='등록/변경'
-            label='멜픽 자동생성 설정'
-            id='personal-link'
-            type='text'
-          />
-          <InputField
-            placeholder='등록하실 링크를 추가하세요'
-            buttonLabel='등록/변경'
+            buttonLabel='켜짐/꺼짐'
             label='멜픽 자동생성 설정'
             id='personal-link'
             type='text'
           />
 
+          <InputField
+            placeholder='등록하실 링크를 추가하세요'
+            buttonLabel='등록/변경'
+            label='정산 계좌정보 (필수)'
+            id='personal-link'
+            type='text'
+          />
           <InputField
             placeholder='등록하실 링크를 추가하세요'
             buttonLabel='링크등록'
@@ -71,36 +102,24 @@ const SettingMelpik: React.FC = () => {
         </Section>
 
         <Section>
-          <Label>정산 계좌정보 (필수)</Label>
-          <AccountInfo>4532**-**-***544 (국민)</AccountInfo>
-          <Button02>등록/변경</Button02>
-        </Section>
-
-        <Section>
-          <InputField
-            placeholder='등록하실 링크를 추가하세요'
-            buttonLabel='링크등록'
-            label='개인 링크 설정 (선택)'
-            id='personal-link'
-            type='text'
-          />
           <LinkList>
-            <LinkItem>
-              <LinkText>밍또의 세상 | youtu.be/Kw482drmWqw</LinkText>
-              <DeleteButton>✕</DeleteButton>
-            </LinkItem>
-            <LinkItem>
-              <LinkText>서비스 소개 링크 | youtu.be/UfLf_60xa2a</LinkText>
-              <DeleteButton>✕</DeleteButton>
-            </LinkItem>
-            <LinkItem>
-              <LinkText>2024 티타임지 인터뷰 | myteatime.kr/con...</LinkText>
-              <DeleteButton>✕</DeleteButton>
-            </LinkItem>
-            <LinkItem>
-              <LinkText>2024 네이버 인터뷰 | myteatime.kr/cont1...</LinkText>
-              <DeleteButton>✕</DeleteButton>
-            </LinkItem>
+            {links.map((link) => (
+              <LinkItem key={link.id}>
+                <Label>{link.label}</Label>
+                <LinkContent>
+                  <LinkTitle>{link.title}</LinkTitle>
+                  <Separator>|</Separator>
+                  <LinkUrl>{link.url}</LinkUrl>
+                  <DeleteButton onClick={() => handleDelete(link.id)}>
+                    <img
+                      src={DeleteIcon}
+                      alt='Delete'
+                      style={{ marginLeft: 'auto' }}
+                    />
+                  </DeleteButton>
+                </LinkContent>
+              </LinkItem>
+            ))}
           </LinkList>
         </Section>
       </Container>
@@ -134,12 +153,6 @@ const Subtitle = styled.p`
   color: #aaa;
 `;
 
-const StatsSectionRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-`;
-
 const Divider = styled.div`
   width: 100%;
   height: 1px;
@@ -152,32 +165,6 @@ const Section = styled.div`
   padding: 10px 0;
 `;
 
-const Label = styled.label`
-  font-weight: bold;
-  margin-bottom: 5px;
-`;
-
-const FixedInput = styled.div`
-  background: #f6f6f6;
-  padding: 10px;
-  border-radius: 5px;
-  width: 100%;
-`;
-
-const ToggleButton = styled.button`
-  background: black;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  width: 100%;
-`;
-
-const AccountInfo = styled.div`
-  font-weight: bold;
-  color: #f6ae24;
-  margin-bottom: 5px;
-`;
-
 const LinkList = styled.ul`
   margin-top: 10px;
   list-style: none;
@@ -186,23 +173,51 @@ const LinkList = styled.ul`
 
 const LinkItem = styled.li`
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  background: #f6f6f6;
+
+  margin-bottom: 10px;
+`;
+
+const Label = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 16px;
+  color: #000000;
+`;
+
+const LinkContent = styled.div`
+  display: flex;
+  align-items: center;
+  border: 1px solid ${Theme.colors.gray1};
   padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 5px;
+  margin-left: 14px;
+  flex-grow: 1;
 `;
 
-const LinkText = styled.span`
-  font-size: 14px;
+const LinkTitle = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #000000;
 `;
 
-const DeleteButton = styled.button`
-  background: none;
-  border: none;
-  color: red;
-  font-size: 16px;
-  cursor: pointer;
+const Separator = styled.span`
+  color: #aaa;
+  margin: 0 5px;
+`;
+
+const LinkUrl = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #000000;
 `;
 
 const StatsRow = styled.div`
@@ -211,4 +226,11 @@ const StatsRow = styled.div`
   justify-content: space-between;
   width: 100%;
   padding: 0 20px;
+`;
+
+const DeleteButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: auto;
 `;
