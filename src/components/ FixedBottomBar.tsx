@@ -24,14 +24,20 @@ const FixedBottomBar: React.FC<FixedBottomBarProps> = ({
 export default FixedBottomBar;
 
 const BottomBar = styled.div`
+  width: 100%;
   position: fixed;
   bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #fff;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
+  max-width: 800px;
+  background: #eeeeee;
   padding: 10px 0px 34px 0px;
   text-align: center;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 `;
 
 const SettleButton = styled.button<{ color: 'yellow' | 'black' }>`
