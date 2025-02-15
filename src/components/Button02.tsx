@@ -1,21 +1,25 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 interface Button02Props {
   children: React.ReactNode;
-  onClick?: () => void; // onClick은 선택적 속성으로 정의
+  onClick?: () => void;
+  color: 'yellow' | 'black';
 }
 
-const Button02: React.FC<Button02Props> = ({ children, onClick }) => {
-  return <StyledButton onClick={onClick}>{children}</StyledButton>;
+const Button02: React.FC<Button02Props> = ({ children, onClick, color }) => {
+  return (
+    <StyledButton onClick={onClick} color={color}>
+      {children}
+    </StyledButton>
+  );
 };
 
 export default Button02;
 
-const StyledButton = styled.button`
+const StyledButton = styled.button<{ color: 'yellow' | 'black' }>`
   min-width: 69px;
   min-height: 34px;
-  background-color: #f6ae24;
   border-radius: 5px;
   border: none;
   color: #ffffff;
@@ -28,13 +32,26 @@ const StyledButton = styled.button`
   cursor: pointer;
   transition: background-color 0.3s ease;
 
-  &:hover {
-    background-color: #e59c20;
-  }
-
-  &:active {
-    background-color: #cc8c1c;
-  }
+  ${({ color }) =>
+    color === 'yellow'
+      ? css`
+          background-color: #f6ae24;
+          &:hover {
+            background-color: #e59c20;
+          }
+          &:active {
+            background-color: #cc8c1c;
+          }
+        `
+      : css`
+          background-color: #333333;
+          &:hover {
+            background-color: #1a1a1a;
+          }
+          &:active {
+            background-color: #000000;
+          }
+        `}
 
   &:disabled {
     background-color: #cccccc;

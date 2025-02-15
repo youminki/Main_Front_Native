@@ -1,4 +1,3 @@
-// src/components/InputField.tsx
 import React from 'react';
 import styled from 'styled-components';
 import Button02 from './Button02';
@@ -9,6 +8,7 @@ type InputFieldProps = {
   type: string;
   error?: { message: string };
   buttonLabel?: string;
+  buttonColor?: 'yellow' | 'black';
   onButtonClick?: () => void;
   prefix?: string;
   as?: React.ElementType;
@@ -24,6 +24,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
       type,
       error,
       buttonLabel,
+      buttonColor = 'yellow',
       onButtonClick,
       prefix,
       as,
@@ -65,7 +66,9 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
             />
             {buttonLabel && (
               <ButtonWrapper>
-                <Button02 onClick={onButtonClick}>{buttonLabel}</Button02>
+                <Button02 onClick={onButtonClick} color={buttonColor}>
+                  {buttonLabel}
+                </Button02>
               </ButtonWrapper>
             )}
           </InputWrapper>

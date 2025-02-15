@@ -4,7 +4,7 @@ import { ThemeProvider } from 'styled-components';
 import Theme from '../../../styles/Theme';
 import StatsSection from '../../../components/Melpik/StatsSection';
 import InputField from '../../../components/InputField';
-import DeleteIcon from '../../../assets/Melpik/DeleteIcon.svg'; // SVG 아이콘 임포트
+import DeleteIcon from '../../../assets/Melpik/DeleteIcon.svg';
 
 const SettingMelpik: React.FC = () => {
   const visits = '@styleweex';
@@ -70,8 +70,6 @@ const SettingMelpik: React.FC = () => {
             id='melpickAddress'
             type='text'
             placeholder='주소를 입력하세요'
-            buttonLabel='체크'
-            buttonColor='yellow'
             required
             maxLength={12}
             prefix='melpick.com/'
@@ -88,13 +86,16 @@ const SettingMelpik: React.FC = () => {
           <InputField
             placeholder='등록하실 링크를 추가하세요'
             buttonLabel='등록/변경'
+            buttonColor='yellow'
             label='정산 계좌정보 (필수)'
             id='personal-link'
             type='text'
           />
+
           <InputField
             placeholder='등록하실 링크를 추가하세요'
             buttonLabel='링크등록'
+            buttonColor='black'
             label='개인 링크 설정 (선택)'
             id='personal-link'
             type='text'
