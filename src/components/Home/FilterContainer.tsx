@@ -1,7 +1,19 @@
-// src/components/Home/FilterContainer.tsx
 import React from 'react';
 import styled from 'styled-components';
 import FilterIcon from '../../assets/FilterIcon.svg';
+
+export const SeasonToggle = ({
+  isActive,
+  toggle,
+}: {
+  isActive: boolean;
+  toggle: () => void;
+}) => (
+  <StyledSeasonToggle onClick={toggle} $isActive={isActive}>
+    <ToggleCircle $isActive={isActive} />
+    <ToggleText $isActive={isActive}>{isActive ? '켜짐' : '꺼짐'}</ToggleText>
+  </StyledSeasonToggle>
+);
 
 interface FilterContainerProps {
   seasonToggle: boolean;
@@ -16,14 +28,9 @@ const FilterContainer: React.FC<FilterContainerProps> = ({
     <Container>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <SeasonToggle
-          onClick={() => setSeasonToggle(!seasonToggle)}
-          $isActive={seasonToggle}
-        >
-          <ToggleCircle $isActive={seasonToggle} />
-          <ToggleText $isActive={seasonToggle}>
-            {seasonToggle ? '켜짐' : '꺼짐'}
-          </ToggleText>
-        </SeasonToggle>
+          isActive={seasonToggle}
+          toggle={() => setSeasonToggle(!seasonToggle)}
+        />
         <ToggleLabel>계절감</ToggleLabel>
       </div>
       <FilterIconContainer>
@@ -36,7 +43,7 @@ const FilterContainer: React.FC<FilterContainerProps> = ({
 
 export default FilterContainer;
 
-// Styled Components
+// Styled Components for FilterContainer
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
@@ -44,7 +51,7 @@ const Container = styled.div`
   margin-bottom: 20px;
 `;
 
-const SeasonToggle = styled.div<{ $isActive: boolean }>`
+const StyledSeasonToggle = styled.div<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   position: relative;
@@ -74,12 +81,6 @@ const ToggleText = styled.span<{ $isActive: boolean }>`
   transform: translateY(-50%);
   right: ${({ $isActive }) => ($isActive ? '6px' : 'unset')};
   left: ${({ $isActive }) => (!$isActive ? '6px' : 'unset')};
-
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
 `;
 
 const ToggleLabel = styled.span`

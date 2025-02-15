@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, forwardRef } from 'react';
 import styled from 'styled-components';
 import Button02 from './Button02';
+import { SeasonToggle } from '../components/Home/FilterContainer';
 
 type InputFieldProps = {
   label: string;
@@ -13,10 +14,11 @@ type InputFieldProps = {
   prefix?: string;
   as?: React.ElementType;
   isEmailField?: boolean;
+  useToggle?: boolean;
   [key: string]: any;
 };
 
-const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
+const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
   (
     {
       label,
@@ -29,41 +31,25 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
       prefix,
       as,
       isEmailField,
-      onChange,
+      useToggle = false,
       ...rest
     },
     ref
-  ) => (
-    <InputContainer>
-      <Label htmlFor={id} isEmpty={!label}>
-        {label.split('(')[0] || '​'}
-        {label.includes('(') && (
-          <GrayText>{`(${label.split('(')[1]}`}</GrayText>
-        )}
-      </Label>
-      {type === 'password' ? (
-        <PasswordWrapper>
-          <Input
-            as={as}
-            type={type}
-            id={id}
-            ref={ref}
-            onChange={onChange}
-            {...rest}
-          />
-        </PasswordWrapper>
-      ) : (
+  ) => {
+    const [toggle, setToggle] = useState(false);
+
+    return (
+      <InputContainer>
+        <Label htmlFor={id} isEmpty={!label}>
+          {label.split('(')[0] || '​'}
+          {label.includes('(') && (
+            <GrayText>{`(${label.split('(')[1]}`}</GrayText>
+          )}
+        </Label>
         <InputRow>
           {prefix && <PrefixText>{prefix}</PrefixText>}
           <InputWrapper>
-            <Input
-              as={as}
-              type={type}
-              id={`${id}-local`}
-              ref={ref}
-              onChange={onChange}
-              {...rest}
-            />
+            <Input as={as} type={type} id={`${id}-local`} ref={ref} {...rest} />
             {buttonLabel && (
               <ButtonWrapper>
                 <Button02 onClick={onButtonClick} color={buttonColor}>
@@ -71,25 +57,29 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
                 </Button02>
               </ButtonWrapper>
             )}
+            {useToggle && (
+              <ToggleWrapper>
+                <SeasonToggle
+                  isActive={toggle}
+                  toggle={() => setToggle(!toggle)}
+                />
+              </ToggleWrapper>
+            )}
           </InputWrapper>
           {isEmailField && <AtSymbol>@</AtSymbol>}
           {isEmailField && (
-            <InputWrapper>
-              <EmailDropdown id={`${id}-domain`} defaultValue='naver.com'>
-                <option value='gmail.com'>gmail.com</option>
-                <option value='naver.com'>naver.com</option>
-                <option value='daum.net'>daum.net</option>
-              </EmailDropdown>
-            </InputWrapper>
+            <EmailDropdown id={`${id}-domain`} defaultValue='naver.com'>
+              <option value='gmail.com'>gmail.com</option>
+              <option value='naver.com'>naver.com</option>
+              <option value='daum.net'>daum.net</option>
+            </EmailDropdown>
           )}
         </InputRow>
-      )}
-      {error && <ErrorMessage>{error.message}</ErrorMessage>}
-    </InputContainer>
-  )
+        {error && <ErrorMessage>{error.message}</ErrorMessage>}
+      </InputContainer>
+    );
+  }
 );
-
-InputField.displayName = 'InputField';
 
 export default InputField;
 
@@ -106,7 +96,6 @@ const Label = styled.label<{ isEmpty: boolean }>`
   font-size: 10px;
   font-weight: 700;
   line-height: 11.05px;
-
   text-align: left;
   visibility: ${({ isEmpty }) => (isEmpty ? 'hidden' : 'visible')};
 `;
@@ -132,12 +121,6 @@ const PrefixText = styled.span`
   color: ${({ theme }) => theme.colors.black};
 `;
 
-const AtSymbol = styled.span`
-  margin: 0 10px;
-  font-size: 16px;
-  color: ${({ theme }) => theme.colors.black};
-`;
-
 const InputWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -145,29 +128,8 @@ const InputWrapper = styled.div`
   border-radius: 4px;
   height: 57px;
   overflow: hidden;
-
   flex: 1;
   position: relative;
-
-  select {
-    font-family: 'NanumSquare Neo OTF';
-    font-style: normal;
-    font-weight: 800;
-    font-size: 13px;
-    line-height: 14px;
-
-    color: #000000;
-  }
-
-  option {
-    font-family: 'NanumSquare Neo OTF';
-    font-style: normal;
-    font-weight: 800;
-    font-size: 13px;
-    line-height: 14px;
-
-    color: #000000;
-  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -177,16 +139,12 @@ const ButtonWrapper = styled.div`
   bottom: 0;
   display: flex;
   align-items: center;
-  padding-right: 10px;
 `;
 
-const PasswordWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  border: 1px solid ${({ theme }) => theme.colors.gray1};
-  border-radius: 4px;
-  height: 57px;
-  overflow: hidden;
+const AtSymbol = styled.span`
+  margin: 0 10px;
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.black};
 `;
 
 const Input = styled.input`
@@ -200,7 +158,6 @@ const Input = styled.input`
   &::placeholder {
     font-family: 'NanumSquare Neo OTF';
     font-size: 13px;
-
     font-weight: 400;
     line-height: 14.37px;
     text-align: left;
@@ -222,4 +179,13 @@ const ErrorMessage = styled.span`
   color: blue;
   font-size: 12px;
   margin-top: 5px;
+`;
+
+const ToggleWrapper = styled.div`
+  position: absolute;
+  right: 10px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
 `;

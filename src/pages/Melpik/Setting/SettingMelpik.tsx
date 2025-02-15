@@ -77,10 +77,10 @@ const SettingMelpik: React.FC = () => {
 
           <InputField
             placeholder='등록하실 링크를 추가하세요'
-            buttonLabel='켜짐/꺼짐'
             label='멜픽 자동생성 설정'
-            id='personal-link'
+            id='auto-create-toggle'
             type='text'
+            useToggle={true}
           />
 
           <InputField
