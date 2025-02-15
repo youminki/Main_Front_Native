@@ -65,6 +65,7 @@ const App: React.FC = () => {
     '/schedule/reservation1',
     '/schedule/reservation2',
     '/schedule/reservation3',
+    '/sales-settlement-detail/:id',
   ];
 
   const header4Paths = ['/signup', '/findid', 'findPassword'];
@@ -105,6 +106,9 @@ const App: React.FC = () => {
     if (matchPath('/schedule/reservation3', location.pathname)) {
       return '스케줄 예약하기';
     }
+    if (matchPath('/sales-settlement-detail/:id', location.pathname)) {
+      return '정산내역 상세';
+    }
     return '';
   };
 
@@ -117,9 +121,6 @@ const App: React.FC = () => {
     }
     if (matchPath('/findPassword', location.pathname)) {
       return '비밀번호찾기';
-    }
-    if (matchPath('/sales-settlement-detail', location.pathname)) {
-      return '정산내역 상세';
     }
 
     return '';

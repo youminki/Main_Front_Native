@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
-import InputField from '../../../components/InputField';
 
 const SalesSettlementDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
