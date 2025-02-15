@@ -43,13 +43,13 @@ const SettlementRequest: React.FC = () => {
           />
         </RowContainer>
 
-        <Notice>
+        <Notice1>
           ※ 정산금액은 세액 공제 및 신고비용을 제외한 나머지 금액입니다.
-        </Notice>
-        <Notice>
+        </Notice1>
+        <Notice2>
           정산 가능시간 (평일 09:00 ~ 22:00) /{' '}
           <Highlight>공휴일 신청불가</Highlight>
-        </Notice>
+        </Notice2>
 
         <FixedBottomBar
           text='신청완료'
@@ -66,7 +66,7 @@ export default SettlementRequest;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+
   width: 100%;
   margin: 0 auto;
   padding: 20px;
@@ -78,13 +78,34 @@ const RowContainer = styled.div`
   width: 100%;
 `;
 
-const Notice = styled.p`
+const Notice1 = styled.p`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
   font-size: 12px;
-  color: #666;
+  line-height: 13px;
+
+  color: #999999;
   margin-top: 10px;
+`;
+const Notice2 = styled.p`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 13px;
+
+  color: #000000;
+  margin-top: 0px;
+  padding: 0 15px;
 `;
 
 const Highlight = styled.span`
-  color: red;
-  font-weight: bold;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 13px;
+
+  color: #ef4523;
 `;
