@@ -49,6 +49,7 @@ const App: React.FC = () => {
     '/create-melpik',
     '/brand/:brandName',
     '/sales-schedule',
+    '/melpik-settings',
   ];
 
   // Header3가 포함될 경로 패턴
@@ -87,6 +88,7 @@ const App: React.FC = () => {
     if (matchPath('/sales-schedule', location.pathname)) {
       return '판매 스케줄';
     }
+
     if (matchPath('/schedule/confirmation', location.pathname)) {
       return '예약 스케줄 확인';
     }
