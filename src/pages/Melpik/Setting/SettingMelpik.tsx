@@ -41,7 +41,6 @@ const SettingMelpik: React.FC = () => {
   ]);
 
   const handleDelete = (linkId: number) => {
-    // 매개변수의 타입을 명시적으로 선언
     setLinks(links.filter((link) => link.id !== linkId));
   };
 
@@ -73,8 +72,8 @@ const SettingMelpik: React.FC = () => {
             required
             maxLength={12}
             prefix='melpick.com/'
-            readOnly // 입력 필드를 읽기 전용으로 설정
-            defaultValue='styleweex' // 임시 데이터로 'styleweex' 설정
+            readOnly
+            defaultValue='styleweex'
           />
 
           <InputField
