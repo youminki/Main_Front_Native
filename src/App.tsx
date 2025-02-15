@@ -21,7 +21,8 @@ import BrandDetail from './pages/Brand/BrandDetail';
 import Melpik from './pages/Melpik/Melpik';
 import CreateMelpik from './pages/Melpik/Create/CreateMelpik';
 import ContemporarySettings from './pages/Melpik/Create/ContemporarySettings';
-import Setting from './pages/Melpik/Setting/SettingMelpik.tsx';
+import Setting from './pages/Melpik/Setting/SettingMelpik';
+import SalesSettlement from './pages/Melpik/Calculate/SalesSettlement';
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
 
@@ -50,6 +51,7 @@ const App: React.FC = () => {
     '/brand/:brandName',
     '/sales-schedule',
     '/melpik-settings',
+    '/sales-settlement',
   ];
 
   // Header3가 포함될 경로 패턴
@@ -144,6 +146,7 @@ const App: React.FC = () => {
             path='/createMelpik/settings'
             element={<ContemporarySettings />}
           />
+          <Route path='/sales-settlement' element={<SalesSettlement />} />
           <Route path='/melpik-settings' element={<Setting />} />
           <Route path='/sales-schedule' element={<Scedule />} />
           <Route
