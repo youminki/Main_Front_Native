@@ -1,6 +1,6 @@
-import React from "react";
-import styled from "styled-components";
-import Arrow from "../../assets/Home/Arrow.svg";
+import React from 'react';
+import styled from 'styled-components';
+import Arrow from '../../assets/Home/Arrow.svg';
 
 const Notice: React.FC = () => {
   return (
@@ -9,7 +9,7 @@ const Notice: React.FC = () => {
       <NoticeText>2024년 7월 1차 업데이트 예정 공개</NoticeText>
 
       <Icons>
-        <Icon src={Arrow} alt="스케줄" />
+        <Icon src={Arrow} alt='스케줄' />
       </Icons>
     </NoticeContainer>
   );
@@ -33,7 +33,7 @@ const NoticeTag = styled.div`
 
   padding: 5px 8px;
   border-radius: 4px;
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 10px;
@@ -47,7 +47,7 @@ const NoticeTag = styled.div`
 const NoticeText = styled.div`
   flex: 1;
   margin-left: 12px;
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
