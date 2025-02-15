@@ -24,6 +24,7 @@ import ContemporarySettings from './pages/Melpik/Create/ContemporarySettings';
 import Setting from './pages/Melpik/Setting/SettingMelpik';
 import SalesSettlement from './pages/Melpik/Calculate/SalesSettlement';
 import SalesSettlementDetail from './pages/Melpik/Calculate/SalesSettlementDetail';
+import SettlementRequest from './pages/Melpik/Calculate/SettlementRequest';
 
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
@@ -66,6 +67,7 @@ const App: React.FC = () => {
     '/schedule/reservation2',
     '/schedule/reservation3',
     '/sales-settlement-detail/:id',
+    'settlement-request',
   ];
 
   const header4Paths = ['/signup', '/findid', 'findPassword'];
@@ -109,6 +111,10 @@ const App: React.FC = () => {
     if (matchPath('/sales-settlement-detail/:id', location.pathname)) {
       return '정산내역 상세';
     }
+    if (matchPath('/settlement-request', location.pathname)) {
+      return '정산신청';
+    }
+
     return '';
   };
 
@@ -157,6 +163,8 @@ const App: React.FC = () => {
             path='/sales-settlement-detail/:id'
             element={<SalesSettlementDetail />}
           />
+          <Route path='/settlement-request' element={<SettlementRequest />} />
+
           <Route path='/melpik-settings' element={<Setting />} />
           <Route path='/sales-schedule' element={<Scedule />} />
           <Route

@@ -47,7 +47,7 @@ const SettleButton = styled.button<{ color: 'yellow' | 'black' }>`
   border-radius: 6px;
   cursor: pointer;
   background-color: ${({ color }) =>
-    color === 'yellow' ? '#FFD700' : 'black'};
-  color: ${({ color }) => (color === 'yellow' ? 'black' : 'white')};
+    color === 'yellow' ? '#F6AE24' : 'black'};
+  color: ${({ color }) => (color === 'yellow' ? 'white' : 'white')};
   border: none;
 `;

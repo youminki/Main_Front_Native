@@ -1,6 +1,6 @@
-// src/components/AgreementSection.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import ReusableModal from '../../ReusableModal';
 
 type AgreementSectionProps = {};
 
@@ -17,7 +17,6 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
   });
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalContent, setModalContent] = useState('');
 
   const handleAllChecked = () => {
     const newValue = !allChecked;
@@ -36,8 +35,7 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
     }));
   };
 
-  const handleViewDetails = (content: string) => {
-    setModalContent(content);
+  const handleViewDetails = () => {
     setModalVisible(true);
   };
 
@@ -62,25 +60,18 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
           <Checkbox
             type='checkbox'
             id='agree1'
-            required
             checked={individualChecks.agree1}
             onChange={handleIndividualCheck}
           />
           <Label htmlFor='agree1'>
-            이용약관 동의 <RequiredText>(필수)</RequiredText>
+            정산에 따른 동의 <RequiredText>(필수)</RequiredText>
           </Label>
         </CheckboxWrapper>
         <InputWrapper>
           <DescriptionWrapper>
             <Description>이용 전 필수사항 및 주의사항 안내.</Description>
           </DescriptionWrapper>
-          <ViewDetailsButton
-            onClick={() =>
-              handleViewDetails(`
-                본 약관은 주식회사 멜픽(이하 "회사"라 합니다.)가 제공하는 의류 및 잡화(이하 "제품"이라 합니다.) 판매 및 전자상거래에 관한 온/오프라인상의 제반 서비스(이하 "서비스"라 합니다.)를 이용함에 있어서 회사와 회원의 권리와 의무에 대한 책임사항을 규정함을 목적으로 합니다.
-              `)
-            }
-          >
+          <ViewDetailsButton onClick={handleViewDetails}>
             전체보기
           </ViewDetailsButton>
         </InputWrapper>
@@ -88,45 +79,19 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
           <Checkbox
             type='checkbox'
             id='agree2'
-            required
             checked={individualChecks.agree2}
             onChange={handleIndividualCheck}
           />
           <Label htmlFor='agree2'>
-            개인정보수집 동의 <RequiredText>(필수)</RequiredText>
+            정산계좌 확인 <RequiredText>(필수)</RequiredText>
           </Label>
         </CheckboxWrapper>
-        <InputWrapper>
-          <DescriptionWrapper>
-            <Description>서비스 이용에 필요한 개인정보 수집 안내.</Description>
-          </DescriptionWrapper>
-          <ViewDetailsButton
-            onClick={() => handleViewDetails('개인정보수집 내용')}
-          >
-            전체보기
-          </ViewDetailsButton>
-        </InputWrapper>
+        <ReadonlyInput value='234501-04-654122 (국민) - 홍길동' readOnly />
       </ContentContainer>
 
-      {modalVisible && (
-        <Modal>
-          <ModalContent>
-            <ContentWrapper>
-              <ModalHeader>
-                <ModalTitle>이용약관</ModalTitle>
-                <GrayLine />
-                <SectionTitle>제1장 총칙</SectionTitle>
-                <SubTitle>제1조 (목적)</SubTitle>
-              </ModalHeader>
-              <Text>{modalContent}</Text>
-              <GrayLine />
-              <CloseButtonWrapper>
-                <CloseButton onClick={closeModal}>확인</CloseButton>
-              </CloseButtonWrapper>
-            </ContentWrapper>
-          </ModalContent>
-        </Modal>
-      )}
+      <ReusableModal isOpen={modalVisible} onClose={closeModal} title='알림'>
+        정산처리가 완료 되었습니다.
+      </ReusableModal>
     </AgreementWrapper>
   );
 };
@@ -206,8 +171,13 @@ const Checkbox = styled.input`
 `;
 
 const Label = styled.label`
-  ${({ theme }) => theme.fonts.default};
-  color: ${({ theme }) => theme.colors.black};
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 13px;
+
+  color: #000000;
 `;
 
 const RequiredText = styled.span`
@@ -243,96 +213,20 @@ const Description = styled.p`
   font-size: 12px;
   line-height: 13px;
 `;
-
-const Modal = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 27px;
-  z-index: 9999;
-`;
-
-const ModalContent = styled.div`
-  background-color: ${({ theme }) => theme.colors.white};
+const ReadonlyInput = styled.input`
+  width: 100%;
   padding: 20px;
-  max-width: 500px;
-  width: 100%;
-  height: 670px;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`;
+  box-sizing: border-box;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  font-size: 14px;
 
-const ContentWrapper = styled.div`
-  flex-grow: 1;
-  height: 486px;
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ModalTitle = styled.p`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 800;
-  font-size: 16px;
-  line-height: 16px;
-  margin-top: 20px;
-`;
-
-const SectionTitle = styled.p`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 400;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 700;
   font-size: 12px;
-  line-height: 13.26px;
-  margin-bottom: 20px;
-`;
+  line-height: 13px;
 
-const SubTitle = styled.p`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 13.26px;
-  margin-bottom: 20px;
-`;
-
-const Text = styled.p`
-  height: 386px;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 13.26px;
-  margin-bottom: 20px;
-  color: ${({ theme }) => theme.colors.gray2};
-`;
-
-const GrayLine = styled.hr`
-  border: none;
-  width: 100%;
-  border: 1px solid ${({ theme }) => theme.colors.gray0};
-  margin: 20px 0;
-`;
-
-const CloseButtonWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const CloseButton = styled.button`
-  width: 100%;
-  height: 56px;
-  background-color: #000000;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
+  color: #000000;
+  cursor: not-allowed;
 `;
