@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import StatsSection from '../../../components/Melpik/StatsSection';
 import FixedBottomBar from '../../../components/ FixedBottomBar';
 
 const SalesSettlement: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(6);
+  const navigate = useNavigate();
 
   const visits = '230,400';
   const sales = '02.07';
@@ -118,7 +120,12 @@ const SalesSettlement: React.FC = () => {
 
         <SettlementList>
           {filteredSettlements.map((settlement) => (
-            <SettlementItem key={settlement.id}>
+            <SettlementItem
+              key={settlement.id}
+              onClick={() =>
+                navigate(`/sales-settlement-detail/${settlement.id}`)
+              }
+            >
               <LeftSection>
                 <StatusDate>
                   <StatusTag

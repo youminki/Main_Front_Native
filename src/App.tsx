@@ -23,6 +23,8 @@ import CreateMelpik from './pages/Melpik/Create/CreateMelpik';
 import ContemporarySettings from './pages/Melpik/Create/ContemporarySettings';
 import Setting from './pages/Melpik/Setting/SettingMelpik';
 import SalesSettlement from './pages/Melpik/Calculate/SalesSettlement';
+import SalesSettlementDetail from './pages/Melpik/Calculate/SalesSettlementDetail';
+
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
 
@@ -116,6 +118,9 @@ const App: React.FC = () => {
     if (matchPath('/findPassword', location.pathname)) {
       return '비밀번호찾기';
     }
+    if (matchPath('/sales-settlement-detail', location.pathname)) {
+      return '정산내역 상세';
+    }
 
     return '';
   };
@@ -147,6 +152,10 @@ const App: React.FC = () => {
             element={<ContemporarySettings />}
           />
           <Route path='/sales-settlement' element={<SalesSettlement />} />
+          <Route
+            path='/sales-settlement-detail/:id'
+            element={<SalesSettlementDetail />}
+          />
           <Route path='/melpik-settings' element={<Setting />} />
           <Route path='/sales-schedule' element={<Scedule />} />
           <Route
