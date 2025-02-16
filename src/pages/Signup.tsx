@@ -8,6 +8,8 @@ import AgreementSection from '../components/Signup/AgreementSection';
 import Theme from '../styles/Theme';
 import BottomBar from '../components/BottomNav2';
 import ResetButtonIcon from '../assets/ResetButton.png';
+import { signupUser } from '../api/user/signup';
+import { useNavigate } from 'react-router-dom';
 
 type SignupFormData = {
   email: string;
@@ -21,13 +23,17 @@ type SignupFormData = {
   district: string;
   melpickAddress: string;
   instar: string;
+  agreeToTerms: boolean;
+  agreeToPrivacyPolicy: boolean;
 };
 
 const Signup: React.FC = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    watch,
   } = useForm<SignupFormData>({
     resolver: yupResolver(schemaSignup),
     mode: 'all',
@@ -74,8 +80,46 @@ const Signup: React.FC = () => {
     console.log('멜픽 주소 확인:', melpickAddress);
   };
 
-  const onSubmit: SubmitHandler<SignupFormData> = (data) => {
-    console.log('Form Data: ', data);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
+    if (data.password !== data.passwordConfirm) {
+      setErrorMessage('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    setErrorMessage(null);
+
+    const formattedData = {
+      email: data.email,
+      password: data.password,
+      name: data.name,
+      nickname: data.nickname,
+      birthdate: `${data.birthYear}-01-01`,
+      address: `${data.region} ${data.district}`,
+      phoneNumber: data.phoneNumber,
+      gender: gender === '여성' ? 'female' : 'male',
+      instagramId: data.instar || undefined,
+      agreeToTerms: data.agreeToTerms,
+      agreeToPrivacyPolicy: data.agreeToPrivacyPolicy,
+    };
+
+    try {
+      const response = await signupUser(formattedData);
+
+      if (response && response.success) {
+        console.log('회원가입 성공:', response);
+        alert('🎉 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
+        navigate('/login'); // 회원가입 후 로그인 페이지로 이동
+      } else {
+        throw new Error(response.message || '회원가입 실패');
+      }
+    } catch (error) {
+      console.error('회원가입 실패:', error);
+      setErrorMessage(
+        typeof error === 'string' ? error : '회원가입 중 오류가 발생했습니다.'
+      );
+    }
   };
 
   return (
@@ -83,6 +127,9 @@ const Signup: React.FC = () => {
       <Container>
         <Form onSubmit={handleSubmit(onSubmit)}>
           <AgreementSection />
+
+          {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+
           <InputField
             label='계정(이메일)'
             id='email'
@@ -241,7 +288,12 @@ const Signup: React.FC = () => {
             prefix='melpick.com/'
           />
           <BlackContainer />
-          <BottomBar imageSrc={ResetButtonIcon} buttonText='작성 완료' />
+          <BottomBar
+            imageSrc={ResetButtonIcon}
+            buttonText={isSubmitting ? '가입 중...' : '회원가입'}
+            type='submit'
+            disabled={isSubmitting}
+          />
         </Form>
       </Container>
     </ThemeProvider>
