@@ -100,6 +100,15 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             )}
           </InputWrapper>
           {isEmailField && <AtSymbol>@</AtSymbol>}
+          {isEmailField && (
+            <InputWrapper>
+              <EmailDropdown id={`${id}-domain`} defaultValue='naver.com'>
+                <option value='gmail.com'>gmail.com</option>
+                <option value='naver.com'>naver.com</option>
+                <option value='daum.net'>daum.net</option>
+              </EmailDropdown>
+            </InputWrapper>
+          )}
         </InputRow>
         {error && <ErrorMessage>{error.message}</ErrorMessage>}
       </InputContainer>
@@ -215,4 +224,13 @@ const ErrorMessage = styled.span`
   color: blue;
   font-size: 12px;
   margin-top: 5px;
+`;
+
+const EmailDropdown = styled.select`
+  font-size: 16px;
+  border: none;
+  padding: 0 11px;
+  flex: 1;
+  height: 100%;
+  background-color: ${({ theme }) => theme.colors.white};
 `;
