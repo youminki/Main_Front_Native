@@ -11,6 +11,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FindId from './pages/FindId';
 import FindPassword from './pages/FindPassword';
+import Basket from './pages/Basket';
+
 import Home from './pages/Home/Home';
 import HomeDetail from './pages/Home/HomeDetail';
 import Analysis from './pages/Analysis';
@@ -148,6 +150,7 @@ const App: React.FC = () => {
           <Route path='/findid' element={<FindId />} />
           <Route path='/findPassword' element={<FindPassword />} />
           <Route path='/analysis' element={<Analysis />} />
+          <Route path='/basket' element={<Basket />} />
 
           <Route path='/brand' element={<Brand />} />
           <Route path='/brand/:brandName' element={<BrandDetail />} />
