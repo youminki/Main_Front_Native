@@ -14,10 +14,7 @@ import NaverImg from '../assets/NaverImg.svg';
 import GoogleImg from '../assets/GoogleImg.svg';
 
 const schemaLogin = yup.object({
-  email: yup
-    .string()
-    .email('유효한 이메일 주소를 입력하세요')
-    .required('이메일은 필수 입력 사항입니다'),
+  id: yup.string().required('사용자 ID는 필수 입력 사항입니다'),
   password: yup
     .string()
     .min(6, '비밀번호는 최소 6자 이상이어야 합니다')
@@ -25,7 +22,7 @@ const schemaLogin = yup.object({
 });
 
 type LoginFormValues = {
-  email: string;
+  id: string;
   password: string;
 };
 
@@ -41,17 +38,22 @@ const Login: React.FC = () => {
   } = useForm<LoginFormValues>({
     resolver: yupResolver(schemaLogin),
     mode: 'onChange',
-    defaultValues: { email: '', password: '' },
+    defaultValues: { id: '', password: '' },
   });
 
   const handleLoginClick = async (data: LoginFormValues) => {
     try {
-      const response = await LoginPost(data.email, data.password);
-      console.log('로그인 성공:', response);
-      navigate('/home');
-    } catch (error) {
-      console.error('로그인 실패:', error);
-      setModalMessage('로그인 실패. 이메일 또는 비밀번호를 확인하세요.');
+      const response = await LoginPost(data.id, data.password);
+      console.log('✅ 로그인 성공:', response);
+
+      // ✅ 토큰 안전하게 저장
+      localStorage.setItem('accessToken', response.accessToken);
+      localStorage.setItem('refreshToken', response.refreshToken);
+
+      navigate('/home'); // 로그인 성공 후 이동
+    } catch (error: any) {
+      console.error('❌ 로그인 실패:', error);
+      setModalMessage(error?.message || '로그인 실패. 다시 시도해주세요.');
       setIsModalOpen(true);
     }
   };
@@ -76,14 +78,14 @@ const Login: React.FC = () => {
             <InputFieldRow>
               <Controller
                 control={control}
-                name='email'
+                name='id' // ✅ ID 필드로 변경
                 render={({ field }) => (
                   <InputField
-                    label='계정(이메일)'
-                    id='email'
+                    label='사용자 ID'
+                    id='id'
                     type='text'
-                    error={errors.email?.message}
-                    placeholder='계정을 입력하세요'
+                    error={errors.id?.message}
+                    placeholder='사용자 ID를 입력하세요'
                     isEmailField={true}
                     {...field}
                   />

@@ -16,7 +16,7 @@ export const schemaSignup = yup
     email: yup
       .string()
       .required('이메일을 입력해주세요.')
-      .email('유효한 이메일 형식이 아닙니다.')
+
       .min(5, '이메일은 최소 5자 이상이어야 합니다.')
       .max(50, '이메일은 최대 50자까지 입력 가능합니다.'),
     password: yup

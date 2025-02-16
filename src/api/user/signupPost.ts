@@ -1,4 +1,4 @@
-import { Axios } from '../../api/Axios';
+import { Axios } from '../Axios';
 
 interface SignupData {
   email: string;

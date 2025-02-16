@@ -1,45 +1,35 @@
-import { Axios } from '../Axios.ts';
+// src/api/auth/LoginPost.ts
+import { Axios } from '../Axios';
 
-interface LoginResponse {
-  accessToken: string; // 서버에서 반환하는 액세스 토큰의 구조에 따라 수정
-  refreshToken?: string; // 만약 리프레시 토큰도 반환된다면 추가
-  user?: {
-    id: string;
-    email: string;
-    [key: string]: any; // 유저 데이터 구조에 맞게 세부 필드 추가 가능
-  };
-}
-
-interface LoginError {
-  message: string;
-  statusCode?: number;
-  [key: string]: any; // 에러 객체의 추가적인 필드를 정의 가능
-}
-
-/**
- * 사용자 로그인 요청 함수
- * @param email - 사용자 이메일
- * @param password - 사용자 비밀번호
- * @returns 로그인 성공 시 서버에서 반환된 데이터 (액세스 토큰 등)
- * @throws 로그인 실패 시 에러 메시지
- */
-export const LoginPost = async (
-  email: string,
-  password: string
-): Promise<LoginResponse> => {
+export const LoginPost = async (id: string, password: string) => {
   try {
-    const response = await Axios.post<LoginResponse>('/auth/login', {
-      email,
-      password,
-    });
-    return response.data;
+    console.log('📤 로그인 요청 데이터:', { id, password }); // ✅ 요청 데이터 확인
+
+    const response = await Axios.post(
+      '/auth/login',
+      { id, password }, // ✅ API 명세서에 맞게 "id"와 "password" 전달
+      {
+        headers: { 'Content-Type': 'application/json' }, // ✅ JSON 데이터 형식 지정
+      }
+    );
+
+    if (response.status === 200) {
+      console.log('✅ 로그인 성공:', response.data);
+      return response.data; // { accessToken, refreshToken }
+    } else {
+      throw new Error('로그인 실패');
+    }
   } catch (error: any) {
-    console.error('Login failed:', error);
-    const errorMessage: LoginError = {
-      message:
-        error.response?.data?.message || '알 수 없는 에러가 발생했습니다.',
-      statusCode: error.response?.status,
-    };
-    throw errorMessage;
+    console.error(
+      '❌ 로그인 요청 실패:',
+      error.response?.data || error.message
+    );
+
+    // ✅ 401 에러일 경우 사용자에게 명확한 메시지 전달
+    if (error.response?.status === 401) {
+      throw { message: '잘못된 사용자 ID 또는 비밀번호입니다.' };
+    }
+
+    throw error.response?.data || { message: '로그인 요청에 실패했습니다.' };
   }
 };

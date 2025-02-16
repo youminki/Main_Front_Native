@@ -8,7 +8,7 @@ import AgreementSection from '../components/Signup/AgreementSection';
 import Theme from '../styles/Theme';
 import BottomBar from '../components/BottomNav2';
 import ResetButtonIcon from '../assets/ResetButton.png';
-import { signupUser } from '../api/user/signup';
+import { signupUser } from '../api/user/signupPost';
 import { useNavigate } from 'react-router-dom';
 
 type SignupFormData = {
@@ -351,7 +351,7 @@ const GenderRow = styled.div`
 
 const GenderButton = styled.button<{ selected: boolean; isSelected: boolean }>`
   flex: 1;
-  border: ${({ isSelected }) => (isSelected ? '2px solid #f6ae24' : 'none')};
+  border: ${({ $isSelected }) => ($isSelected ? '2px solid #f6ae24' : 'none')};
   border-radius: 10px;
   background-color: ${({ selected }) => (selected ? '#FFFFFF' : '#EEEEEE')};
   color: ${({ selected }) => (selected ? '#000000' : '#999999')};
