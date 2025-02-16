@@ -6,35 +6,41 @@ import Cookies from 'js-cookie';
 import Alarm from '../assets/Header/AlarmIcon.svg';
 import BasketIcon from '../assets/Header/BasketIcon.svg';
 import MypageIcon from '../assets/Header/MypageIcon.svg';
+// import LogoutIcon from '../assets/Header/LogoutIcon.svg'; // 로그아웃 아이콘 추가
 import Logo from '../assets/Logo.svg';
 
-// Header 컴포넌트 정의
 const Header: React.FC = () => {
   const navigate = useNavigate();
 
   // 상태 정의
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [nickname, setNickname] = useState<string>('');
+  const [nickname, setNickname] = useState<string>('사용자'); // 기본 닉네임
 
-  // useEffect로 쿠키 가져오기
   useEffect(() => {
-    const userNickname = Cookies.get('nickname'); // 쿠키에서 "nickname" 가져오기
-    if (userNickname) {
+    // ✅ 토큰 확인 후 로그인 상태 변경
+    const accessToken = Cookies.get('accessToken');
+    const userNickname = Cookies.get('nickname');
+
+    if (accessToken) {
       setIsLoggedIn(true);
-      setNickname(userNickname);
+      setNickname(userNickname || '멜픽 회원'); // 닉네임이 없으면 기본값 사용
     } else {
       setIsLoggedIn(false);
     }
   }, []);
 
-  // 이벤트 핸들러
-  const handleMypageClick = (): void => {
+  // ✅ 로그아웃 핸들러 (쿠키 삭제 후 상태 업데이트)
+  const handleLogout = () => {
+    Cookies.remove('accessToken');
+    Cookies.remove('refreshToken');
+    Cookies.remove('nickname');
+    setIsLoggedIn(false);
     navigate('/login');
   };
 
-  const handleBasketClick = (): void => {
-    navigate('/basket');
-  };
+  // ✅ 페이지 이동 핸들러
+  const handleMypageClick = () => navigate('/mypage');
+  const handleBasketClick = () => navigate('/basket');
 
   return (
     <HeaderWrapper>
@@ -58,15 +64,20 @@ const Header: React.FC = () => {
         <RightSection>
           {isLoggedIn ? (
             <>
-              <Icon src={BasketIcon} alt='Basket' onClick={handleBasketClick} />
+              <Icon
+                src={BasketIcon}
+                alt='장바구니'
+                onClick={handleBasketClick}
+              />
               <Icon src={Alarm} alt='알림' />
+              {/* <Icon src={LogoutIcon} alt='로그아웃' onClick={handleLogout} /> */}
             </>
           ) : (
             <>
               <Icon
                 src={MypageIcon}
                 alt='마이페이지'
-                onClick={handleMypageClick}
+                onClick={() => navigate('/login')}
               />
               <Icon src={Alarm} alt='알림' />
             </>
