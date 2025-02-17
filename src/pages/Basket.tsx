@@ -7,6 +7,8 @@ import PriceIcon from '../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
 import FixedBottomBar from '../components/FixedBottomBar';
+import { useNavigate } from 'react-router-dom';
+
 interface BasketItem {
   id: number;
   brand: string;
@@ -23,6 +25,7 @@ interface BasketItem {
 }
 
 const Basket: React.FC = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState<BasketItem[]>([
     {
       id: 1,
@@ -55,10 +58,12 @@ const Basket: React.FC = () => {
     );
     setItems(updatedItems);
   };
-  const handlePayment = () => {
-    // 결제하기 처리 로직 추가
-    alert('결제하기 버튼 클릭');
+
+  const handleConfirmPayment = () => {
+    alert('결제가 완료되었습니다!');
+    navigate('/payment'); // 결제 완료 후 메인 페이지로 이동
   };
+
   return (
     <Container>
       <Header>
@@ -175,7 +180,11 @@ const Basket: React.FC = () => {
           </ButtonContainer>
         </Item>
       ))}
-      <FixedBottomBar text='결제하기' color='yellow' onClick={handlePayment} />
+      <FixedBottomBar
+        onClick={handleConfirmPayment}
+        text='결제하기'
+        color='yellow'
+      />
     </Container>
   );
 };
