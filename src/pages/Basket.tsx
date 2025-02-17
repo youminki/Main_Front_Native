@@ -78,56 +78,75 @@ const Basket: React.FC = () => {
                 <ItemType>{item.nameType}</ItemType>
               </ItemName>
 
-              {/* 진행 서비스 */}
+              {/* 진행 서비스 + 추가 정보 */}
               {item.type === 'rental' ? (
-                <>
-                  {/* 1) 진행 서비스 - 대여(3일) */}
-                  <InfoRow>
+                <InfoRowFlex>
+                  <IconArea>
                     <Icon src={ServiceInfoIcon} alt='Service Info' />
-                    <DetailText>진행 서비스 - </DetailText>
-                    <DetailHighlight>대여(3일)</DetailHighlight>
-                  </InfoRow>
-
-                  {/* 2) 대여 기간 (예: 2025.03.02 ~ 03.05) */}
-                  <InfoRow>
-                    <DetailText>{item.servicePeriod}</DetailText>
-                  </InfoRow>
-                </>
+                  </IconArea>
+                  <TextContainer>
+                    <RowText>
+                      <LabelDetailText>진행 서비스 - </LabelDetailText>
+                      <DetailHighlight>대여(3일)</DetailHighlight>
+                    </RowText>
+                    {item.servicePeriod && (
+                      <AdditionalText>
+                        <DetailText>{item.servicePeriod}</DetailText>
+                      </AdditionalText>
+                    )}
+                  </TextContainer>
+                </InfoRowFlex>
               ) : (
-                <>
-                  <InfoRow>
+                <InfoRowFlex>
+                  <IconArea>
                     <Icon src={ServiceInfoIcon} alt='Service Info' />
-                    <DetailText>진행 서비스 - 구매</DetailText>
-                  </InfoRow>
-                  <InfoRow>
-                    <DetailText>{item.deliveryDate}</DetailText>
-                  </InfoRow>
-                </>
+                  </IconArea>
+                  <TextContainer>
+                    <RowText>
+                      <DetailText>진행 서비스 - 구매</DetailText>
+                    </RowText>
+                    {item.deliveryDate && (
+                      <AdditionalText>
+                        <DetailText>{item.deliveryDate}</DetailText>
+                      </AdditionalText>
+                    )}
+                  </TextContainer>
+                </InfoRowFlex>
               )}
 
-              {/* 제품 정보 */}
-              {/* 3) '제품 정보' 라벨만 별도 라인 */}
-              <InfoRow>
-                <Icon src={ProductInfoIcon} alt='Product Info' />
-                <DetailText>제품 정보</DetailText>
-              </InfoRow>
-              {/* 4) 사이즈 / 색상 */}
-              <InfoRow>
-                <DetailText>사이즈 - </DetailText>
-                <DetailHighlight>{item.size}</DetailHighlight>
-                <DetailText> / 색상 - </DetailText>
-                <DetailHighlight>{item.color}</DetailHighlight>
-              </InfoRow>
+              {/* 제품 정보: 첫 줄 - 라벨, 두 번째 줄 - 사이즈/색상 */}
+              <InfoRowFlex>
+                <IconArea>
+                  <Icon src={ProductInfoIcon} alt='Product Info' />
+                </IconArea>
+                <TextContainer>
+                  <RowText>
+                    <LabelDetailText>제품 정보</LabelDetailText>
+                  </RowText>
+                  <AdditionalText>
+                    <DetailText>사이즈 - </DetailText>
+                    <DetailHighlight>{item.size}</DetailHighlight>
+                    <Slash>/</Slash>
+                    <DetailText>색상 - </DetailText>
+                    <DetailHighlight>{item.color}</DetailHighlight>
+                  </AdditionalText>
+                </TextContainer>
+              </InfoRowFlex>
 
               {/* 결제 금액 */}
-              {/* 5) 결제 금액 */}
-              <InfoRow>
-                <Icon src={PriceIcon} alt='Price' />
-                <DetailText>결제금액 - </DetailText>
-                <DetailHighlight>
-                  {item.price.toLocaleString()}원
-                </DetailHighlight>
-              </InfoRow>
+              <InfoRowFlex>
+                <IconArea>
+                  <Icon src={PriceIcon} alt='Price' />
+                </IconArea>
+                <TextContainer>
+                  <RowText>
+                    <LabelDetailText>결제금액 - </LabelDetailText>
+                    <DetailHighlight>
+                      {item.price.toLocaleString()}원
+                    </DetailHighlight>
+                  </RowText>
+                </TextContainer>
+              </InfoRowFlex>
             </ItemDetails>
 
             {/* 우측: 이미지 + 체크박스 */}
@@ -158,11 +177,10 @@ const Basket: React.FC = () => {
 
 export default Basket;
 
-/* 스타일 정의 */
+/* 기본 스타일 */
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   margin: 0 auto;
 `;
 
@@ -200,19 +218,27 @@ const ContentWrapper = styled.div`
 const ItemDetails = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+
   flex: 1;
 `;
 
 const Brand = styled.div`
-  font-size: 12px;
-  font-weight: bold;
-  color: #333;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 900;
+  font-size: 10px;
+  line-height: 11px;
+  /* identical to box height */
+
+  color: #000000;
 `;
 
 const ItemName = styled.div`
   display: flex;
   align-items: center;
+  margin-top: 6px;
+
+  margin-bottom: 28px;
 `;
 
 const NameCode = styled.span`
@@ -243,7 +269,26 @@ const Slash = styled.span`
   margin: 0 4px;
 `;
 
-// 강조해야 하는 요소 (대여(3일), 사이즈, 색상, 결제금액 등)
+const LabelDetailText = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 22px;
+  color: #000000;
+  white-space: nowrap;
+`;
+
+const DetailText = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 22px;
+  color: #000000;
+  white-space: nowrap;
+`;
+
 const DetailHighlight = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
@@ -251,35 +296,53 @@ const DetailHighlight = styled.span`
   font-size: 12px;
   line-height: 22px;
   color: #000000;
-`;
-
-// 나머지 디테일 요소 (진행 서비스 -, 제품 정보 - 등)
-const DetailText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 22px;
-  color: #000000;
+  white-space: nowrap;
 `;
 
 /**
- * InfoRow:
- * - 각 줄이 항상 한 줄로만 보이도록 white-space: nowrap 적용
- * - 글이 길어지면 가로 스크롤 발생
+ * InfoRowFlex:
+ * 아이콘과 텍스트 컨테이너를 row로 정렬 (align-items: stretch로 텍스트 높이에 맞춰 아이콘 영역 확장)
  */
-const InfoRow = styled.div`
+const InfoRowFlex = styled.div`
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 5px;
-  font-size: 14px;
-  white-space: nowrap; /* 한 줄로만 표시 (줄바꿈 없이) */
+  width: 100%;
 `;
 
-const Icon = styled.img`
-  width: 16px;
-  height: 16px;
-  margin-top: 3px;
+/**
+ * IconArea:
+ * 아이콘이 들어갈 영역 – 텍스트 영역의 높이에 맞춰 자동으로 늘어나도록 합니다.
+ */
+const IconArea = styled.div`
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+`;
+
+/**
+ * TextContainer:
+ * 아이콘 옆의 텍스트 영역 (column으로 정렬, 내부의 각 행은 nowrap)
+ */
+const TextContainer = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+`;
+
+const RowText = styled.div`
+  display: flex;
+  gap: 5px;
+  white-space: nowrap;
+`;
+
+const AdditionalText = styled.div`
+  display: flex;
+  gap: 5px;
+  white-space: nowrap;
 `;
 
 const RightSection = styled.div`
@@ -307,14 +370,15 @@ const ItemImage = styled.img`
 const ButtonContainer = styled.div`
   display: flex;
   gap: 20px;
-  margin-top: 20px;
+
   align-self: flex-end;
 `;
 
 const DeleteButton = styled.button`
   background-color: #fff;
   color: #888;
-  padding: 10px 20px;
+  width: 91px;
+  height: 46px;
   white-space: nowrap;
   border-radius: 6px;
   cursor: pointer;
@@ -325,9 +389,15 @@ const PurchaseButton = styled.button`
   background-color: black;
   color: white;
   border: none;
-  padding: 10px 30px;
+  width: 91px;
+  height: 46px;
   white-space: nowrap;
   border-radius: 6px;
   cursor: pointer;
   border: 1px solid #ddd;
+`;
+
+const Icon = styled.img`
+  width: 20px;
+  height: 20px;
 `;
