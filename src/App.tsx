@@ -72,7 +72,7 @@ const App: React.FC = () => {
     'settlement-request',
   ];
 
-  const header4Paths = ['/signup', '/findid', 'findPassword'];
+  const header4Paths = ['/signup', '/findid', 'findPassword', '/basket'];
 
   const includeBottomNav = bottomNavPaths.some((path) =>
     matchPath(path, location.pathname)
@@ -129,6 +129,9 @@ const App: React.FC = () => {
     }
     if (matchPath('/findPassword', location.pathname)) {
       return '비밀번호찾기';
+    }
+    if (matchPath('/basket', location.pathname)) {
+      return '장바구니';
     }
 
     return '';

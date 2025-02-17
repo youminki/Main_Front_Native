@@ -6,7 +6,7 @@ import sampleImage from '../assets/sample-dress.svg';
 import PriceIcon from '../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
-
+import FixedBottomBar from '../components/FixedBottomBar';
 interface BasketItem {
   id: number;
   brand: string;
@@ -55,7 +55,10 @@ const Basket: React.FC = () => {
     );
     setItems(updatedItems);
   };
-
+  const handlePayment = () => {
+    // 결제하기 처리 로직 추가
+    alert('결제하기 버튼 클릭');
+  };
   return (
     <Container>
       <Header>
@@ -172,6 +175,7 @@ const Basket: React.FC = () => {
           </ButtonContainer>
         </Item>
       ))}
+      <FixedBottomBar text='결제하기' color='yellow' onClick={handlePayment} />
     </Container>
   );
 };
@@ -320,16 +324,6 @@ const DetailHighlight = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
-  font-size: 12px;
-  line-height: 22px;
-  color: #000000;
-  white-space: nowrap;
-`;
-
-const DateText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 400;
   font-size: 12px;
   line-height: 22px;
   color: #000000;
