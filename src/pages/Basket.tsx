@@ -1,3 +1,4 @@
+// src/components/Basket.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import sampleImage from '../assets/sample-dress.svg';
@@ -192,11 +193,41 @@ const Header = styled.div`
   margin-bottom: 15px;
 `;
 
+/* 체크박스 디자인 - 직접 컬러 명시 */
 const Checkbox = styled.input`
-  width: 18px;
-  height: 18px;
+  margin-bottom: 5px;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 3px;
   cursor: pointer;
-  margin-right: 8px;
+  position: relative;
+
+  &:checked {
+    background-color: #ffffff;
+    border-color: #999999;
+  }
+
+  &:checked::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 10px;
+    height: 5px;
+    border-left: 3px solid orange;
+    border-bottom: 3px solid orange;
+    transform: rotate(-45deg);
+  }
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 const Item = styled.div`
@@ -218,7 +249,6 @@ const ContentWrapper = styled.div`
 const ItemDetails = styled.div`
   display: flex;
   flex-direction: column;
-
   flex: 1;
 `;
 
@@ -228,8 +258,6 @@ const Brand = styled.div`
   font-weight: 900;
   font-size: 10px;
   line-height: 11px;
-  /* identical to box height */
-
   color: #000000;
 `;
 
@@ -237,7 +265,6 @@ const ItemName = styled.div`
   display: flex;
   align-items: center;
   margin-top: 6px;
-
   margin-bottom: 28px;
 `;
 
@@ -299,6 +326,16 @@ const DetailHighlight = styled.span`
   white-space: nowrap;
 `;
 
+const DateText = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 22px;
+  color: #000000;
+  white-space: nowrap;
+`;
+
 /**
  * InfoRowFlex:
  * 아이콘과 텍스트 컨테이너를 row로 정렬 (align-items: stretch로 텍스트 높이에 맞춰 아이콘 영역 확장)
@@ -312,7 +349,7 @@ const InfoRowFlex = styled.div`
 
 /**
  * IconArea:
- * 아이콘이 들어갈 영역 – 텍스트 영역의 높이에 맞춰 자동으로 늘어나도록 합니다.
+ * 아이콘이 들어갈 영역 – 텍스트 영역의 높이에 맞춰 자동으로 늘어나며, 항상 상단에 위치합니다.
  */
 const IconArea = styled.div`
   flex: 0 0 auto;
@@ -323,7 +360,7 @@ const IconArea = styled.div`
 
 /**
  * TextContainer:
- * 아이콘 옆의 텍스트 영역 (column으로 정렬, 내부의 각 행은 nowrap)
+ * 아이콘 옆의 텍스트 영역 (column으로 정렬, 내부 행은 nowrap)
  */
 const TextContainer = styled.div`
   flex: 1;
@@ -370,7 +407,7 @@ const ItemImage = styled.img`
 const ButtonContainer = styled.div`
   display: flex;
   gap: 20px;
-
+  margin-top: 20px;
   align-self: flex-end;
 `;
 
