@@ -60,7 +60,6 @@ const Basket: React.FC = () => {
   };
 
   const handleConfirmPayment = () => {
-    alert('결제가 완료되었습니다!');
     navigate('/payment'); // 결제 완료 후 메인 페이지로 이동
   };
 
