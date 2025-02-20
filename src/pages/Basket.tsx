@@ -8,6 +8,7 @@ import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
 import FixedBottomBar from '../components/FixedBottomBar';
 import { useNavigate } from 'react-router-dom';
+import ReusableModal2 from '../components/ReusableModal2';
 
 interface BasketItem {
   id: number;
@@ -23,7 +24,7 @@ interface BasketItem {
   imageUrl: string;
   isSelected: boolean;
 }
-
+const [isModalOpen, setIsModalOpen] = useState(false);
 const Basket: React.FC = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState<BasketItem[]>([
@@ -41,7 +42,7 @@ const Basket: React.FC = () => {
       isSelected: true,
     },
   ]);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   // 전체 선택/해제
   const handleSelectAll = () => {
     const updatedItems = items.map((item) => ({
@@ -184,6 +185,14 @@ const Basket: React.FC = () => {
         text='결제하기'
         color='yellow'
       />
+      <ReusableModal2
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title='알림'
+      >
+        해당 제품을 삭제하시겠습니까?
+      </ReusableModal2>
     </Container>
   );
 };
