@@ -45,6 +45,7 @@ const PaymentPage: React.FC = () => {
 
   return (
     <Container>
+      <LabelDetailText>신청제품</LabelDetailText>
       {items.map((item) => (
         <Item key={item.id}>
           <ContentWrapper>
