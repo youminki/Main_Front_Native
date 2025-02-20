@@ -1,75 +1,227 @@
-import { useState } from 'react';
+import React from 'react';
+import styled from 'styled-components';
+import FixedBottomBar from '../components/FixedBottomBar';
+import BasketItemComponent from '../pages/Basket';
 
-const Payment = () => {
-  const [recipient, setRecipient] = useState('');
-  const [address, setAddress] = useState('');
-  const [detailAddress, setDetailAddress] = useState('');
+const items = [
+  {
+    id: 1,
+    brand: 'SANDRO',
+    name: 'SF25S3FRD7699 / 원피스',
+    service: '대여 (3일)',
+    size: 'M (55)',
+    color: '블랙',
+    price: '50,000원',
+  },
+];
 
+const handleSelectItem = (item) => {
+  console.log('Selected item:', item);
+};
+
+const PaymentPage: React.FC = () => {
   return (
-    <div className='max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg'>
-      {/* 수령인 입력 */}
-      <label className='block text-sm font-medium text-gray-700 mb-1'>
-        수령인 *
-      </label>
-      <input
-        type='text'
-        value={recipient}
-        onChange={(e) => setRecipient(e.target.value)}
-        placeholder='이름을 입력하세요'
-        className='w-full p-3 border rounded-md mb-4 bg-gray-100'
-      />
+    <Container>
+      <MainContent>
+        <ProductSection>
+          <SectionTitle>신청제품</SectionTitle>
+          <ProductContent>
+            {items.map((item) => (
+              <BasketItemComponent
+                key={item.id}
+                item={item}
+                onSelect={handleSelectItem}
+              />
+            ))}
+          </ProductContent>
+        </ProductSection>
 
-      {/* 배송 방법 */}
-      <label className='block text-sm font-medium text-gray-700 mb-1'>
-        배송방법 *
-      </label>
-      <div className='relative w-full mb-4'>
-        <select className='w-full p-3 border rounded-md appearance-none bg-gray-100'>
-          <option>매니저 배송</option>
-        </select>
-        <div className='absolute right-3 top-1/2 transform -translate-y-1/2'>
-          ▼
-        </div>
-      </div>
+        <DeliverySection>
+          <SectionTitle>배송지 입력 *</SectionTitle>
+          <InputWrapper>
+            <AddressInput placeholder='주소를 검색 하세요' />
+            <SearchButton>검색</SearchButton>
+          </InputWrapper>
+          <AddressInput placeholder='상세주소를 입력 하세요' />
+          <ContactInput placeholder='010 - 0000 - 0000' />
+          <DeliveryMessage placeholder='배송 시 전달할 내용을 입력하세요 ( 예:공동 현관문 비번 등.. )' />
+        </DeliverySection>
 
-      {/* 매니저 배송 설명 */}
-      <div className='bg-gray-100 p-4 rounded-md mb-4 text-sm'>
-        <p className='font-semibold'>※ 매니저 배송 이란..?</p>
-        <p>매니저가 직접 고객에게 전달하는 방식으로 당일 배송가능.</p>
-        <p className='text-orange-500 font-bold'>
-          서비스 지역 [ 서울 / 경기 일부 ]
-        </p>
-        <p className='text-xs text-gray-500'>( 결제 시 추가비용 발생 )</p>
-      </div>
+        <ReturnSection>
+          <SectionTitle>반납지 입력 *</SectionTitle>
+          <ReturnOption>
+            <Option>배송지와 동일</Option>
+            <Option>새로 입력</Option>
+          </ReturnOption>
+        </ReturnSection>
 
-      {/* 배송지 입력 */}
-      <label className='block text-sm font-medium text-gray-700 mb-1'>
-        배송지 입력 *
-      </label>
-      <div className='flex gap-2 mb-2'>
-        <input
-          type='text'
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          placeholder='주소를 검색하세요'
-          className='flex-1 p-3 border rounded-md bg-gray-100'
-        />
-        <button className='px-4 py-2 bg-yellow-400 text-black font-semibold rounded-md'>
-          검색
-        </button>
-      </div>
-      <button className='w-full py-3 bg-black text-white font-semibold rounded-md mb-2'>
-        배송목록
-      </button>
-      <input
-        type='text'
-        value={detailAddress}
-        onChange={(e) => setDetailAddress(e.target.value)}
-        placeholder='상세주소를 입력하세요'
-        className='w-full p-3 border rounded-md bg-gray-100'
-      />
-    </div>
+        <PaymentSection>
+          <SectionTitle>결제방식 *</SectionTitle>
+          <PaymentOption>
+            <Option>이용권 / 정기 구독권 ( 2025년 3월분 )</Option>
+            <Option>무통장 결제 / 기업 065-143111-0-015, (주)리프트콤마</Option>
+            <Option>카드 결제 / 신한카드 1212-****-****-0121</Option>
+          </PaymentOption>
+        </PaymentSection>
+
+        <CouponSection>
+          <SectionTitle>추가 쿠폰 (선택)</SectionTitle>
+          <CouponOption>
+            <Option>20% 할인 쿠폰 / 26NJ-D6WW-NELY-5GB0</Option>
+            <Option>보유 쿠폰 없음</Option>
+          </CouponOption>
+        </CouponSection>
+
+        <TotalPaymentSection>
+          <SectionTitle>총 결제금액 (VAT 포함)</SectionTitle>
+          <TotalAmount>
+            <AdditionalCost>+ 추가비용 (15,000)</AdditionalCost>
+            <Amount>65,000원</Amount>
+          </TotalAmount>
+        </TotalPaymentSection>
+      </MainContent>
+
+      <FixedBottomBar text='결제하기' color='yellow' />
+    </Container>
   );
 };
 
-export default Payment;
+export default PaymentPage;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0 auto;
+  background: #ffffff;
+`;
+
+const MainContent = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const ProductSection = styled.section`
+  display: flex;
+  flex-direction: column;
+`;
+
+const SectionTitle = styled.h2`
+  font-family: 'NanumSquare Neo OTF';
+  font-weight: 700;
+  font-size: 14px;
+  color: #000000;
+  margin-bottom: 10px;
+`;
+
+const ProductContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const DeliverySection = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const InputWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const AddressInput = styled.input`
+  flex: 1;
+  height: 57px;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  padding: 10px;
+`;
+
+const SearchButton = styled.button`
+  width: 69px;
+  height: 57px;
+  background: #f6ae24;
+  border-radius: 5px;
+  border: none;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+`;
+
+const ContactInput = styled(AddressInput)``;
+const DeliveryMessage = styled(AddressInput)``;
+
+const ReturnSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const ReturnOption = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+`;
+
+const Option = styled.div`
+  flex: 1;
+  height: 57px;
+  background: #ffffff;
+  border: 2px solid #f6ae24;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+`;
+
+const PaymentSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const PaymentOption = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const CouponSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const CouponOption = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const TotalPaymentSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const TotalAmount = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const AdditionalCost = styled.div`
+  font-weight: 400;
+  font-size: 14px;
+`;
+
+const Amount = styled.div`
+  font-weight: 900;
+  font-size: 16px;
+  text-align: right;
+`;
