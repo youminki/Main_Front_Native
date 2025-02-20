@@ -157,7 +157,5 @@ const LogoIcon = styled.img`
 `;
 
 const Icon = styled.img`
-  width: auto;
-  height: auto;
   cursor: pointer;
 `;
