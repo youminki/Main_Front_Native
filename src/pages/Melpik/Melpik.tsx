@@ -8,7 +8,7 @@ import MelpikIcon from '../../assets/Melpik/MelpikIcon.svg';
 
 import MelpikCreateIcon from '../../assets/Melpik/MelpikCreateIconBox.svg';
 import MelpikScheduelerIcon from '../../assets/Melpik/MelpikScheduelerIconBox.svg';
-import MelpikCalculateIcon from '../../assets/Melpik/MelpikcalculateIconBox.svg';
+import MelpikCalculateIcon from '../../assets/Melpik/MelpikCalculateIconBox.svg';
 import MelpikOptionIcon from '../../assets/Melpik/MelpikOptionIconBox.svg';
 import { useNavigate } from 'react-router-dom';
 
