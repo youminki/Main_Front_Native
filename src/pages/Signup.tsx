@@ -111,7 +111,7 @@ const Signup: React.FC = () => {
         alert('🎉 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
         navigate('/login');
       } else {
-        throw new Error(response.message || '회원가입 실패');
+        throw new Error(response.data?.message || '회원가입 실패');
       }
     } catch (error) {
       console.error('회원가입 실패:', error);
@@ -190,7 +190,7 @@ const Signup: React.FC = () => {
               maxLength={5}
             />
 
-            {/** ❷ as={CustomSelect}로 교체하여 커스텀 화살표 적용 */}
+            {/** as={CustomSelect}로 교체하여 커스텀 화살표 적용 */}
             <InputField
               label='태어난 해'
               id='birthYear'
@@ -246,7 +246,6 @@ const Signup: React.FC = () => {
           </PhoneField>
 
           <RowLabel>
-            {/** ❸ 지역, 구 select에도 적용 */}
             <InputField
               label='지역'
               id='region'
@@ -305,8 +304,7 @@ const Signup: React.FC = () => {
 
 export default Signup;
 
-/* 아래는 스타일 정의들... */
-
+/* 스타일 정의 */
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -315,21 +313,18 @@ const Container = styled.div`
   width: 100%;
   margin: 0 auto;
 `;
-
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 15px;
   width: 100%;
 `;
-
 const RowLabel = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
   width: 100%;
 `;
-
 const GenderField = styled.div`
   width: 100%;
   height: 57px;
@@ -337,7 +332,6 @@ const GenderField = styled.div`
   flex-direction: column;
   margin-bottom: 20px;
 `;
-
 const InputFieldLabel = styled.label`
   margin-bottom: 10px;
   color: ${({ theme }) => theme.colors.black};
@@ -346,13 +340,11 @@ const InputFieldLabel = styled.label`
   font-size: 11px;
   line-height: 11px;
 `;
-
 const GenderRow = styled.div`
   display: flex;
   height: 100%;
   justify-content: space-between;
 `;
-
 const GenderButton = styled.button<{ selected: boolean; isSelected: boolean }>`
   flex: 1;
   border: ${({ isSelected }) => (isSelected ? '2px solid #f6ae24' : 'none')};
@@ -364,35 +356,28 @@ const GenderButton = styled.button<{ selected: boolean; isSelected: boolean }>`
     background-color 0.3s ease,
     border 0.3s ease,
     color 0.3s ease;
-
   &:hover {
     border: 2px solid #f6ae24;
   }
-
   &:first-child {
     border-radius: 10px 0 0 10px;
   }
-
   &:last-child {
     border-radius: 0 10px 10px 0;
   }
 `;
-
 const PhoneField = styled.div`
   display: flex;
   align-items: center;
   position: relative;
-
   input {
     flex: 1;
     padding-right: 120px;
   }
 `;
-
 const BlackContainer = styled.div`
   margin-bottom: 100px;
 `;
-
 const ErrorText = styled.div`
   color: red;
   text-align: center;

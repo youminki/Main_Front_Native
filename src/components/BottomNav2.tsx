@@ -1,3 +1,4 @@
+// BottomBar.tsx
 import React from 'react';
 import styled from 'styled-components';
 import Theme from '../styles/Theme';
@@ -6,19 +7,25 @@ type BottomBarProps = {
   buttonText?: string;
   imageSrc?: string;
   onClick?: () => void;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
 };
 
 const BottomBar: React.FC<BottomBarProps> = ({
   buttonText = '작성완료',
   imageSrc,
   onClick,
+  type = 'button',
+  disabled = false,
 }) => {
   return (
     <BottomBarContainer>
       <CartButton>
         {imageSrc && <CartImage src={imageSrc} alt='icon' />}
       </CartButton>
-      <OrderButton onClick={onClick}>{buttonText}</OrderButton>
+      <OrderButton onClick={onClick} type={type} disabled={disabled}>
+        {buttonText}
+      </OrderButton>
     </BottomBarContainer>
   );
 };
@@ -41,7 +48,6 @@ const BottomBarContainer = styled.div`
   padding: 1rem;
   text-align: center;
 `;
-
 const CartButton = styled.button`
   width: 75px;
   height: 56px;
@@ -54,9 +60,7 @@ const CartButton = styled.button`
   cursor: pointer;
   margin: 0 21px;
 `;
-
 const CartImage = styled.img``;
-
 const OrderButton = styled.button`
   width: 100%;
   height: 56px;
