@@ -11,6 +11,9 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FindId from './pages/FindId';
 import FindPassword from './pages/FindPassword';
+import Basket from './pages/Basket';
+import Payment from './pages/Payment';
+
 import Home from './pages/Home/Home';
 import HomeDetail from './pages/Home/HomeDetail';
 import Analysis from './pages/Analysis';
@@ -70,7 +73,13 @@ const App: React.FC = () => {
     'settlement-request',
   ];
 
-  const header4Paths = ['/signup', '/findid', 'findPassword'];
+  const header4Paths = [
+    '/signup',
+    '/findid',
+    'findPassword',
+    '/basket',
+    '/payment',
+  ];
 
   const includeBottomNav = bottomNavPaths.some((path) =>
     matchPath(path, location.pathname)
@@ -128,6 +137,12 @@ const App: React.FC = () => {
     if (matchPath('/findPassword', location.pathname)) {
       return '비밀번호찾기';
     }
+    if (matchPath('/basket', location.pathname)) {
+      return '장바구니';
+    }
+    if (matchPath('/payment', location.pathname)) {
+      return '결제하기';
+    }
 
     return '';
   };
@@ -148,6 +163,8 @@ const App: React.FC = () => {
           <Route path='/findid' element={<FindId />} />
           <Route path='/findPassword' element={<FindPassword />} />
           <Route path='/analysis' element={<Analysis />} />
+          <Route path='/basket' element={<Basket />} />
+          <Route path='/payment' element={<Payment />} />
 
           <Route path='/brand' element={<Brand />} />
           <Route path='/brand/:brandName' element={<BrandDetail />} />
@@ -205,5 +222,5 @@ const AppContainer = styled.div`
 
 const ContentContainer = styled.div`
   flex: 1;
-  padding: 88px 0 70px 0;
+  padding: 88px 0 120px 0;
 `;

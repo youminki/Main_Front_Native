@@ -53,7 +53,7 @@ const StyledModal = styled.div`
   align-items: center;
   padding: 27px;
   z-index: 9999;
-  width: 100vw;
+  width: 90vw;
   height: 100vh;
   max-width: 800px;
 `;
@@ -82,7 +82,7 @@ const ModalBody = styled.div`
   font-size: 14px;
   font-weight: 400;
   text-align: center;
-  max-height: 230px;
+  max-height: 70%;
   height: 100%;
   display: flex;
   justify-content: center;
