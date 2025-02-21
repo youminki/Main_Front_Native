@@ -3,11 +3,18 @@ import styled from 'styled-components';
 import { ThemeProvider } from 'styled-components';
 import Theme from '../../styles/Theme';
 import StatsSection from '../../components/Melpik/StatsSection';
-import CardGrid from '../../components/Melpik/CardGrid.tsx';
+
 import MelpikIcon from '/src/assets/Melpik/MelpikIcon.svg';
 
+import MelpikCreateIcon from '/src/assets/Melpik/MelpikCreateIconBox.svg';
+import MelpikScheduelerIcon from '/src/assets/Melpik/MelpikScheduelerIconBox.svg';
+import MelpikCalculateIcon from '/src/assets/Melpik/MelpikcalculateIconBox.svg';
+import MelpikOptionIcon from '/src/assets/Melpik/MelpikOptionIconBox.svg';
+import { useNavigate } from 'react-router-dom';
+
 const MelpikPage: React.FC = () => {
-  // 동적 데이터 (프롭스로 전달할 값)
+  const navigate = useNavigate();
+
   const visits = 174;
   const sales = 26;
   const dateRange = '2025.01.06 ~ 01.10';
@@ -15,12 +22,19 @@ const MelpikPage: React.FC = () => {
   const visitLabel = '방문수';
   const salesLabel = '판매된 제품수';
 
+  const menuItems = [
+    { icon: MelpikCreateIcon, label: '내 옷장', path: '/create-melpik' },
+    { icon: MelpikScheduelerIcon, label: '이용 내역', path: '/sales-schedule' },
+    { icon: MelpikCalculateIcon, label: '포인트', path: '/sales-settlement' },
+    { icon: MelpikOptionIcon, label: '티켓', path: '/melpik-settings' },
+  ];
+
   return (
     <ThemeProvider theme={Theme}>
       <Container>
         <Header>
-          <Title>멜픽</Title>
-          <Subtitle>내 채널을 통해 나는 브랜드가 된다</Subtitle>
+          <Title>락커룸</Title>
+          <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
         </Header>
 
         <StatsRow>
@@ -35,8 +49,16 @@ const MelpikPage: React.FC = () => {
             <MenuImage src={MelpikIcon} alt='메뉴 이미지' />
           </ImageWrapper>
         </StatsRow>
+
         <Divider />
-        <CardGrid />
+
+        <GridMenu>
+          {menuItems.map((item, index) => (
+            <GridItem key={index} onClick={() => navigate(item.path)}>
+              <IconImage src={item.icon} alt={item.label} />
+            </GridItem>
+          ))}
+        </GridMenu>
       </Container>
     </ThemeProvider>
   );
@@ -99,4 +121,29 @@ const Divider = styled.div`
   height: 1px;
   background: #dddddd;
   margin: 30px 0;
+`;
+
+const GridMenu = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+
+  margin-bottom: 20px;
+`;
+
+const GridItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: all 0.2s;
+`;
+
+const IconImage = styled.img`
+  width: 100%;
+  height: 100%;
+  margin-bottom: 8px;
 `;
