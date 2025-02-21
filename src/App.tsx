@@ -29,6 +29,8 @@ import SalesSettlement from './pages/Melpik/Calculate/SalesSettlement';
 import SalesSettlementDetail from './pages/Melpik/Calculate/SalesSettlementDetail';
 import SettlementRequest from './pages/Melpik/Calculate/SettlementRequest';
 
+import LockerRoom from './pages/LockerRoom/LockerRoom';
+
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
 
@@ -46,10 +48,10 @@ const App: React.FC = () => {
   const location = useLocation();
 
   // BottomNav가 포함될 경로 패턴
-  const bottomNavPaths = ['/home', '/melpik', '/brand'];
+  const bottomNavPaths = ['/home', '/melpik', '/brand', '/lockerRoom'];
 
   // Header1이 포함될 경로 패턴
-  const header1Paths = ['/home', '/melpik', '/brand'];
+  const header1Paths = ['/home', '/melpik', '/brand', '/lockerRoom'];
 
   // Header2가 포함될 경로 패턴
   const header2Paths = [
@@ -200,6 +202,8 @@ const App: React.FC = () => {
             path='/schedule/reservation3'
             element={<ScheduleReservation3 />}
           />
+
+          <Route path='/lockerRoom' element={<LockerRoom />} />
         </Routes>
       </ContentContainer>
       {includeBottomNav && <BottomNav />}

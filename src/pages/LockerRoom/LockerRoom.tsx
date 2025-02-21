@@ -1,32 +1,34 @@
 import React from 'react';
 import styled from 'styled-components';
 import { ThemeProvider } from 'styled-components';
-import Theme from '../../styles/Theme';
-import StatsSection from '../../components/Melpik/StatsSection';
-
-import MelpikIcon from '/src/assets/Melpik/MelpikIcon.svg';
-
-import MelpikCreateIcon from '/src/assets/Melpik/MelpikCreateIconBox.svg';
-import MelpikScheduelerIcon from '/src/assets/Melpik/MelpikScheduelerIconBox.svg';
-import MelpikCalculateIcon from '/src/assets/Melpik/MelpikcalculateIconBox.svg';
-import MelpikOptionIcon from '/src/assets/Melpik/MelpikOptionIconBox.svg';
 import { useNavigate } from 'react-router-dom';
+import Theme from '../../styles/Theme';
+import StatsSection from '../../components/LockerRoom/StatsSection';
 
-const MelpikPage: React.FC = () => {
+import LockerRoomIcons from '../../assets/LockerRoom/LockerRoomIcons.svg';
+import ClosetIcon from '../../assets/LockerRoom/ClosetIconBox.svg';
+import HistoryIcon from '../../assets/LockerRoom/HistoryIconBox.svg';
+import PointsIcon from '../../assets/LockerRoom/PointsIconBox.svg';
+import TicketIcon from '../../assets/LockerRoom/TicketIconBox.svg';
+import PaymentIcon from '../../assets/LockerRoom/PaymentIconBox.svg';
+import ReviewIcon from '../../assets/LockerRoom/ReviewIconBox.svg';
+
+const LockerRoom: React.FC = () => {
   const navigate = useNavigate();
 
-  const visits = 174;
-  const sales = 26;
-  const dateRange = '2025.01.06 ~ 01.10';
-
-  const visitLabel = '방문수';
-  const salesLabel = '판매된 제품수';
+  const visits = '구독자';
+  const sales = '26,000';
+  const dateRange = '요약정보';
+  const visitLabel = '그룹';
+  const salesLabel = '보유 포인트';
 
   const menuItems = [
-    { icon: MelpikCreateIcon, label: '내 옷장', path: '/create-melpik' },
-    { icon: MelpikScheduelerIcon, label: '이용 내역', path: '/sales-schedule' },
-    { icon: MelpikCalculateIcon, label: '포인트', path: '/sales-settlement' },
-    { icon: MelpikOptionIcon, label: '티켓', path: '/melpik-settings' },
+    { icon: ClosetIcon, label: '내 옷장', path: '/my-closet' },
+    { icon: HistoryIcon, label: '이용 내역', path: '/usage-history' },
+    { icon: PointsIcon, label: '포인트', path: '/points' },
+    { icon: TicketIcon, label: '티켓', path: '/tickets' },
+    { icon: PaymentIcon, label: '결제수단', path: '/payment-methods' },
+    { icon: ReviewIcon, label: '상품 리뷰', path: '/product-reviews' },
   ];
 
   return (
@@ -46,7 +48,7 @@ const MelpikPage: React.FC = () => {
             salesLabel={salesLabel}
           />
           <ImageWrapper>
-            <MenuImage src={MelpikIcon} alt='메뉴 이미지' />
+            <MenuImage src={LockerRoomIcons} alt='메뉴 이미지' />
           </ImageWrapper>
         </StatsRow>
 
@@ -64,7 +66,7 @@ const MelpikPage: React.FC = () => {
   );
 };
 
-export default MelpikPage;
+export default LockerRoom;
 
 const Container = styled.div`
   display: flex;
