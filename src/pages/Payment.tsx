@@ -1,14 +1,13 @@
-// src/components/Basket.tsx
+// PaymentPage.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import sampleImage from '../assets/sample-dress.svg';
-// 아이콘 import 경로는 실제 경로에 맞춰 수정해주세요.
 import PriceIcon from '../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
 import FixedBottomBar from '../components/FixedBottomBar';
-// import { useNavigate } from 'react-router-dom';
-// import ReusableModal2 from '../components/ReusableModal2';
+import InputField from '../components/InputField';
+import { YellowButton, BlackButton } from '../components/ButtonWrapper';
 
 interface BasketItem {
   id: number;
@@ -24,9 +23,8 @@ interface BasketItem {
   imageUrl: string;
   isSelected: boolean;
 }
-// const [isModalOpen, setIsModalOpen] = useState(false);
+
 const PaymentPage: React.FC = () => {
-  // const navigate = useNavigate();
   const [items] = useState<BasketItem[]>([
     {
       id: 1,
@@ -43,13 +41,35 @@ const PaymentPage: React.FC = () => {
     },
   ]);
 
+  const [selectedMethod, setSelectedMethod] = useState('매니저 배송');
+  const [deliveryInfo, setDeliveryInfo] = useState({
+    address: '',
+    detailAddress: '',
+    contact: '',
+  });
+  const [returnInfo, setReturnInfo] = useState({
+    address: '',
+    detailAddress: '',
+    contact: '',
+  });
+  const [isSameAsDelivery, setIsSameAsDelivery] = useState(true);
+
+  const handleUseSameAddress = () => {
+    setReturnInfo({ ...deliveryInfo });
+    setIsSameAsDelivery(true);
+  };
+
+  const handleNewAddress = () => {
+    setReturnInfo({ address: '', detailAddress: '', contact: '' });
+    setIsSameAsDelivery(false);
+  };
+
   return (
     <Container>
       <LabelDetailText>신청제품</LabelDetailText>
       {items.map((item) => (
         <Item key={item.id}>
           <ContentWrapper>
-            {/* 좌측: 상품 텍스트 정보 */}
             <ItemDetails>
               <Brand>{item.brand}</Brand>
               <ItemName>
@@ -57,8 +77,6 @@ const PaymentPage: React.FC = () => {
                 <Slash>/</Slash>
                 <ItemType>{item.nameType}</ItemType>
               </ItemName>
-
-              {/* 진행 서비스 + 추가 정보 */}
               {item.type === 'rental' ? (
                 <InfoRowFlex>
                   <IconArea>
@@ -93,8 +111,6 @@ const PaymentPage: React.FC = () => {
                   </TextContainer>
                 </InfoRowFlex>
               )}
-
-              {/* 제품 정보: 첫 줄 - 라벨, 두 번째 줄 - 사이즈/색상 */}
               <InfoRowFlex>
                 <IconArea>
                   <Icon src={ProductInfoIcon} alt='Product Info' />
@@ -112,8 +128,6 @@ const PaymentPage: React.FC = () => {
                   </AdditionalText>
                 </TextContainer>
               </InfoRowFlex>
-
-              {/* 결제 금액 */}
               <InfoRowFlex>
                 <IconArea>
                   <Icon src={PriceIcon} alt='Price' />
@@ -128,8 +142,6 @@ const PaymentPage: React.FC = () => {
                 </TextContainer>
               </InfoRowFlex>
             </ItemDetails>
-
-            {/* 우측: 이미지 + 체크박스 */}
             <RightSection>
               <ItemImageContainer>
                 <ItemImage src={item.imageUrl} alt={item.nameCode} />
@@ -138,43 +150,165 @@ const PaymentPage: React.FC = () => {
           </ContentWrapper>
         </Item>
       ))}
-
-      <DeliverySection>
+      <Section>
+        <Row>
+          <InputGroup>
+            <InputField
+              id='recipient'
+              placeholder='이름을 입력 하세요'
+              label='수령인 *'
+            />
+          </InputGroup>
+          <InputGroup>
+            <InputField
+              id='delivery-method'
+              options={['매니저 배송', '택배 배송']}
+              label='배송방법 *'
+              onSelectChange={(value: string) => setSelectedMethod(value)}
+            />
+          </InputGroup>
+        </Row>
+      </Section>
+      {selectedMethod === '매니저 배송' && (
+        <DeliveryNotice>
+          <NoticeTitle>※ 매니저 배송이란?</NoticeTitle>
+          <NoticeText>
+            매니저가 직접 고객에게 전달하는 방식으로 당일 배송 가능.
+          </NoticeText>
+          <ServiceArea>
+            서비스 지역 <Highlight>[ 서울 / 경기 일부 ]</Highlight>
+            <SmallText> (결제 시 추가 비용 발생)</SmallText>
+          </ServiceArea>
+        </DeliveryNotice>
+      )}
+      <Section>
         <SectionTitle>배송지 입력 *</SectionTitle>
-        <InputWrapper>
-          <AddressInput placeholder='주소를 검색 하세요' />
-          <SearchButton>검색</SearchButton>
-        </InputWrapper>
-        <AddressInput placeholder='상세주소를 입력 하세요' />
-        <ContactInput placeholder='010 - 0000 - 0000' />
-        <DeliveryMessage placeholder='배송 시 전달할 내용을 입력하세요 ( 예:공동 현관문 비번 등.. )' />
-      </DeliverySection>
-
+        <Row style={{ marginBottom: '10px' }}>
+          <AddressInputWrapper>
+            <AddressInput
+              type='text'
+              placeholder='주소를 검색 하세요'
+              value={deliveryInfo.address}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setDeliveryInfo({ ...deliveryInfo, address: e.target.value })
+              }
+            />
+            <SearchButton>검색</SearchButton>
+          </AddressInputWrapper>
+          <DeliveryListButton>배송목록</DeliveryListButton>
+        </Row>
+        <Row style={{ marginBottom: '10px' }}>
+          <DetailAddressInput
+            type='text'
+            placeholder='상세주소를 입력 하세요'
+            value={deliveryInfo.detailAddress}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setDeliveryInfo({
+                ...deliveryInfo,
+                detailAddress: e.target.value,
+              })
+            }
+          />
+        </Row>
+        <Row>
+          <InputGroup style={{ flex: 1 }}>
+            <InputField
+              id='contact'
+              placeholder='010 - 0000 - 0000'
+              label='연락처'
+              value={deliveryInfo.contact}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setDeliveryInfo({ ...deliveryInfo, contact: e.target.value })
+              }
+            />
+          </InputGroup>
+        </Row>
+        <Row>
+          <InputGroup style={{ flex: 1 }}>
+            <InputField
+              id='delivery-message'
+              placeholder='배송 시 전달할 내용을 입력하세요'
+              label='배송 메시지 (선택)'
+            />
+          </InputGroup>
+        </Row>
+      </Section>
       <ReturnSection>
         <SectionTitle>반납지 입력 *</SectionTitle>
         <ReturnOption>
-          <Option>배송지와 동일</Option>
-          <Option>새로 입력</Option>
+          <OptionButton
+            $active={isSameAsDelivery}
+            onClick={handleUseSameAddress}
+          >
+            배송지와 동일
+          </OptionButton>
+          <OptionButton $active={!isSameAsDelivery} onClick={handleNewAddress}>
+            새로 입력
+          </OptionButton>
         </ReturnOption>
+        <Row style={{ marginBottom: '10px' }}>
+          <AddressInputWrapper>
+            <AddressInput
+              type='text'
+              placeholder='주소를 입력 하세요'
+              value={returnInfo.address}
+              disabled={isSameAsDelivery}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setReturnInfo({ ...returnInfo, address: e.target.value })
+              }
+            />
+            <SearchButton>검색</SearchButton>
+          </AddressInputWrapper>
+          <DeliveryListButton>배송목록</DeliveryListButton>
+        </Row>
+        <Row style={{ marginBottom: '10px' }}>
+          <DetailAddressInput
+            type='text'
+            placeholder='상세주소를 입력 하세요'
+            value={returnInfo.detailAddress}
+            disabled={isSameAsDelivery}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setReturnInfo({ ...returnInfo, detailAddress: e.target.value })
+            }
+          />
+        </Row>
+        <Row>
+          <InputGroup style={{ flex: 1 }}>
+            <InputField
+              id='return-contact'
+              placeholder='010 - 0000 - 0000'
+              label='연락처'
+              value={returnInfo.contact}
+              disabled={isSameAsDelivery}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setReturnInfo({ ...returnInfo, contact: e.target.value })
+              }
+            />
+          </InputGroup>
+        </Row>
       </ReturnSection>
-
-      <PaymentSection>
-        <SectionTitle>결제방식 *</SectionTitle>
-        <PaymentOption>
-          <Option>이용권 / 정기 구독권 ( 2025년 3월분 )</Option>
-          <Option>무통장 결제 / 기업 065-143111-0-015, (주)리프트콤마</Option>
-          <Option>카드 결제 / 신한카드 1212-****-****-0121</Option>
-        </PaymentOption>
-      </PaymentSection>
-
-      <CouponSection>
-        <SectionTitle>추가 쿠폰 (선택)</SectionTitle>
-        <CouponOption>
-          <Option>20% 할인 쿠폰 / 26NJ-D6WW-NELY-5GB0</Option>
-          <Option>보유 쿠폰 없음</Option>
-        </CouponOption>
-      </CouponSection>
-
+      <PaymentAndCouponContainer>
+        <PaymentSection>
+          <InputField
+            id='payment-method'
+            options={[
+              '이용권 / 정기 구독권 ( 2025년 3월분 )',
+              '무통장 결제 / 기업 065-143111-0-015, (주)리프트콤마',
+              '카드 결제 / 신한카드 1212-****-****-0121',
+            ]}
+            label='결제방식 *'
+            placeholder=''
+          />
+        </PaymentSection>
+        <CouponSection>
+          <InputField
+            id='coupon'
+            options={['20% 할인 쿠폰 / 26NJ-D6WW-NELY-5GB0', '보유 쿠폰 없음']}
+            label='추가 쿠폰 (선택)'
+            placeholder=''
+          />
+        </CouponSection>
+      </PaymentAndCouponContainer>
       <TotalPaymentSection>
         <SectionTitle>총 결제금액 (VAT 포함)</SectionTitle>
         <TotalAmount>
@@ -182,7 +316,6 @@ const PaymentPage: React.FC = () => {
           <Amount>65,000원</Amount>
         </TotalAmount>
       </TotalPaymentSection>
-
       <FixedBottomBar text='결제하기' color='yellow' />
     </Container>
   );
@@ -190,6 +323,7 @@ const PaymentPage: React.FC = () => {
 
 export default PaymentPage;
 
+/* 스타일 정의 */
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -198,100 +332,126 @@ const Container = styled.div`
   background: #ffffff;
 `;
 
+const Section = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+`;
+
 const SectionTitle = styled.h2`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
   color: #000000;
-
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 `;
 
-const DeliverySection = styled.section`
+const Row = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
 `;
 
-const InputWrapper = styled.div`
+const AddressInputWrapper = styled.div`
   display: flex;
-  gap: 10px;
+  align-items: center;
+  flex: 1;
+  height: 57px;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  overflow: hidden;
 `;
 
 const AddressInput = styled.input`
   flex: 1;
+  border: none;
+  padding: 0 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+  height: 100%;
+  &:focus {
+    outline: none;
+  }
+`;
+
+const SearchButton = styled(YellowButton)`
+  height: 57px;
+  border: none;
+  border-radius: 0;
+  padding: 0 15px;
+`;
+
+const DeliveryListButton = styled(BlackButton)`
+  height: 57px;
+  padding: 0 15px;
+`;
+
+const DetailAddressInput = styled.input`
+  flex: 1;
   border: 1px solid #dddddd;
   border-radius: 4px;
-  padding: 20px 10px;
-`;
-
-const SearchButton = styled.button`
-  width: 69px;
-  height: 34px;
-  background: #f6ae24;
-
-  border-radius: 5px;
-  border: none;
-  color: #ffffff;
-  font-weight: 800;
-  cursor: pointer;
-`;
-
-const ContactInput = styled(AddressInput)``;
-const DeliveryMessage = styled(AddressInput)``;
-
-const ReturnSection = styled.section`
-  display: flex;
-  flex-direction: column;
+  padding: 0 10px;
+  font-size: 14px;
+  height: 57px;
+  box-sizing: border-box;
+  &:focus {
+    outline: none;
+  }
 `;
 
 const ReturnOption = styled.div`
   display: flex;
-  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
 `;
 
-const Option = styled.div`
+/* OptionButton에 transient prop($active) 사용 */
+const OptionButton = styled.button<{ $active: boolean }>`
   flex: 1;
   border-radius: 4px;
-  padding: 20px 10px;
-  background: #ffffff;
-  border: 1px solid #dddddd;
-  display: flex;
-  align-items: center;
-
-  font-weight: 800;
+  padding: 16px;
+  font-weight: 700;
   font-size: 13px;
   cursor: pointer;
+  text-align: center;
+  border: ${({ $active }) =>
+    $active ? '2px solid #FFC107' : '1px solid #ddd'};
+  background: ${({ $active }) => ($active ? '#FFF8E1' : '#ffffff')};
+  color: ${({ $active }) => ($active ? '#000000' : '#aaaaaa')};
+`;
 
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 14px;
+const PaymentAndCouponContainer = styled.div`
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 30px 0;
+  margin: 30px 0;
+`;
 
-  color: #dddddd;
+const ReturnSection = styled(Section)`
+  border-top: 1px solid #ddd;
+  margin: 30px 0;
+  padding-top: 30px;
 `;
 
 const PaymentSection = styled.section`
   display: flex;
   flex-direction: column;
-`;
-
-const PaymentOption = styled.div`
-  display: flex;
-  flex-direction: column;
+  margin-bottom: 16px;
 `;
 
 const CouponSection = styled.section`
   display: flex;
   flex-direction: column;
-`;
-
-const CouponOption = styled.div`
-  display: flex;
-  flex-direction: column;
+  margin-bottom: 16px;
 `;
 
 const TotalPaymentSection = styled.section`
@@ -300,25 +460,34 @@ const TotalPaymentSection = styled.section`
 `;
 
 const TotalAmount = styled.div`
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #eeeeee;
+  border-radius: 4px;
+  padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
 
 const AdditionalCost = styled.div`
+  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 14px;
+  color: #000000;
 `;
 
 const Amount = styled.div`
+  font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
   font-size: 16px;
-  text-align: right;
+  color: #000000;
 `;
 
 const Item = styled.div`
   display: flex;
   flex-direction: column;
+  margin-top: 10px;
   border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
   padding: 30px 0;
@@ -340,82 +509,63 @@ const ItemDetails = styled.div`
 
 const Brand = styled.div`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 900;
   font-size: 10px;
-  line-height: 11px;
   color: #000000;
 `;
 
 const ItemName = styled.div`
   display: flex;
   align-items: center;
-  margin-top: 6px;
-  margin-bottom: 28px;
+  margin: 6px 0 28px;
 `;
 
 const NameCode = styled.span`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 900;
   font-size: 16px;
-  line-height: 22px;
   color: #000000;
 `;
 
 const ItemType = styled.span`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
-  line-height: 22px;
   color: #999999;
 `;
 
 const Slash = styled.span`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
-  line-height: 22px;
   color: #dddddd;
   margin: 0 4px;
 `;
 
 const LabelDetailText = styled.span`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
-  line-height: 22px;
   color: #000000;
   white-space: nowrap;
 `;
 
 const DetailText = styled.span`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
-  line-height: 22px;
   color: #000000;
   white-space: nowrap;
 `;
 
 const DetailHighlight = styled.span`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 900;
   font-size: 12px;
-  line-height: 22px;
   color: #000000;
   white-space: nowrap;
 `;
 
-/**
- * InfoRowFlex:
- * 아이콘과 텍스트 컨테이너를 row로 정렬 (align-items: stretch로 텍스트 높이에 맞춰 아이콘 영역 확장)
- */
 const InfoRowFlex = styled.div`
   display: flex;
   align-items: stretch;
@@ -423,10 +573,6 @@ const InfoRowFlex = styled.div`
   width: 100%;
 `;
 
-/**
- * IconArea:
- * 아이콘이 들어갈 영역 – 텍스트 영역의 높이에 맞춰 자동으로 늘어나며, 항상 상단에 위치합니다.
- */
 const IconArea = styled.div`
   flex: 0 0 auto;
   display: flex;
@@ -434,10 +580,6 @@ const IconArea = styled.div`
   justify-content: center;
 `;
 
-/**
- * TextContainer:
- * 아이콘 옆의 텍스트 영역 (column으로 정렬, 내부 행은 nowrap)
- */
 const TextContainer = styled.div`
   flex: 1;
   display: flex;
@@ -479,4 +621,39 @@ const ItemImage = styled.img`
 const Icon = styled.img`
   width: 20px;
   height: 20px;
+`;
+
+const DeliveryNotice = styled.div`
+  background: #fafafa;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+`;
+
+const NoticeTitle = styled.p`
+  font-size: 12px;
+  font-weight: 700;
+  color: #000;
+`;
+
+const NoticeText = styled.p`
+  font-size: 12px;
+  color: #444;
+  margin-top: 4px;
+`;
+
+const ServiceArea = styled.p`
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 4px;
+`;
+
+const Highlight = styled.span`
+  color: orange;
+`;
+
+const SmallText = styled.span`
+  font-size: 11px;
+  color: #666;
+  margin-left: 4px;
 `;

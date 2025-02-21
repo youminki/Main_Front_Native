@@ -56,12 +56,13 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
 
     return (
       <InputContainer>
-        <Label htmlFor={id} isEmpty={!label}>
+        <Label htmlFor={id} $isEmpty={!label}>
           {label.split('(')[0] || '​'}
           {label.includes('(') && (
             <GrayText>{`(${label.split('(')[1]}`}</GrayText>
           )}
         </Label>
+
         <InputRow>
           {prefix && <PrefixText>{prefix}</PrefixText>}
           <InputWrapper>
@@ -120,25 +121,25 @@ export default InputField;
 
 // ✅ 스타일 정의
 const InputContainer = styled.div`
-  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-top: 20px;
 `;
 
-const Label = styled.label<{ isEmpty: boolean }>`
+const Label = styled.label<{ $isEmpty: boolean }>`
   margin-bottom: 10px;
   font-family: 'NanumSquare Neo OTF';
   font-size: 10px;
   font-weight: 700;
   line-height: 11.05px;
   text-align: left;
-  visibility: ${({ isEmpty }) => (isEmpty ? 'hidden' : 'visible')};
+  visibility: ${({ $isEmpty }) => ($isEmpty ? 'hidden' : 'visible')};
 `;
 
 const GrayText = styled.span`
   padding-left: 3px;
-  color: ${({ theme }) => theme.colors.gray2};
+  color: #888888; /* 고정된 회색 */
   font-size: 10px;
   line-height: 14px;
 `;
@@ -152,7 +153,7 @@ const PrefixText = styled.span`
   margin-right: 10px;
   font-size: 16px;
   font-weight: 700;
-  color: ${({ theme }) => theme.colors.black};
+  color: #000000; /* 고정된 검정색 */
 `;
 
 const PrefixcontentText = styled.span`
@@ -162,14 +163,13 @@ const PrefixcontentText = styled.span`
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
-
   color: #000000;
 `;
 
 const InputWrapper = styled.div`
   display: flex;
   align-items: center;
-  border: 1px solid ${({ theme }) => theme.colors.gray1};
+  border: 1px solid #dddddd; /* 고정된 회색 */
   border-radius: 4px;
   height: 57px;
   overflow: hidden;
@@ -198,7 +198,7 @@ const ToggleWrapper = styled.div`
 const AtSymbol = styled.span`
   margin: 0 10px;
   font-size: 16px;
-  color: ${({ theme }) => theme.colors.black};
+  color: #000000; /* 고정된 검정색 */
 `;
 
 const Input = styled.input`
@@ -214,9 +214,10 @@ const Select = styled.select`
   font-size: 16px;
   border: none;
   padding: 0 11px;
+  width: 100%;
   flex: 1;
   height: 100%;
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: #ffffff; /* 고정된 흰색 */
   cursor: pointer;
 `;
 
@@ -232,5 +233,5 @@ const EmailDropdown = styled.select`
   padding: 0 11px;
   flex: 1;
   height: 100%;
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: #ffffff; /* 고정된 흰색 */
 `;
