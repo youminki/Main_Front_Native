@@ -280,14 +280,14 @@ const PaymentPage: React.FC = () => {
             />
             <SearchButton
               onClick={() => setModalType('search')}
-              disabled={isSameAsDelivery}
+              // disabled={isSameAsDelivery}
             >
               검색
             </SearchButton>
           </AddressInputWrapper>
           <DeliveryListButton
             onClick={() => setModalType('list')}
-            disabled={isSameAsDelivery}
+            // disabled={isSameAsDelivery}
           >
             배송목록
           </DeliveryListButton>

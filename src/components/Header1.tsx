@@ -30,16 +30,16 @@ const Header: React.FC = () => {
   }, []);
 
   // ✅ 로그아웃 핸들러 (쿠키 삭제 후 상태 업데이트)
-  const handleLogout = () => {
-    Cookies.remove('accessToken');
-    Cookies.remove('refreshToken');
-    Cookies.remove('nickname');
-    setIsLoggedIn(false);
-    navigate('/login');
-  };
+  // const handleLogout = () => {
+  //   Cookies.remove('accessToken');
+  //   Cookies.remove('refreshToken');
+  //   Cookies.remove('nickname');
+  //   setIsLoggedIn(false);
+  //   navigate('/login');
+  // };
 
   // ✅ 페이지 이동 핸들러
-  const handleMypageClick = () => navigate('/mypage');
+  // const handleMypageClick = () => navigate('/mypage');
   const handleBasketClick = () => navigate('/basket');
 
   return (
