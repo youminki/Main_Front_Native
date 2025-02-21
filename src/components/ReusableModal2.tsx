@@ -104,7 +104,7 @@ const NoButton = styled.button`
   flex: 1;
   height: 50px;
   background: #cccccc;
-  color: #000000;
+  color: #ffffff;
   border: none;
   border-radius: 6px;
   cursor: pointer;

@@ -2,13 +2,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import sampleImage from '../assets/sample-dress.svg';
-// 아이콘 import 경로는 실제 경로에 맞춰 수정해주세요.
 import PriceIcon from '../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
 import FixedBottomBar from '../components/FixedBottomBar';
 import { useNavigate } from 'react-router-dom';
-// import ReusableModal2 from '../components/ReusableModal2';
+import ReusableModal2 from '../components/ReusableModal2';
 
 interface BasketItem {
   id: number;
@@ -24,7 +23,7 @@ interface BasketItem {
   imageUrl: string;
   isSelected: boolean;
 }
-// const [isModalOpen, setIsModalOpen] = useState(false);
+
 const Basket: React.FC = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState<BasketItem[]>([
@@ -42,8 +41,10 @@ const Basket: React.FC = () => {
       isSelected: true,
     },
   ]);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  // 전체 선택/해제
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+
   const handleSelectAll = () => {
     const updatedItems = items.map((item) => ({
       ...item,
@@ -52,7 +53,6 @@ const Basket: React.FC = () => {
     setItems(updatedItems);
   };
 
-  // 개별 선택/해제
   const handleSelectItem = (id: number) => {
     const updatedItems = items.map((item) =>
       item.id === id ? { ...item, isSelected: !item.isSelected } : item
@@ -61,7 +61,22 @@ const Basket: React.FC = () => {
   };
 
   const handleConfirmPayment = () => {
-    navigate('/payment'); // 결제 완료 후 메인 페이지로 이동
+    navigate('/payment');
+  };
+
+  const handleDeleteClick = (id: number) => {
+    setSelectedItemId(id);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedItemId !== null) {
+      setItems((prevItems) =>
+        prevItems.filter((item) => item.id !== selectedItemId)
+      );
+      setSelectedItemId(null);
+    }
+    setIsModalOpen(false);
   };
 
   return (
@@ -78,7 +93,6 @@ const Basket: React.FC = () => {
       {items.map((item) => (
         <Item key={item.id}>
           <ContentWrapper>
-            {/* 좌측: 상품 텍스트 정보 */}
             <ItemDetails>
               <Brand>{item.brand}</Brand>
               <ItemName>
@@ -86,8 +100,6 @@ const Basket: React.FC = () => {
                 <Slash>/</Slash>
                 <ItemType>{item.nameType}</ItemType>
               </ItemName>
-
-              {/* 진행 서비스 + 추가 정보 */}
               {item.type === 'rental' ? (
                 <InfoRowFlex>
                   <IconArea>
@@ -122,8 +134,6 @@ const Basket: React.FC = () => {
                   </TextContainer>
                 </InfoRowFlex>
               )}
-
-              {/* 제품 정보: 첫 줄 - 라벨, 두 번째 줄 - 사이즈/색상 */}
               <InfoRowFlex>
                 <IconArea>
                   <Icon src={ProductInfoIcon} alt='Product Info' />
@@ -141,8 +151,6 @@ const Basket: React.FC = () => {
                   </AdditionalText>
                 </TextContainer>
               </InfoRowFlex>
-
-              {/* 결제 금액 */}
               <InfoRowFlex>
                 <IconArea>
                   <Icon src={PriceIcon} alt='Price' />
@@ -158,7 +166,6 @@ const Basket: React.FC = () => {
               </InfoRowFlex>
             </ItemDetails>
 
-            {/* 우측: 이미지 + 체크박스 */}
             <RightSection>
               <ItemImageContainer>
                 <CheckboxOverlay>
@@ -173,26 +180,29 @@ const Basket: React.FC = () => {
             </RightSection>
           </ContentWrapper>
 
-          {/* 하단 버튼 영역 */}
           <ButtonContainer>
-            <DeleteButton>삭제</DeleteButton>
+            <DeleteButton onClick={() => handleDeleteClick(item.id)}>
+              삭제
+            </DeleteButton>
             <PurchaseButton>바로구매</PurchaseButton>
           </ButtonContainer>
         </Item>
       ))}
+
       <FixedBottomBar
         onClick={handleConfirmPayment}
         text='결제하기'
         color='yellow'
       />
-      {/* <ReusableModal2
+
+      <ReusableModal2
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmDelete}
         title='알림'
       >
         해당 제품을 삭제하시겠습니까?
-      </ReusableModal2> */}
+      </ReusableModal2>
     </Container>
   );
 };
