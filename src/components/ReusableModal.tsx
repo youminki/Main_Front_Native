@@ -82,7 +82,7 @@ const ModalBody = styled.div`
   font-size: 14px;
   font-weight: 400;
   text-align: center;
-  max-height: 230px;
+  max-height: 70%;
   height: 100%;
   display: flex;
   justify-content: center;

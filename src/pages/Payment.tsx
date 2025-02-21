@@ -4,11 +4,11 @@ import styled from 'styled-components';
 import sampleImage from '../assets/sample-dress.svg';
 import PriceIcon from '../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
-import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
+import ServiceInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import FixedBottomBar from '../components/FixedBottomBar';
 import InputField from '../components/InputField';
 import { YellowButton, BlackButton } from '../components/ButtonWrapper';
-import ReusableModal from '../components/ReusableModal'; // 모달 import
+import ReusableModal from '../components/ReusableModal';
 
 interface BasketItem {
   id: number;
@@ -55,19 +55,24 @@ const PaymentPage: React.FC = () => {
   });
   const [isSameAsDelivery, setIsSameAsDelivery] = useState(true);
 
-  // 모달 열림 상태
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // 모달 타입 상태: 'none' | 'search' | 'list'
+  const [modalType, setModalType] = useState<'none' | 'search' | 'list'>(
+    'none'
+  );
 
-  // "배송지와 동일" 클릭
   const handleUseSameAddress = () => {
     setReturnInfo({ ...deliveryInfo });
     setIsSameAsDelivery(true);
   };
 
-  // "새로 입력" 클릭
   const handleNewAddress = () => {
     setReturnInfo({ address: '', detailAddress: '', contact: '' });
     setIsSameAsDelivery(false);
+  };
+
+  // 모달 닫기 핸들러
+  const handleCloseModal = () => {
+    setModalType('none');
   };
 
   return (
@@ -77,7 +82,6 @@ const PaymentPage: React.FC = () => {
         <Item key={item.id}>
           <ContentWrapper>
             <ItemDetails>
-              {/* 아이템 정보들 */}
               <Brand>{item.brand}</Brand>
               <ItemName>
                 <NameCode>{item.nameCode}</NameCode>
@@ -158,7 +162,6 @@ const PaymentPage: React.FC = () => {
         </Item>
       ))}
 
-      {/* 수령인 + 배송방법 */}
       <Section>
         <Row>
           <InputGroup>
@@ -179,7 +182,6 @@ const PaymentPage: React.FC = () => {
         </Row>
       </Section>
 
-      {/* 매니저 배송 안내 */}
       {selectedMethod === '매니저 배송' && (
         <DeliveryNotice>
           <NoticeTitle>※ 매니저 배송이란?</NoticeTitle>
@@ -193,7 +195,6 @@ const PaymentPage: React.FC = () => {
         </DeliveryNotice>
       )}
 
-      {/* 배송지 입력 */}
       <Section>
         <SectionTitle>배송지 입력 *</SectionTitle>
         <Row style={{ marginBottom: '10px' }}>
@@ -206,10 +207,13 @@ const PaymentPage: React.FC = () => {
                 setDeliveryInfo({ ...deliveryInfo, address: e.target.value })
               }
             />
-            <SearchButton>검색</SearchButton>
+            {/* 검색 버튼 -> '지도' 모달 열기 */}
+            <SearchButton onClick={() => setModalType('search')}>
+              검색
+            </SearchButton>
           </AddressInputWrapper>
-          {/* 모달 열기 */}
-          <DeliveryListButton onClick={() => setIsModalOpen(true)}>
+          {/* 배송목록 버튼 -> '배송목록 추가' 모달 열기 */}
+          <DeliveryListButton onClick={() => setModalType('list')}>
             배송목록
           </DeliveryListButton>
         </Row>
@@ -250,7 +254,6 @@ const PaymentPage: React.FC = () => {
         </Row>
       </Section>
 
-      {/* 반납지 입력 */}
       <ReturnSection>
         <SectionTitle>반납지 입력 *</SectionTitle>
         <ReturnOption>
@@ -275,10 +278,15 @@ const PaymentPage: React.FC = () => {
                 setReturnInfo({ ...returnInfo, address: e.target.value })
               }
             />
-            <SearchButton disabled={isSameAsDelivery}>검색</SearchButton>
+            <SearchButton
+              onClick={() => setModalType('search')}
+              disabled={isSameAsDelivery}
+            >
+              검색
+            </SearchButton>
           </AddressInputWrapper>
           <DeliveryListButton
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => setModalType('list')}
             disabled={isSameAsDelivery}
           >
             배송목록
@@ -311,7 +319,6 @@ const PaymentPage: React.FC = () => {
         </Row>
       </ReturnSection>
 
-      {/* 결제방식 + 추가쿠폰 */}
       <PaymentAndCouponContainer>
         <PaymentSection>
           <InputField
@@ -335,7 +342,6 @@ const PaymentPage: React.FC = () => {
         </CouponSection>
       </PaymentAndCouponContainer>
 
-      {/* 총 결제금액 */}
       <TotalPaymentSection>
         <SectionTitle>총 결제금액 (VAT 포함)</SectionTitle>
         <TotalAmount>
@@ -346,23 +352,45 @@ const PaymentPage: React.FC = () => {
 
       <FixedBottomBar text='결제하기' color='yellow' />
 
-      {/* 모달: "배송목록 추가" */}
-      <ReusableModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title='배송목록 추가'
-        width='80%'
-        height='320px'
-      >
-        <ModalBodyContent>
-          <DeliveryListLabel>배송목록 (1/3)</DeliveryListLabel>
-          <DeliverySelect>
-            <option>서울 금천구 디지털로9길 41, 1008호</option>
-            <option>서울 금천구 가산디지털1로 168</option>
-            <option>경기도 성남시 분당구 판교역로 235</option>
-          </DeliverySelect>
-        </ModalBodyContent>
-      </ReusableModal>
+      {/* 
+        모달 1: 검색 버튼 -> 지도 모달 
+        modalType === 'search'
+      */}
+      {modalType === 'search' && (
+        <ReusableModal
+          isOpen={modalType === 'search'}
+          onClose={handleCloseModal}
+          title='지도'
+          height='500px'
+        >
+          <MapBody>
+            <p>카카오 지도가 들어갈 자리</p>
+          </MapBody>
+        </ReusableModal>
+      )}
+
+      {/* 
+        모달 2: 배송목록 버튼 -> 배송목록 추가 모달 
+        modalType === 'list'
+      */}
+      {modalType === 'list' && (
+        <ReusableModal
+          isOpen={modalType === 'list'}
+          onClose={handleCloseModal}
+          title='배송목록 추가'
+          width='80%'
+          height='320px'
+        >
+          <ModalBodyContent>
+            <DeliveryListLabel>배송목록 (1/3)</DeliveryListLabel>
+            <DeliverySelect>
+              <option>서울 금천구 디지털로9길 41, 1008호</option>
+              <option>서울 금천구 가산디지털1로 168</option>
+              <option>경기도 성남시 분당구 판교역로 235</option>
+            </DeliverySelect>
+          </ModalBodyContent>
+        </ReusableModal>
+      )}
     </Container>
   );
 };
@@ -704,38 +732,41 @@ const SmallText = styled.span`
   margin-left: 4px;
 `;
 
+/* 지도 모달 내용 예시 */
+const MapBody = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  /* 배경 등 원하는 스타일 */
+  background-color: #f5f5f5;
+`;
+
 /* 모달 바디 안의 내용 래핑 */
 const ModalBodyContent = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
   gap: 15px;
-  /* 높이 100%에서 중앙정렬하고 싶다면 필요에 맞게 스타일 조정 */
 `;
 
-/* '배송목록 (1/3)' 레이블 스타일 */
 const DeliveryListLabel = styled.div`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
-  /* identical to box height */
-
   color: #000000;
   text-align: left;
 `;
 
-/* 셀렉트 박스 스타일 */
 const DeliverySelect = styled.select`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
-
   color: #000000;
-
   width: 100%;
   height: 57px;
   border: 1px solid #dddddd;
