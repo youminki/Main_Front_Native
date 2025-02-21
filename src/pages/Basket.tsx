@@ -42,7 +42,8 @@ const Basket: React.FC = () => {
     },
   ]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
 
   const handleSelectAll = () => {
@@ -66,7 +67,12 @@ const Basket: React.FC = () => {
 
   const handleDeleteClick = (id: number) => {
     setSelectedItemId(id);
-    setIsModalOpen(true);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleBuyClick = (id: number) => {
+    setSelectedItemId(id);
+    setIsBuyModalOpen(true);
   };
 
   const handleConfirmDelete = () => {
@@ -76,7 +82,12 @@ const Basket: React.FC = () => {
       );
       setSelectedItemId(null);
     }
-    setIsModalOpen(false);
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleConfirmBuy = () => {
+    setIsBuyModalOpen(false);
+    navigate('/payment');
   };
 
   return (
@@ -184,7 +195,9 @@ const Basket: React.FC = () => {
             <DeleteButton onClick={() => handleDeleteClick(item.id)}>
               삭제
             </DeleteButton>
-            <PurchaseButton>바로구매</PurchaseButton>
+            <PurchaseButton onClick={() => handleBuyClick(item.id)}>
+              바로구매
+            </PurchaseButton>
           </ButtonContainer>
         </Item>
       ))}
@@ -195,13 +208,24 @@ const Basket: React.FC = () => {
         color='yellow'
       />
 
+      {/* 삭제 모달 */}
       <ReusableModal2
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         title='알림'
       >
         해당 제품을 삭제하시겠습니까?
+      </ReusableModal2>
+
+      {/* 바로구매 모달 */}
+      <ReusableModal2
+        isOpen={isBuyModalOpen}
+        onClose={() => setIsBuyModalOpen(false)}
+        onConfirm={handleConfirmBuy}
+        title='알림'
+      >
+        해당 제품을 바로 구매하시겠습니까?
       </ReusableModal2>
     </Container>
   );
