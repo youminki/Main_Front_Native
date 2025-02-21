@@ -1,3 +1,4 @@
+// Signup.tsx
 import React, { useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -10,6 +11,7 @@ import BottomBar from '../components/BottomNav2';
 import ResetButtonIcon from '../assets/ResetButton.png';
 import { signupUser } from '../api/user/signupPost';
 import { useNavigate } from 'react-router-dom';
+import { CustomSelect } from '../components/CustomSelect';
 
 type SignupFormData = {
   email: string;
@@ -33,7 +35,6 @@ const Signup: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    watch,
   } = useForm<SignupFormData>({
     resolver: yupResolver(schemaSignup),
     mode: 'all',
@@ -43,6 +44,7 @@ const Signup: React.FC = () => {
   const [selectedGenderButton, setSelectedGenderButton] =
     useState<string>('여성');
   const [melpickAddress, setMelpickAddress] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleGenderChange = (selectedGender: string): void => {
     setGender(selectedGender);
@@ -80,8 +82,6 @@ const Signup: React.FC = () => {
     console.log('멜픽 주소 확인:', melpickAddress);
   };
 
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
     if (data.password !== data.passwordConfirm) {
       setErrorMessage('비밀번호가 일치하지 않습니다.');
@@ -106,11 +106,10 @@ const Signup: React.FC = () => {
 
     try {
       const response = await signupUser(formattedData);
-
       if (response && response.success) {
         console.log('회원가입 성공:', response);
         alert('🎉 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
-        navigate('/login'); // 회원가입 후 로그인 페이지로 이동
+        navigate('/login');
       } else {
         throw new Error(response.message || '회원가입 실패');
       }
@@ -190,10 +189,12 @@ const Signup: React.FC = () => {
               required
               maxLength={5}
             />
+
+            {/** ❷ as={CustomSelect}로 교체하여 커스텀 화살표 적용 */}
             <InputField
               label='태어난 해'
               id='birthYear'
-              as='select'
+              as={CustomSelect}
               error={errors.birthYear}
               required
               {...register('birthYear')}
@@ -245,10 +246,11 @@ const Signup: React.FC = () => {
           </PhoneField>
 
           <RowLabel>
+            {/** ❸ 지역, 구 select에도 적용 */}
             <InputField
               label='지역'
               id='region'
-              as='select'
+              as={CustomSelect}
               error={errors.region}
               required
               {...register('region')}
@@ -260,7 +262,7 @@ const Signup: React.FC = () => {
             <InputField
               label='구'
               id='district'
-              as='select'
+              as={CustomSelect}
               error={errors.district}
               required
               {...register('district')}
@@ -287,6 +289,7 @@ const Signup: React.FC = () => {
             onButtonClick={handleCheckClick}
             prefix='melpick.com/'
           />
+
           <BlackContainer />
           <BottomBar
             imageSrc={ResetButtonIcon}
@@ -302,13 +305,14 @@ const Signup: React.FC = () => {
 
 export default Signup;
 
+/* 아래는 스타일 정의들... */
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
-
   margin: 0 auto;
 `;
 
@@ -351,7 +355,7 @@ const GenderRow = styled.div`
 
 const GenderButton = styled.button<{ selected: boolean; isSelected: boolean }>`
   flex: 1;
-  border: ${({ $isSelected }) => ($isSelected ? '2px solid #f6ae24' : 'none')};
+  border: ${({ isSelected }) => (isSelected ? '2px solid #f6ae24' : 'none')};
   border-radius: 10px;
   background-color: ${({ selected }) => (selected ? '#FFFFFF' : '#EEEEEE')};
   color: ${({ selected }) => (selected ? '#000000' : '#999999')};
@@ -387,4 +391,9 @@ const PhoneField = styled.div`
 
 const BlackContainer = styled.div`
   margin-bottom: 100px;
+`;
+
+const ErrorText = styled.div`
+  color: red;
+  text-align: center;
 `;

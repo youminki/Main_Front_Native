@@ -219,6 +219,10 @@ const Select = styled.select`
   height: 100%;
   background-color: #ffffff; /* 고정된 흰색 */
   cursor: pointer;
+
+  appearance: none;
+  background: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'10'%20height%3D'6'%20viewBox%3D'0%200%2010%206'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M5%206%200%200%2010%200z'%20fill%3D'%23aaa'%20/%3E%3C/svg%3E")
+    no-repeat right 10px center/10px;
 `;
 
 const ErrorMessage = styled.span`

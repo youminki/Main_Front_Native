@@ -53,7 +53,7 @@ const StyledModal = styled.div`
   align-items: center;
   padding: 27px;
   z-index: 9999;
-  width: 100vw;
+  width: 90vw;
   height: 100vh;
   max-width: 800px;
 `;

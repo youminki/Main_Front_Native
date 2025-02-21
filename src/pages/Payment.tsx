@@ -8,6 +8,7 @@ import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
 import FixedBottomBar from '../components/FixedBottomBar';
 import InputField from '../components/InputField';
 import { YellowButton, BlackButton } from '../components/ButtonWrapper';
+import ReusableModal from '../components/ReusableModal'; // 모달 import
 
 interface BasketItem {
   id: number;
@@ -54,11 +55,16 @@ const PaymentPage: React.FC = () => {
   });
   const [isSameAsDelivery, setIsSameAsDelivery] = useState(true);
 
+  // 모달 열림 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // "배송지와 동일" 클릭
   const handleUseSameAddress = () => {
     setReturnInfo({ ...deliveryInfo });
     setIsSameAsDelivery(true);
   };
 
+  // "새로 입력" 클릭
   const handleNewAddress = () => {
     setReturnInfo({ address: '', detailAddress: '', contact: '' });
     setIsSameAsDelivery(false);
@@ -71,6 +77,7 @@ const PaymentPage: React.FC = () => {
         <Item key={item.id}>
           <ContentWrapper>
             <ItemDetails>
+              {/* 아이템 정보들 */}
               <Brand>{item.brand}</Brand>
               <ItemName>
                 <NameCode>{item.nameCode}</NameCode>
@@ -150,6 +157,8 @@ const PaymentPage: React.FC = () => {
           </ContentWrapper>
         </Item>
       ))}
+
+      {/* 수령인 + 배송방법 */}
       <Section>
         <Row>
           <InputGroup>
@@ -169,6 +178,8 @@ const PaymentPage: React.FC = () => {
           </InputGroup>
         </Row>
       </Section>
+
+      {/* 매니저 배송 안내 */}
       {selectedMethod === '매니저 배송' && (
         <DeliveryNotice>
           <NoticeTitle>※ 매니저 배송이란?</NoticeTitle>
@@ -181,6 +192,8 @@ const PaymentPage: React.FC = () => {
           </ServiceArea>
         </DeliveryNotice>
       )}
+
+      {/* 배송지 입력 */}
       <Section>
         <SectionTitle>배송지 입력 *</SectionTitle>
         <Row style={{ marginBottom: '10px' }}>
@@ -195,7 +208,10 @@ const PaymentPage: React.FC = () => {
             />
             <SearchButton>검색</SearchButton>
           </AddressInputWrapper>
-          <DeliveryListButton>배송목록</DeliveryListButton>
+          {/* 모달 열기 */}
+          <DeliveryListButton onClick={() => setIsModalOpen(true)}>
+            배송목록
+          </DeliveryListButton>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
           <DetailAddressInput
@@ -233,6 +249,8 @@ const PaymentPage: React.FC = () => {
           </InputGroup>
         </Row>
       </Section>
+
+      {/* 반납지 입력 */}
       <ReturnSection>
         <SectionTitle>반납지 입력 *</SectionTitle>
         <ReturnOption>
@@ -257,9 +275,14 @@ const PaymentPage: React.FC = () => {
                 setReturnInfo({ ...returnInfo, address: e.target.value })
               }
             />
-            <SearchButton>검색</SearchButton>
+            <SearchButton disabled={isSameAsDelivery}>검색</SearchButton>
           </AddressInputWrapper>
-          <DeliveryListButton>배송목록</DeliveryListButton>
+          <DeliveryListButton
+            onClick={() => setIsModalOpen(true)}
+            disabled={isSameAsDelivery}
+          >
+            배송목록
+          </DeliveryListButton>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
           <DetailAddressInput
@@ -287,6 +310,8 @@ const PaymentPage: React.FC = () => {
           </InputGroup>
         </Row>
       </ReturnSection>
+
+      {/* 결제방식 + 추가쿠폰 */}
       <PaymentAndCouponContainer>
         <PaymentSection>
           <InputField
@@ -309,6 +334,8 @@ const PaymentPage: React.FC = () => {
           />
         </CouponSection>
       </PaymentAndCouponContainer>
+
+      {/* 총 결제금액 */}
       <TotalPaymentSection>
         <SectionTitle>총 결제금액 (VAT 포함)</SectionTitle>
         <TotalAmount>
@@ -316,14 +343,34 @@ const PaymentPage: React.FC = () => {
           <Amount>65,000원</Amount>
         </TotalAmount>
       </TotalPaymentSection>
+
       <FixedBottomBar text='결제하기' color='yellow' />
+
+      {/* 모달: "배송목록 추가" */}
+      <ReusableModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title='배송목록 추가'
+        width='80%'
+        height='320px'
+      >
+        <ModalBodyContent>
+          <DeliveryListLabel>배송목록 (1/3)</DeliveryListLabel>
+          <DeliverySelect>
+            <option>서울 금천구 디지털로9길 41, 1008호</option>
+            <option>서울 금천구 가산디지털1로 168</option>
+            <option>경기도 성남시 분당구 판교역로 235</option>
+          </DeliverySelect>
+        </ModalBodyContent>
+      </ReusableModal>
     </Container>
   );
 };
 
 export default PaymentPage;
 
-/* 스타일 정의 */
+/* ==================== 스타일 정의 ==================== */
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -414,7 +461,6 @@ const ReturnOption = styled.div`
   margin-bottom: 10px;
 `;
 
-/* OptionButton에 transient prop($active) 사용 */
 const OptionButton = styled.button<{ $active: boolean }>`
   flex: 1;
   border-radius: 4px;
@@ -656,4 +702,48 @@ const SmallText = styled.span`
   font-size: 11px;
   color: #666;
   margin-left: 4px;
+`;
+
+/* 모달 바디 안의 내용 래핑 */
+const ModalBodyContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 15px;
+  /* 높이 100%에서 중앙정렬하고 싶다면 필요에 맞게 스타일 조정 */
+`;
+
+/* '배송목록 (1/3)' 레이블 스타일 */
+const DeliveryListLabel = styled.div`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 11px;
+  /* identical to box height */
+
+  color: #000000;
+  text-align: left;
+`;
+
+/* 셀렉트 박스 스타일 */
+const DeliverySelect = styled.select`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 14px;
+
+  color: #000000;
+
+  width: 100%;
+  height: 57px;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  padding: 0 10px;
+  font-size: 14px;
+  cursor: pointer;
+  appearance: none;
+  background: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'10'%20height%3D'6'%20viewBox%3D'0%200%2010%206'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M5%206%200%200%2010%200z'%20fill%3D'%23aaa'%20/%3E%3C/svg%3E")
+    no-repeat right 10px center/10px;
 `;
