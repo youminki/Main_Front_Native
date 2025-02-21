@@ -4,12 +4,12 @@ import { ThemeProvider } from 'styled-components';
 import Theme from '../../styles/Theme';
 import StatsSection from '../../components/Melpik/StatsSection';
 
-import MelpikIcon from '/src/assets/Melpik/MelpikIcon.svg';
+import MelpikIcon from '../../assets/Melpik/MelpikIcon.svg';
 
-import MelpikCreateIcon from '/src/assets/Melpik/MelpikCreateIconBox.svg';
-import MelpikScheduelerIcon from '/src/assets/Melpik/MelpikScheduelerIconBox.svg';
-import MelpikCalculateIcon from '/src/assets/Melpik/MelpikcalculateIconBox.svg';
-import MelpikOptionIcon from '/src/assets/Melpik/MelpikOptionIconBox.svg';
+import MelpikCreateIcon from '../../assets/Melpik/MelpikCreateIconBox.svg';
+import MelpikScheduelerIcon from '../../assets/Melpik/MelpikScheduelerIconBox.svg';
+import MelpikCalculateIcon from '../../assets/Melpik/MelpikcalculateIconBox.svg';
+import MelpikOptionIcon from '../../assets/Melpik/MelpikOptionIconBox.svg';
 import { useNavigate } from 'react-router-dom';
 
 const MelpikPage: React.FC = () => {
