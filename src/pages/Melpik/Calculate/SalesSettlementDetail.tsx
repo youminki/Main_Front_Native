@@ -84,30 +84,36 @@ const SalesSettlementDetail: React.FC = () => {
       </Note>
 
       <Divider />
-      <Table>
-        <thead>
-          <tr>
-            <ThRight>판매제품 / 구매자 정보</ThRight>
-            <ThLeft>결제금액 / 정산금액</ThLeft>
-          </tr>
-        </thead>
-        <tbody>
-          {settlement.salesList.map((sale, index) => (
-            <tr key={index}>
-              <TdLeft>
-                <ProductName isBold={sale.product.includes('JNS2219')}>
-                  {sale.product}
-                </ProductName>
-                <SubInfo>{`${settlement.date} - (구매자: ${sale.buyer})`}</SubInfo>
-              </TdLeft>
-              <TdRight>
-                {sale.price}
-                <SubInfo isBold>{sale.settlement}</SubInfo>
-              </TdRight>
+      {/*
+        테이블을 감싸는 래퍼를 두고 overflow-x: auto로 설정
+        -> 화면이 좁아지면 가로 스크롤이 생기면서 텍스트가 줄바꿈되지 않음
+      */}
+      <TableWrapper>
+        <Table>
+          <thead>
+            <tr>
+              <ThRight>판매제품 / 구매자 정보</ThRight>
+              <ThLeft>결제금액 / 정산금액</ThLeft>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {settlement.salesList.map((sale, index) => (
+              <tr key={index}>
+                <TdLeft>
+                  <ProductName isBold={sale.product.includes('JNS2219')}>
+                    {sale.product}
+                  </ProductName>
+                  <SubInfo>{`${settlement.date} - (구매자: ${sale.buyer})`}</SubInfo>
+                </TdLeft>
+                <TdRight>
+                  {sale.price}
+                  <SubInfo isBold>{sale.settlement}</SubInfo>
+                </TdRight>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </TableWrapper>
     </Container>
   );
 };
@@ -166,38 +172,53 @@ const Note = styled.p`
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;
-
   color: #999999;
-
   margin-top: 20px;
+`;
+
+const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+  background: #dddddd;
+  margin: 30px 0;
+`;
+
+// 테이블을 감싸는 래퍼
+const TableWrapper = styled.div`
+  width: 100%;
+  overflow-x: auto; /* 가로 스크롤 */
 `;
 
 const Table = styled.table`
   width: 100%;
   margin-top: 20px;
   border-collapse: collapse;
+  /* 테이블이 너무 좁아지지 않도록 필요한 경우 min-width 설정 가능 */
+  /* min-width: 600px; */
 `;
 
 const ThRight = styled.th`
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
   text-align: left;
   font-weight: 800;
   font-size: 10px;
   padding: 15px 20px;
-
   color: #000;
   background-color: #dddddd;
 `;
+
 const ThLeft = styled.th`
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
   text-align: right;
   font-weight: 800;
   font-size: 10px;
   padding: 15px 20px;
-
   color: #000;
   background-color: #dddddd;
 `;
 
 const TdLeft = styled.td`
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
   padding: 20px;
   border: 1px solid #dddddd;
   text-align: left;
@@ -206,11 +227,11 @@ const TdLeft = styled.td`
   font-weight: 800;
   font-size: 12px;
   line-height: 13px;
-
   color: #000000;
 `;
 
 const TdRight = styled.td`
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
   padding: 20px;
   border: 1px solid #dddddd;
   font-family: 'NanumSquare Neo OTF';
@@ -219,7 +240,6 @@ const TdRight = styled.td`
   font-size: 12px;
   line-height: 13px;
   text-align: right;
-
   color: #000000;
 `;
 
@@ -228,25 +248,12 @@ const ProductName = styled.span<{ isBold?: boolean }>`
 `;
 
 const SubInfo = styled.p<{ isBold?: boolean }>`
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 13px;
-
-  color: #000000;
-
-  margin-top: 4px;
   font-weight: ${({ isBold }) => (isBold ? 800 : 400)};
   font-size: 12px;
   line-height: 13px;
   color: #000;
   margin-top: 4px;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #dddddd;
-  margin: 30px 0;
 `;
