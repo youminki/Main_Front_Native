@@ -12,7 +12,6 @@ import { signupUser } from '../api/user/signupPost';
 import { useNavigate } from 'react-router-dom';
 import { CustomSelect } from '../components/CustomSelect';
 
-// SignupFormData에 agreeToTerms와 agreeToPrivacyPolicy를 추가합니다.
 type SignupFormData = {
   email: string;
   password: string;
@@ -24,13 +23,10 @@ type SignupFormData = {
   region: string;
   district: string;
   melpickAddress: string;
-  agreeToTerms: boolean;
-  agreeToPrivacyPolicy: boolean;
 };
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
-  // defaultValues에 약관 동의값도 추가합니다.
   const methods = useForm<SignupFormData>({
     resolver: yupResolver(schemaSignup),
     mode: 'all',
@@ -45,8 +41,6 @@ const Signup: React.FC = () => {
       region: '',
       district: '',
       melpickAddress: '',
-      agreeToTerms: false, // 초기값 false (필요에 따라 true로 변경)
-      agreeToPrivacyPolicy: false, // 초기값 false
     },
   });
   const {
@@ -102,10 +96,8 @@ const Signup: React.FC = () => {
       setErrorMessage('비밀번호가 일치하지 않습니다.');
       return;
     }
-
     setErrorMessage(null);
 
-    // formattedData에 agreeToTerms와 agreeToPrivacyPolicy를 함께 전달합니다.
     const formattedData = {
       email: data.email,
       password: data.password,
@@ -115,8 +107,6 @@ const Signup: React.FC = () => {
       address: `${data.region} ${data.district}`,
       phoneNumber: data.phoneNumber,
       gender: gender === '여성' ? 'female' : 'male',
-      agreeToTerms: data.agreeToTerms,
-      agreeToPrivacyPolicy: data.agreeToPrivacyPolicy,
     };
 
     try {
@@ -141,7 +131,7 @@ const Signup: React.FC = () => {
       <FormProvider {...methods}>
         <Container>
           <Form onSubmit={handleSubmit(onSubmit)}>
-            {/* AgreementSection 내부에서 useFormContext를 사용하여 체크박스를 등록 */}
+            {/* AgreementSection은 체크박스 관련 UI만 보여줍니다. */}
             <AgreementSection />
 
             {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
@@ -207,7 +197,6 @@ const Signup: React.FC = () => {
                 maxLength={5}
               />
 
-              {/** as={CustomSelect}로 커스텀 화살표 적용 */}
               <InputField
                 label='태어난 해'
                 id='birthYear'
