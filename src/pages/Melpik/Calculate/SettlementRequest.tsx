@@ -69,7 +69,6 @@ const Container = styled.div`
 
   width: 100%;
   margin: 0 auto;
-  padding: 20px;
 `;
 
 const RowContainer = styled.div`
