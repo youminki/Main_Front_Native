@@ -55,10 +55,16 @@ export const schemaSignup = yup
         /^[a-zA-Z0-9]{1,12}$/,
         '멜픽 주소는 영문과 숫자로 이루어진 1~12자 이내로 입력해주세요.'
       ),
-    agreeToTerms: yup.boolean().oneOf([true], '약관에 동의해야 합니다.'), // .required() 제거
+    agreeToTerms: yup
+      .boolean()
+      .oneOf([true], '약관에 동의해야 합니다.')
+      .default(false)
+      .defined(),
     agreeToPrivacyPolicy: yup
       .boolean()
-      .oneOf([true], '개인정보 처리방침에 동의해야 합니다.'), // .required() 제거
+      .oneOf([true], '개인정보 처리방침에 동의해야 합니다.')
+      .default(false)
+      .defined(),
   })
   .required();
 

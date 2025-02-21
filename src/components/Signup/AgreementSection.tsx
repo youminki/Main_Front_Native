@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-type AgreementSectionProps = {};
+type AgreementSectionProps = object;
 
 type IndividualChecks = {
   agree1: boolean;
