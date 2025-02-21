@@ -27,7 +27,7 @@ interface BasketItem {
 // const [isModalOpen, setIsModalOpen] = useState(false);
 const PaymentPage: React.FC = () => {
   // const navigate = useNavigate();
-  const [items, setItems] = useState<BasketItem[]>([
+  const [items] = useState<BasketItem[]>([
     {
       id: 1,
       brand: 'SANDRO',
