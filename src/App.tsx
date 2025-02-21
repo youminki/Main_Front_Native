@@ -48,10 +48,10 @@ const App: React.FC = () => {
   const location = useLocation();
 
   // BottomNav가 포함될 경로 패턴
-  const bottomNavPaths = ['/home', '/melpik', '/brand'];
+  const bottomNavPaths = ['/home', '/melpik', '/brand', '/lockerRoom'];
 
   // Header1이 포함될 경로 패턴
-  const header1Paths = ['/home', '/melpik', '/brand'];
+  const header1Paths = ['/home', '/melpik', '/brand', '/lockerRoom'];
 
   // Header2가 포함될 경로 패턴
   const header2Paths = [
