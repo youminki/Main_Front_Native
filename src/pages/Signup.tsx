@@ -1,4 +1,3 @@
-// Signup.tsx
 import React, { useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -24,7 +23,7 @@ type SignupFormData = {
   region: string;
   district: string;
   melpickAddress: string;
-  instar: string;
+  instar?: string; // 선택적 필드로 수정
   agreeToTerms: boolean;
   agreeToPrivacyPolicy: boolean;
 };
@@ -190,7 +189,7 @@ const Signup: React.FC = () => {
               maxLength={5}
             />
 
-            {/** as={CustomSelect}로 교체하여 커스텀 화살표 적용 */}
+            {/** as={CustomSelect}로 커스텀 화살표 적용 */}
             <InputField
               label='태어난 해'
               id='birthYear'

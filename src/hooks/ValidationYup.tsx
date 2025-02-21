@@ -1,4 +1,3 @@
-// ValidationYup.ts
 import * as yup from 'yup';
 
 export const schemaSignupContemporary = yup.object({
@@ -57,10 +56,14 @@ export const schemaSignup = yup
         '멜픽 주소는 영문과 숫자로 이루어진 1~12자 이내로 입력해주세요.'
       ),
     instar: yup.string(), // 선택적 필드
-    agreeToTerms: yup.boolean().oneOf([true], '약관에 동의해야 합니다.'),
+    agreeToTerms: yup
+      .boolean()
+      .oneOf([true], '약관에 동의해야 합니다.')
+      .required('약관에 동의해야 합니다.'),
     agreeToPrivacyPolicy: yup
       .boolean()
-      .oneOf([true], '개인정보 처리방침에 동의해야 합니다.'),
+      .oneOf([true], '개인정보 처리방침에 동의해야 합니다.')
+      .required('개인정보 처리방침에 동의해야 합니다.'),
   })
   .required();
 
