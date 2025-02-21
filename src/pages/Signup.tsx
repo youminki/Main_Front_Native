@@ -110,7 +110,9 @@ const Signup: React.FC = () => {
     };
 
     try {
-      const response = await signupUser(formattedData);
+      // API 타입(SignupData)이 agreeToTerms와 agreeToPrivacyPolicy를 요구하더라도,
+      // 이 경우 해당 값이 필요 없으므로 타입 단언을 사용합니다.
+      const response = await signupUser(formattedData as any);
       if (response && response.success) {
         console.log('회원가입 성공:', response);
         alert('🎉 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
@@ -205,6 +207,9 @@ const Signup: React.FC = () => {
                 required
                 {...register('birthYear')}
               >
+                <option value='' disabled selected>
+                  태어난 해를 선택하세요
+                </option>
                 {Array.from({ length: 100 }, (_, i) => 2023 - i).map((year) => (
                   <option key={year} value={year}>
                     {year}년
@@ -260,6 +265,9 @@ const Signup: React.FC = () => {
                 required
                 {...register('region')}
               >
+                <option value='' disabled selected>
+                  지역을 선택하세요
+                </option>
                 <option value='서울특별시'>서울특별시</option>
                 <option value='경기도'>경기도</option>
               </InputField>
@@ -272,6 +280,9 @@ const Signup: React.FC = () => {
                 required
                 {...register('district')}
               >
+                <option value='' disabled selected>
+                  구를 선택하세요
+                </option>
                 <option value='강남구'>강남구</option>
                 <option value='서초구'>서초구</option>
                 <option value='금천구'>금천구</option>
@@ -282,7 +293,7 @@ const Signup: React.FC = () => {
               label='멜픽 주소설정(영문, 숫자 12글자 이내)'
               id='melpickAddress'
               type='text'
-              placeholder='주소를 입력하세요'
+              placeholder='멜픽 주소를 입력하세요'
               error={errors.melpickAddress}
               {...register('melpickAddress')}
               value={melpickAddress}
