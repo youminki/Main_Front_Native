@@ -22,6 +22,7 @@ const homeIcons = [
 interface SubHeaderProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
+  barPosition: number;
 }
 
 const ICONS_PER_PAGE = 5;
