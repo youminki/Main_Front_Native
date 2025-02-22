@@ -350,15 +350,18 @@ const PaymentPage: React.FC = () => {
         <SectionTitle>반납지 입력 *</SectionTitle>
         {/* ====== 3) ReturnOption, OptionButton 스타일 수정 ====== */}
         <ReturnOption>
-          <OptionButton
+          <OptionButtonRight
             $active={isSameAsDelivery}
             onClick={handleUseSameAddress}
           >
             배송지와 동일
-          </OptionButton>
-          <OptionButton $active={!isSameAsDelivery} onClick={handleNewAddress}>
+          </OptionButtonRight>
+          <OptionButtonLeft
+            $active={!isSameAsDelivery}
+            onClick={handleNewAddress}
+          >
             새로 입력
-          </OptionButton>
+          </OptionButtonLeft>
         </ReturnOption>
         <Row style={{ marginBottom: '10px' }}>
           <AddressInputWrapper>
@@ -572,10 +575,9 @@ const DetailAddressInput = styled.input`
 // ======== ReturnOption, OptionButton 수정 ======== //
 const ReturnOption = styled.div`
   display: inline-flex; /* 버튼이 옆으로 붙도록 */
-  border: 2px solid #f6ae24; /* 전체 테두리(금색) */
-  border-radius: 4px;
+  border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
 
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
@@ -583,28 +585,39 @@ const ReturnOption = styled.div`
   font-size: 13px;
   line-height: 14px;
   text-align: center;
-
   color: #000000;
 `;
 
-const OptionButton = styled.button<{ $active: boolean }>`
+const OptionButtonRight = styled.button<{ $active: boolean }>`
   flex: 1;
   height: 57px;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
   text-align: center;
-  border: none;
   outline: none;
+  border-radius: 10px 0px 0px 10px;
+  border: ${({ $active }) =>
+    $active ? '2px solid #f6ae24' : '2px solid transparent'};
 
-  /* 선택된 버튼은 흰 배경 + 진한 글자, 미선택은 회색 배경 + 연한 글자 */
   background: ${({ $active }) => ($active ? '#fff' : '#eee')};
   color: ${({ $active }) => ($active ? '#000' : '#888')};
+`;
 
-  /* 가운데 구분선 */
-  &:first-child {
-    border-right: 2px solid #f6ae24;
-  }
+const OptionButtonLeft = styled.button<{ $active: boolean }>`
+  flex: 1;
+  height: 57px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: center;
+  outline: none;
+  border-radius: 0px 10px 10px 0px;
+  border: ${({ $active }) =>
+    $active ? '2px solid #f6ae24' : '2px solid transparent'};
+
+  background: ${({ $active }) => ($active ? '#fff' : '#eee')};
+  color: ${({ $active }) => ($active ? '#000' : '#888')};
 `;
 
 const PaymentAndCouponContainer = styled.div`
