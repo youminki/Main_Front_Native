@@ -44,6 +44,7 @@ import Header2 from './components/Header2';
 import Header3 from './components/Header3';
 import Header4 from './components/Header4';
 
+import { Navigate } from 'react-router-dom';
 const App: React.FC = () => {
   const location = useLocation();
 
@@ -157,9 +158,10 @@ const App: React.FC = () => {
       {includeHeader4 && <Header4 title={getHeader4Title()} />}
       <ContentContainer>
         <Routes>
+          <Route path='/' element={<Navigate to='/home' replace />} />
           <Route path='/home' element={<Home />} />
           <Route path='/item/:id' element={<HomeDetail />} />
-          <Route path='/' element={<Login />} />
+
           <Route path='/login' element={<Login />} />
           <Route path='/signup' element={<Signup />} />
           <Route path='/findid' element={<FindId />} />
