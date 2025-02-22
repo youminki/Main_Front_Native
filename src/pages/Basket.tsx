@@ -19,9 +19,10 @@ interface BasketItem {
   deliveryDate?: string;
   size: string;
   color: string;
-  price: number;
+  price: number | string;
   imageUrl: string;
   isSelected: boolean;
+  rentalDays?: string;
 }
 
 const Basket: React.FC = () => {
@@ -39,6 +40,21 @@ const Basket: React.FC = () => {
       price: 50000,
       imageUrl: sampleImage,
       isSelected: true,
+      rentalDays: '대여 (3일)',
+    },
+    {
+      id: 2,
+      brand: 'SANDRO',
+      nameCode: 'SF25S3FRD7699',
+      nameType: '원피스',
+      type: 'rental',
+      servicePeriod: '2025.03.02 (일) ~ 03.05 (수)',
+      size: 'M (55)',
+      color: '블랙',
+      price: '489,000',
+      imageUrl: sampleImage,
+      isSelected: true,
+      rentalDays: '구매',
     },
   ]);
 
@@ -119,7 +135,7 @@ const Basket: React.FC = () => {
                   <TextContainer>
                     <RowText>
                       <LabelDetailText>진행 서비스 - </LabelDetailText>
-                      <DetailHighlight>대여(3일)</DetailHighlight>
+                      <DetailHighlight>{item.rentalDays}</DetailHighlight>
                     </RowText>
                     {item.servicePeriod && (
                       <AdditionalText>
