@@ -63,55 +63,60 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
           )}
         </Label>
 
-        <InputRow>
-          {prefix && <PrefixText>{prefix}</PrefixText>}
-          <InputWrapper>
-            {prefixcontent && (
-              <PrefixcontentText>{prefixcontent}</PrefixcontentText>
-            )}
-            {options ? (
-              <Select
-                id={id}
-                value={selectedOption}
-                onChange={handleSelectChange}
-              >
-                {options.map((option: string) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </Select>
-            ) : (
-              <Input as={as} type={type} id={id} ref={ref} {...rest} />
-            )}
-            {buttonLabel && (
-              <ButtonWrapper>
-                <Button02 onClick={onButtonClick} color={buttonColor}>
-                  {buttonLabel}
-                </Button02>
-              </ButtonWrapper>
-            )}
-            {useToggle && (
-              <ToggleWrapper>
-                <SeasonToggle
-                  isActive={toggle}
-                  toggle={() => setToggle(!toggle)}
-                />
-              </ToggleWrapper>
-            )}
-          </InputWrapper>
-          {isEmailField && <AtSymbol>@</AtSymbol>}
-          {isEmailField && (
+        {/* 인풋과 에러 메시지를 묶어서, 인풋 바로 아래에 에러가 오도록 배치 */}
+        <div>
+          <InputRow>
+            {prefix && <PrefixText>{prefix}</PrefixText>}
             <InputWrapper>
-              <EmailDropdown id={`${id}-domain`} defaultValue='naver.com'>
-                <option value='gmail.com'>gmail.com</option>
-                <option value='naver.com'>naver.com</option>
-                <option value='daum.net'>daum.net</option>
-              </EmailDropdown>
+              {prefixcontent && (
+                <PrefixcontentText>{prefixcontent}</PrefixcontentText>
+              )}
+              {options ? (
+                <Select
+                  id={id}
+                  value={selectedOption}
+                  onChange={handleSelectChange}
+                >
+                  {options.map((option: string) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </Select>
+              ) : (
+                <Input as={as} type={type} id={id} ref={ref} {...rest} />
+              )}
+              {buttonLabel && (
+                <ButtonWrapper>
+                  <Button02 onClick={onButtonClick} color={buttonColor}>
+                    {buttonLabel}
+                  </Button02>
+                </ButtonWrapper>
+              )}
+              {useToggle && (
+                <ToggleWrapper>
+                  <SeasonToggle
+                    isActive={toggle}
+                    toggle={() => setToggle(!toggle)}
+                  />
+                </ToggleWrapper>
+              )}
             </InputWrapper>
-          )}
-        </InputRow>
-        {error && <ErrorMessage>{error.message}</ErrorMessage>}
+            {isEmailField && <AtSymbol>@</AtSymbol>}
+            {isEmailField && (
+              <InputWrapper>
+                <EmailDropdown id={`${id}-domain`} defaultValue='naver.com'>
+                  <option value='gmail.com'>gmail.com</option>
+                  <option value='naver.com'>naver.com</option>
+                  <option value='daum.net'>daum.net</option>
+                </EmailDropdown>
+              </InputWrapper>
+            )}
+          </InputRow>
+
+          {/* 에러가 있을 경우 인풋필드 아래에 표시 */}
+          {error && <ErrorMessage>{error.message}</ErrorMessage>}
+        </div>
       </InputContainer>
     );
   }
@@ -144,6 +149,7 @@ const GrayText = styled.span`
   line-height: 14px;
 `;
 
+/** 인풋과 에러메시지를 묶는 박스 */
 const InputRow = styled.div`
   display: flex;
   align-items: center;
@@ -216,7 +222,6 @@ const Input = styled.input`
 
   &:focus {
     outline: none;
-
     border-color: #000000;
   }
 `;
@@ -251,9 +256,14 @@ const Select = styled.select`
 `;
 
 const ErrorMessage = styled.span`
+  display: block;
+  margin-top: 6px;
+  margin-left: 4px;
   color: blue;
   font-size: 12px;
-  margin-top: 5px;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
 `;
 
 const EmailDropdown = styled.select`

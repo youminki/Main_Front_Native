@@ -1,4 +1,3 @@
-// PaymentPage.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import * as yup from 'yup';
@@ -10,13 +9,9 @@ import FixedBottomBar from '../components/FixedBottomBar';
 import InputField from '../components/InputField';
 import { YellowButton, BlackButton } from '../components/ButtonWrapper';
 import ReusableModal from '../components/ReusableModal';
+import ReusableModal2 from '../components/ReusableModal2';
 
-// ========== 1) yup 스키마 정의 ========== //
-/**
- * - deliveryContact: 010으로 시작하는 11자리 숫자 (하이픈 제외)
- * - isSameAsDelivery: 반납지를 배송지와 동일하게 쓸지 여부
- * - returnContact: isSameAsDelivery=false일 때만 필수
- */
+// yup 스키마 (전화번호는 "010" + 8자리 숫자여야 함)
 const paymentSchema = yup.object().shape({
   deliveryContact: yup
     .string()
@@ -37,7 +32,7 @@ const paymentSchema = yup.object().shape({
             '전화번호는 010으로 시작하는 11자리 숫자여야 합니다.'
           );
       }
-      return schema; // 동일 사용이면 필수 아님
+      return schema;
     }),
 });
 
@@ -57,6 +52,11 @@ interface BasketItem {
 }
 
 const PaymentPage: React.FC = () => {
+  // 수령인 (반드시 입력되어야 함)
+  const [recipient, setRecipient] = useState<string>('');
+  // 홈 이동 여부 (결제 완료 alert 후 홈 이동)
+  const [navigateHome, setNavigateHome] = useState(false);
+
   // 샘플 장바구니 아이템
   const [items] = useState<BasketItem[]>([
     {
@@ -74,105 +74,152 @@ const PaymentPage: React.FC = () => {
     },
   ]);
 
-  // 배송방법(매니저 배송 or 택배 배송)
+  // 배송방법 선택
   const [selectedMethod, setSelectedMethod] = useState('매니저 배송');
 
-  // 배송지 정보
+  // 배송지 정보 (전화번호는 "010"이 기본값; "010" 부분은 수정 불가)
   const [deliveryInfo, setDeliveryInfo] = useState({
     address: '',
     detailAddress: '',
-    contact: '010', // 전화번호는 기본 '010'으로 시작
+    contact: '010',
   });
-
-  // 반납지 정보
+  // 반납지 정보 (기본값 "010"으로 시작)
   const [returnInfo, setReturnInfo] = useState({
     address: '',
     detailAddress: '',
     contact: '010',
   });
+  // 반납지와 동일 여부 (기본값 false: '새로 입력' 선택)
+  const [isSameAsDelivery, setIsSameAsDelivery] = useState(false);
 
-  // 반납지 = 배송지와 동일 여부
-  const [isSameAsDelivery, setIsSameAsDelivery] = useState(true);
-
-  // 모달 상태
+  // 모달 상태 (주소 검색/배송목록, alert용)
   const [modalType, setModalType] = useState<'none' | 'search' | 'list'>(
     'none'
   );
+  const [modalAlert, setModalAlert] = useState<{
+    isOpen: boolean;
+    message: string;
+  }>({
+    isOpen: false,
+    message: '',
+  });
+  const closeAlertModal = () => {
+    setModalAlert({ isOpen: false, message: '' });
+    if (navigateHome) {
+      window.location.href = '/home';
+    }
+    setNavigateHome(false);
+  };
+  const handleCloseModalCommon = () => setModalType('none');
 
-  // ========== 2) 전화번호 입력 핸들러 (자동 포맷) ========== //
+  // 결제 확인용 ReusableModal2 상태
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+
+  // 배송 연락처 입력 핸들러 (입력 시 "010"은 고정, 나머지 8자리 입력)
   const handleDeliveryContactChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    let input = e.target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
-    if (!input.startsWith('010')) {
-      input = '010' + input;
+    let value = e.target.value.replace(/[^0-9]/g, '');
+    if (!value.startsWith('010')) {
+      value = '010' + value;
     }
-    input = input.slice(0, 11); // 최대 11자리까지만
-    if (input.length === 11) {
-      // 11자리가 되면 하이픈 포맷
-      input = input.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+    value = value.slice(0, 11);
+    if (value.length === 11) {
+      value = value.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
     }
-    setDeliveryInfo({ ...deliveryInfo, contact: input });
+    setDeliveryInfo({ ...deliveryInfo, contact: value });
   };
 
   const handleReturnContactChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    let input = e.target.value.replace(/[^0-9]/g, '');
-    if (!input.startsWith('010')) {
-      input = '010' + input;
+    let value = e.target.value.replace(/[^0-9]/g, '');
+    if (!value.startsWith('010')) {
+      value = '010' + value;
     }
-    input = input.slice(0, 11);
-    if (input.length === 11) {
-      input = input.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+    value = value.slice(0, 11);
+    if (value.length === 11) {
+      value = value.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
     }
-    setReturnInfo({ ...returnInfo, contact: input });
+    setReturnInfo({ ...returnInfo, contact: value });
   };
 
-  // ========== 3) 반납지 = 배송지와 동일 / 새로 입력 ========== //
-  const handleUseSameAddress = () => {
+  // "배송지와 동일" 버튼 클릭 시 현재 입력된 배송지 정보(주소, 상세주소, 연락처)를 반납지에 복사
+  const handleUseSameAddressConditional = () => {
     setReturnInfo({ ...deliveryInfo });
     setIsSameAsDelivery(true);
   };
+
   const handleNewAddress = () => {
     setReturnInfo({ address: '', detailAddress: '', contact: '010' });
     setIsSameAsDelivery(false);
   };
 
-  // 모달 닫기
-  const handleCloseModal = () => {
-    setModalType('none');
-  };
-
-  // ========== 4) 결제금액 계산 (매니저 배송이면 VAT 15,000 추가) ========== //
+  // 결제금액 계산 (매니저 배송이면 VAT 15,000 추가)
   const baseTotal = items.reduce((acc, item) => acc + item.price, 0);
   const additionalCost = selectedMethod === '매니저 배송' ? 15000 : 0;
   const finalAmount = baseTotal + additionalCost;
 
-  // ========== 5) 결제하기 버튼 -> yup 검증 ========== //
   const handlePaymentSubmit = async () => {
+    if (
+      recipient.trim() === '' ||
+      deliveryInfo.address.trim() === '' ||
+      deliveryInfo.detailAddress.trim() === ''
+    ) {
+      setModalAlert({
+        isOpen: true,
+        message: '수령인, 주소, 상세주소를 모두 입력해주세요.',
+      });
+      return;
+    }
     try {
-      // 하이픈 제거한 순수 숫자 형태로 스키마에 전달
       const validatedData = await paymentSchema.validate({
         deliveryContact: deliveryInfo.contact.replace(/-/g, ''),
         returnContact: returnInfo.contact.replace(/-/g, ''),
         isSameAsDelivery,
       });
       console.log('검증 성공:', validatedData);
-      alert('결제 검증 성공! 결제를 진행합니다.');
-      // 여기서 실제 결제 로직 호출
+      setConfirmModalOpen(true);
     } catch (error: unknown) {
-      // 'Unexpected any'를 피하기 위해 error: unknown으로 두고 instanceof로 처리
       if (error instanceof yup.ValidationError) {
-        alert(error.message);
+        setModalAlert({ isOpen: true, message: error.message });
       } else {
         console.error(error);
       }
     }
   };
 
+  // ReusableModal2의 onConfirm: "네" 버튼 클릭 시 실행 (여기서는 즉시 모달Alert을 띄우고, navigateHome 상태를 true로 설정)
+  const handleConfirmPayment = () => {
+    setConfirmModalOpen(false);
+    setModalAlert({ isOpen: true, message: '결제가 완료되었습니다.' });
+    setNavigateHome(true);
+  };
+
   return (
     <Container>
+      {modalAlert.isOpen && (
+        <ReusableModal
+          isOpen={modalAlert.isOpen}
+          onClose={closeAlertModal}
+          title='알림'
+          height='200px'
+        >
+          <ModalBody>{modalAlert.message}</ModalBody>
+        </ReusableModal>
+      )}
+      {confirmModalOpen && (
+        <ReusableModal2
+          isOpen={confirmModalOpen}
+          onClose={() => setConfirmModalOpen(false)}
+          onConfirm={handleConfirmPayment}
+          title='결제 확인'
+          width='376px'
+          height='360px'
+        >
+          <ModalBody>결제를 진행하시겠습니까?</ModalBody>
+        </ReusableModal2>
+      )}
       <LabelDetailText>신청제품</LabelDetailText>
       {items.map((item) => (
         <Item key={item.id}>
@@ -265,6 +312,8 @@ const PaymentPage: React.FC = () => {
               id='recipient'
               placeholder='이름을 입력 하세요'
               label='수령인 *'
+              value={recipient}
+              onChange={(e) => setRecipient(e.target.value)}
             />
           </InputGroup>
           <InputGroup>
@@ -299,7 +348,7 @@ const PaymentPage: React.FC = () => {
               type='text'
               placeholder='주소를 검색 하세요'
               value={deliveryInfo.address}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange={(e) =>
                 setDeliveryInfo({ ...deliveryInfo, address: e.target.value })
               }
             />
@@ -316,7 +365,7 @@ const PaymentPage: React.FC = () => {
             type='text'
             placeholder='상세주소를 입력 하세요'
             value={deliveryInfo.detailAddress}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange={(e) =>
               setDeliveryInfo({
                 ...deliveryInfo,
                 detailAddress: e.target.value,
@@ -328,7 +377,7 @@ const PaymentPage: React.FC = () => {
           <InputGroup style={{ flex: 1 }}>
             <InputField
               id='contact'
-              placeholder='010 - 0000 - 0000'
+              placeholder='나머지 8자리 입력'
               label='연락처'
               value={deliveryInfo.contact}
               onChange={handleDeliveryContactChange}
@@ -348,11 +397,10 @@ const PaymentPage: React.FC = () => {
 
       <ReturnSection>
         <SectionTitle>반납지 입력 *</SectionTitle>
-        {/* ====== 3) ReturnOption, OptionButton 스타일 수정 ====== */}
         <ReturnOption>
           <OptionButtonRight
             $active={isSameAsDelivery}
-            onClick={handleUseSameAddress}
+            onClick={handleUseSameAddressConditional}
           >
             배송지와 동일
           </OptionButtonRight>
@@ -370,7 +418,7 @@ const PaymentPage: React.FC = () => {
               placeholder='주소를 입력 하세요'
               value={returnInfo.address}
               disabled={isSameAsDelivery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange={(e) =>
                 setReturnInfo({ ...returnInfo, address: e.target.value })
               }
             />
@@ -388,7 +436,7 @@ const PaymentPage: React.FC = () => {
             placeholder='상세주소를 입력 하세요'
             value={returnInfo.detailAddress}
             disabled={isSameAsDelivery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange={(e) =>
               setReturnInfo({ ...returnInfo, detailAddress: e.target.value })
             }
           />
@@ -397,7 +445,7 @@ const PaymentPage: React.FC = () => {
           <InputGroup style={{ flex: 1 }}>
             <InputField
               id='return-contact'
-              placeholder='010 - 0000 - 0000'
+              placeholder='나머지 8자리 입력'
               label='연락처'
               value={returnInfo.contact}
               disabled={isSameAsDelivery}
@@ -440,18 +488,16 @@ const PaymentPage: React.FC = () => {
         </TotalAmount>
       </TotalPaymentSection>
 
-      {/* 결제하기 버튼 */}
       <FixedBottomBar
         text='결제하기'
         color='yellow'
         onClick={handlePaymentSubmit}
       />
 
-      {/* 모달 1: 주소 검색 */}
       {modalType === 'search' && (
         <ReusableModal
           isOpen={modalType === 'search'}
-          onClose={handleCloseModal}
+          onClose={handleCloseModalCommon}
           title='지도'
           height='500px'
         >
@@ -461,11 +507,10 @@ const PaymentPage: React.FC = () => {
         </ReusableModal>
       )}
 
-      {/* 모달 2: 배송목록 */}
       {modalType === 'list' && (
         <ReusableModal
           isOpen={modalType === 'list'}
-          onClose={handleCloseModal}
+          onClose={handleCloseModalCommon}
           title='배송목록 추가'
           width='80%'
           height='320px'
@@ -479,6 +524,19 @@ const PaymentPage: React.FC = () => {
             </DeliverySelect>
           </ModalBodyContent>
         </ReusableModal>
+      )}
+
+      {confirmModalOpen && (
+        <ReusableModal2
+          isOpen={confirmModalOpen}
+          onClose={() => setConfirmModalOpen(false)}
+          onConfirm={handleConfirmPayment}
+          title='결제 확인'
+          width='376px'
+          height='360px'
+        >
+          <ModalBody>결제를 진행하시겠습니까?</ModalBody>
+        </ReusableModal2>
       )}
     </Container>
   );
@@ -532,7 +590,6 @@ const AddressInputWrapper = styled.div`
   height: 57px;
   border: 1px solid #dddddd;
   border-radius: 4px;
-
   overflow: hidden;
 `;
 
@@ -566,32 +623,25 @@ const DetailAddressInput = styled.input`
   border-radius: 4px;
   padding: 0 10px;
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 400;
   font-size: 13px;
   line-height: 14px;
-
-  color: #dddddd;
   height: 57px;
-
   box-sizing: border-box;
   &:focus {
     outline: none;
   }
 `;
 
-// ======== ReturnOption, OptionButton 수정 ======== //
+// ReturnOption 및 OptionButton (배송지와 동일 버튼) 수정
 const ReturnOption = styled.div`
-  display: inline-flex; /* 버튼이 옆으로 붙도록 */
+  display: inline-flex;
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 30px;
-
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 800;
   font-size: 13px;
-  line-height: 14px;
   text-align: center;
   color: #000000;
 `;
@@ -602,14 +652,17 @@ const OptionButtonRight = styled.button<{ $active: boolean }>`
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
-  text-align: center;
   outline: none;
-  border-radius: 10px 0px 0px 10px;
+  border-radius: 10px 0 0 10px;
   border: ${({ $active }) =>
     $active ? '2px solid #f6ae24' : '2px solid transparent'};
-
   background: ${({ $active }) => ($active ? '#fff' : '#eee')};
   color: ${({ $active }) => ($active ? '#000' : '#888')};
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    border: 2px solid #ccc;
+  }
 `;
 
 const OptionButtonLeft = styled.button<{ $active: boolean }>`
@@ -618,12 +671,10 @@ const OptionButtonLeft = styled.button<{ $active: boolean }>`
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
-  text-align: center;
   outline: none;
-  border-radius: 0px 10px 10px 0px;
+  border-radius: 0 10px 10px 0;
   border: ${({ $active }) =>
     $active ? '2px solid #f6ae24' : '2px solid transparent'};
-
   background: ${({ $active }) => ($active ? '#fff' : '#eee')};
   color: ${({ $active }) => ($active ? '#000' : '#888')};
 `;
@@ -875,7 +926,6 @@ const ModalBodyContent = styled.div`
 
 const DeliveryListLabel = styled.div`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
@@ -885,7 +935,6 @@ const DeliveryListLabel = styled.div`
 
 const DeliverySelect = styled.select`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
@@ -900,4 +949,10 @@ const DeliverySelect = styled.select`
   appearance: none;
   background: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'10'%20height%3D'6'%20viewBox%3D'0%200%2010%206'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M5%206%200%200%2010%200z'%20fill%3D'%23aaa'%20/%3E%3C/svg%3E")
     no-repeat right 10px center/10px;
+`;
+
+const ModalBody = styled.div`
+  font-size: 14px;
+  text-align: center;
+  padding: 20px;
 `;

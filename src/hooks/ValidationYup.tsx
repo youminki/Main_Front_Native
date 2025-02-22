@@ -45,7 +45,13 @@ export const schemaSignup = yup
       .string()
       .required('태어난 해를 선택해주세요.')
       .matches(/^\d{4}$/, '태어난 해는 4자리 숫자로 입력해주세요.'),
-    phoneNumber: yup.string().required('전화번호를 입력해주세요.'),
+    phoneNumber: yup
+      .string()
+      .required('전화번호를 입력해주세요.')
+      .matches(
+        /^010\d{8}$/,
+        '전화번호는 010으로 시작하는 11자리 숫자여야 합니다.'
+      ),
     region: yup.string().required('지역을 선택해주세요.'),
     district: yup.string().required('구를 선택해주세요.'),
     melpickAddress: yup
