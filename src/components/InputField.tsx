@@ -208,6 +208,10 @@ const Input = styled.input`
   flex: 1;
   height: 100%;
   width: 100%;
+  &:focus {
+    outline: none;
+    border-color: #000000;
+  }
 `;
 
 /* 
