@@ -1,6 +1,7 @@
 // PaymentPage.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import * as yup from 'yup';
 import sampleImage from '../assets/sample-dress.svg';
 import PriceIcon from '../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
@@ -9,6 +10,36 @@ import FixedBottomBar from '../components/FixedBottomBar';
 import InputField from '../components/InputField';
 import { YellowButton, BlackButton } from '../components/ButtonWrapper';
 import ReusableModal from '../components/ReusableModal';
+
+// ========== 1) yup 스키마 정의 ========== //
+/**
+ * - deliveryContact: 010으로 시작하는 11자리 숫자 (하이픈 제외)
+ * - isSameAsDelivery: 반납지를 배송지와 동일하게 쓸지 여부
+ * - returnContact: isSameAsDelivery=false일 때만 필수
+ */
+const paymentSchema = yup.object().shape({
+  deliveryContact: yup
+    .string()
+    .required('전화번호를 입력해주세요.')
+    .matches(
+      /^010\d{8}$/,
+      '전화번호는 010으로 시작하는 11자리 숫자여야 합니다.'
+    ),
+  isSameAsDelivery: yup.boolean(),
+  returnContact: yup
+    .string()
+    .when('isSameAsDelivery', (isSameAsDelivery, schema) => {
+      if (!isSameAsDelivery) {
+        return schema
+          .required('반납 전화번호를 입력해주세요.')
+          .matches(
+            /^010\d{8}$/,
+            '전화번호는 010으로 시작하는 11자리 숫자여야 합니다.'
+          );
+      }
+      return schema; // 동일 사용이면 필수 아님
+    }),
+});
 
 interface BasketItem {
   id: number;
@@ -26,6 +57,7 @@ interface BasketItem {
 }
 
 const PaymentPage: React.FC = () => {
+  // 샘플 장바구니 아이템
   const [items] = useState<BasketItem[]>([
     {
       id: 1,
@@ -42,37 +74,101 @@ const PaymentPage: React.FC = () => {
     },
   ]);
 
+  // 배송방법(매니저 배송 or 택배 배송)
   const [selectedMethod, setSelectedMethod] = useState('매니저 배송');
+
+  // 배송지 정보
   const [deliveryInfo, setDeliveryInfo] = useState({
     address: '',
     detailAddress: '',
-    contact: '',
+    contact: '010', // 전화번호는 기본 '010'으로 시작
   });
+
+  // 반납지 정보
   const [returnInfo, setReturnInfo] = useState({
     address: '',
     detailAddress: '',
-    contact: '',
+    contact: '010',
   });
+
+  // 반납지 = 배송지와 동일 여부
   const [isSameAsDelivery, setIsSameAsDelivery] = useState(true);
 
-  // 모달 타입 상태: 'none' | 'search' | 'list'
+  // 모달 상태
   const [modalType, setModalType] = useState<'none' | 'search' | 'list'>(
     'none'
   );
 
+  // ========== 2) 전화번호 입력 핸들러 (자동 포맷) ========== //
+  const handleDeliveryContactChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    let input = e.target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
+    if (!input.startsWith('010')) {
+      input = '010' + input;
+    }
+    input = input.slice(0, 11); // 최대 11자리까지만
+    if (input.length === 11) {
+      // 11자리가 되면 하이픈 포맷
+      input = input.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+    }
+    setDeliveryInfo({ ...deliveryInfo, contact: input });
+  };
+
+  const handleReturnContactChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    let input = e.target.value.replace(/[^0-9]/g, '');
+    if (!input.startsWith('010')) {
+      input = '010' + input;
+    }
+    input = input.slice(0, 11);
+    if (input.length === 11) {
+      input = input.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+    }
+    setReturnInfo({ ...returnInfo, contact: input });
+  };
+
+  // ========== 3) 반납지 = 배송지와 동일 / 새로 입력 ========== //
   const handleUseSameAddress = () => {
     setReturnInfo({ ...deliveryInfo });
     setIsSameAsDelivery(true);
   };
-
   const handleNewAddress = () => {
-    setReturnInfo({ address: '', detailAddress: '', contact: '' });
+    setReturnInfo({ address: '', detailAddress: '', contact: '010' });
     setIsSameAsDelivery(false);
   };
 
-  // 모달 닫기 핸들러
+  // 모달 닫기
   const handleCloseModal = () => {
     setModalType('none');
+  };
+
+  // ========== 4) 결제금액 계산 (매니저 배송이면 VAT 15,000 추가) ========== //
+  const baseTotal = items.reduce((acc, item) => acc + item.price, 0);
+  const additionalCost = selectedMethod === '매니저 배송' ? 15000 : 0;
+  const finalAmount = baseTotal + additionalCost;
+
+  // ========== 5) 결제하기 버튼 -> yup 검증 ========== //
+  const handlePaymentSubmit = async () => {
+    try {
+      // 하이픈 제거한 순수 숫자 형태로 스키마에 전달
+      const validatedData = await paymentSchema.validate({
+        deliveryContact: deliveryInfo.contact.replace(/-/g, ''),
+        returnContact: returnInfo.contact.replace(/-/g, ''),
+        isSameAsDelivery,
+      });
+      console.log('검증 성공:', validatedData);
+      alert('결제 검증 성공! 결제를 진행합니다.');
+      // 여기서 실제 결제 로직 호출
+    } catch (error: unknown) {
+      // 'Unexpected any'를 피하기 위해 error: unknown으로 두고 instanceof로 처리
+      if (error instanceof yup.ValidationError) {
+        alert(error.message);
+      } else {
+        console.error(error);
+      }
+    }
   };
 
   return (
@@ -207,12 +303,10 @@ const PaymentPage: React.FC = () => {
                 setDeliveryInfo({ ...deliveryInfo, address: e.target.value })
               }
             />
-            {/* 검색 버튼 -> '지도' 모달 열기 */}
             <SearchButton onClick={() => setModalType('search')}>
               검색
             </SearchButton>
           </AddressInputWrapper>
-          {/* 배송목록 버튼 -> '배송목록 추가' 모달 열기 */}
           <DeliveryListButton onClick={() => setModalType('list')}>
             배송목록
           </DeliveryListButton>
@@ -237,9 +331,7 @@ const PaymentPage: React.FC = () => {
               placeholder='010 - 0000 - 0000'
               label='연락처'
               value={deliveryInfo.contact}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setDeliveryInfo({ ...deliveryInfo, contact: e.target.value })
-              }
+              onChange={handleDeliveryContactChange}
             />
           </InputGroup>
         </Row>
@@ -256,6 +348,7 @@ const PaymentPage: React.FC = () => {
 
       <ReturnSection>
         <SectionTitle>반납지 입력 *</SectionTitle>
+        {/* ====== 3) ReturnOption, OptionButton 스타일 수정 ====== */}
         <ReturnOption>
           <OptionButton
             $active={isSameAsDelivery}
@@ -278,17 +371,11 @@ const PaymentPage: React.FC = () => {
                 setReturnInfo({ ...returnInfo, address: e.target.value })
               }
             />
-            <SearchButton
-              onClick={() => setModalType('search')}
-              // disabled={isSameAsDelivery}
-            >
+            <SearchButton onClick={() => setModalType('search')}>
               검색
             </SearchButton>
           </AddressInputWrapper>
-          <DeliveryListButton
-            onClick={() => setModalType('list')}
-            // disabled={isSameAsDelivery}
-          >
+          <DeliveryListButton onClick={() => setModalType('list')}>
             배송목록
           </DeliveryListButton>
         </Row>
@@ -311,9 +398,7 @@ const PaymentPage: React.FC = () => {
               label='연락처'
               value={returnInfo.contact}
               disabled={isSameAsDelivery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setReturnInfo({ ...returnInfo, contact: e.target.value })
-              }
+              onChange={handleReturnContactChange}
             />
           </InputGroup>
         </Row>
@@ -325,8 +410,8 @@ const PaymentPage: React.FC = () => {
             id='payment-method'
             options={[
               '이용권 / 정기 구독권 ( 2025년 3월분 )',
-              '무통장 결제 / 기업 065-143111-0-015, (주)리프트콤마',
-              '카드 결제 / 신한카드 1212-****-****-0121',
+              '무통장 결제 ',
+              '카드 결제 ',
             ]}
             label='결제방식 *'
             placeholder=''
@@ -335,7 +420,7 @@ const PaymentPage: React.FC = () => {
         <CouponSection>
           <InputField
             id='coupon'
-            options={['20% 할인 쿠폰 / 26NJ-D6WW-NELY-5GB0', '보유 쿠폰 없음']}
+            options={['20% 할인 쿠폰 ', '보유 쿠폰 없음']}
             label='추가 쿠폰 (선택)'
             placeholder=''
           />
@@ -345,17 +430,21 @@ const PaymentPage: React.FC = () => {
       <TotalPaymentSection>
         <SectionTitle>총 결제금액 (VAT 포함)</SectionTitle>
         <TotalAmount>
-          <AdditionalCost>+ 추가비용 (15,000)</AdditionalCost>
-          <Amount>65,000원</Amount>
+          {selectedMethod === '매니저 배송' && (
+            <AdditionalCost>+ 추가비용 (15,000)</AdditionalCost>
+          )}
+          <Amount>{finalAmount.toLocaleString()}원</Amount>
         </TotalAmount>
       </TotalPaymentSection>
 
-      <FixedBottomBar text='결제하기' color='yellow' />
+      {/* 결제하기 버튼 */}
+      <FixedBottomBar
+        text='결제하기'
+        color='yellow'
+        onClick={handlePaymentSubmit}
+      />
 
-      {/* 
-        모달 1: 검색 버튼 -> 지도 모달 
-        modalType === 'search'
-      */}
+      {/* 모달 1: 주소 검색 */}
       {modalType === 'search' && (
         <ReusableModal
           isOpen={modalType === 'search'}
@@ -369,10 +458,7 @@ const PaymentPage: React.FC = () => {
         </ReusableModal>
       )}
 
-      {/* 
-        모달 2: 배송목록 버튼 -> 배송목록 추가 모달 
-        modalType === 'list'
-      */}
+      {/* 모달 2: 배송목록 */}
       {modalType === 'list' && (
         <ReusableModal
           isOpen={modalType === 'list'}
@@ -483,24 +569,42 @@ const DetailAddressInput = styled.input`
   }
 `;
 
+// ======== ReturnOption, OptionButton 수정 ======== //
 const ReturnOption = styled.div`
-  display: flex;
-  gap: 8px;
+  display: inline-flex; /* 버튼이 옆으로 붙도록 */
+  border: 2px solid #f6ae24; /* 전체 테두리(금색) */
+  border-radius: 4px;
+  overflow: hidden;
   margin-bottom: 10px;
+
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 14px;
+  text-align: center;
+
+  color: #000000;
 `;
 
 const OptionButton = styled.button<{ $active: boolean }>`
   flex: 1;
-  border-radius: 4px;
-  padding: 16px;
+  height: 57px;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
   text-align: center;
-  border: ${({ $active }) =>
-    $active ? '2px solid #FFC107' : '1px solid #ddd'};
-  background: ${({ $active }) => ($active ? '#FFF8E1' : '#ffffff')};
-  color: ${({ $active }) => ($active ? '#000000' : '#aaaaaa')};
+  border: none;
+  outline: none;
+
+  /* 선택된 버튼은 흰 배경 + 진한 글자, 미선택은 회색 배경 + 연한 글자 */
+  background: ${({ $active }) => ($active ? '#fff' : '#eee')};
+  color: ${({ $active }) => ($active ? '#000' : '#888')};
+
+  /* 가운데 구분선 */
+  &:first-child {
+    border-right: 2px solid #f6ae24;
+  }
 `;
 
 const PaymentAndCouponContainer = styled.div`
@@ -732,17 +836,14 @@ const SmallText = styled.span`
   margin-left: 4px;
 `;
 
-/* 지도 모달 내용 예시 */
 const MapBody = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
-  /* 배경 등 원하는 스타일 */
   background-color: #f5f5f5;
 `;
 
-/* 모달 바디 안의 내용 래핑 */
 const ModalBodyContent = styled.div`
   display: flex;
   flex-direction: column;
