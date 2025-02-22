@@ -8,6 +8,7 @@ import AgreementSection from '../../../components/Melpik/CreateMelpik/Settings/A
 import Theme from '../../../styles/Theme';
 import BottomBar from '../../../components/BottomNav2';
 import Modal from '../../../components/Melpik/CreateMelpik/Settings/Modal';
+import { CustomSelect } from '../../../components/CustomSelect';
 
 interface FormData {
   height: string;
@@ -57,7 +58,7 @@ const ContemporarySettings: React.FC = () => {
             <InputField
               label='기본정보'
               id='height'
-              as='select'
+              as={CustomSelect}
               error={errors.height}
               {...register('height', { required: true })}
             >
@@ -69,7 +70,7 @@ const ContemporarySettings: React.FC = () => {
             <InputField
               label='사이즈'
               id='size'
-              as='select'
+              as={CustomSelect}
               error={errors.size}
               {...register('size', { required: true })}
             >
@@ -84,7 +85,7 @@ const ContemporarySettings: React.FC = () => {
             <InputField
               label='착용스펙 상세입력'
               id='dress'
-              as='select'
+              as={CustomSelect}
               error={errors.dress}
               {...register('dress', { required: true })}
             >
@@ -93,7 +94,7 @@ const ContemporarySettings: React.FC = () => {
             <InputField
               label='상의'
               id='top'
-              as='select'
+              as={CustomSelect}
               error={errors.top}
               {...register('top', { required: true })}
             >
@@ -102,7 +103,7 @@ const ContemporarySettings: React.FC = () => {
             <InputField
               label='하의'
               id='bottom'
-              as='select'
+              as={CustomSelect}
               error={errors.bottom}
               {...register('bottom', { required: true })}
             >
@@ -130,7 +131,7 @@ const ContemporarySettings: React.FC = () => {
             <InputField
               label='상품 노출수 설정'
               id='productCount'
-              as='select'
+              as={CustomSelect}
               value={productCount}
               error={errors.productCount}
               {...register('productCount')}
@@ -143,7 +144,7 @@ const ContemporarySettings: React.FC = () => {
             <InputField
               label='노출기간 설정'
               id='exposureFrequency'
-              as='select'
+              as={CustomSelect}
               value={exposureFrequency}
               error={errors.exposureFrequency}
               {...register('exposureFrequency')}

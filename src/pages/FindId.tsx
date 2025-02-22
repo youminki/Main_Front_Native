@@ -7,6 +7,7 @@ import Button from '../components/Button01';
 import InputField from '../components/InputField';
 import Theme from '../styles/Theme';
 import ReusableModal from '../components/ReusableModal';
+import { CustomSelect } from '../components/CustomSelect';
 
 export const schemaFindId = yup.object({
   nickname: yup
@@ -113,7 +114,7 @@ const FindId: React.FC = () => {
                   <InputField
                     label='태어난 해'
                     id='birthYear'
-                    as='select'
+                    as={CustomSelect}
                     error={errors.birthYear?.message}
                     {...field}
                   >
