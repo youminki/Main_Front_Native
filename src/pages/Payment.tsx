@@ -677,6 +677,7 @@ const AdditionalCost = styled.div`
 `;
 
 const Amount = styled.div`
+  margin-left: auto;
   font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
   font-size: 16px;
