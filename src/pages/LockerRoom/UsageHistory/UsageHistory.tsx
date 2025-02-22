@@ -26,7 +26,7 @@ const UsageHistory: React.FC = () => {
   // 기간 선택 상태 (3개월 / 6개월)
   const [selectedPeriod, setSelectedPeriod] = useState(6);
   // Basket.tsx와 동일한 아이템 구조
-  const [items, setItems] = useState<BasketItem[]>([
+  const [items] = useState<BasketItem[]>([
     {
       id: 1,
       brand: 'SANDRO',
@@ -60,23 +60,6 @@ const UsageHistory: React.FC = () => {
 
   // 선택된 기간에 따라 아이템 목록을 필터링 (예시: 3개월이면 앞의 3개, 6개월이면 전체)
   const filteredItems = selectedPeriod === 3 ? items.slice(0, 3) : items;
-
-  // 전체 선택 체크박스 토글
-  const handleSelectAll = () => {
-    const updatedItems = items.map((item) => ({
-      ...item,
-      isSelected: !items.every((i) => i.isSelected),
-    }));
-    setItems(updatedItems);
-  };
-
-  // 개별 아이템 선택 토글
-  const handleSelectItem = (id: number) => {
-    const updatedItems = items.map((item) =>
-      item.id === id ? { ...item, isSelected: !item.isSelected } : item
-    );
-    setItems(updatedItems);
-  };
 
   return (
     <UsageHistoryContainer>
@@ -305,44 +288,6 @@ const PeriodButton = styled.button<{ active: boolean }>`
   white-space: nowrap;
 `;
 
-/* Basket.tsx의 아이템 관련 스타일 */
-const BasketHeader = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  font-weight: bold;
-  margin: 15px 0;
-`;
-
-const Checkbox = styled.input`
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-  appearance: none;
-  background-color: #fff;
-  border: 1px solid #cccccc;
-  border-radius: 3px;
-  cursor: pointer;
-  position: relative;
-
-  &:checked {
-    background-color: #fff;
-    border-color: #999999;
-  }
-
-  &:checked::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 10px;
-    height: 5px;
-    border-left: 3px solid orange;
-    border-bottom: 3px solid orange;
-    transform: rotate(-45deg);
-  }
-`;
-
 const ItemList = styled.div`
   display: flex;
   flex-direction: column;
@@ -474,10 +419,6 @@ const ItemImageContainer = styled.div`
   position: relative;
   width: 140px;
   height: 210px;
-`;
-
-const CheckboxOverlay = styled.div`
-  position: absolute;
 `;
 
 const ItemImage = styled.img`
