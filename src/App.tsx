@@ -30,6 +30,7 @@ import SalesSettlementDetail from './pages/Melpik/Calculate/SalesSettlementDetai
 import SettlementRequest from './pages/Melpik/Calculate/SettlementRequest';
 
 import LockerRoom from './pages/LockerRoom/LockerRoom';
+import UsageHistory from './pages/LockerRoom/UsageHistory/UsageHistory';
 
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
@@ -206,6 +207,7 @@ const App: React.FC = () => {
           />
 
           <Route path='/lockerRoom' element={<LockerRoom />} />
+          <Route path='/usage-History' element={<UsageHistory />} />
         </Routes>
       </ContentContainer>
       {includeBottomNav && <BottomNav />}
