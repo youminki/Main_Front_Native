@@ -208,7 +208,7 @@ const Signup: React.FC = () => {
                 {...register('birthYear')}
               >
                 <option value='' disabled selected>
-                  태어난 해를 선택하세요
+                  1990
                 </option>
                 {Array.from({ length: 100 }, (_, i) => 2023 - i).map((year) => (
                   <option key={year} value={year}>
