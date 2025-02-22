@@ -189,7 +189,7 @@ const PaymentPage: React.FC = () => {
     }
   };
 
-  // ReusableModal2의 onConfirm: "네" 버튼 클릭 시 실행 (여기서는 즉시 모달Alert을 띄우고, navigateHome 상태를 true로 설정)
+  // ReusableModal2의 onConfirm: "네" 버튼 클릭 시 실행
   const handleConfirmPayment = () => {
     setConfirmModalOpen(false);
     setModalAlert({ isOpen: true, message: '결제가 완료되었습니다.' });
@@ -350,7 +350,7 @@ const PaymentPage: React.FC = () => {
               type='text'
               placeholder='주소를 검색 하세요'
               value={deliveryInfo.address}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setDeliveryInfo({ ...deliveryInfo, address: e.target.value })
               }
             />
@@ -367,7 +367,7 @@ const PaymentPage: React.FC = () => {
             type='text'
             placeholder='상세주소를 입력 하세요'
             value={deliveryInfo.detailAddress}
-            onChange={(e) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setDeliveryInfo({
                 ...deliveryInfo,
                 detailAddress: e.target.value,
@@ -420,7 +420,7 @@ const PaymentPage: React.FC = () => {
               placeholder='주소를 입력 하세요'
               value={returnInfo.address}
               disabled={isSameAsDelivery}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setReturnInfo({ ...returnInfo, address: e.target.value })
               }
             />
@@ -438,7 +438,7 @@ const PaymentPage: React.FC = () => {
             placeholder='상세주소를 입력 하세요'
             value={returnInfo.detailAddress}
             disabled={isSameAsDelivery}
-            onChange={(e) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setReturnInfo({ ...returnInfo, detailAddress: e.target.value })
             }
           />
