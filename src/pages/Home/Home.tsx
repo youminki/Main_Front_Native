@@ -62,11 +62,13 @@ const Home: React.FC = () => {
     <MainContainer>
       <ContentWrapper>
         <Notice />
-        <SubHeader
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          barPosition={barPosition}
-        />
+        <SubHeaderContainer>
+          <SubHeader
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            barPosition={barPosition}
+          />
+        </SubHeaderContainer>
         <FilterContainer
           seasonToggle={seasonToggle}
           setSeasonToggle={setSeasonToggle}
@@ -82,7 +84,6 @@ const Home: React.FC = () => {
 
 export default Home;
 
-// Styled Components
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -96,4 +97,10 @@ const ContentWrapper = styled.div`
 
 const Content = styled.div`
   flex: 1;
+`;
+
+// SubHeader 위아래에 border 추가
+const SubHeaderContainer = styled.div`
+  margin: 20px 0;
+  border-top: 1px solid #eeeeee;
 `;
