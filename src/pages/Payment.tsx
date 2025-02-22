@@ -532,6 +532,7 @@ const AddressInputWrapper = styled.div`
   height: 57px;
   border: 1px solid #dddddd;
   border-radius: 4px;
+
   overflow: hidden;
 `;
 
@@ -564,8 +565,15 @@ const DetailAddressInput = styled.input`
   border: 1px solid #dddddd;
   border-radius: 4px;
   padding: 0 10px;
-  font-size: 14px;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 14px;
+
+  color: #dddddd;
   height: 57px;
+
   box-sizing: border-box;
   &:focus {
     outline: none;
@@ -885,7 +893,7 @@ const DeliverySelect = styled.select`
   height: 57px;
   border: 1px solid #dddddd;
   border-radius: 4px;
-  padding: 0 10px;
+  padding: 0 11px;
   font-size: 14px;
   cursor: pointer;
   appearance: none;
