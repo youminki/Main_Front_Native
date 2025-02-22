@@ -75,7 +75,9 @@ export const getSettlementDetail = async (
 
 export const getUserSettlement = async (email: string): Promise<unknown> => {
   try {
-    const response = await Axios.get(`/settlement/${email}`);
+    // 백엔드 API 명세에 따라, 이메일을 URL 경로 대신 쿼리 파라미터로 전달할 수 있습니다.
+    // 예시: GET /settlement?email=user@example.com
+    const response = await Axios.get('/settlement', { params: { email } });
     return response.data;
   } catch (error: unknown) {
     const axiosError = error as AxiosError;
