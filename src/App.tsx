@@ -31,6 +31,9 @@ import SettlementRequest from './pages/Melpik/Calculate/SettlementRequest';
 
 import LockerRoom from './pages/LockerRoom/LockerRoom';
 import UsageHistory from './pages/LockerRoom/UsageHistory/UsageHistory';
+import Point from './pages/LockerRoom/Point/Point';
+import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
+import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
 
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
@@ -62,6 +65,10 @@ const App: React.FC = () => {
     '/sales-schedule',
     '/melpik-settings',
     '/sales-settlement',
+    '/usage-history',
+    '/my-tiket',
+    '/my-closet',
+    '/point',
   ];
 
   // Header3가 포함될 경로 패턴
@@ -207,7 +214,10 @@ const App: React.FC = () => {
           />
 
           <Route path='/lockerRoom' element={<LockerRoom />} />
-          <Route path='/usage-History' element={<UsageHistory />} />
+          <Route path='/usage-history' element={<UsageHistory />} />
+          <Route path='/my-tiket' element={<MyTicket />} />
+          <Route path='/my-closet' element={<MyCloset />} />
+          <Route path='/point' element={<Point />} />
         </Routes>
       </ContentContainer>
       {includeBottomNav && <BottomNav />}
