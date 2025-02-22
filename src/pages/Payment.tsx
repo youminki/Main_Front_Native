@@ -313,7 +313,9 @@ const PaymentPage: React.FC = () => {
               placeholder='이름을 입력 하세요'
               label='수령인 *'
               value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setRecipient(e.target.value)
+              }
             />
           </InputGroup>
           <InputGroup>
