@@ -35,6 +35,15 @@ const items = [
     price: 540000,
     discount: 20,
   },
+  {
+    id: 4,
+    image: '',
+    brand: 'MICHA',
+    description: 'MCH88T7 / 투피스',
+    category: 'twopiece',
+    price: 540000,
+    discount: 20,
+  },
 ];
 
 const Home: React.FC = () => {
