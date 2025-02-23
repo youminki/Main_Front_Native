@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import sampleImage from '../../../assets/sample-dress.svg';
 import ProductInfoIcon from '../../../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../../../assets/Basket/ServiceInfoIcon.svg';
-import EvaluationIcon from '../../../assets/Basket/EvaluationIcon.svg'; // ★ 평가 아이콘
+
 import FilledStarIcon from '../../../assets/Basket/FilledStarIcon.svg'; // ★ 채워진 별
 import EmptyStarIcon from '../../../assets/Basket/EmptyStarIcon.svg'; // ★ 빈 별
 
@@ -26,7 +26,7 @@ interface BasketItem {
 }
 
 const ProductReview: React.FC = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState(6);
+  const [selectedPeriod] = useState(6);
 
   // 아이템(예: 1개만 사용)
   const [items] = useState<BasketItem[]>([
@@ -508,33 +508,6 @@ const ItemImageContainer = styled.div`
 const ItemImage = styled.img`
   width: 100%;
   height: 100%;
-`;
-
-const DeleteButton = styled.button`
-  background-color: #fff;
-  color: #888;
-  width: 91px;
-  height: 46px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  cursor: pointer;
-`;
-
-const PurchaseButton = styled.button`
-  background-color: #000;
-  color: #fff;
-  width: 91px;
-  height: 46px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  cursor: pointer;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 20px;
-  margin-top: 20px;
-  align-self: flex-end;
 `;
 
 const Icon = styled.img`
