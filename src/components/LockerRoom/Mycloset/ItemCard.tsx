@@ -92,7 +92,10 @@ const ItemCard: React.FC<ItemCardProps> = ({
         onConfirm={handleConfirmDelete}
         title='삭제 확인'
       >
-        아이템을 삭제하시겠습니까?
+        <ModalContentWrapper>
+          <ModalImage src={imageToShow} alt={brand} />
+          <ModalMessage>선택한 옷을 삭제하시겠습니까?</ModalMessage>
+        </ModalContentWrapper>
       </ReusableModal2>
     </>
   );
@@ -100,7 +103,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
 export default ItemCard;
 
-// 스타일 정의
+// 기존 스타일 정의
 const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -188,4 +191,29 @@ const DiscountLabel = styled.span`
   font-size: 10px;
   line-height: 11px;
   color: #f6ae24;
+`;
+
+// 모달 내부 컨텐츠 스타일
+const ModalContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const ModalImage = styled.img`
+  width: 70%;
+  height: auto;
+  object-fit: cover;
+`;
+
+const ModalMessage = styled.p`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 15px;
+  text-align: center;
+  color: #000000;
+
+  text-align: center;
 `;

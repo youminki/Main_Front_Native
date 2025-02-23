@@ -85,7 +85,7 @@ const ModalBody = styled.div`
   font-size: 14px;
   font-weight: 400;
   text-align: center;
-  max-height: 230px;
+  /* max-height: 230px; */
   height: 100%;
   display: flex;
   justify-content: center;
@@ -98,6 +98,7 @@ const CloseButtonWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 10px;
+  margin-top: 10px;
 `;
 
 const NoButton = styled.button`
