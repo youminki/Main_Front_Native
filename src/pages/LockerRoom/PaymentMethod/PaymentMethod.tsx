@@ -249,7 +249,7 @@ const CardOrange = styled.div`
 `;
 
 const CardTop = styled.div`
-  margin: 10px;
+  margin: 20px;
   display: flex;
   justify-content: flex-end;
 `;
@@ -268,6 +268,7 @@ const CardBody = styled.div`
   flex-direction: column;
   justify-content: center;
   margin-left: 20px;
+  margin-top: 30px;
 `;
 
 const CardBrand = styled.span`
