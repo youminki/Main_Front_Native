@@ -1,12 +1,17 @@
-// src/components/ProductReview/ProductReview.tsx
+// ProductReview.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
-import PeriodSection from '../../../components/PeriodSection'; // 추가된 import
+import PeriodSection from '../../../components/PeriodSection';
+
+// 예시 아이콘 import
 import sampleImage from '../../../assets/sample-dress.svg';
-import PriceIcon from '../../../assets/Basket/PriceIcon.svg';
+
 import ProductInfoIcon from '../../../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../../../assets/Basket/ServiceInfoIcon.svg';
+import EvaluationIcon from '../../../assets/Basket/EvaluationIcon.svg'; // ★ 평가 아이콘
+import FilledStarIcon from '../../../assets/Basket/FilledStarIcon.svg'; // ★ 채워진 별
+import EmptyStarIcon from '../../../assets/Basket/EmptyStarIcon.svg'; // ★ 빈 별
 
 interface BasketItem {
   id: number;
@@ -22,12 +27,12 @@ interface BasketItem {
   imageUrl: string;
   isSelected: boolean;
   rentalDays?: string;
+  rating?: number; // 별점(0~5)
 }
 
 const ProductReview: React.FC = () => {
-  // 기간 선택 상태 (3개월 / 6개월)
   const [selectedPeriod, setSelectedPeriod] = useState(6);
-  // Basket.tsx와 동일한 아이템 구조
+
   const [items] = useState<BasketItem[]>([
     {
       id: 1,
@@ -42,6 +47,7 @@ const ProductReview: React.FC = () => {
       imageUrl: sampleImage,
       isSelected: true,
       rentalDays: '대여 (3일)',
+      rating: 3,
     },
     {
       id: 2,
@@ -56,8 +62,8 @@ const ProductReview: React.FC = () => {
       imageUrl: sampleImage,
       isSelected: true,
       rentalDays: '구매',
+      rating: 5,
     },
-    // 필요에 따라 아이템 추가 가능
   ]);
 
   // 선택된 기간에 따라 아이템 목록을 필터링 (예시: 3개월이면 앞의 3개, 6개월이면 전체)
@@ -81,7 +87,6 @@ const ProductReview: React.FC = () => {
       <Divider />
 
       <Section>
-        {/* 기존 SettlementHeader 영역을 PeriodSection 컴포넌트로 대체 */}
         <PeriodSection
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
@@ -98,6 +103,8 @@ const ProductReview: React.FC = () => {
                     <Slash>/</Slash>
                     <ItemType>{item.nameType}</ItemType>
                   </ItemName>
+
+                  {/* 진행 서비스 */}
                   {item.type === 'rental' ? (
                     <InfoRowFlex>
                       <IconArea>
@@ -132,6 +139,8 @@ const ProductReview: React.FC = () => {
                       </TextContainer>
                     </InfoRowFlex>
                   )}
+
+                  {/* 제품 정보 */}
                   <InfoRowFlex>
                     <IconArea>
                       <Icon src={ProductInfoIcon} alt='Product Info' />
@@ -149,19 +158,27 @@ const ProductReview: React.FC = () => {
                       </AdditionalText>
                     </TextContainer>
                   </InfoRowFlex>
+
+                  {/* 평가 아이콘 + 별점 */}
                   <InfoRowFlex>
                     <IconArea>
-                      <Icon src={PriceIcon} alt='Price' />
+                      <Icon src={EvaluationIcon} alt='평가' />
                     </IconArea>
                     <TextContainer>
                       <RowText>
-                        <LabelDetailText>결제금액 - </LabelDetailText>
-                        <DetailHighlight>
-                          {typeof item.price === 'number'
-                            ? item.price.toLocaleString()
-                            : item.price}
-                          원
-                        </DetailHighlight>
+                        <LabelDetailText>평가 -</LabelDetailText>
+                        <StarRow>
+                          {Array.from({ length: 5 }).map((_, i) => {
+                            const filled = i < (item.rating || 0);
+                            return (
+                              <StarIcon
+                                key={i}
+                                src={filled ? FilledStarIcon : EmptyStarIcon}
+                                alt='별'
+                              />
+                            );
+                          })}
+                        </StarRow>
                       </RowText>
                     </TextContainer>
                   </InfoRowFlex>
@@ -176,7 +193,7 @@ const ProductReview: React.FC = () => {
 
               <ButtonContainer>
                 <DeleteButton>제품상세</DeleteButton>
-                <PurchaseButton>재신청</PurchaseButton>
+                <PurchaseButton>작성</PurchaseButton>
               </ButtonContainer>
             </Item>
           ))}
@@ -188,7 +205,9 @@ const ProductReview: React.FC = () => {
 
 export default ProductReview;
 
-/* ProductReview 기본 스타일 */
+/* ============================= */
+/*  스타일 정의 시작            */
+/* ============================= */
 const ProductReviewContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -327,7 +346,8 @@ const TextContainer = styled.div`
 
 const RowText = styled.div`
   display: flex;
-  gap: 5px;
+  align-items: center;
+  gap: 6px;
   white-space: nowrap;
 `;
 
@@ -413,4 +433,16 @@ const LabelDetailText = styled.span`
   line-height: 22px;
   color: #000000;
   white-space: nowrap;
+`;
+
+/* ========== 별 아이콘(채워짐/비어있음) ========== */
+const StarRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const StarIcon = styled.img`
+  width: 16px;
+  height: 16px;
 `;
