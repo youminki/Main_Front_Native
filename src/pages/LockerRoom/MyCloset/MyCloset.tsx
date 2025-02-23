@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/Melpik/StatsSection';
 import ItemList from '../../../components/LockerRoom/Mycloset/ItemList';
@@ -51,18 +51,7 @@ const items = [
 const MyCloset: React.FC = () => {
   const [selectedCategory] = useState<string>('all');
 
-  const [setBarPosition] = useState<number>(0);
-
-  useEffect(() => {
-    const selectedElement = document.querySelector(
-      `[data-category="${selectedCategory}"]`
-    ) as HTMLElement;
-
-    if (selectedElement) {
-      const { offsetLeft, offsetWidth } = selectedElement;
-      setBarPosition(offsetLeft + offsetWidth / 2 - 25);
-    }
-  }, [selectedCategory]);
+  // barPosition 상태 및 useEffect 삭제
 
   const filteredItems =
     selectedCategory === 'all'
@@ -117,7 +106,6 @@ const Title = styled.h1`
   font-weight: 800;
   font-size: 24px;
   line-height: 27px;
-
   color: #000000;
   margin-bottom: 0px;
 `;
