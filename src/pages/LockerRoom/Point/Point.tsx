@@ -70,17 +70,17 @@ const pointHistory = [
   },
 ];
 
-const items = [
-  { id: 1, name: 'Item1' },
-  { id: 2, name: 'Item2' },
-  { id: 3, name: 'Item3' },
-  { id: 4, name: 'Item4' },
-];
+// const items = [
+//   { id: 1, name: 'Item1' },
+//   { id: 2, name: 'Item2' },
+//   { id: 3, name: 'Item3' },
+//   { id: 4, name: 'Item4' },
+// ];
 
 const Point: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(6);
   // 예시: 선택된 기간에 따라 아이템 목록을 필터링 (3개월이면 앞의 3개, 6개월이면 전체)
-  const filteredItems = selectedPeriod === 3 ? items.slice(0, 3) : items;
+  // const filteredItems = selectedPeriod === 3 ? items.slice(0, 3) : items;
 
   return (
     <PointContainer>
