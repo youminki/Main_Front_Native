@@ -3,6 +3,8 @@ import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 import PeriodSection from '../../../components/PeriodSection';
+import CardIcon from '../../../assets/LockerRoom/CardIcon.svg';
+
 // 동적 데이터
 const visitLabel = '결제등록 카드';
 const salesLabel = '시즌';
@@ -31,7 +33,7 @@ const PaymentMethod: React.FC = () => {
   const [currentCard, setCurrentCard] = useState(0);
   const cardsWrapperRef = useRef<HTMLDivElement>(null);
 
-  // ① 전체 데이터를 한꺼번에 선언(혹은 API로 fetch)
+  // 전체 데이터를 한꺼번에 선언(혹은 API로 fetch)
   const data = {
     cards: [
       {
@@ -73,12 +75,11 @@ const PaymentMethod: React.FC = () => {
     ] as PaymentData[],
   };
 
-  // ② 카드 스크롤 이벤트로 현재 카드 인덱스 추적
+  // 카드 스크롤 이벤트로 현재 카드 인덱스 추적
   const handleScroll = () => {
     if (!cardsWrapperRef.current) return;
     const scrollLeft = cardsWrapperRef.current.scrollLeft;
     // 카드 폭 + gap 등을 고려해 간단히 threshold 설정
-    // scrollLeft < 150이면 첫 번째 카드, 아니면 두 번째 카드
     if (scrollLeft < 150) {
       setCurrentCard(0);
     } else {
@@ -113,7 +114,12 @@ const PaymentMethod: React.FC = () => {
                   <CardRegisterDate>{card.registerDate}</CardRegisterDate>
                 </CardTop>
                 <CardBody>
-                  <CardBrand>{card.brand}</CardBrand>
+                  {/** brand 왼쪽에 CardIcon.svg 이미지를 row로 정렬 */}
+                  <CardBrandRow>
+                    <CardIconImg src={CardIcon} alt='card icon' />
+                    <CardBrandText>{card.brand}</CardBrandText>
+                  </CardBrandRow>
+
                   <CardNumber>{card.cardNumber}</CardNumber>
                 </CardBody>
               </CardOrange>
@@ -134,7 +140,6 @@ const PaymentMethod: React.FC = () => {
 
         {/* 페이지 인디케이터 (Dots) */}
         <DotsContainer>
-          {/* data.cards.length가 2개인 전제 */}
           {data.cards.map((_, idx) => (
             <Dot key={idx} active={currentCard === idx} />
           ))}
@@ -152,7 +157,6 @@ const PaymentMethod: React.FC = () => {
             <RightHeader>변동 / 누적 (포인트)</RightHeader>
           </TableHeader>
 
-          {/* ③ payments 배열을 순회하여 결제 항목 렌더링 */}
           {data.payments.map((pay, idx) => (
             <PaymentItem key={idx}>
               <PaymentInfo>
@@ -215,7 +219,6 @@ const Divider = styled.div`
 
 /* ========== 새로 추가된 스타일 ========== */
 
-/** 전체 스크롤 컨테이너 */
 const ScrollContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -225,17 +228,15 @@ const ScrollContainer = styled.div`
   position: relative;
 `;
 
-/** 카드 2장(가로 스크롤) */
 const CardsWrapper = styled.div`
   display: flex;
   gap: 20px;
   overflow-x: scroll; /* 수평 스크롤 */
   scroll-behavior: smooth;
-  /* 스크롤바 숨기기 (선택) */
   &::-webkit-scrollbar {
     display: none;
   }
-  margin-bottom: 10px; /* 카드 아래쪽 여백 */
+  margin-bottom: 10px;
 `;
 
 const CardOrange = styled.div`
@@ -271,13 +272,24 @@ const CardBody = styled.div`
   margin-top: 30px;
 `;
 
-const CardBrand = styled.span`
+const CardBrandRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+`;
+
+const CardIconImg = styled.img`
+  width: 12px;
+  height: 12px;
+`;
+
+const CardBrandText = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 8px;
   line-height: 9px;
   color: #ffffff;
-  margin-bottom: 4px;
 `;
 
 const CardNumber = styled.span`
@@ -348,7 +360,7 @@ const DotsContainer = styled.div`
   justify-content: center;
   align-items: center;
   gap: 8px;
-  margin-bottom: 20px; /* 인디케이터 아래쪽 여백 */
+  margin-bottom: 20px;
 `;
 
 const Dot = styled.div<{ active: boolean }>`
