@@ -1,5 +1,5 @@
 // ItemCard.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ import SampleMyCloset2 from '../../../assets/LockerRoom/SampleMyCloset2.svg';
 import SampleMyCloset3 from '../../../assets/LockerRoom/SampleMyCloset3.svg';
 import SampleMyCloset4 from '../../../assets/LockerRoom/SampleMyCloset4.svg';
 import DeleteButton from '../../../assets/LockerRoom/DeleteButton.svg';
+import ReusableModal2 from '../../../components/ReusableModal2';
 
 const sampleImages = [
   SampleMyCloset1,
@@ -24,7 +25,7 @@ type ItemCardProps = {
   description: string;
   price: number;
   discount: number;
-  onDelete: (id: string) => void; // 삭제 처리용 콜백 함수 추가
+  onDelete: (id: string) => void; // 삭제 콜백 함수
 };
 
 const ItemCard: React.FC<ItemCardProps> = ({
@@ -37,9 +38,27 @@ const ItemCard: React.FC<ItemCardProps> = ({
   onDelete,
 }) => {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleClick = () => {
     navigate(`/item/${id}`);
+  };
+
+  // 삭제 버튼 클릭 시 모달 오픈
+  const handleDeleteClick = (e: React.MouseEvent<HTMLImageElement>) => {
+    e.stopPropagation();
+    setIsModalOpen(true);
+  };
+
+  // 모달의 "네" 버튼 클릭 시 삭제 처리 후 모달 닫기
+  const handleConfirmDelete = () => {
+    onDelete(id);
+    setIsModalOpen(false);
+  };
+
+  // 모달의 "아니요" 버튼 클릭 시 모달 닫기
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   // image prop이 비어있으면 sample 이미지 사용
@@ -48,30 +67,34 @@ const ItemCard: React.FC<ItemCardProps> = ({
       ? image
       : sampleImages[(parseInt(id) - 1) % sampleImages.length];
 
-  // delete 버튼 클릭 핸들러
-  const handleDelete = (e: React.MouseEvent<HTMLImageElement>) => {
-    e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
-    onDelete(id);
-  };
-
   return (
-    <CardContainer onClick={handleClick}>
-      <ImageWrapper>
-        <Image src={imageToShow} alt={brand} />
-        <DeleteButtonIcon
-          onClick={handleDelete}
-          src={DeleteButton}
-          alt='삭제'
-        />
-      </ImageWrapper>
-      <Brand>{brand}</Brand>
-      <Description>{description}</Description>
-      <PriceWrapper>
-        <OriginalPrice>{price.toLocaleString()}원</OriginalPrice>
-        <NowLabel>NOW</NowLabel>
-        <DiscountLabel>{discount}%</DiscountLabel>
-      </PriceWrapper>
-    </CardContainer>
+    <>
+      <CardContainer onClick={handleClick}>
+        <ImageWrapper>
+          <Image src={imageToShow} alt={brand} />
+          <DeleteButtonIcon
+            onClick={handleDeleteClick}
+            src={DeleteButton}
+            alt='삭제'
+          />
+        </ImageWrapper>
+        <Brand>{brand}</Brand>
+        <Description>{description}</Description>
+        <PriceWrapper>
+          <OriginalPrice>{price.toLocaleString()}원</OriginalPrice>
+          <NowLabel>NOW</NowLabel>
+          <DiscountLabel>{discount}%</DiscountLabel>
+        </PriceWrapper>
+      </CardContainer>
+      <ReusableModal2
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmDelete}
+        title='삭제 확인'
+      >
+        아이템을 삭제하시겠습니까?
+      </ReusableModal2>
+    </>
   );
 };
 
