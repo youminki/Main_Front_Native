@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import StatsSection from '../../../components/Melpik/StatsSection';
+import StatsSection from '../../../components/StatsSection';
 import ContentList from '../../../components/Melpik/CreateMelpik/ContentList';
 
 // 동적 데이터

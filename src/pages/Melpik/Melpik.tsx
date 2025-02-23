@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { ThemeProvider } from 'styled-components';
 import Theme from '../../styles/Theme';
-import StatsSection from '../../components/Melpik/StatsSection';
+import StatsSection from '../../components/StatsSection';
 
 import MelpikIcon from '../../assets/Melpik/MelpikIcon.svg';
 

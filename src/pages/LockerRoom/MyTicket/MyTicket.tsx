@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import StatsSection from '../../../components/Melpik/StatsSection';
+import StatsSection from '../../../components/StatsSection';
 
 // 동적 데이터
 const visitLabel = '사용중인 이용권';

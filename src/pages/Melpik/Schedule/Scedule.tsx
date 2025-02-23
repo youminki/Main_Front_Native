@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Theme from '../../../styles/Theme';
 import ScheduleIcon from '../../../assets/Melpik/schedule.svg';
 import BletIcon from '../../../assets/Melpik/blet.svg';
-import StatsSection from '../../../components/Melpik/StatsSection';
+import StatsSection from '../../../components/StatsSection';
 
 const Schedule: React.FC = () => {
   // 동적 데이터 (프롭스로 전달할 값)

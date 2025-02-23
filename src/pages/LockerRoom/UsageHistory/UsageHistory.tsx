@@ -1,6 +1,8 @@
+// src/components/UsageHistory/UsageHistory.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import StatsSection from '../../../components/Melpik/StatsSection';
+import StatsSection from '../../../components/StatsSection';
+import PeriodSection from '../../../components/PeriodSection'; // 추가된 import
 import sampleImage from '../../../assets/sample-dress.svg';
 import PriceIcon from '../../../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../../../assets/Basket/ProductInfoIcon.svg';
@@ -79,23 +81,11 @@ const UsageHistory: React.FC = () => {
       <Divider />
 
       <Section>
-        <SettlementHeader>
-          <DateRange>2024.12.01 ~ 2025.05.31</DateRange>
-          <PeriodSelector>
-            <PeriodButton
-              active={selectedPeriod === 3}
-              onClick={() => setSelectedPeriod(3)}
-            >
-              3개월
-            </PeriodButton>
-            <PeriodButton
-              active={selectedPeriod === 6}
-              onClick={() => setSelectedPeriod(6)}
-            >
-              6개월
-            </PeriodButton>
-          </PeriodSelector>
-        </SettlementHeader>
+        {/* 기존 SettlementHeader 영역을 PeriodSection 컴포넌트로 대체 */}
+        <PeriodSection
+          selectedPeriod={selectedPeriod}
+          setSelectedPeriod={setSelectedPeriod}
+        />
 
         <ItemList>
           {filteredItems.map((item) => (
@@ -242,50 +232,8 @@ const Section = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-
   padding-bottom: 80px;
   margin-top: 30px;
-`;
-
-const SettlementHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f3f3f3;
-  border: 1px solid #dddddd;
-  padding: 20px;
-  white-space: nowrap;
-`;
-
-const DateRange = styled.p`
-  font-family: 'NanumSquare Neo OTF';
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-  color: #000;
-  flex-shrink: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const PeriodSelector = styled.div`
-  display: flex;
-  flex-shrink: 0;
-`;
-
-const PeriodButton = styled.button<{ active: boolean }>`
-  padding: 8px 12px;
-  margin-left: 8px;
-  font-family: 'NanumSquare Neo OTF';
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-  color: ${({ active }) => (active ? '#fff' : '#000')};
-  background: ${({ active }) => (active ? '#000' : '#fff')};
-  border: 1px solid ${({ active }) => (active ? '#000' : '#ccc')};
-  border-radius: 14px;
-  cursor: pointer;
-  white-space: nowrap;
 `;
 
 const ItemList = styled.div`
@@ -298,7 +246,6 @@ const ItemList = styled.div`
 const Item = styled.div`
   display: flex;
   flex-direction: column;
-
   border-bottom: 1px solid #ddd;
   padding: 30px 0;
   margin-bottom: 15px;
@@ -457,6 +404,7 @@ const Icon = styled.img`
   width: 20px;
   height: 20px;
 `;
+
 const LabelDetailText = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;

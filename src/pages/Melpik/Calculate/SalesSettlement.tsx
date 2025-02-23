@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import StatsSection from '../../../components/Melpik/StatsSection';
+import StatsSection from '../../../components/StatsSection';
 import FixedBottomBar from '../../../components/FixedBottomBar';
+import PeriodSection from '../../../components/PeriodSection'; // PeriodSection import 추가
 
 const SalesSettlement: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(6);
@@ -15,7 +16,8 @@ const SalesSettlement: React.FC = () => {
   const visitLabel = '미정산금';
   const salesLabel = '다음 정산일';
 
-  const settlementDate = '2024.12.01 ~ 2025.05.31';
+  // 기존 settlementDate는 더 이상 사용하지 않고, PeriodSection에서 선택된 기간에 따라 텍스트가 표시됩니다.
+  // const settlementDate = '2024.12.01 ~ 2025.05.31';
 
   const settlements = [
     {
@@ -100,23 +102,11 @@ const SalesSettlement: React.FC = () => {
       <Divider />
 
       <Section>
-        <SettlementHeader>
-          <DateRange>{settlementDate}</DateRange>
-          <PeriodSelector>
-            <PeriodButton
-              active={selectedPeriod === 3}
-              onClick={() => setSelectedPeriod(3)}
-            >
-              3개월
-            </PeriodButton>
-            <PeriodButton
-              active={selectedPeriod === 6}
-              onClick={() => setSelectedPeriod(6)}
-            >
-              6개월
-            </PeriodButton>
-          </PeriodSelector>
-        </SettlementHeader>
+        {/* 기존 SettlementHeader를 PeriodSection 컴포넌트로 대체 */}
+        <PeriodSection
+          selectedPeriod={selectedPeriod}
+          setSelectedPeriod={setSelectedPeriod}
+        />
 
         <SettlementList>
           {filteredSettlements.map((settlement) => (
@@ -208,52 +198,6 @@ const Divider = styled.div`
   background: #dddddd;
   margin: 30px 0;
 `;
-const SettlementHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: nowrap;
-  background: #f3f3f3;
-  border-bottom: 1px solid #dddddd;
-  padding: 20px;
-
-  white-space: nowrap;
-`;
-
-const DateRange = styled.p`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-  text-align: left;
-  color: #000000;
-  flex-shrink: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const PeriodSelector = styled.div`
-  display: flex;
-  flex-shrink: 0;
-`;
-
-const PeriodButton = styled.button<{ active: boolean }>`
-  padding: 8px 12px;
-  margin-left: 8px;
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-  text-align: right;
-  color: ${({ active }) => (active ? '#fff' : '#000')};
-  background: ${({ active }) => (active ? '#000' : '#fff')};
-  border: 1px solid ${({ active }) => (active ? '#000' : '#ccc')};
-  border-radius: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-`;
 
 const SettlementList = styled.div`
   flex: 1;
@@ -266,7 +210,6 @@ const SettlementItem = styled.div`
   align-items: center;
   padding: 21px;
   background: #fff;
-
   border-bottom: 1px solid #dddddd;
 `;
 
@@ -281,6 +224,7 @@ const RightSection = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
 const AmountWrapper = styled.div`
   display: flex;
   flex-direction: row;
@@ -296,7 +240,6 @@ const PendingLabel = styled.span`
   line-height: 15px;
   flex: 1;
   text-align: left;
-
   margin-top: 10px;
 `;
 
@@ -313,11 +256,9 @@ const StatusTag = styled.span<{ pending?: boolean; confirmed?: boolean }>`
   font-size: 8px;
   line-height: 9px;
   padding: 2px;
-
   border: 1px solid
     ${({ pending, confirmed }) =>
       pending ? '#D40148' : confirmed ? '#297FD5' : '#000'};
-
   color: ${({ pending, confirmed }) =>
     pending ? '#D40148' : confirmed ? '#297FD5' : '#000'};
 `;
@@ -328,7 +269,6 @@ const Date = styled.p`
   font-weight: 700;
   font-size: 18px;
   line-height: 20px;
-
   color: #000000;
   margin-top: 6px;
   margin-bottom: 0px;
@@ -341,7 +281,6 @@ const SubDate = styled.p`
   font-size: 10px;
   line-height: 11px;
   margin-top: 10px;
-
   color: #999999;
 `;
 
@@ -355,7 +294,6 @@ const Amount = styled.p`
   color: #000000;
   flex: 1;
   white-space: nowrap;
-
   margin-left: 6px;
   margin-top: 20px;
   margin-bottom: 10px;
@@ -366,9 +304,7 @@ const Deduction = styled.p`
   font-weight: 400;
   font-size: 10px;
   line-height: 11px;
-
   text-align: right;
-
   color: #999999;
   margin-top: 0px;
 `;
