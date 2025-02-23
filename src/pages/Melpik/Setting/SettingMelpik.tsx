@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import Theme from '../../../styles/Theme';
-import StatsSection from '../../../components/Melpik/StatsSection';
+import StatsSection from '../../../components/StatsSection';
 import InputField from '../../../components/InputField';
 import ReusableModal from '../../../components/ReusableModal';
 import DeleteIcon from '../../../assets/Melpik/DeleteIcon.svg';

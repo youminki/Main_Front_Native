@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import StatsSection from '../../../components/Melpik/StatsSection';
+import StatsSection from '../../../components/StatsSection';
 import ItemList from '../../../components/LockerRoom/Mycloset/ItemList';
 // 동적 데이터
 const visitLabel = '담긴 제품들';
