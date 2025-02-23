@@ -87,6 +87,7 @@ const App: React.FC = () => {
     '/schedule/reservation3',
     '/sales-settlement-detail/:id',
     'settlement-request',
+    '/payment-review/Write',
   ];
 
   const header4Paths = [
@@ -139,6 +140,10 @@ const App: React.FC = () => {
     if (matchPath('/settlement-request', location.pathname)) {
       return '정산신청';
     }
+    if (matchPath('/payment-review/Write', location.pathname)) {
+      return '평가작성';
+    }
+    
 
     return '';
   };

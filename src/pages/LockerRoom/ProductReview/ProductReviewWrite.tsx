@@ -1,12 +1,15 @@
 // ProductReview.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import sampleImage from '../../../assets/sample-dress.svg';
 import ProductInfoIcon from '../../../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../../../assets/Basket/ServiceInfoIcon.svg';
-
-import FilledStarIcon from '../../../assets/Basket/FilledStarIcon.svg'; // ★ 채워진 별
-import EmptyStarIcon from '../../../assets/Basket/EmptyStarIcon.svg'; // ★ 빈 별
+import EvaluationIcon from '../../../assets/Basket/EvaluationIcon.svg'; // 평가 아이콘
+import FilledStarIcon from '../../../assets/Basket/FilledStarIcon.svg'; // 채워진 별
+import EmptyStarIcon from '../../../assets/Basket/EmptyStarIcon.svg'; // 빈 별
+import FixedBottomBar from '../../../components/FixedBottomBar';
+import ReusableModal2 from '../../../components/ReusableModal2';
 
 interface BasketItem {
   id: number;
@@ -26,6 +29,7 @@ interface BasketItem {
 }
 
 const ProductReview: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedPeriod] = useState(6);
 
   // 아이템(예: 1개만 사용)
@@ -55,6 +59,9 @@ const ProductReview: React.FC = () => {
   const [reviewText, setReviewText] = useState(''); // 후기 텍스트
   const [fileName, setFileName] = useState(''); // 업로드 파일명
 
+  // 모달 제어 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   // 별점 선택
   const handleStarClick = (idx: number) => {
     setStarRating(idx + 1);
@@ -70,6 +77,12 @@ const ProductReview: React.FC = () => {
     if (e.target.files && e.target.files.length > 0) {
       setFileName(e.target.files[0].name);
     }
+  };
+
+  // 모달 "예" 클릭 시: 모달 닫고 /product-review로 이동
+  const handleConfirmModal = () => {
+    setIsModalOpen(false);
+    navigate('/product-review');
   };
 
   return (
@@ -154,7 +167,7 @@ const ProductReview: React.FC = () => {
           ))}
         </ItemList>
 
-        {/* 새로 추가된 섹션 (AboveContentContainer) */}
+        {/* 위쪽 추가 섹션: 제품 평가, 후기작성, 후기사진 등록 */}
         <AboveContentContainer>
           {/* 제품 만족도 평가 */}
           <StarSection>
@@ -209,6 +222,23 @@ const ProductReview: React.FC = () => {
           </PhotoSection>
         </AboveContentContainer>
       </Section>
+
+      {/* FixedBottomBar 클릭 시 모달을 열어 "리뷰를 등록하시겠습니까?" 메시지를 표시 */}
+      <FixedBottomBar
+        onClick={() => setIsModalOpen(true)}
+        text='평가등록'
+        color='yellow'
+      />
+
+      {/* ReusableModal2: 모달 내 "예" 선택 시 /product-review로 이동 */}
+      <ReusableModal2
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirmModal}
+        title='평가등록'
+      >
+        리뷰를 등록하시겠습니까?
+      </ReusableModal2>
     </ProductReviewContainer>
   );
 };
@@ -235,13 +265,12 @@ const Section = styled.div`
   width: 100%;
 `;
 
-/** 새로 추가된 섹션을 감싸는 래퍼 */
 const AboveContentContainer = styled.div`
-  display: flex; /* flex로 정렬 */
-  flex-direction: column; /* 세로 배치 */
-  width: 100%; /* Section과 동일하게 폭 100% */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   margin-top: 20px;
-  padding: 10px;
+
   box-sizing: border-box;
   background: #ffffff;
 `;
@@ -300,7 +329,7 @@ const TextareaContainer = styled.div`
 const ReviewTextarea = styled.textarea`
   width: 92%;
   height: 100%;
-  min-height: 171px;
+  min-height: 151px;
   border: none;
   resize: none;
   outline: none;
