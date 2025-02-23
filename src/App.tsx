@@ -34,6 +34,9 @@ import UsageHistory from './pages/LockerRoom/UsageHistory/UsageHistory';
 import Point from './pages/LockerRoom/Point/Point';
 import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
 import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
+import PaymentMethod from './pages/LockerRoom/PaymentMethod/PaymentMethod';
+import ProductReview from './pages/LockerRoom/ProductReview/ProductReview';
+import ProductReviewWrite from './pages/LockerRoom/ProductReview/ProductReviewWrite';
 
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
@@ -69,6 +72,8 @@ const App: React.FC = () => {
     '/my-tiket',
     '/my-closet',
     '/point',
+    '/product-review',
+    '/payment-method',
   ];
 
   // Header3가 포함될 경로 패턴
@@ -82,6 +87,7 @@ const App: React.FC = () => {
     '/schedule/reservation3',
     '/sales-settlement-detail/:id',
     'settlement-request',
+    '/payment-review/Write',
   ];
 
   const header4Paths = [
@@ -134,6 +140,10 @@ const App: React.FC = () => {
     if (matchPath('/settlement-request', location.pathname)) {
       return '정산신청';
     }
+    if (matchPath('/payment-review/Write', location.pathname)) {
+      return '평가작성';
+    }
+    
 
     return '';
   };
@@ -218,6 +228,12 @@ const App: React.FC = () => {
           <Route path='/my-tiket' element={<MyTicket />} />
           <Route path='/my-closet' element={<MyCloset />} />
           <Route path='/point' element={<Point />} />
+          <Route path='/product-review' element={<ProductReview />} />
+          <Route path='/payment-method' element={<PaymentMethod />} />
+          <Route
+            path='/payment-review/Write'
+            element={<ProductReviewWrite />}
+          />
         </Routes>
       </ContentContainer>
       {includeBottomNav && <BottomNav />}
