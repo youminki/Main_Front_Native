@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 
 // 동적 데이터
-const visitLabel = '사용중인 이용권';
+const visitLabel = '결제등록 카드';
 const salesLabel = '시즌';
-const visits = '2';
+const visits = '1';
 const sales = '2025 1분기';
 const dateRange = 'SPRING';
 
@@ -13,7 +13,7 @@ const PaymentMethod: React.FC = () => {
   return (
     <PaymentMethodContainer>
       <Header>
-        <Title>이용권</Title>
+        <Title>결제수단</Title>
         <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
       </Header>
 

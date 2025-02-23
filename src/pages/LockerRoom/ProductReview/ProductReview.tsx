@@ -73,7 +73,7 @@ const ProductReview: React.FC = () => {
   return (
     <ProductReviewContainer>
       <Header>
-        <Title>이용 내역</Title>
+        <Title>제품평가</Title>
         <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
       </Header>
 
@@ -81,7 +81,7 @@ const ProductReview: React.FC = () => {
         visits={'999'}
         sales={'2025 1분기'}
         dateRange={'SPRING'}
-        visitLabel={'담긴 제품들'}
+        visitLabel={'제품 평가수'}
         salesLabel={'시즌'}
       />
 
