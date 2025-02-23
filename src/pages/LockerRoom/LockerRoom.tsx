@@ -27,8 +27,8 @@ const LockerRoom: React.FC = () => {
     { icon: HistoryIcon, label: '이용 내역', path: '/usage-history' },
     { icon: PointsIcon, label: '포인트', path: '/point' },
     { icon: TicketIcon, label: '티켓', path: '/my-tiket' },
-    { icon: PaymentIcon, label: '결제수단', path: '/payment-methods' },
-    { icon: ReviewIcon, label: '상품 리뷰', path: '/product-reviews' },
+    { icon: PaymentIcon, label: '결제수단', path: '/payment-method' },
+    { icon: ReviewIcon, label: '상품 리뷰', path: '/product-review' },
   ];
 
   return (

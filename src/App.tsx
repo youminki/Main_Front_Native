@@ -34,6 +34,8 @@ import UsageHistory from './pages/LockerRoom/UsageHistory/UsageHistory';
 import Point from './pages/LockerRoom/Point/Point';
 import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
 import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
+import PaymentMethod from './pages/LockerRoom/PaymentMethod/PaymentMethod';
+import ProductReview from './pages/LockerRoom/ProductReview/ProductReview';
 
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
@@ -69,6 +71,8 @@ const App: React.FC = () => {
     '/my-tiket',
     '/my-closet',
     '/point',
+    '/product-review',
+    '/payment-method',
   ];
 
   // Header3가 포함될 경로 패턴
@@ -218,6 +222,8 @@ const App: React.FC = () => {
           <Route path='/my-tiket' element={<MyTicket />} />
           <Route path='/my-closet' element={<MyCloset />} />
           <Route path='/point' element={<Point />} />
+          <Route path='/product-review' element={<ProductReview />} />
+          <Route path='/payment-method' element={<PaymentMethod />} />
         </Routes>
       </ContentContainer>
       {includeBottomNav && <BottomNav />}
