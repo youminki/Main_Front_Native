@@ -2,7 +2,7 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
-
+import PeriodSection from '../../../components/PeriodSection';
 // 동적 데이터
 const visitLabel = '결제등록 카드';
 const salesLabel = '시즌';
@@ -27,6 +27,7 @@ interface PaymentData {
 }
 
 const PaymentMethod: React.FC = () => {
+  const [selectedPeriod, setSelectedPeriod] = useState(6);
   const [currentCard, setCurrentCard] = useState(0);
   const cardsWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -141,13 +142,10 @@ const PaymentMethod: React.FC = () => {
 
         {/* 결제내역 목록 */}
         <PaymentList>
-          <PaymentListHeader>
-            <DateRange>2025.02.01 ~ 2025.04.30</DateRange>
-            <PeriodSelector>
-              <PeriodButton active>3개월</PeriodButton>
-              <PeriodButton>6개월</PeriodButton>
-            </PeriodSelector>
-          </PaymentListHeader>
+          <PeriodSection
+            selectedPeriod={selectedPeriod}
+            setSelectedPeriod={setSelectedPeriod}
+          />
 
           <TableHeader>
             <LeftHeader>결제일자 / 결제내역</LeftHeader>
@@ -363,45 +361,6 @@ const Dot = styled.div<{ active: boolean }>`
 const PaymentList = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const PaymentListHeader = styled.div`
-  display: flex;
-  align-items: center;
-  background: #f3f3f3;
-  border: 1px solid #dddddd;
-  height: 70px;
-  margin-top: 20px;
-  padding: 10px 20px;
-  justify-content: space-between;
-`;
-
-const DateRange = styled.span`
-  font-family: 'NanumSquare Neo OTF';
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-  color: #000000;
-`;
-
-const PeriodSelector = styled.div`
-  display: flex;
-  gap: 8px;
-`;
-
-const PeriodButton = styled.button<{ active?: boolean }>`
-  width: 50px;
-  height: 29px;
-  border-radius: 14px;
-  font-family: 'NanumSquare Neo OTF';
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-  text-align: center;
-  color: ${({ active }) => (active ? '#ffffff' : '#000000')};
-  background: ${({ active }) => (active ? '#000000' : '#ffffff')};
-  border: 1px solid ${({ active }) => (active ? '#000000' : '#cccccc')};
-  cursor: pointer;
 `;
 
 const TableHeader = styled.div`
