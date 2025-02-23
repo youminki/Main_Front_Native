@@ -36,6 +36,7 @@ import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
 import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
 import PaymentMethod from './pages/LockerRoom/PaymentMethod/PaymentMethod';
 import ProductReview from './pages/LockerRoom/ProductReview/ProductReview';
+import ProductReviewWrite from './pages/LockerRoom/ProductReview/ProductReviewWrite';
 
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
@@ -224,6 +225,10 @@ const App: React.FC = () => {
           <Route path='/point' element={<Point />} />
           <Route path='/product-review' element={<ProductReview />} />
           <Route path='/payment-method' element={<PaymentMethod />} />
+          <Route
+            path='/payment-review/Write'
+            element={<ProductReviewWrite />}
+          />
         </Routes>
       </ContentContainer>
       {includeBottomNav && <BottomNav />}
