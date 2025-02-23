@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import sampleImage from '../../../assets/sample-dress.svg';
 import ProductInfoIcon from '../../../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../../../assets/Basket/ServiceInfoIcon.svg';
-import EvaluationIcon from '../../../assets/Basket/EvaluationIcon.svg'; // 평가 아이콘
+
 import FilledStarIcon from '../../../assets/Basket/FilledStarIcon.svg'; // 채워진 별
 import EmptyStarIcon from '../../../assets/Basket/EmptyStarIcon.svg'; // 빈 별
 import FixedBottomBar from '../../../components/FixedBottomBar';
