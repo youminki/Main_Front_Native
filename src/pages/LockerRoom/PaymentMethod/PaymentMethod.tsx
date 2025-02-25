@@ -1,6 +1,6 @@
-// PaymentMethod.tsx
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom'; // 추가
 import StatsSection from '../../../components/StatsSection';
 import PeriodSection from '../../../components/PeriodSection';
 import CardIcon from '../../../assets/LockerRoom/CardIcon.svg';
@@ -32,6 +32,7 @@ const PaymentMethod: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(6);
   const [currentCard, setCurrentCard] = useState(0);
   const cardsWrapperRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate(); // 추가: 페이지 이동을 위한 hook
 
   // 전체 데이터를 한꺼번에 선언(혹은 API로 fetch)
   const data = {
@@ -119,13 +120,15 @@ const PaymentMethod: React.FC = () => {
                     <CardIconImg src={CardIcon} alt='card icon' />
                     <CardBrandText>{card.brand}</CardBrandText>
                   </CardBrandRow>
-
                   <CardNumber>{card.cardNumber}</CardNumber>
                 </CardBody>
               </CardOrange>
             ) : (
-              /* "카드 추가" 용 흰색 카드 */
-              <CardWhite key={idx}>
+              /* "카드 추가" 용 흰색 카드, 클릭 시 AddCard 페이지로 이동 */
+              <CardWhite
+                key={idx}
+                onClick={() => navigate('/payment-method/AddCard')}
+              >
                 <PlusWrapper>
                   <PlusBox>
                     <PlusLineVert />

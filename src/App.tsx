@@ -35,6 +35,7 @@ import Point from './pages/LockerRoom/Point/Point';
 import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
 import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
 import PaymentMethod from './pages/LockerRoom/PaymentMethod/PaymentMethod';
+import AddCard from './pages/LockerRoom/PaymentMethod/AddCard';
 import ProductReview from './pages/LockerRoom/ProductReview/ProductReview';
 import ProductReviewWrite from './pages/LockerRoom/ProductReview/ProductReviewWrite';
 
@@ -143,7 +144,6 @@ const App: React.FC = () => {
     if (matchPath('/payment-review/Write', location.pathname)) {
       return '평가작성';
     }
-    
 
     return '';
   };
@@ -230,6 +230,8 @@ const App: React.FC = () => {
           <Route path='/point' element={<Point />} />
           <Route path='/product-review' element={<ProductReview />} />
           <Route path='/payment-method' element={<PaymentMethod />} />
+          <Route path='/payment-method/addcard' element={<AddCard />} />
+
           <Route
             path='/payment-review/Write'
             element={<ProductReviewWrite />}
