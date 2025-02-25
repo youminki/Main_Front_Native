@@ -266,14 +266,11 @@ const Container = styled.div`
   background-color: #ffffff;
 `;
 
-const FieldSection = styled.div`
-  margin-bottom: 20px;
-`;
+const FieldSection = styled.div``;
 
 const TwoColumns = styled.div`
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
 `;
 
 const Column = styled.div`
