@@ -111,3 +111,40 @@ export const schemaFindId = yup.object({
     .required('태어난 해를 선택해주세요.')
     .matches(/^\d{4}$/, '태어난 해는 4자리 숫자로 입력해주세요.'),
 });
+
+export const schemaCardRegistration = yup.object({
+  cardNumber: yup
+    .string()
+    // 1) 하이픈 제거
+    .transform((value) => value.replace(/-/g, ''))
+    .required('카드번호를 입력해주세요.')
+    .matches(/^\d{16}$/, '카드번호는 16자리 숫자여야 합니다.'),
+
+  cardExpiration: yup
+    .string()
+    // 2) 공백 제거 (원한다면)
+    .transform((value) => value.replace(/\s/g, ''))
+    .required('유효기간을 입력해주세요.')
+    .matches(
+      // '05/24' 형태만 허용 (공백 없이)
+      /^(0[1-9]|1[0-2])\/\d{2}$/,
+      '유효기간은 MM/YY 형식이어야 합니다.'
+    ),
+
+  cardPassword: yup
+    .string()
+    .required('비밀번호를 입력해주세요.')
+    .matches(/^\d{2}$/, '비밀번호는 정확히 2자리 숫자여야 합니다.'),
+
+  birthOrBusiness: yup
+    .string()
+    .required('생년월일 또는 사업자번호를 입력해주세요.')
+    .test(
+      'lengthCheck',
+      '생년월일은 6자리, 사업자번호는 10자리 숫자여야 합니다.',
+      (value) => {
+        if (!value) return false;
+        return value.length === 6 || value.length === 10;
+      }
+    ),
+});
