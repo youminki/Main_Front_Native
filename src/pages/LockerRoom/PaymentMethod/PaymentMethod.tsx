@@ -1,11 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom'; // 추가
+import { useNavigate, useLocation } from 'react-router-dom'; // 수정
 import StatsSection from '../../../components/StatsSection';
 import PeriodSection from '../../../components/PeriodSection';
 import CardIcon from '../../../assets/LockerRoom/CardIcon.svg';
 
-// 동적 데이터
 const visitLabel = '결제등록 카드';
 const salesLabel = '시즌';
 const visits = '1';
@@ -14,73 +13,89 @@ const dateRange = 'SPRING';
 
 // 카드 데이터 타입
 interface CardData {
-  registerDate?: string; // 등록일 (없으면 "카드 추가" 용도)
-  brand?: string; // 카드 브랜드 (없으면 "카드 추가" 용도)
-  cardNumber?: string; // 카드번호
-  isOrange?: boolean; // true면 오렌지색 카드, false면 흰색 카드
+  registerDate?: string;
+  brand?: string;
+  cardNumber?: string;
+  isOrange?: boolean;
 }
 
 // 결제 내역 데이터 타입
 interface PaymentData {
-  date: string; // 예: "2025-03-10 / 이용권 결제"
-  detail: string; // 예: "정기결제"
-  detailColor?: string; // 예: "#F6AE24"
-  price: string; // 예: "120,000"
+  date: string;
+  detail: string;
+  detailColor?: string;
+  price: string;
 }
 
 const PaymentMethod: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(6);
   const [currentCard, setCurrentCard] = useState(0);
   const cardsWrapperRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate(); // 추가: 페이지 이동을 위한 hook
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // 전체 데이터를 한꺼번에 선언(혹은 API로 fetch)
-  const data = {
-    cards: [
-      {
-        registerDate: '등록일 2025.02.01',
-        brand: '신한카드',
-        cardNumber: '4567-●●●●-●●●●-1234',
-        isOrange: true,
-      },
-      {
-        // "카드 추가" 용
-        isOrange: false,
-      },
-    ] as CardData[],
-    payments: [
-      {
-        date: '2025-03-10 / 이용권 결제',
-        detail: '정기결제',
-        detailColor: '#F6AE24',
-        price: '120,000',
-      },
-      {
-        date: '2025-03-08 / 제품구매',
-        detail: '일반결제',
-        detailColor: '#EF4523',
-        price: '260,000',
-      },
-      {
-        date: '2025-03-07 / 지연반납 결제',
-        detail: '일반결제',
-        detailColor: '#EF4523',
-        price: '10,000',
-      },
-      {
-        date: '2025-02-10 / 이용권 결제',
-        detail: '정기결제',
-        detailColor: '#F6AE24',
-        price: '120,000',
-      },
-    ] as PaymentData[],
-  };
+  // ✅ 카드 목록을 State로 관리
+  const [cards, setCards] = useState<CardData[]>([
+    {
+      registerDate: '등록일 2025.02.01',
+      brand: '신한카드',
+      cardNumber: '4567-●●●●-●●●●-1234',
+      isOrange: true,
+    },
+    {
+      // "카드 추가" 용
+      isOrange: false,
+    },
+  ]);
+
+  // 결제 내역 (고정 데이터)
+  const payments: PaymentData[] = [
+    {
+      date: '2025-03-10 / 이용권 결제',
+      detail: '정기결제',
+      detailColor: '#F6AE24',
+      price: '120,000',
+    },
+    {
+      date: '2025-03-08 / 제품구매',
+      detail: '일반결제',
+      detailColor: '#EF4523',
+      price: '260,000',
+    },
+    {
+      date: '2025-03-07 / 지연반납 결제',
+      detail: '일반결제',
+      detailColor: '#EF4523',
+      price: '10,000',
+    },
+    {
+      date: '2025-02-10 / 이용권 결제',
+      detail: '정기결제',
+      detailColor: '#F6AE24',
+      price: '120,000',
+    },
+  ];
+
+  // ✅ 수정 후 돌아올 때, location.state에서 updatedCard, cardIndex를 가져와서 cards를 업데이트
+  useEffect(() => {
+    const { state } = location;
+    if (
+      state &&
+      state.updatedCard !== undefined &&
+      state.cardIndex !== undefined
+    ) {
+      const { updatedCard, cardIndex } = state;
+      // 기존 cards 복사 후 해당 인덱스의 카드 정보를 수정
+      const newCards = [...cards];
+      newCards[cardIndex] = updatedCard;
+      setCards(newCards);
+    }
+  }, [location.state, cards]);
 
   // 카드 스크롤 이벤트로 현재 카드 인덱스 추적
   const handleScroll = () => {
     if (!cardsWrapperRef.current) return;
     const scrollLeft = cardsWrapperRef.current.scrollLeft;
-    // 카드 폭 + gap 등을 고려해 간단히 threshold 설정
     if (scrollLeft < 150) {
       setCurrentCard(0);
     } else {
@@ -107,15 +122,25 @@ const PaymentMethod: React.FC = () => {
       <ScrollContainer>
         {/* 카드 표시 영역 */}
         <CardsWrapper ref={cardsWrapperRef} onScroll={handleScroll}>
-          {data.cards.map((card, idx) =>
+          {cards.map((card, idx) =>
             card.isOrange ? (
-              /* 오렌지색 카드 */
-              <CardOrange key={idx}>
+              /* 오렌지색 카드, 클릭 시 카드 상세 페이지로 이동 */
+              <CardOrange
+                key={idx}
+                onClick={() =>
+                  navigate('/payment-method/cardDetail', {
+                    state: {
+                      cardIndex: idx,
+                      cardData: card,
+                    },
+                  })
+                }
+              >
                 <CardTop>
                   <CardRegisterDate>{card.registerDate}</CardRegisterDate>
                 </CardTop>
                 <CardBody>
-                  {/** brand 왼쪽에 CardIcon.svg 이미지를 row로 정렬 */}
+                  {/* brand 왼쪽에 CardIcon.svg 이미지를 row로 정렬 */}
                   <CardBrandRow>
                     <CardIconImg src={CardIcon} alt='card icon' />
                     <CardBrandText>{card.brand}</CardBrandText>
@@ -124,7 +149,7 @@ const PaymentMethod: React.FC = () => {
                 </CardBody>
               </CardOrange>
             ) : (
-              /* "카드 추가" 용 흰색 카드, 클릭 시 AddCard 페이지로 이동 */
+              /* "카드 추가" 용 흰색 카드 */
               <CardWhite
                 key={idx}
                 onClick={() => navigate('/payment-method/AddCard')}
@@ -143,7 +168,7 @@ const PaymentMethod: React.FC = () => {
 
         {/* 페이지 인디케이터 (Dots) */}
         <DotsContainer>
-          {data.cards.map((_, idx) => (
+          {cards.map((_, idx) => (
             <Dot key={idx} active={currentCard === idx} />
           ))}
         </DotsContainer>
@@ -160,7 +185,7 @@ const PaymentMethod: React.FC = () => {
             <RightHeader>변동 / 누적 (포인트)</RightHeader>
           </TableHeader>
 
-          {data.payments.map((pay, idx) => (
+          {payments.map((pay, idx) => (
             <PaymentItem key={idx}>
               <PaymentInfo>
                 <PaymentMainText>{pay.date}</PaymentMainText>
@@ -234,7 +259,7 @@ const ScrollContainer = styled.div`
 const CardsWrapper = styled.div`
   display: flex;
   gap: 20px;
-  overflow-x: scroll; /* 수평 스크롤 */
+  overflow-x: scroll;
   scroll-behavior: smooth;
   &::-webkit-scrollbar {
     display: none;
@@ -250,6 +275,7 @@ const CardOrange = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  cursor: pointer;
 `;
 
 const CardTop = styled.div`
@@ -313,6 +339,7 @@ const CardWhite = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 `;
 
 const PlusWrapper = styled.div`
@@ -357,7 +384,6 @@ const CardAddText = styled.span`
   color: #dddddd;
 `;
 
-/** 페이지 인디케이터 (Dot) */
 const DotsContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -373,7 +399,6 @@ const Dot = styled.div<{ active: boolean }>`
   background: ${({ active }) => (active ? '#F6AE24' : '#D9D9D9')};
 `;
 
-/** 결제내역 목록 */
 const PaymentList = styled.div`
   display: flex;
   flex-direction: column;

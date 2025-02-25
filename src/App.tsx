@@ -36,6 +36,7 @@ import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
 import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
 import PaymentMethod from './pages/LockerRoom/PaymentMethod/PaymentMethod';
 import AddCard from './pages/LockerRoom/PaymentMethod/AddCard';
+import CardDetail from './pages/LockerRoom/PaymentMethod/CardDetail';
 import ProductReview from './pages/LockerRoom/ProductReview/ProductReview';
 import ProductReviewWrite from './pages/LockerRoom/ProductReview/ProductReviewWrite';
 
@@ -89,6 +90,8 @@ const App: React.FC = () => {
     '/sales-settlement-detail/:id',
     'settlement-request',
     '/payment-review/Write',
+    '/payment-method/addcard',
+    '/payment-method/cardDetail',
   ];
 
   const header4Paths = [
@@ -143,6 +146,12 @@ const App: React.FC = () => {
     }
     if (matchPath('/payment-review/Write', location.pathname)) {
       return '평가작성';
+    }
+    if (matchPath('/payment-method/addcard', location.pathname)) {
+      return '카드등록';
+    }
+    if (matchPath('//payment-method/cardDetail', location.pathname)) {
+      return '카드상세';
     }
 
     return '';
@@ -231,6 +240,7 @@ const App: React.FC = () => {
           <Route path='/product-review' element={<ProductReview />} />
           <Route path='/payment-method' element={<PaymentMethod />} />
           <Route path='/payment-method/addcard' element={<AddCard />} />
+          <Route path='/payment-method/cardDetail' element={<CardDetail />} />
 
           <Route
             path='/payment-review/Write'
