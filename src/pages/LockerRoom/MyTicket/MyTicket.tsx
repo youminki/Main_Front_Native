@@ -2,6 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 
+// SVG 이미지 import 예시
+import RegularPass from '../../../assets/LockerRoom/RegularPass.svg';
+import OnetimePass from '../../..//assets/LockerRoom/OnetimePass.svg';
+import AddPass from '../../..//assets/LockerRoom/AddPass.svg';
+
 // 동적 데이터
 const visitLabel = '사용중인 이용권';
 const salesLabel = '시즌';
@@ -25,6 +30,23 @@ const MyTicket: React.FC = () => {
         salesLabel={salesLabel}
       />
       <Divider />
+
+      <TicketWrapper>
+        {/* 티켓 1: 정기 구독권 */}
+        <TicketCard>
+          <img src={RegularPass} alt='정기 구독권 이미지' />
+        </TicketCard>
+
+        {/* 티켓 2: 1회 이용권 */}
+        <TicketCard>
+          <img src={OnetimePass} alt='1회 이용권 이미지' />
+        </TicketCard>
+
+        {/* 티켓 3: 이용권 추가 */}
+        <TicketCard>
+          <img src={AddPass} alt='이용권 추가 이미지' />
+        </TicketCard>
+      </TicketWrapper>
     </MyTicketContainer>
   );
 };
@@ -54,7 +76,6 @@ const Title = styled.h1`
   font-weight: 800;
   font-size: 24px;
   line-height: 27px;
-
   color: #000000;
   margin-bottom: 0px;
 `;
@@ -70,4 +91,22 @@ const Divider = styled.div`
   height: 1px;
   background: #dddddd;
   margin-top: 30px;
+`;
+
+/* 티켓 전체 묶음 */
+const TicketWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+`;
+
+const TicketCard = styled.div`
+  display: flex;
+  width: 376px;
+  height: 160px;
+  border: 1px solid #dddddd;
+  position: relative;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 `;
