@@ -103,10 +103,12 @@ const TicketWrapper = styled.div`
 `;
 
 const TicketCard = styled.div`
-  display: flex;
-  width: 376px;
-  height: 160px;
-  border: 1px solid #dddddd;
+  display: inline-block;
   position: relative;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
 `;

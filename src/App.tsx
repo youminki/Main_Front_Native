@@ -234,7 +234,7 @@ const App: React.FC = () => {
 
           <Route path='/lockerRoom' element={<LockerRoom />} />
           <Route path='/usage-history' element={<UsageHistory />} />
-          <Route path='/my-tiket' element={<MyTicket />} />
+          <Route path='/my-ticket' element={<MyTicket />} />
           <Route path='/my-closet' element={<MyCloset />} />
           <Route path='/point' element={<Point />} />
           <Route path='/product-review' element={<ProductReview />} />
