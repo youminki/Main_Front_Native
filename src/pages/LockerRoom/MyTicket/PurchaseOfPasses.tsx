@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import InputField from '../../../components/InputField';
+import FixedBottomBar from '../../../components/FixedBottomBar';
 
 const PurchaseOfPasses: React.FC = () => {
   // "구매할 이용권 (선택)" 상태 관리
@@ -94,6 +95,11 @@ const PurchaseOfPasses: React.FC = () => {
           </NoticeText>
         </NoticeArea>
       </ContentWrapper>
+      <FixedBottomBar
+        text='이용권 결제하기'
+        color='black'
+        onClick={() => alert('이용권 결제가 완료되었습니다!')}
+      />
     </Container>
   );
 };

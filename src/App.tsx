@@ -95,6 +95,7 @@ const App: React.FC = () => {
     '/payment-review/Write',
     '/payment-method/addcard',
     '/payment-method/cardDetail',
+    '/my-ticket/PurchaseOfPasses',
   ];
 
   const header4Paths = [
@@ -153,8 +154,11 @@ const App: React.FC = () => {
     if (matchPath('/payment-method/addcard', location.pathname)) {
       return '카드등록';
     }
-    if (matchPath('//payment-method/cardDetail', location.pathname)) {
+    if (matchPath('/payment-method/cardDetail', location.pathname)) {
       return '카드상세';
+    }
+    if (matchPath('/my-ticket/PurchaseOfPasses', location.pathname)) {
+      return '이용권 구매';
     }
 
     return '';
