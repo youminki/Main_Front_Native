@@ -29,19 +29,16 @@ const CardDetail: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { cardIndex: _cardIndex, cardData } = location.state as {
     cardIndex: number;
     cardData: CardData;
   };
 
-  // react-hook-form 설정 (getValues는 사용하지 않으므로 구조분해에서 제거)
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
-    // yup 스키마에는 cardIssuer가 없으므로 타입 단언으로 Resolver 타입을 맞춰줍니다.
     resolver: yupResolver(
       schemaCardRegistration
     ) as unknown as Resolver<FormValues>,
@@ -54,32 +51,50 @@ const CardDetail: React.FC = () => {
     },
   });
 
-  // 모달 상태
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false); // "카드를 수정하시겠습니까?"
-  const [isFinalModalOpen, setIsFinalModalOpen] = useState(false); // "카드 수정이 완료되었습니다"
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isFinalModalOpen, setIsFinalModalOpen] = useState(false);
 
-  // onFocus 시 기존 마스킹(●)이 포함된 값은 지워지도록
+  // 삭제 모달을 위한 상태 추가
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
+    useState(false);
+  const [isDeleteFinalModalOpen, setIsDeleteFinalModalOpen] = useState(false);
+
   const handleFocusClear = (e: React.FocusEvent<HTMLInputElement>) => {
     if (e.target.value.includes('●')) {
       e.target.value = '';
     }
   };
 
-  // 폼 제출 시 (검증 통과) → 수정 확인 모달 오픈
   const onSubmit = (data: FormValues) => {
     console.log('Form Submit Data:', data);
     setIsConfirmModalOpen(true);
   };
 
-  // 모달2 "네" 버튼 클릭 → 수정 완료 모달 오픈
   const handleConfirmYes = () => {
     setIsConfirmModalOpen(false);
     setIsFinalModalOpen(true);
   };
 
-  // 최종 모달 "확인" 버튼 클릭 → 단순 페이지 이동
   const handleFinalConfirm = () => {
     setIsFinalModalOpen(false);
+    navigate('/payment-method');
+  };
+
+  // "등록 카드삭제" 버튼 클릭 시 삭제 확인 모달 오픈
+  const handleDeleteCard = () => {
+    console.log('등록 카드삭제 버튼 클릭');
+    setIsDeleteConfirmModalOpen(true);
+  };
+
+  // 삭제 확인 모달 "네" 버튼 클릭 시 삭제 완료 모달 오픈
+  const handleDeleteConfirmYes = () => {
+    setIsDeleteConfirmModalOpen(false);
+    setIsDeleteFinalModalOpen(true);
+  };
+
+  // 등록 카드 삭제 완료 모달 "확인" 버튼 클릭 시 /payment-method로 이동하도록 수정
+  const handleDeleteFinalConfirm = () => {
+    setIsDeleteFinalModalOpen(false);
     navigate('/payment-method');
   };
 
@@ -217,17 +232,22 @@ const CardDetail: React.FC = () => {
             <br />
             자세한 문의 ( 평일 09:00 ~ 18:00 ) 서비스팀에 남겨주세요.
           </GuideMessage>
+
+          {/* GuideMessage 아래 "등록 카드삭제" 버튼 */}
+          <DeleteButtonWrapper>
+            <DeleteButton type='button' onClick={handleDeleteCard}>
+              등록 카드삭제
+            </DeleteButton>
+          </DeleteButtonWrapper>
         </Container>
       </FormContainer>
 
-      {/* 하단 고정 버튼 - "카드 수정" */}
       <FixedBottomBar
         text='카드 수정'
         color='yellow'
         onClick={handleSubmit(onSubmit)}
       />
 
-      {/* "카드를 수정하시겠습니까?" 모달 (ReusableModal2) */}
       <ReusableModal2
         isOpen={isConfirmModalOpen}
         onClose={() => setIsConfirmModalOpen(false)}
@@ -239,13 +259,33 @@ const CardDetail: React.FC = () => {
         <>카드를 수정하시겠습니까?</>
       </ReusableModal2>
 
-      {/* "카드 수정이 완료되었습니다" 모달 (ReusableModal) */}
       <ReusableModal
         isOpen={isFinalModalOpen}
         onClose={handleFinalConfirm}
         title='알림'
       >
         <>카드 수정이 완료되었습니다</>
+      </ReusableModal>
+
+      {/* 등록 카드 삭제 확인 모달 */}
+      <ReusableModal2
+        isOpen={isDeleteConfirmModalOpen}
+        onClose={() => setIsDeleteConfirmModalOpen(false)}
+        onConfirm={handleDeleteConfirmYes}
+        title='카드 삭제 확인'
+        width='376px'
+        height='360px'
+      >
+        <>등록된 카드를 삭제하시겠습니까?</>
+      </ReusableModal2>
+
+      {/* 등록 카드 삭제 완료 모달 */}
+      <ReusableModal
+        isOpen={isDeleteFinalModalOpen}
+        onClose={handleDeleteFinalConfirm}
+        title='알림'
+      >
+        <>카드가 삭제되었습니다</>
       </ReusableModal>
     </>
   );
@@ -285,4 +325,28 @@ const GuideMessage = styled.div`
   line-height: 1.4;
   padding: 0 0 30px 0;
   border-bottom: 1px solid #ccc;
+`;
+
+const DeleteButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+`;
+
+const DeleteButton = styled.button`
+  width: 100%;
+  height: 56px;
+  background: #999999;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 18px;
+  color: #ffffff;
+  cursor: pointer;
 `;
