@@ -21,23 +21,27 @@ type InputFieldProps = {
   [key: string]: any;
 };
 
-/**
- * prefixcontent 안의 '(1개월)', '(진행예정)', '해당없음'만 #999999로 바꿔주는 함수
- * (간단한 정규식을 사용하여 토큰별로 분할)
- */
 function parsePrefixContent(content: string) {
-  // /(해당없음|\(.*?\))/g : '해당없음' 또는 '( ... )' 형태를 캡처
-  const tokens = content.split(/(해당없음|\(.*?\))/g);
+  // '해당없음', '( ... )', '|' 토큰을 캡처
+  const tokens = content.split(/(해당없음|\(.*?\)|\|)/g);
+  let applyGray = false; // '|' 이후부터 true로 전환
 
   return tokens.map((token, i) => {
-    // 캡처된 토큰이 '(1개월)', '(진행예정)', '해당없음'인지 확인
+    if (token === '|') {
+      applyGray = true;
+      return <GraySpan key={i}>{token}</GraySpan>;
+    }
+    // '|' 이후의 모든 토큰은 그레이 텍스트로 감싸기
+    if (applyGray) {
+      return <GraySpan key={i}>{token}</GraySpan>;
+    }
+    // 그 외 조건: 토큰이 '(1개월)', '(진행예정)', '해당없음'인 경우 그레이 텍스트 적용
     if (
       (token.startsWith('(') && token.endsWith(')')) ||
       token === '해당없음'
     ) {
       return <GraySpan key={i}>{token}</GraySpan>;
     }
-    // 그 외 문자열은 원래 색상 그대로
     return token;
   });
 }
@@ -204,7 +208,7 @@ const PrefixText = styled.span`
 const PrefixcontentText = styled.span`
   margin-left: 10px;
   font-family: 'NanumSquare Neo OTF';
-  font-weight: 800;
+  font-weight: 700;
   font-size: 13px;
   line-height: 14px;
   color: #000000;
