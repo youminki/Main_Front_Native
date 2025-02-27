@@ -76,6 +76,7 @@ const App: React.FC = () => {
     '/point',
     '/product-review',
     '/payment-method',
+    '/my-ticket',
   ];
 
   // Header3가 포함될 경로 패턴

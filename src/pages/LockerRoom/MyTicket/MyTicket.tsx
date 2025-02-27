@@ -97,8 +97,8 @@ const Divider = styled.div`
 const TicketWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 20px;
+  gap: 20px;
+  margin-top: 30px;
   margin-bottom: 20px;
 `;
 
