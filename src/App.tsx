@@ -34,6 +34,8 @@ import UsageHistory from './pages/LockerRoom/UsageHistory/UsageHistory';
 import Point from './pages/LockerRoom/Point/Point';
 import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
 import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
+import PurchaseOfPasses from './pages/LockerRoom/MyTicket/PurchaseOfPasses';
+
 import PaymentMethod from './pages/LockerRoom/PaymentMethod/PaymentMethod';
 import AddCard from './pages/LockerRoom/PaymentMethod/AddCard';
 import CardDetail from './pages/LockerRoom/PaymentMethod/CardDetail';
@@ -236,6 +238,11 @@ const App: React.FC = () => {
           <Route path='/lockerRoom' element={<LockerRoom />} />
           <Route path='/usage-history' element={<UsageHistory />} />
           <Route path='/my-ticket' element={<MyTicket />} />
+          <Route
+            path='/my-ticket/PurchaseOfPasses'
+            element={<PurchaseOfPasses />}
+          />
+
           <Route path='/my-closet' element={<MyCloset />} />
           <Route path='/point' element={<Point />} />
           <Route path='/product-review' element={<ProductReview />} />
