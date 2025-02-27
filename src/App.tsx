@@ -35,6 +35,7 @@ import Point from './pages/LockerRoom/Point/Point';
 import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
 import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
 import PurchaseOfPasses from './pages/LockerRoom/MyTicket/PurchaseOfPasses';
+import TicketPayment from './pages/LockerRoom/MyTicket/TicketPayment';
 
 import PaymentMethod from './pages/LockerRoom/PaymentMethod/PaymentMethod';
 import AddCard from './pages/LockerRoom/PaymentMethod/AddCard';
@@ -245,6 +246,10 @@ const App: React.FC = () => {
           <Route
             path='/my-ticket/PurchaseOfPasses'
             element={<PurchaseOfPasses />}
+          />
+          <Route
+            path='/my-ticket/PurchaseOfPasses/TicketPayment'
+            element={<TicketPayment />}
           />
 
           <Route path='/my-closet' element={<MyCloset />} />
