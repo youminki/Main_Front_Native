@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+// SubHeader.tsx
+import React from 'react';
 import styled from 'styled-components';
 import AllClosetIcon from '../../assets/SubHeader/AllClosetIcon.svg';
 import OnepieceIcon from '../../assets/SubHeader/OnepieceIcon.svg';
@@ -12,95 +13,41 @@ const homeIcons = [
   { src: JumpsuitIcon, alt: '점프수트', category: 'jumpsuit' },
   { src: TwopieceIcon, alt: '투피스', category: 'twopiece' },
   { src: BlouseIcon, alt: '블라우스', category: 'blouse' },
-  { src: OnepieceIcon, alt: '원피스', category: 'onepiece' },
-  { src: JumpsuitIcon, alt: '점프수트', category: 'jumpsuit' },
-  { src: TwopieceIcon, alt: '투피스', category: 'twopiece' },
-  { src: BlouseIcon, alt: '블라우스', category: 'blouse' },
-  // 필요에 따라 추가 가능
+  { src: OnepieceIcon, alt: '원피스', category: 'onepiece1' },
+  { src: JumpsuitIcon, alt: '점프수트', category: 'jumpsuit1' },
+  { src: TwopieceIcon, alt: '투피스', category: 'twopiece1' },
+  { src: BlouseIcon, alt: '블라우스', category: 'blouse1' },
+  // 필요시 추가
 ];
 
 interface SubHeaderProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
-  barPosition: number;
+  barPosition: number; // Home.tsx에서 넘겨주지만 여기서는 사용하지 않습니다.
 }
 
-const ICONS_PER_PAGE = 5;
-const INDICATOR_WIDTH = 50;
+const ICON_WIDTH = 80;
 
 const SubHeader: React.FC<SubHeaderProps> = ({
   selectedCategory,
   setSelectedCategory,
 }) => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const totalPages = Math.ceil(homeIcons.length / ICONS_PER_PAGE);
-  const iconsRef = useRef<HTMLDivElement>(null);
-  const [indicatorLeft, setIndicatorLeft] = useState(0);
-
-  // 현재 페이지에 해당하는 아이콘들만 추출
-  const displayedIcons = homeIcons.slice(
-    currentPage * ICONS_PER_PAGE,
-    currentPage * ICONS_PER_PAGE + ICONS_PER_PAGE
-  );
-
-  useEffect(() => {
-    if (!iconsRef.current) return;
-    const selectedElement = iconsRef.current.querySelector(
-      `[data-category="${selectedCategory}"]`
-    ) as HTMLElement;
-    if (selectedElement) {
-      // offsetLeft, offsetWidth를 사용해 Indicator 위치 계산
-      const newLeft =
-        selectedElement.offsetLeft +
-        (selectedElement.offsetWidth - INDICATOR_WIDTH) / 2;
-      setIndicatorLeft(newLeft);
-    }
-  }, [selectedCategory, currentPage]);
-
-  const handlePrev = () => {
-    if (currentPage > 0) setCurrentPage(currentPage - 1);
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages - 1) setCurrentPage(currentPage + 1);
-  };
-
-  const handleIconClick = (iconCategory: string, globalIndex: number) => {
-    setSelectedCategory(iconCategory);
-    const page = Math.floor(globalIndex / ICONS_PER_PAGE);
-    if (page !== currentPage) setCurrentPage(page);
-  };
-
   return (
     <SubHeaderWrapper>
-      <SliderWrapper>
-        <ArrowButton onClick={handlePrev} disabled={currentPage === 0}>
-          ◀
-        </ArrowButton>
-        <IconsContainer ref={iconsRef}>
-          {displayedIcons.map((icon, index) => {
-            const globalIndex = currentPage * ICONS_PER_PAGE + index;
-            return (
-              <IconContainer
-                key={globalIndex}
-                data-category={icon.category}
-                $isSelected={selectedCategory === icon.category}
-                onClick={() => handleIconClick(icon.category, globalIndex)}
-              >
-                <Icon src={icon.src} alt={icon.alt} />
-                <IconText>{icon.alt}</IconText>
-              </IconContainer>
-            );
-          })}
-          <IndicatorBar style={{ left: `${indicatorLeft}px` }} />
-        </IconsContainer>
-        <ArrowButton
-          onClick={handleNext}
-          disabled={currentPage === totalPages - 1}
-        >
-          ▶
-        </ArrowButton>
-      </SliderWrapper>
+      <IconsContainer>
+        {homeIcons.map((icon, index) => (
+          <IconContainer
+            key={index}
+            data-category={icon.category}
+            $isSelected={selectedCategory === icon.category}
+            onClick={() => setSelectedCategory(icon.category)}
+          >
+            <Icon src={icon.src} alt={icon.alt} />
+            <IconText>{icon.alt}</IconText>
+            {selectedCategory === icon.category && <SelectedIndicator />}
+          </IconContainer>
+        ))}
+      </IconsContainer>
       <Divider />
     </SubHeaderWrapper>
   );
@@ -114,31 +61,19 @@ const SubHeaderWrapper = styled.div`
   margin-bottom: 30px;
 `;
 
-const SliderWrapper = styled.div`
+const IconsContainer = styled.div`
   display: flex;
-  align-items: center;
-`;
-
-const ArrowButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-
-  &:disabled {
-    color: #ccc;
-    cursor: default;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  /* 필요시 스크롤바 숨김 */
+  &::-webkit-scrollbar {
+    display: none;
   }
 `;
 
-const IconsContainer = styled.div`
-  position: relative;
-  display: flex;
-  width: 100%;
-`;
-
 const IconContainer = styled.div<{ $isSelected: boolean }>`
-  flex: 0 0 calc(100% / ${ICONS_PER_PAGE});
+  flex: 0 0 auto;
+  width: ${ICON_WIDTH}px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -162,14 +97,12 @@ const IconText = styled.span`
   color: #333;
 `;
 
-const IndicatorBar = styled.div`
-  position: absolute;
-  bottom: 0;
-  width: ${INDICATOR_WIDTH}px;
-  height: 3px;
+const SelectedIndicator = styled.div`
+  margin-top: 4px;
+  width: 50px;
+  height: 2px;
   background-color: #000;
   border-radius: 3px;
-  transition: left 0.3s ease-in-out;
 `;
 
 const Divider = styled.div`
