@@ -41,7 +41,7 @@ const MyTicket: React.FC = () => {
         </TicketCard>
 
         {/* 티켓 2: 1회 이용권 */}
-        <TicketCard>
+        <TicketCard onClick={() => navigate('/my-ticket/OnetimePass')}>
           <img src={OnetimePass} alt='1회 이용권 이미지' />
         </TicketCard>
 
