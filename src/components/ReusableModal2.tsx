@@ -17,7 +17,7 @@ const ReusableModal2: React.FC<ModalProps> = ({
   onConfirm,
   title,
   children,
-  width = '376px',
+  width = '100%',
   height = '360px',
 }) => {
   if (!isOpen) return null;

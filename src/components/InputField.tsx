@@ -12,7 +12,7 @@ type InputFieldProps = {
   buttonColor?: 'yellow' | 'black';
   onButtonClick?: () => void;
   prefix?: string;
-  prefixcontent?: string;
+  prefixcontent?: string | React.ReactNode; // 문자열 말고 ReactNode도 허용
   as?: React.ElementType;
   isEmailField?: boolean;
   useToggle?: boolean;
@@ -20,6 +20,31 @@ type InputFieldProps = {
   onSelectChange?: (value: string) => void;
   [key: string]: any;
 };
+
+function parsePrefixContent(content: string) {
+  // '해당없음', '( ... )', '|' 토큰을 캡처
+  const tokens = content.split(/(해당없음|\(.*?\)|\|)/g);
+  let applyGray = false; // '|' 이후부터 true로 전환
+
+  return tokens.map((token, i) => {
+    if (token === '|') {
+      applyGray = true;
+      return <GraySpan key={i}>{token}</GraySpan>;
+    }
+    // '|' 이후의 모든 토큰은 그레이 텍스트로 감싸기
+    if (applyGray) {
+      return <GraySpan key={i}>{token}</GraySpan>;
+    }
+    // 그 외 조건: 토큰이 '(1개월)', '(진행예정)', '해당없음'인 경우 그레이 텍스트 적용
+    if (
+      (token.startsWith('(') && token.endsWith(')')) ||
+      token === '해당없음'
+    ) {
+      return <GraySpan key={i}>{token}</GraySpan>;
+    }
+    return token;
+  });
+}
 
 const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
   (
@@ -54,6 +79,20 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       }
     };
 
+    // prefixcontent가 문자열이면 parsePrefixContent를 통해 토큰만 부분 컬러링
+    const renderPrefixContent = () => {
+      if (!prefixcontent) return null;
+      if (typeof prefixcontent === 'string') {
+        return (
+          <PrefixcontentText>
+            {parsePrefixContent(prefixcontent)}
+          </PrefixcontentText>
+        );
+      }
+      // 이미 ReactNode라면 그대로 렌더
+      return <PrefixcontentText>{prefixcontent}</PrefixcontentText>;
+    };
+
     return (
       <InputContainer>
         <Label htmlFor={id} $isEmpty={!label}>
@@ -63,19 +102,19 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
           )}
         </Label>
 
-        {/* 인풋과 에러 메시지를 묶어서, 인풋 바로 아래에 에러가 오도록 배치 */}
         <div>
           <InputRow>
             {prefix && <PrefixText>{prefix}</PrefixText>}
             <InputWrapper>
-              {prefixcontent && (
-                <PrefixcontentText>{prefixcontent}</PrefixcontentText>
-              )}
+              {prefixcontent && renderPrefixContent()}
+
+              {/* options가 있으면 select, 없으면 input */}
               {options ? (
                 <Select
                   id={id}
                   value={selectedOption}
                   onChange={handleSelectChange}
+                  {...rest}
                 >
                   {options.map((option: string) => (
                     <option key={option} value={option}>
@@ -86,6 +125,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
               ) : (
                 <Input as={as} type={type} id={id} ref={ref} {...rest} />
               )}
+
               {buttonLabel && (
                 <ButtonWrapper>
                   <Button02 onClick={onButtonClick} color={buttonColor}>
@@ -93,6 +133,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                   </Button02>
                 </ButtonWrapper>
               )}
+
               {useToggle && (
                 <ToggleWrapper>
                   <SeasonToggle
@@ -102,6 +143,8 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                 </ToggleWrapper>
               )}
             </InputWrapper>
+
+            {/* 이메일 필드 형태라면 @ + 뒤쪽 도메인 select 노출 */}
             {isEmailField && <AtSymbol>@</AtSymbol>}
             {isEmailField && (
               <InputWrapper>
@@ -114,7 +157,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             )}
           </InputRow>
 
-          {/* 에러가 있을 경우 인풋필드 아래에 표시 */}
+          {/* 에러 메시지 */}
           {error && <ErrorMessage>{error.message}</ErrorMessage>}
         </div>
       </InputContainer>
@@ -124,7 +167,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
 
 export default InputField;
 
-// ✅ 스타일 정의
+/* --- styled-components --- */
 const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -144,12 +187,11 @@ const Label = styled.label<{ $isEmpty: boolean }>`
 
 const GrayText = styled.span`
   padding-left: 3px;
-  color: #888888; /* 고정된 회색 */
+  color: #888888;
   font-size: 10px;
   line-height: 14px;
 `;
 
-/** 인풋과 에러메시지를 묶는 박스 */
 const InputRow = styled.div`
   display: flex;
   align-items: center;
@@ -159,23 +201,27 @@ const PrefixText = styled.span`
   margin-right: 10px;
   font-size: 16px;
   font-weight: 700;
-  color: #000000; /* 고정된 검정색 */
+  color: #000000;
 `;
 
+/** prefixcontent(문구) 통째로 감싸는 영역 */
 const PrefixcontentText = styled.span`
   margin-left: 10px;
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 13px;
   line-height: 14px;
   color: #000000;
 `;
 
+const GraySpan = styled.span`
+  color: #999999;
+`;
+
 const InputWrapper = styled.div`
   display: flex;
   align-items: center;
-  border: 1px solid #dddddd; /* 고정된 회색 */
+  border: 1px solid #dddddd;
   border-radius: 4px;
   height: 57px;
   overflow: hidden;
@@ -204,7 +250,7 @@ const ToggleWrapper = styled.div`
 const AtSymbol = styled.span`
   margin: 0 10px;
   font-size: 16px;
-  color: #000000; /* 고정된 검정색 */
+  color: #000000;
 `;
 
 const Input = styled.input`
@@ -212,7 +258,7 @@ const Input = styled.input`
   border: none;
   padding: 0 11px;
   flex: 1;
-  height: 100%;
+  height: 57px;
   width: 100%;
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
@@ -222,23 +268,16 @@ const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #000000;
   }
 `;
 
-/* 
-  1) 블랙 테두리와 라운드 처리 
-  2) 오른쪽에 아이콘을 배치하기 위해 padding 우측 여백 확보 
-  3) 배경에 블랙 화살표 아이콘(다운 방향) 
-  4) focus 시 outline 제거 & 테두리 검정색 유지
-*/
 const Select = styled.select`
   font-size: 16px;
   border: 1px solid #000000;
   border-radius: 4px;
   height: 57px;
   width: 100%;
-  padding: 0 40px 0 16px; /* 오른쪽에 아이콘 들어갈 공간 확보 */
+  padding: 0 40px 0 16px;
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
@@ -262,7 +301,6 @@ const ErrorMessage = styled.span`
   color: blue;
   font-size: 12px;
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 400;
 `;
 

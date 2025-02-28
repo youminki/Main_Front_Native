@@ -34,6 +34,11 @@ import UsageHistory from './pages/LockerRoom/UsageHistory/UsageHistory';
 import Point from './pages/LockerRoom/Point/Point';
 import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
 import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
+import PurchaseOfPasses from './pages/LockerRoom/MyTicket/PurchaseOfPasses';
+import TicketPayment from './pages/LockerRoom/MyTicket/TicketPayment';
+import SubscriptionPass from './pages/LockerRoom/MyTicket/SubscriptionPass';
+import OnetimePass from './pages/LockerRoom/MyTicket/OnetimePass';
+
 import PaymentMethod from './pages/LockerRoom/PaymentMethod/PaymentMethod';
 import AddCard from './pages/LockerRoom/PaymentMethod/AddCard';
 import CardDetail from './pages/LockerRoom/PaymentMethod/CardDetail';
@@ -76,6 +81,7 @@ const App: React.FC = () => {
     '/point',
     '/product-review',
     '/payment-method',
+    '/my-ticket',
   ];
 
   // Header3가 포함될 경로 패턴
@@ -92,6 +98,10 @@ const App: React.FC = () => {
     '/payment-review/Write',
     '/payment-method/addcard',
     '/payment-method/cardDetail',
+    '/my-ticket/PurchaseOfPasses',
+    '/my-ticket/PurchaseOfPasses/TicketPayment',
+    '/my-ticket/SubscriptionPass',
+    '/my-ticket/OnetimePass',
   ];
 
   const header4Paths = [
@@ -150,10 +160,23 @@ const App: React.FC = () => {
     if (matchPath('/payment-method/addcard', location.pathname)) {
       return '카드등록';
     }
-    if (matchPath('//payment-method/cardDetail', location.pathname)) {
+    if (matchPath('/payment-method/cardDetail', location.pathname)) {
       return '카드상세';
     }
-
+    if (matchPath('/my-ticket/PurchaseOfPasses', location.pathname)) {
+      return '이용권 구매';
+    }
+    if (
+      matchPath('/my-ticket/PurchaseOfPasses/TicketPayment', location.pathname)
+    ) {
+      return '결제하기';
+    }
+    if (matchPath('/my-ticket/SubscriptionPass', location.pathname)) {
+      return '이용권 상세';
+    }
+    if (matchPath('/my-ticket/OnetimePass', location.pathname)) {
+      return '이용권 상세';
+    }
     return '';
   };
 
@@ -234,7 +257,21 @@ const App: React.FC = () => {
 
           <Route path='/lockerRoom' element={<LockerRoom />} />
           <Route path='/usage-history' element={<UsageHistory />} />
-          <Route path='/my-tiket' element={<MyTicket />} />
+          <Route path='/my-ticket' element={<MyTicket />} />
+          <Route
+            path='/my-ticket/PurchaseOfPasses'
+            element={<PurchaseOfPasses />}
+          />
+          <Route
+            path='/my-ticket/PurchaseOfPasses/TicketPayment'
+            element={<TicketPayment />}
+          />
+          <Route
+            path='/my-ticket/SubscriptionPass'
+            element={<SubscriptionPass />}
+          />
+          <Route path='/my-ticket/OnetimePass' element={<OnetimePass />} />
+
           <Route path='/my-closet' element={<MyCloset />} />
           <Route path='/point' element={<Point />} />
           <Route path='/product-review' element={<ProductReview />} />

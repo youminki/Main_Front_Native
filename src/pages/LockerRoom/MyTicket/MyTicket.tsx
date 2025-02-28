@@ -1,6 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
+
+// SVG 이미지 import 예시
+import RegularPass from '../../../assets/LockerRoom/RegularPass.svg';
+import OnetimePass from '../../../assets/LockerRoom/OnetimePass.svg';
+import AddPass from '../../../assets/LockerRoom/AddPass.svg';
 
 // 동적 데이터
 const visitLabel = '사용중인 이용권';
@@ -10,6 +16,8 @@ const sales = '2025 1분기';
 const dateRange = 'SPRING';
 
 const MyTicket: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <MyTicketContainer>
       <Header>
@@ -25,6 +33,23 @@ const MyTicket: React.FC = () => {
         salesLabel={salesLabel}
       />
       <Divider />
+
+      <TicketWrapper>
+        {/* 티켓 1: 정기 구독권 */}
+        <TicketCard onClick={() => navigate('/my-ticket/SubscriptionPass')}>
+          <img src={RegularPass} alt='정기 구독권 이미지' />
+        </TicketCard>
+
+        {/* 티켓 2: 1회 이용권 */}
+        <TicketCard onClick={() => navigate('/my-ticket/OnetimePass')}>
+          <img src={OnetimePass} alt='1회 이용권 이미지' />
+        </TicketCard>
+
+        {/* 티켓 3: 이용권 추가 - 클릭 시 이동 */}
+        <TicketCard onClick={() => navigate('/my-ticket/PurchaseOfPasses')}>
+          <img src={AddPass} alt='이용권 추가 이미지' />
+        </TicketCard>
+      </TicketWrapper>
     </MyTicketContainer>
   );
 };
@@ -54,9 +79,8 @@ const Title = styled.h1`
   font-weight: 800;
   font-size: 24px;
   line-height: 27px;
-
   color: #000000;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 `;
 
 const Subtitle = styled.p`
@@ -70,4 +94,23 @@ const Divider = styled.div`
   height: 1px;
   background: #dddddd;
   margin-top: 30px;
+`;
+
+const TicketWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 30px;
+  cursor: pointer;
+`;
+
+const TicketCard = styled.div`
+  display: inline-block;
+  position: relative;
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
 `;
