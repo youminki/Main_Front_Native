@@ -164,18 +164,6 @@ const PriceText = styled.span`
   color: #000000;
 `;
 
-const InFieldBoxBlack = styled.div`
-  box-sizing: border-box;
-  width: 100%;
-  height: 57px;
-  border: 1px solid #000000;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-`;
-
 const PassName = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
