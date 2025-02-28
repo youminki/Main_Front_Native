@@ -36,6 +36,7 @@ import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
 import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
 import PurchaseOfPasses from './pages/LockerRoom/MyTicket/PurchaseOfPasses';
 import TicketPayment from './pages/LockerRoom/MyTicket/TicketPayment';
+import SubscriptionPass from './pages/LockerRoom/MyTicket/SubscriptionPass';
 
 import PaymentMethod from './pages/LockerRoom/PaymentMethod/PaymentMethod';
 import AddCard from './pages/LockerRoom/PaymentMethod/AddCard';
@@ -98,6 +99,7 @@ const App: React.FC = () => {
     '/payment-method/cardDetail',
     '/my-ticket/PurchaseOfPasses',
     '/my-ticket/PurchaseOfPasses/TicketPayment',
+    '/my-ticket/SubscriptionPass',
   ];
 
   const header4Paths = [
@@ -167,7 +169,9 @@ const App: React.FC = () => {
     ) {
       return '결제하기';
     }
-
+    if (matchPath('/my-ticket/SubscriptionPass', location.pathname)) {
+      return '이용권 상세';
+    }
     return '';
   };
 
@@ -256,6 +260,10 @@ const App: React.FC = () => {
           <Route
             path='/my-ticket/PurchaseOfPasses/TicketPayment'
             element={<TicketPayment />}
+          />
+          <Route
+            path='/my-ticket/SubscriptionPass'
+            element={<SubscriptionPass />}
           />
 
           <Route path='/my-closet' element={<MyCloset />} />

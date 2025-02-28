@@ -36,7 +36,7 @@ const MyTicket: React.FC = () => {
 
       <TicketWrapper>
         {/* 티켓 1: 정기 구독권 */}
-        <TicketCard>
+        <TicketCard onClick={() => navigate('/my-ticket/SubscriptionPass')}>
           <img src={RegularPass} alt='정기 구독권 이미지' />
         </TicketCard>
 
