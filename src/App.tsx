@@ -97,6 +97,7 @@ const App: React.FC = () => {
     '/payment-method/addcard',
     '/payment-method/cardDetail',
     '/my-ticket/PurchaseOfPasses',
+    '/my-ticket/PurchaseOfPasses/TicketPayment',
   ];
 
   const header4Paths = [
@@ -160,6 +161,11 @@ const App: React.FC = () => {
     }
     if (matchPath('/my-ticket/PurchaseOfPasses', location.pathname)) {
       return '이용권 구매';
+    }
+    if (
+      matchPath('/my-ticket/PurchaseOfPasses/TicketPayment', location.pathname)
+    ) {
+      return '결제하기';
     }
 
     return '';
