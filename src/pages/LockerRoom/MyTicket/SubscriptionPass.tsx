@@ -159,7 +159,7 @@ const SubscriptionPassDetail: React.FC = () => {
         {/* 취소신청 확인/취소 모달 */}
         <ReusableModal2
           isOpen={isModalOpen}
-          title='카드 등록 확인'
+          title='시즌 자동연장'
           onClose={() => setModalOpen(false)}
           onConfirm={onModalConfirm}
         >
