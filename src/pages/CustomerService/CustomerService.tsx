@@ -23,16 +23,16 @@ const CustomerService: React.FC = () => {
   const menuItems = [
     {
       icon: FrequentlyAskedQuestionsBox,
-      path: '/my-closet/FrequentlyAskedQuestions',
+      path: '/CustomerService/FrequentlyAskedQuestions',
     },
-    { icon: NoticeBox, path: '/my-closet/Notice' },
+    { icon: NoticeBox, path: '/CustomerService/Notice' },
     {
       icon: PersonalInformationProcessingPolicyBox,
-      path: '/my-closet/PersonalInformationProcessingPolicy',
+      path: '/CustomerService/PersonalInformationProcessingPolicy',
     },
     {
       icon: TermsAndConditionsOfUseBox,
-      path: '/my-closet/TermsAndConditionsOfUse',
+      path: '/CustomerService/TermsAndConditionsOfUse',
     },
   ];
 
