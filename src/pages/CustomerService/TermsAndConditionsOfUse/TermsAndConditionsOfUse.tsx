@@ -19,31 +19,25 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
           active={selectedPeriod === 3}
           onClick={() => setSelectedPeriod(3)}
         >
-          공지
+          전체
         </PeriodButton>
         <PeriodButton
           active={selectedPeriod === 6}
           onClick={() => setSelectedPeriod(6)}
         >
-          서비스
+          서비스 정책
         </PeriodButton>
         <PeriodButton
           active={selectedPeriod === 6}
           onClick={() => setSelectedPeriod(6)}
         >
-          주문/결제
+          판매정책
         </PeriodButton>
         <PeriodButton
           active={selectedPeriod === 6}
           onClick={() => setSelectedPeriod(6)}
         >
-          배송/반품
-        </PeriodButton>
-        <PeriodButton
-          active={selectedPeriod === 6}
-          onClick={() => setSelectedPeriod(6)}
-        >
-          이용권
+          훼손정책
         </PeriodButton>
       </PeriodSelector>
     </SettlementHeader>
@@ -63,8 +57,8 @@ const TermsAndConditionsOfUse: React.FC = () => {
   return (
     <TermsAndConditionsOfUseContainer>
       <Header>
-        <Title>자주묻는질문</Title>
-        <Subtitle>새로운 소식 및 서비스 안내를 드립니다.</Subtitle>
+        <Title>이용약관</Title>
+        <Subtitle>서비스 이용에 따른 정책을 안내 드립니다.</Subtitle>
       </Header>
 
       <StatsSection
@@ -87,7 +81,7 @@ const TermsAndConditionsOfUse: React.FC = () => {
           <TermsAndConditionsOfUseItem onClick={handleItemClick}>
             <TextWrapper>
               <ItemTitle>
-                <BoldText>공지</BoldText> / 새로운 시즌 의류 업데이트 (2025 봄)
+                <BoldText>서비스 정책</BoldText> / 제1장 총칙
               </ItemTitle>
               <ItemDate>2025.02.01</ItemDate>
             </TextWrapper>
@@ -97,13 +91,53 @@ const TermsAndConditionsOfUse: React.FC = () => {
           <TermsAndConditionsOfUseItem onClick={handleItemClick}>
             <TextWrapper>
               <ItemTitle>
-                <BoldText>공지</BoldText> / 새로운 시즌 의류 업데이트 (2025 봄)
+                <BoldText>서비스 정책</BoldText> / 제2장 회원가입 사항
               </ItemTitle>
               <ItemDate>2025.02.01</ItemDate>
             </TextWrapper>
             <Bullet />
           </TermsAndConditionsOfUseItem>
-          {/* 필요 개수만큼 반복 */}
+
+          <TermsAndConditionsOfUseItem onClick={handleItemClick}>
+            <TextWrapper>
+              <ItemTitle>
+                <BoldText>서비스 정책</BoldText> / 제3장 회사의 서비스 (대여)
+              </ItemTitle>
+              <ItemDate>2025.02.01</ItemDate>
+            </TextWrapper>
+            <Bullet />
+          </TermsAndConditionsOfUseItem>
+
+          <TermsAndConditionsOfUseItem onClick={handleItemClick}>
+            <TextWrapper>
+              <ItemTitle>
+                <BoldText>서비스 정책</BoldText> / 제4장 회사의 서비스 (구매)
+              </ItemTitle>
+              <ItemDate>2025.02.01</ItemDate>
+            </TextWrapper>
+            <Bullet />
+          </TermsAndConditionsOfUseItem>
+
+          <TermsAndConditionsOfUseItem onClick={handleItemClick}>
+            <TextWrapper>
+              <ItemTitle>
+                <BoldText>판매정책</BoldText> / 회사에서 제공하는 판매 서비스
+                사항
+              </ItemTitle>
+              <ItemDate>2025.02.01</ItemDate>
+            </TextWrapper>
+            <Bullet />
+          </TermsAndConditionsOfUseItem>
+
+          <TermsAndConditionsOfUseItem onClick={handleItemClick}>
+            <TextWrapper>
+              <ItemTitle>
+                <BoldText>판매정책</BoldText> / 판매 서비스 정산의 정의
+              </ItemTitle>
+              <ItemDate>2025.02.01</ItemDate>
+            </TextWrapper>
+            <Bullet />
+          </TermsAndConditionsOfUseItem>
         </TermsAndConditionsOfUseListContainer>
       </Section>
     </TermsAndConditionsOfUseContainer>

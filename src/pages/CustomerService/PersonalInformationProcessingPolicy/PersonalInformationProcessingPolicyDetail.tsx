@@ -105,7 +105,7 @@ const ContentText = styled.div`
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
-  line-height: 14px;
+  line-height: 20px;
   color: #000000;
   white-space: pre-wrap;
 `;

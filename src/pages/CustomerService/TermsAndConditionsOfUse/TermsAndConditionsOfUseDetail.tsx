@@ -1,31 +1,29 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const NoticeDetail: React.FC = () => {
+const TermsAndConditionsOfUseDetail: React.FC = () => {
   return (
     <DetailContainer>
-      {/* 상단 제목 */}
       <Section>
-        <Label>공지사항</Label>
+        <Label>서비스 정책</Label>
         <Box>
-          <BoxText>새로운 시즌 의류 업데이트 (2025 봄)</BoxText>
+          <BoxText>제2장 회원가입 사항</BoxText>
         </Box>
       </Section>
 
-      {/* 등록일 */}
       <Section>
-        <Label>등록일</Label>
+        <Label>개정일</Label>
         <Box>
           <BoxText>2025.02.01</BoxText>
         </Box>
       </Section>
 
-      {/* 상세내용 */}
       <Section>
         <Label>상세내용</Label>
         <ContentBox>
           <ContentText>
-            공지사항에 들어가는 상세한 내용이 들어가는 영역으로
+            이용약관이 들어가는 영역으로 내용이 길어지면 여기까지 표기 되고
+            내용이 만들어 진다.
           </ContentText>
         </ContentBox>
       </Section>
@@ -37,7 +35,7 @@ const NoticeDetail: React.FC = () => {
       <NoticeMessage>
         <Bullet>※</Bullet>
         <NoticeText>
-          해당 공지는 새로운 업데이트에 관한 내용으로 상황에 따라 변경될 수
+          해당 약관은 새로운 업데이트에 관한 내용으로 상황에 따라 변경될 수
           있으며, 자세한 문의는 서비스팀을 통해 안내 드립니다.
         </NoticeText>
       </NoticeMessage>
@@ -45,7 +43,7 @@ const NoticeDetail: React.FC = () => {
   );
 };
 
-export default NoticeDetail;
+export default TermsAndConditionsOfUseDetail;
 
 /* ----- 스타일 정의 ----- */
 

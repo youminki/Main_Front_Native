@@ -52,8 +52,8 @@ import NoticeDetail from './pages/CustomerService/Notice/NoticeDetail';
 import PersonalInformationProcessingPolicy from './pages/CustomerService/PersonalInformationProcessingPolicy/PersonalInformationProcessingPolicy';
 import PersonalInformationProcessingPolicyDetail from './pages/CustomerService/PersonalInformationProcessingPolicy/PersonalInformationProcessingPolicyDetail';
 import TermsAndConditionsOfUse from './pages/CustomerService/TermsAndConditionsOfUse/TermsAndConditionsOfUse';
+import TermsAndConditionsOfUseDetail from './pages/CustomerService/TermsAndConditionsOfUse/TermsAndConditionsOfUseDetail';
 
-// ... 라우터 설정 내부
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
 import ScheduleReservation1 from './pages/Melpik/Schedule/ScheduleReservation1';
@@ -128,6 +128,7 @@ const App: React.FC = () => {
     '/my-ticket/OnetimePass',
     '/customerService/NoticeDetail',
     '/customerService/PersonalInformationProcessingPolicyDetail',
+    '/customerService/TermsAndConditionsOfUseDetail',
   ];
 
   const header4Paths = [
@@ -315,10 +316,13 @@ const App: React.FC = () => {
             path='/customerService/PersonalInformationProcessingPolicyDetail'
             element={<PersonalInformationProcessingPolicyDetail />}
           />
-
           <Route
             path='/customerService/TermsAndConditionsOfUse'
             element={<TermsAndConditionsOfUse />}
+          />
+          <Route
+            path='/customerService/TermsAndConditionsOfUseDetail'
+            element={<TermsAndConditionsOfUseDetail />}
           />
 
           <Route path='/my-closet' element={<MyCloset />} />
