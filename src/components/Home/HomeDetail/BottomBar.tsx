@@ -29,7 +29,7 @@ const BottomBarContainer = styled.div`
 
   z-index: 9999;
 
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 1rem;
   text-align: center;

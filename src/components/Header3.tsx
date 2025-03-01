@@ -42,7 +42,7 @@ const HeaderWrapper = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;

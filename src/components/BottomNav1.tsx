@@ -156,7 +156,7 @@ const BottomNavContainer = styled.nav`
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 1rem;
   text-align: center;
