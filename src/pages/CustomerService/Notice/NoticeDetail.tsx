@@ -64,6 +64,7 @@ const DetailContainer = styled.div`
 
 const Section = styled.div`
   width: 100%;
+
   margin-bottom: 30px;
 `;
 
@@ -83,7 +84,7 @@ const Box = styled.div`
   background: #ffffff;
   border: 1px solid #eeeeee;
   border-radius: 4px;
-  padding: 12px;
+  padding: 20px 10px;
   box-sizing: border-box;
 `;
 
