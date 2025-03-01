@@ -48,6 +48,7 @@ import ProductReviewWrite from './pages/LockerRoom/ProductReview/ProductReviewWr
 import CustomerService from './pages/CustomerService/CustomerService';
 import FrequentlyAskedQuestions from './pages/CustomerService/FrequentlyAskedQuestions/FrequentlyAskedQuestions';
 import Notice from './pages/CustomerService/Notice/Notice';
+import NoticeDetail from './pages/CustomerService/Notice/NoticeDetail';
 import PersonalInformationProcessingPolicy from './pages/CustomerService/PersonalInformationProcessingPolicy/PersonalInformationProcessingPolicy';
 import TermsAndConditionsOfUse from './pages/CustomerService/TermsAndConditionsOfUse/TermsAndConditionsOfUse';
 
@@ -294,6 +295,10 @@ const App: React.FC = () => {
             element={<FrequentlyAskedQuestions />}
           />
           <Route path='/customerService/Notice' element={<Notice />} />
+          <Route
+            path='/customerService/NoticeDetail'
+            element={<NoticeDetail />}
+          />
           <Route
             path='/customerService/PersonalInformationProcessingPolicy'
             element={<PersonalInformationProcessingPolicy />}

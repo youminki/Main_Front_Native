@@ -1,4 +1,7 @@
+// src/pages/CustomerService/Notice/Notice.tsx
+
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 추가
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 import SearchIcon from '../../../assets/CustomerService/SearchIcon.svg'; // 아이콘 경로
@@ -39,6 +42,13 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
 
 const Notice: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(3);
+  const navigate = useNavigate(); // useNavigate 훅
+
+  // 아이템 클릭 핸들러
+  const handleItemClick = () => {
+    // 상세 페이지로 이동
+    navigate('/customerService/NoticeDetail');
+  };
 
   return (
     <NoticeContainer>
@@ -63,7 +73,8 @@ const Notice: React.FC = () => {
         />
 
         <NoticeListContainer>
-          <NoticeItem>
+          {/* NoticeItem 클릭 시 handleItemClick 실행 */}
+          <NoticeItem onClick={handleItemClick}>
             <TextWrapper>
               <ItemTitle>
                 <BoldText>공지</BoldText> / 새로운 시즌 의류 업데이트 (2025 봄)
@@ -73,7 +84,7 @@ const Notice: React.FC = () => {
             <Bullet />
           </NoticeItem>
 
-          <NoticeItem>
+          <NoticeItem onClick={handleItemClick}>
             <TextWrapper>
               <ItemTitle>
                 <BoldText>공지</BoldText> / 새로운 시즌 의류 업데이트 (2025 봄)
@@ -82,24 +93,7 @@ const Notice: React.FC = () => {
             </TextWrapper>
             <Bullet />
           </NoticeItem>
-          <NoticeItem>
-            <TextWrapper>
-              <ItemTitle>
-                <BoldText>공지</BoldText> / 새로운 시즌 의류 업데이트 (2025 봄)
-              </ItemTitle>
-              <ItemDate>2025.02.01</ItemDate>
-            </TextWrapper>
-            <Bullet />
-          </NoticeItem>
-          <NoticeItem>
-            <TextWrapper>
-              <ItemTitle>
-                <BoldText>공지</BoldText> / 새로운 시즌 의류 업데이트 (2025 봄)
-              </ItemTitle>
-              <ItemDate>2025.02.01</ItemDate>
-            </TextWrapper>
-            <Bullet />
-          </NoticeItem>
+          {/* 필요 개수만큼 반복 */}
         </NoticeListContainer>
       </Section>
     </NoticeContainer>
@@ -108,6 +102,7 @@ const Notice: React.FC = () => {
 
 export default Notice;
 
+/* ----- 스타일 정의 ----- */
 const NoticeContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -235,6 +230,7 @@ const NoticeItem = styled.div`
   background: rgba(255, 255, 255, 0.96);
 
   border-bottom: 1px solid #dddddd;
+  cursor: pointer; /* 클릭 가능하도록 포인터 표시 */
   &:last-child {
     border-bottom: none;
   }
