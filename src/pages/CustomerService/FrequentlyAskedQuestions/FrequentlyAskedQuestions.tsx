@@ -1,7 +1,49 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
+
+type FaqItem = {
+  id: number;
+  category: string;
+  question: string;
+  answer: string;
+};
+
+const FAQ_DATA: FaqItem[] = [
+  {
+    id: 1,
+    category: '서비스 - 포인트',
+    question: '멜픽서비스의 포인트는 어떻게 사용하나요?',
+    answer:
+      '포인트는 일반 대여 또는 제품을 구매하는 데 사용하실 수 있고, 결제 페이지 - 포인트 입력란을 통해 사용하시면 됩니다.',
+  },
+  {
+    id: 2,
+    category: '서비스 - 이용방법',
+    question: '멜픽서비스의 포인트는 어떻게 사용하나요?',
+    answer: '서비스 이용 방법에 대한 답변을 여기에 작성하세요.',
+  },
+  {
+    id: 3,
+    category: '주문 - 예약변경',
+    question: '대여 신청한 제품의 수령 주소지를 변경하는 방법은?',
+    answer: '주문/예약 변경 관련 답변을 여기에 작성하세요.',
+  },
+  {
+    id: 4,
+    category: '결제 - 카드결제',
+    question: '제품구매 시 할부 개월을 변경하는 방법은?',
+    answer:
+      '카드결제 시 할부 개월 수 변경 방법에 대한 답변을 여기에 작성하세요.',
+  },
+  {
+    id: 5,
+    category: '결제 - 무통장 입금',
+    question: '무통장 입금으로 선택 후 현금영수증을 요청 하는 방법은?',
+    answer:
+      '무통장 입금 시 현금영수증 발행 방법에 대한 답변을 여기에 작성하세요.',
+  },
+];
 
 type PeriodSectionProps = {
   selectedPeriod: number;
@@ -51,11 +93,11 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
 };
 
 const FrequentlyAskedQuestions: React.FC = () => {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState(1);
-  const navigate = useNavigate();
 
-  const handleItemClick = () => {
-    navigate('/customerService/FrequentlyAskedQuestionsDetail');
+  const toggleItem = (index: number) => {
+    setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
   return (
@@ -81,26 +123,29 @@ const FrequentlyAskedQuestions: React.FC = () => {
         />
 
         <FrequentlyAskedQuestionsListContainer>
-          {/* FrequentlyAskedQuestionsItem 클릭 시 handleItemClick 실행 */}
-          <FrequentlyAskedQuestionsItem onClick={handleItemClick}>
-            <TextWrapper>
-              <ItemTitle>
-                <BoldText>공지</BoldText> / 새로운 시즌 의류 업데이트 (2025 봄)
-              </ItemTitle>
-              <ItemDate>2025.02.01</ItemDate>
-            </TextWrapper>
-            <Bullet />
-          </FrequentlyAskedQuestionsItem>
+          {FAQ_DATA.map((faq, index) => (
+            <FaqItemContainer key={faq.id}>
+              <QuestionWrapper onClick={() => toggleItem(index)}>
+                <QuestionText>
+                  <Row>
+                    <QPrefix>Q.</QPrefix>
+                    <QuestionLabel>{faq.question}</QuestionLabel>
+                  </Row>
 
-          <FrequentlyAskedQuestionsItem onClick={handleItemClick}>
-            <TextWrapper>
-              <ItemTitle>
-                <BoldText>공지</BoldText> / 새로운 시즌 의류 업데이트 (2025 봄)
-              </ItemTitle>
-              <ItemDate>2025.02.01</ItemDate>
-            </TextWrapper>
-            <Bullet />
-          </FrequentlyAskedQuestionsItem>
+                  <CategoryLabel>{faq.category}</CategoryLabel>
+                </QuestionText>
+
+                <ArrowIcon isOpen={openIndex === index} />
+              </QuestionWrapper>
+
+              <AnswerWrapper
+                isOpen={openIndex === index}
+                className='transition-all duration-500 ease-in-out'
+              >
+                <AnswerInner className='opacity-100'>{faq.answer}</AnswerInner>
+              </AnswerWrapper>
+            </FaqItemContainer>
+          ))}
         </FrequentlyAskedQuestionsListContainer>
       </Section>
     </FrequentlyAskedQuestionsContainer>
@@ -119,9 +164,6 @@ const FrequentlyAskedQuestionsContainer = styled.div`
 `;
 
 const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   width: 100%;
   margin-bottom: 6px;
 `;
@@ -150,8 +192,6 @@ const Divider = styled.div`
 `;
 
 const Section = styled.div`
-  display: flex;
-  flex-direction: column;
   width: 100%;
   padding-bottom: 80px;
   margin-top: 30px;
@@ -189,77 +229,87 @@ const PeriodButton = styled.button<{ active: boolean }>`
 `;
 
 const FrequentlyAskedQuestionsListContainer = styled.div`
-  max-height: 932px;
-  overflow-y: auto;
-
+  width: 100%;
   display: flex;
   flex-direction: column;
-  width: 100%;
-
   margin-top: 10px;
-
   border: 1px solid #dddddd;
-  background: #ffffff;
 `;
 
-const FrequentlyAskedQuestionsItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  min-height: 76px;
-  box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.96);
-
+const FaqItemContainer = styled.div`
+  background-color: #ffffff;
   border-bottom: 1px solid #dddddd;
-  cursor: pointer;
+
   &:last-child {
     border-bottom: none;
   }
 `;
 
-const TextWrapper = styled.div`
+const QuestionWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px;
+  cursor: pointer;
+`;
+
+const QuestionText = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 20px;
-
-  white-space: pre-wrap;
-  word-break: break-all;
+  flex: 1;
 `;
 
-const ItemTitle = styled.div`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 13px;
-  color: #000000;
+const Row = styled.div`
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 4px;
 `;
 
-const ItemDate = styled.div`
-  margin-top: 10px;
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 13px;
-  color: #aaaaaa;
+const QPrefix = styled.span`
+  font-weight: 800;
+  margin-right: 6px;
+  font-size: 14px;
 `;
 
-const BoldText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
+const QuestionLabel = styled.span`
+  font-weight: 700;
+  font-size: 14px;
+  color: #000;
+`;
+
+const CategoryLabel = styled.span`
+  margin-top: 2px;
   font-weight: 800;
   font-size: 12px;
-  line-height: 13px;
-  color: #000000;
+  color: #f6ae24;
 `;
 
-const Bullet = styled.div`
-  font-size: 20px;
-  color: #cccccc;
-  margin: auto 19px auto 0;
-  &::before {
-    content: '>';
-  }
+type ArrowIconProps = {
+  isOpen: boolean;
+};
+
+const ArrowIcon = styled.div<ArrowIconProps>`
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid #ccc;
+  border-bottom: 2px solid #ccc;
+
+  transform: ${({ isOpen }) => (isOpen ? 'rotate(-135deg)' : 'rotate(45deg)')};
+  transition: transform 0.3s ease-in-out;
+`;
+
+const AnswerWrapper = styled.div<{ isOpen: boolean }>`
+  overflow: hidden;
+  max-height: ${({ isOpen }) => (isOpen ? '300px' : '0')};
+  transition: max-height 0.4s ease-in-out;
+  background: #eeeeee;
+
+  border-top: 1px solid #dddddd;
+`;
+
+const AnswerInner = styled.div`
+  padding: 16px;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.4;
 `;
