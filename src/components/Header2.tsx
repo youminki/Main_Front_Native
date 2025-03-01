@@ -49,7 +49,7 @@ const HeaderWrapper = styled.div`
   right: 0;
   max-width: 600px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
   z-index: 100;
   background-color: #fff;
@@ -59,6 +59,8 @@ const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  margin-top: 20px;
 `;
 
 const LeftSection = styled.div`
