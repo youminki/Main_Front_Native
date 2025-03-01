@@ -16,32 +16,32 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
     <SettlementHeader>
       <PeriodSelector>
         <PeriodButton
-          active={selectedPeriod === 3}
-          onClick={() => setSelectedPeriod(3)}
+          active={selectedPeriod === 1}
+          onClick={() => setSelectedPeriod(1)}
         >
-          공지
+          전체
         </PeriodButton>
         <PeriodButton
-          active={selectedPeriod === 6}
-          onClick={() => setSelectedPeriod(6)}
+          active={selectedPeriod === 2}
+          onClick={() => setSelectedPeriod(2)}
         >
           서비스
         </PeriodButton>
         <PeriodButton
-          active={selectedPeriod === 6}
-          onClick={() => setSelectedPeriod(6)}
+          active={selectedPeriod === 3}
+          onClick={() => setSelectedPeriod(3)}
         >
           주문/결제
         </PeriodButton>
         <PeriodButton
-          active={selectedPeriod === 6}
-          onClick={() => setSelectedPeriod(6)}
+          active={selectedPeriod === 4}
+          onClick={() => setSelectedPeriod(4)}
         >
           배송/반품
         </PeriodButton>
         <PeriodButton
-          active={selectedPeriod === 6}
-          onClick={() => setSelectedPeriod(6)}
+          active={selectedPeriod === 5}
+          onClick={() => setSelectedPeriod(5)}
         >
           이용권
         </PeriodButton>
@@ -51,12 +51,10 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
 };
 
 const FrequentlyAskedQuestions: React.FC = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState(3);
-  const navigate = useNavigate(); // useNavigate 훅
+  const [selectedPeriod, setSelectedPeriod] = useState(1);
+  const navigate = useNavigate();
 
-  // 아이템 클릭 핸들러
   const handleItemClick = () => {
-    // 상세 페이지로 이동
     navigate('/customerService/FrequentlyAskedQuestionsDetail');
   };
 
@@ -103,7 +101,6 @@ const FrequentlyAskedQuestions: React.FC = () => {
             </TextWrapper>
             <Bullet />
           </FrequentlyAskedQuestionsItem>
-          {/* 필요 개수만큼 반복 */}
         </FrequentlyAskedQuestionsListContainer>
       </Section>
     </FrequentlyAskedQuestionsContainer>
@@ -112,7 +109,6 @@ const FrequentlyAskedQuestions: React.FC = () => {
 
 export default FrequentlyAskedQuestions;
 
-/* ----- 스타일 정의 ----- */
 const FrequentlyAskedQuestionsContainer = styled.div`
   display: flex;
   flex-direction: column;

@@ -1,7 +1,5 @@
-// src/pages/CustomerService/Notice/Notice.tsx
-
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 추가
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 import SearchIcon from '../../../assets/CustomerService/SearchIcon.svg'; // 아이콘 경로
@@ -19,14 +17,14 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
     <SettlementHeader>
       <PeriodSelector>
         <PeriodButton
-          active={selectedPeriod === 3}
-          onClick={() => setSelectedPeriod(3)}
+          active={selectedPeriod === 1}
+          onClick={() => setSelectedPeriod(1)}
         >
           공지
         </PeriodButton>
         <PeriodButton
-          active={selectedPeriod === 6}
-          onClick={() => setSelectedPeriod(6)}
+          active={selectedPeriod === 2}
+          onClick={() => setSelectedPeriod(2)}
         >
           안내
         </PeriodButton>
@@ -41,12 +39,10 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
 };
 
 const Notice: React.FC = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState(3);
-  const navigate = useNavigate(); // useNavigate 훅
+  const [selectedPeriod, setSelectedPeriod] = useState(1);
+  const navigate = useNavigate();
 
-  // 아이템 클릭 핸들러
   const handleItemClick = () => {
-    // 상세 페이지로 이동
     navigate('/customerService/NoticeDetail');
   };
 
@@ -73,7 +69,6 @@ const Notice: React.FC = () => {
         />
 
         <NoticeListContainer>
-          {/* NoticeItem 클릭 시 handleItemClick 실행 */}
           <NoticeItem onClick={handleItemClick}>
             <TextWrapper>
               <ItemTitle>
@@ -93,7 +88,6 @@ const Notice: React.FC = () => {
             </TextWrapper>
             <Bullet />
           </NoticeItem>
-          {/* 필요 개수만큼 반복 */}
         </NoticeListContainer>
       </Section>
     </NoticeContainer>
@@ -102,7 +96,6 @@ const Notice: React.FC = () => {
 
 export default Notice;
 
-/* ----- 스타일 정의 ----- */
 const NoticeContainer = styled.div`
   display: flex;
   flex-direction: column;

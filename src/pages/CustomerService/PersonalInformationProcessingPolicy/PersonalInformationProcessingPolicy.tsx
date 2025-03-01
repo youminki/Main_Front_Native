@@ -16,26 +16,26 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
     <SettlementHeader>
       <PeriodSelector>
         <PeriodButton
-          active={selectedPeriod === 3}
-          onClick={() => setSelectedPeriod(3)}
+          active={selectedPeriod === 1}
+          onClick={() => setSelectedPeriod(1)}
         >
           공지
         </PeriodButton>
         <PeriodButton
-          active={selectedPeriod === 6}
-          onClick={() => setSelectedPeriod(6)}
+          active={selectedPeriod === 2}
+          onClick={() => setSelectedPeriod(2)}
         >
           개인정보방침
         </PeriodButton>
         <PeriodButton
-          active={selectedPeriod === 6}
-          onClick={() => setSelectedPeriod(6)}
+          active={selectedPeriod === 3}
+          onClick={() => setSelectedPeriod(3)}
         >
           파기절차
         </PeriodButton>
         <PeriodButton
-          active={selectedPeriod === 6}
-          onClick={() => setSelectedPeriod(6)}
+          active={selectedPeriod === 4}
+          onClick={() => setSelectedPeriod(4)}
         >
           기타
         </PeriodButton>
@@ -45,12 +45,10 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
 };
 
 const PersonalInformationProcessingPolicy: React.FC = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState(3);
-  const navigate = useNavigate(); // useNavigate 훅
+  const [selectedPeriod, setSelectedPeriod] = useState(1);
+  const navigate = useNavigate();
 
-  // 아이템 클릭 핸들러
   const handleItemClick = () => {
-    // 상세 페이지로 이동
     navigate('/customerService/PersonalInformationProcessingPolicyDetail');
   };
 
@@ -77,7 +75,6 @@ const PersonalInformationProcessingPolicy: React.FC = () => {
         />
 
         <PersonalInformationProcessingPolicyListContainer>
-          {/* PersonalInformationProcessingPolicyItem 클릭 시 handleItemClick 실행 */}
           <PersonalInformationProcessingPolicyItem onClick={handleItemClick}>
             <TextWrapper>
               <ItemTitle>
@@ -146,7 +143,6 @@ const PersonalInformationProcessingPolicy: React.FC = () => {
 
 export default PersonalInformationProcessingPolicy;
 
-/* ----- 스타일 정의 ----- */
 const PersonalInformationProcessingPolicyContainer = styled.div`
   display: flex;
   flex-direction: column;
