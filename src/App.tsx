@@ -100,7 +100,10 @@ const App: React.FC = () => {
     '/product-review',
     '/payment-method',
     '/my-ticket',
-    'CustomerService/Notice',
+    '/CustomerService/Notice',
+    '/CustomerService/FrequentlyAskedQuestions',
+    '/CustomerService/PersonalInformationProcessingPolicy',
+    '/CustomerService/TermsAndConditionsOfUse',
   ];
 
   // Header3가 포함될 경로 패턴

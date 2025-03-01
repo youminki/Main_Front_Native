@@ -58,7 +58,6 @@ const DetailContainer = styled.div`
   align-items: flex-start;
 
   background: #ffffff;
-  padding: 20px;
   box-sizing: border-box;
 `;
 
