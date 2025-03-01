@@ -100,6 +100,7 @@ const App: React.FC = () => {
     '/product-review',
     '/payment-method',
     '/my-ticket',
+    'CustomerService/Notice',
   ];
 
   // Header3가 포함될 경로 패턴
@@ -120,6 +121,7 @@ const App: React.FC = () => {
     '/my-ticket/PurchaseOfPasses/TicketPayment',
     '/my-ticket/SubscriptionPass',
     '/my-ticket/OnetimePass',
+    '/customerService/NoticeDetail',
   ];
 
   const header4Paths = [

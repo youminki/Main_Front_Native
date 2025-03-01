@@ -169,7 +169,7 @@ const PeriodSelector = styled.div`
 
 const PeriodButton = styled.button<{ active: boolean }>`
   padding: 8px 12px;
-  margin-left: 8px;
+  margin-right: 8px;
   font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 10px;
@@ -230,7 +230,7 @@ const NoticeItem = styled.div`
   background: rgba(255, 255, 255, 0.96);
 
   border-bottom: 1px solid #dddddd;
-  cursor: pointer; /* 클릭 가능하도록 포인터 표시 */
+  cursor: pointer;
   &:last-child {
     border-bottom: none;
   }
