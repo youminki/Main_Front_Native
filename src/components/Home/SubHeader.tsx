@@ -58,6 +58,7 @@ export default SubHeader;
 // Styled Components
 const SubHeaderWrapper = styled.div`
   width: 100%;
+
   margin-bottom: 30px;
 `;
 
@@ -79,10 +80,6 @@ const IconContainer = styled.div<{ $isSelected: boolean }>`
   align-items: center;
   cursor: pointer;
   padding: 10px 0;
-  transition: transform 0.3s ease;
-  &:hover {
-    transform: scale(1.1);
-  }
 `;
 
 const Icon = styled.img`

@@ -31,7 +31,7 @@ const FilterContainer: React.FC<FilterContainerProps> = ({
           isActive={seasonToggle}
           toggle={() => setSeasonToggle(!seasonToggle)}
         />
-        <ToggleLabel>계절감</ToggleLabel>
+        <ToggleLabel>대여전용</ToggleLabel>
       </div>
       <FilterIconContainer>
         <span>필터</span>
@@ -84,8 +84,13 @@ const ToggleText = styled.span<{ $isActive: boolean }>`
 `;
 
 const ToggleLabel = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 700;
   font-size: 12px;
-  color: #000;
+  line-height: 13px;
+
+  color: #000000;
   margin-left: 10px;
 `;
 

@@ -95,18 +95,25 @@ const Image = styled.img`
 `;
 
 const Brand = styled.h3`
-  font-size: 14px;
-  font-weight: bold;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 900;
+  font-size: 10px;
+  line-height: 11px;
+  /* identical to box height */
+
+  color: #000000;
   margin-bottom: 2px;
 `;
 
 const Description = styled.p`
-  margin-top: 0;
+  margin-top: 6px;
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 13px;
+
   color: #999999;
 `;
 
@@ -115,15 +122,17 @@ const PriceWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-left: 6px;
+
+  border-left: 1px solid #e0e0e0;
 `;
 
 const OriginalPrice = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 15px;
+  margin-left: 6px;
   color: #000000;
 `;
 

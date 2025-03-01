@@ -45,9 +45,14 @@ import CardDetail from './pages/LockerRoom/PaymentMethod/CardDetail';
 import ProductReview from './pages/LockerRoom/ProductReview/ProductReview';
 import ProductReviewWrite from './pages/LockerRoom/ProductReview/ProductReviewWrite';
 
+import CustomerService from './pages/CustomerService/CustomerService';
+import FrequentlyAskedQuestions from './pages/CustomerService/FrequentlyAskedQuestions/FrequentlyAskedQuestions';
+import Notice from './pages/CustomerService/Notice/Notice';
+import PersonalInformationProcessingPolicy from './pages/CustomerService/PersonalInformationProcessingPolicy/PersonalInformationProcessingPolicy';
+import TermsAndConditionsOfUse from './pages/CustomerService/TermsAndConditionsOfUse/TermsAndConditionsOfUse';
+
 import Scedule from './pages/Melpik/Schedule/Scedule';
 import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
-
 import ScheduleReservation1 from './pages/Melpik/Schedule/ScheduleReservation1';
 import ScheduleReservation2 from './pages/Melpik/Schedule/ScheduleReservation2';
 import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
@@ -63,10 +68,22 @@ const App: React.FC = () => {
   const location = useLocation();
 
   // BottomNav가 포함될 경로 패턴
-  const bottomNavPaths = ['/home', '/melpik', '/brand', '/lockerRoom'];
+  const bottomNavPaths = [
+    '/home',
+    '/melpik',
+    '/brand',
+    '/lockerRoom',
+    '/customerService',
+  ];
 
   // Header1이 포함될 경로 패턴
-  const header1Paths = ['/home', '/melpik', '/brand', '/lockerRoom'];
+  const header1Paths = [
+    '/home',
+    '/melpik',
+    '/brand',
+    '/lockerRoom',
+    '/customerService',
+  ];
 
   // Header2가 포함될 경로 패턴
   const header2Paths = [
@@ -271,6 +288,20 @@ const App: React.FC = () => {
             element={<SubscriptionPass />}
           />
           <Route path='/my-ticket/OnetimePass' element={<OnetimePass />} />
+          <Route path='/customerService' element={<CustomerService />} />
+          <Route
+            path='/customerService/FrequentlyAskedQuestions'
+            element={<FrequentlyAskedQuestions />}
+          />
+          <Route path='/customerService/Notice' element={<Notice />} />
+          <Route
+            path='/customerService/PersonalInformationProcessingPolicy'
+            element={<PersonalInformationProcessingPolicy />}
+          />
+          <Route
+            path='/customerService/TermsAndConditionsOfUse'
+            element={<TermsAndConditionsOfUse />}
+          />
 
           <Route path='/my-closet' element={<MyCloset />} />
           <Route path='/point' element={<Point />} />
