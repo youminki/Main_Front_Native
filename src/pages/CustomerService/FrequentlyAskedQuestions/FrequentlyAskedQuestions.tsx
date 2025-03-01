@@ -1,72 +1,121 @@
 import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import StatsSection from '../../../components/StatsSection';
 
-// 동적 데이터
-const visitLabel = '담긴 제품들';
-const salesLabel = '시즌';
-const visits = '999';
-const sales = '2025 1분기';
-const dateRange = 'SPRING';
+// 상세 데이터 타입 정의
+type PolicyDetail = {
+  id: string;
+  category: string;
+  title: string;
+  date: string;
+  content: string;
+};
 
-const FrequentlyAskedQuestions: React.FC = () => {
+// 상세 페이지용 정책 데이터 (실제 환경에서는 API 호출 등을 이용)
+const policyDetails: PolicyDetail[] = [
+  {
+    id: '1',
+    category: '개인정보방침',
+    title: '개인정보의 항목 및 수집방법',
+    date: '2025.02.01',
+    content: '개인정보의 항목 및 수집방법에 대한 상세 내용입니다.',
+  },
+  {
+    id: '2',
+    category: '개인정보방침',
+    title: '개인정보의 이용목적',
+    date: '2025.02.01',
+    content: '개인정보의 이용목적에 대한 상세 내용입니다.',
+  },
+  {
+    id: '3',
+    category: '개인정보방침',
+    title: '개인정보의 보유 및 이용기간',
+    date: '2025.02.01',
+    content: '개인정보의 보유 및 이용기간에 대한 상세 내용입니다.',
+  },
+  {
+    id: '4',
+    category: '개인정보처리방침',
+    title: '동의의 거부권 및 거부시 고지사항',
+    date: '2025.02.01',
+    content: '동의의 거부권 및 거부시 고지사항에 대한 상세 내용입니다.',
+  },
+  {
+    id: '5',
+    category: '파기절차',
+    title: '개인정보의 파기절차 및 방법',
+    date: '2025.02.01',
+    content: '개인정보의 파기절차 및 방법에 대한 상세 내용입니다.',
+  },
+  {
+    id: '6',
+    category: '기타',
+    title: '고지 의무에 따른 안내사항',
+    date: '2025.02.01',
+    content: '고지 의무에 따른 안내사항에 대한 상세 내용입니다.',
+  },
+];
+
+const PersonalInformationProcessingPolicyDetail: React.FC = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  // URL 파라미터 id로 해당 정책 데이터 찾기
+  const policy = policyDetails.find((item) => item.id === id);
+
+  if (!policy) {
+    return <DetailContainer>해당 정책을 찾을 수 없습니다.</DetailContainer>;
+  }
+
   return (
-    <FrequentlyAskedQuestionsContainer>
-      <Header>
-        <Title>내 옷장</Title>
-        <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
-      </Header>
-
-      <StatsSection
-        visits={visits}
-        sales={sales}
-        dateRange={dateRange}
-        visitLabel={visitLabel}
-        salesLabel={salesLabel}
-      />
-      <Divider />
-    </FrequentlyAskedQuestionsContainer>
+    <DetailContainer>
+      <BackButton onClick={() => navigate(-1)}>뒤로가기</BackButton>
+      <DetailHeader>
+        <DetailCategory>{policy.category}</DetailCategory>
+        <DetailTitle>{policy.title}</DetailTitle>
+        <DetailDate>{policy.date}</DetailDate>
+      </DetailHeader>
+      <DetailContent>{policy.content}</DetailContent>
+    </DetailContainer>
   );
 };
 
-export default FrequentlyAskedQuestions;
+export default PersonalInformationProcessingPolicyDetail;
 
-const FrequentlyAskedQuestionsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  background-color: #fff;
+const DetailContainer = styled.div`
+  padding: 20px;
   font-family: 'NanumSquare Neo OTF', sans-serif;
 `;
 
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  margin-bottom: 6px;
+const BackButton = styled.button`
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
 `;
 
-const Title = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 800;
-  font-size: 24px;
-  line-height: 27px;
-  color: #000000;
-  margin-bottom: 0px;
+const DetailHeader = styled.div`
+  margin-bottom: 20px;
 `;
 
-const Subtitle = styled.p`
+const DetailCategory = styled.div`
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 5px;
+`;
+
+const DetailTitle = styled.h2`
+  font-size: 20px;
+  margin-bottom: 5px;
+`;
+
+const DetailDate = styled.div`
   font-size: 12px;
-  font-weight: 400;
-  color: #ccc;
+  color: #aaaaaa;
 `;
 
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #dddddd;
-  margin-top: 30px;
+const DetailContent = styled.div`
+  font-size: 14px;
+  line-height: 1.6;
 `;
