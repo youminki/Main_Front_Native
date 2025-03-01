@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import SearchIcon from '../../../assets/CustomerService/SearchIcon.svg';
 import StatsSection from '../../../components/StatsSection';
+import SearchIcon from '../../../assets/CustomerService/SearchIcon.svg'; // 아이콘 경로
 
 type PeriodSectionProps = {
   selectedPeriod: number;
@@ -14,7 +14,6 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
 }) => {
   return (
     <SettlementHeader>
-      {/* 왼쪽: 버튼 영역 */}
       <PeriodSelector>
         <PeriodButton
           active={selectedPeriod === 3}
@@ -30,7 +29,6 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
         </PeriodButton>
       </PeriodSelector>
 
-      {/* 오른쪽: 검색 바 영역 */}
       <SearchBarContainer>
         <SearchInput placeholder='검색' />
         <SearchIconImg src={SearchIcon} alt='search' />
@@ -40,7 +38,6 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
 };
 
 const Notice: React.FC = () => {
-  // 기본값을 '공지'(3)로 설정
   const [selectedPeriod, setSelectedPeriod] = useState(3);
 
   return (
@@ -60,11 +57,50 @@ const Notice: React.FC = () => {
       <Divider />
 
       <Section>
-        {/* 기간 선택 영역 */}
         <PeriodSection
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
         />
+
+        <NoticeListContainer>
+          <NoticeItem>
+            <TextWrapper>
+              <ItemTitle>
+                <BoldText>공지</BoldText> / 새로운 시즌 의류 업데이트 (2025 봄)
+              </ItemTitle>
+              <ItemDate>2025.02.01</ItemDate>
+            </TextWrapper>
+            <Bullet />
+          </NoticeItem>
+
+          <NoticeItem>
+            <TextWrapper>
+              <ItemTitle>
+                <BoldText>공지</BoldText> / 새로운 시즌 의류 업데이트 (2025 봄)
+              </ItemTitle>
+              <ItemDate>2025.02.01</ItemDate>
+            </TextWrapper>
+            <Bullet />
+          </NoticeItem>
+          <NoticeItem>
+            <TextWrapper>
+              <ItemTitle>
+                <BoldText>공지</BoldText> / 새로운 시즌 의류 업데이트 (2025 봄)
+              </ItemTitle>
+              <ItemDate>2025.02.01</ItemDate>
+            </TextWrapper>
+            <Bullet />
+          </NoticeItem>
+          <NoticeItem>
+            <TextWrapper>
+              <ItemTitle>
+                <BoldText>공지</BoldText> / 새로운 시즌 의류 업데이트 (2025 봄)
+              </ItemTitle>
+              <ItemDate>2025.02.01</ItemDate>
+            </TextWrapper>
+            <Bullet />
+          </NoticeItem>
+        </NoticeListContainer>
       </Section>
     </NoticeContainer>
   );
@@ -72,9 +108,6 @@ const Notice: React.FC = () => {
 
 export default Notice;
 
-/* 스타일 정의 */
-
-// 전체 Notice 컨테이너
 const NoticeContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -84,7 +117,6 @@ const NoticeContainer = styled.div`
   font-family: 'NanumSquare Neo OTF', sans-serif;
 `;
 
-// 헤더 영역
 const Header = styled.div`
   display: flex;
   flex-direction: column;
@@ -124,9 +156,6 @@ const Section = styled.div`
   margin-top: 30px;
 `;
 
-// --------------------------------------
-// PeriodSection 관련 스타일
-// --------------------------------------
 const SettlementHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -180,4 +209,79 @@ const SearchIconImg = styled.img`
   height: 16px;
   margin-right: 12px;
   cursor: pointer;
+`;
+
+const NoticeListContainer = styled.div`
+  max-height: 932px;
+  overflow-y: auto;
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  margin-top: 10px;
+
+  border: 1px solid #dddddd;
+  background: #ffffff;
+`;
+
+const NoticeItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-height: 76px;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.96);
+
+  border-bottom: 1px solid #dddddd;
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const TextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+
+  white-space: pre-wrap;
+  word-break: break-all;
+`;
+
+const ItemTitle = styled.div`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 13px;
+  color: #000000;
+`;
+
+const ItemDate = styled.div`
+  margin-top: 10px;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 13px;
+  color: #aaaaaa;
+`;
+
+const BoldText = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 13px;
+  color: #000000;
+`;
+
+const Bullet = styled.div`
+  font-size: 20px;
+  color: #cccccc;
+  margin: auto 19px auto 0;
+  &::before {
+    content: '>';
+  }
 `;
