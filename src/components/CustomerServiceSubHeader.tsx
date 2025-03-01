@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import SearchIcon from '../../../assets/CustomerService/SearchIcon.svg';
-import StatsSection from '../../../components/StatsSection';
+import SearchIcon from '../assets/CustomerService/SearchIcon.svg'; // 아이콘 경로
 
 type PeriodSectionProps = {
   selectedPeriod: number;
@@ -39,110 +38,28 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
   );
 };
 
-const Notice: React.FC = () => {
-  // 기본값을 '공지'(3)로 설정
-  const [selectedPeriod, setSelectedPeriod] = useState(3);
+export default PeriodSection;
 
-  return (
-    <NoticeContainer>
-      <Header>
-        <Title>공지사항</Title>
-        <Subtitle>새로운 소식 및 서비스 안내를 드립니다.</Subtitle>
-      </Header>
-
-      <StatsSection
-        visits='999'
-        sales='999'
-        dateRange='NEW 2025. 03.'
-        visitLabel='전체'
-        salesLabel='최근 업데이트'
-      />
-      <Divider />
-
-      <Section>
-        {/* 기간 선택 영역 */}
-        <PeriodSection
-          selectedPeriod={selectedPeriod}
-          setSelectedPeriod={setSelectedPeriod}
-        />
-      </Section>
-    </NoticeContainer>
-  );
-};
-
-export default Notice;
-
-/* 스타일 정의 */
-
-// 전체 Notice 컨테이너
-const NoticeContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  background-color: #fff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-`;
-
-// 헤더 영역
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  margin-bottom: 6px;
-`;
-
-const Title = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
-  font-weight: 800;
-  font-size: 24px;
-  line-height: 27px;
-  color: #000000;
-  margin-bottom: 0px;
-`;
-
-const Subtitle = styled.p`
-  font-size: 12px;
-  font-weight: 400;
-  color: #ccc;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #dddddd;
-  margin-top: 30px;
-`;
-
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding-bottom: 80px;
-  margin-top: 30px;
-`;
-
-// --------------------------------------
-// PeriodSection 관련 스타일
-// --------------------------------------
+// 상단 영역 컨테이너
 const SettlementHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* 원하는 경우 높이나 폭을 조절할 수 있습니다 */
   background: #f3f3f3;
   border: 1px solid #dddddd;
   padding: 20px;
   white-space: nowrap;
 `;
 
+// 버튼 그룹
 const PeriodSelector = styled.div`
   display: flex;
   flex-shrink: 0;
   margin-right: 10px;
 `;
 
+// 버튼 스타일
 const PeriodButton = styled.button<{ active: boolean }>`
   padding: 8px 12px;
   margin-left: 8px;
@@ -158,15 +75,18 @@ const PeriodButton = styled.button<{ active: boolean }>`
   white-space: nowrap;
 `;
 
+// 검색 바 컨테이너
 const SearchBarContainer = styled.div`
   display: flex;
   align-items: center;
+
   height: 40px;
   box-sizing: border-box;
   background: #ffffff;
   border: 1px solid #dddddd;
 `;
 
+// 검색 입력 필드
 const SearchInput = styled.input`
   flex: 1;
   border: none;
@@ -175,6 +95,7 @@ const SearchInput = styled.input`
   padding: 0 10px;
 `;
 
+// 검색 아이콘
 const SearchIconImg = styled.img`
   width: 16px;
   height: 16px;
