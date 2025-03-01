@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 
@@ -46,11 +45,6 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
 
 const TermsAndConditionsOfUse: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(1);
-  const navigate = useNavigate();
-
-  const handleItemClick = () => {
-    navigate('/customerService/TermsAndConditionsOfUseDetail');
-  };
 
   return (
     <TermsAndConditionsOfUseContainer>
@@ -76,7 +70,7 @@ const TermsAndConditionsOfUse: React.FC = () => {
 
         <TermsAndConditionsOfUseListContainer>
           {/* TermsAndConditionsOfUseItem 클릭 시 handleItemClick 실행 */}
-          <TermsAndConditionsOfUseItem onClick={handleItemClick}>
+          <TermsAndConditionsOfUseItem>
             <TextWrapper>
               <ItemTitle>
                 <BoldText>서비스 정책</BoldText> / 제1장 총칙
@@ -86,7 +80,7 @@ const TermsAndConditionsOfUse: React.FC = () => {
             <Bullet />
           </TermsAndConditionsOfUseItem>
 
-          <TermsAndConditionsOfUseItem onClick={handleItemClick}>
+          <TermsAndConditionsOfUseItem>
             <TextWrapper>
               <ItemTitle>
                 <BoldText>서비스 정책</BoldText> / 제2장 회원가입 사항
@@ -96,7 +90,7 @@ const TermsAndConditionsOfUse: React.FC = () => {
             <Bullet />
           </TermsAndConditionsOfUseItem>
 
-          <TermsAndConditionsOfUseItem onClick={handleItemClick}>
+          <TermsAndConditionsOfUseItem>
             <TextWrapper>
               <ItemTitle>
                 <BoldText>서비스 정책</BoldText> / 제3장 회사의 서비스 (대여)
@@ -106,7 +100,7 @@ const TermsAndConditionsOfUse: React.FC = () => {
             <Bullet />
           </TermsAndConditionsOfUseItem>
 
-          <TermsAndConditionsOfUseItem onClick={handleItemClick}>
+          <TermsAndConditionsOfUseItem>
             <TextWrapper>
               <ItemTitle>
                 <BoldText>서비스 정책</BoldText> / 제4장 회사의 서비스 (구매)
@@ -116,7 +110,7 @@ const TermsAndConditionsOfUse: React.FC = () => {
             <Bullet />
           </TermsAndConditionsOfUseItem>
 
-          <TermsAndConditionsOfUseItem onClick={handleItemClick}>
+          <TermsAndConditionsOfUseItem>
             <TextWrapper>
               <ItemTitle>
                 <BoldText>판매정책</BoldText> / 회사에서 제공하는 판매 서비스
@@ -127,7 +121,7 @@ const TermsAndConditionsOfUse: React.FC = () => {
             <Bullet />
           </TermsAndConditionsOfUseItem>
 
-          <TermsAndConditionsOfUseItem onClick={handleItemClick}>
+          <TermsAndConditionsOfUseItem>
             <TextWrapper>
               <ItemTitle>
                 <BoldText>판매정책</BoldText> / 판매 서비스 정산의 정의
