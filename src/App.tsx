@@ -11,6 +11,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FindId from './pages/FindId';
 import FindPassword from './pages/FindPassword';
+import MyInfo from './pages/MyInfo';
+import MyStyle from './pages/MyStyle';
 import Basket from './pages/Basket';
 import Payment from './pages/Payment';
 
@@ -137,6 +139,8 @@ const App: React.FC = () => {
     'findPassword',
     '/basket',
     '/payment',
+    '/MyInfo',
+    '/MyStyle',
   ];
 
   const includeBottomNav = bottomNavPaths.some((path) =>
@@ -223,6 +227,12 @@ const App: React.FC = () => {
     if (matchPath('/payment', location.pathname)) {
       return '결제하기';
     }
+    if (matchPath('/MyInfo', location.pathname)) {
+      return '내 정보';
+    }
+    if (matchPath('/MyStyle', location.pathname)) {
+      return '내 스타일';
+    }
 
     return '';
   };
@@ -243,6 +253,8 @@ const App: React.FC = () => {
           <Route path='/signup' element={<Signup />} />
           <Route path='/findid' element={<FindId />} />
           <Route path='/findPassword' element={<FindPassword />} />
+          <Route path='/MyInfo' element={<MyInfo />} />
+          <Route path='/MyStyle' element={<MyStyle />} />
           <Route path='/analysis' element={<Analysis />} />
           <Route path='/basket' element={<Basket />} />
           <Route path='/payment' element={<Payment />} />

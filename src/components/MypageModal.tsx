@@ -51,6 +51,18 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
     navigate('/login');
   };
 
+  // MypageBox 클릭 시 /MyInfo로 이동
+  const handleMyInfoClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate('/MyInfo');
+  };
+
+  // MystyleBox 클릭 시 /MyStyle로 이동
+  const handleMyStyleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate('/MyStyle');
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -66,8 +78,16 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
           <Divider />
 
           <ModalContentArea>
-            <PlaceholderImage src={MypageBox} alt='임시 이미지1' />
-            <PlaceholderImage src={MystyleBox} alt='임시 이미지2' />
+            <PlaceholderImage
+              src={MypageBox}
+              alt='마이페이지 이미지'
+              onClick={handleMyInfoClick}
+            />
+            <PlaceholderImage
+              src={MystyleBox}
+              alt='마이스타일 이미지'
+              onClick={handleMyStyleClick}
+            />
           </ModalContentArea>
           <Divider />
 
@@ -198,6 +218,7 @@ const PlaceholderImage = styled.img`
   width: auto;
   height: auto;
   object-fit: cover;
+  cursor: pointer;
 `;
 
 const LogoutButton = styled.button`
