@@ -6,13 +6,11 @@ import BackButtonIcon from '../assets/BackButton.svg';
 import Alarm from '../assets/Header/AlarmIcon.svg';
 import BasketIcon from '../assets/Header/BasketIcon.svg';
 
-// Header 컴포넌트 정의
 const Header: React.FC = () => {
   const navigate = useNavigate();
 
-  // 이벤트 핸들러
   const handleBackClick = (): void => {
-    navigate(-1); // 뒤로가기
+    navigate(-1);
   };
 
   const handleBasketClick = (): void => {
@@ -41,7 +39,6 @@ const Header: React.FC = () => {
 
 export default Header;
 
-// 스타일 정의
 const HeaderWrapper = styled.div`
   position: fixed;
   top: 0;

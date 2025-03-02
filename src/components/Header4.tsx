@@ -4,13 +4,12 @@ import styled from 'styled-components';
 import BackButtonIcon from '../assets/BackButton.svg';
 
 interface HeaderProps {
-  title?: string; // 선택적 속성으로 변경
+  title?: string;
 }
 
 const Header: React.FC<HeaderProps> = ({ title }) => {
   const navigate = useNavigate();
 
-  // 뒤로가기 버튼 클릭 핸들러
   const handleBackClick = (): void => {
     navigate(-1);
   };
@@ -36,7 +35,6 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
 
 export default Header;
 
-// 스타일 정의
 const HeaderWrapper = styled.div`
   position: fixed;
   top: 0;

@@ -1,4 +1,3 @@
-// src/components/Header.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -8,7 +7,7 @@ import Alarm from '../assets/Header/AlarmIcon.svg';
 import BasketIcon from '../assets/Header/BasketIcon.svg';
 import MypageIcon from '../assets/Header/MypageIcon.svg';
 import Logo from '../assets/Logo.svg';
-import MypageModal from '../components/MypageModal'; // 모달 컴포넌트 import
+import MypageModal from '../components/MypageModal';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -31,7 +30,6 @@ const Header: React.FC = () => {
 
   const handleBasketClick = () => navigate('/basket');
 
-  // 로그인 상태인 경우, LeftSection 클릭 시 모달 오픈
   const handleLeftSectionClick = () => {
     if (isLoggedIn) {
       setIsModalOpen(true);
@@ -82,7 +80,6 @@ const Header: React.FC = () => {
         </HeaderContainer>
       </HeaderWrapper>
 
-      {/* 마이페이지 모달 */}
       <MypageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
@@ -90,7 +87,6 @@ const Header: React.FC = () => {
 
 export default Header;
 
-/* 스타일 정의 */
 const HeaderWrapper = styled.div`
   position: fixed;
   top: 0;
