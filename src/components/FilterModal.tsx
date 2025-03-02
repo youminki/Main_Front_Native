@@ -105,7 +105,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
 
         {/* 계절 */}
         <Section>
-          <SectionTitle>계절 (셋팅 : 없음)</SectionTitle>
+          <SectionTitleWithParen text='계절 (셋팅 : 없음)' />
           <ButtonRow>
             {seasonData.map((season) => (
               <FilterButton
@@ -125,7 +125,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
 
         {/* 사이즈 */}
         <Section>
-          <SectionTitle>사이즈 (셋팅 : 없음)</SectionTitle>
+          <SectionTitleWithParen text='사이즈 (셋팅 : 없음)' />
           <ButtonRow>
             {sizeData.map((size) => (
               <FilterButton
@@ -145,7 +145,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
 
         {/* 색상 */}
         <Section>
-          <SectionTitle>색상 (셋팅 : 없음)</SectionTitle>
+          <SectionTitleWithParen text='색상 (셋팅 : 없음)' />
           <ColorButtonGrid>
             {Object.keys(colorMap).map((color) => (
               <ColorButton
@@ -165,7 +165,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
 
         {/* 스타일 */}
         <Section>
-          <SectionTitle>스타일 (셋팅 : 없음)</SectionTitle>
+          <SectionTitleWithParen text='스타일 (셋팅 : 없음)' />
           <ButtonRow>
             {styleData.map((style) => (
               <FilterButton
@@ -185,7 +185,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
 
         {/* 소재 */}
         <Section>
-          <SectionTitle>소재 (셋팅 : 없음)</SectionTitle>
+          <SectionTitleWithParen text='소재 (셋팅 : 없음)' />
           <ButtonRow>
             {materialData.map((mat) => (
               <FilterButton
@@ -211,6 +211,35 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
 };
 
 export default FilterModal;
+
+const ParenText = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 13px;
+  color: #999999;
+`;
+
+interface SectionTitleWithParenProps {
+  text: string;
+}
+const SectionTitleWithParen: React.FC<SectionTitleWithParenProps> = ({
+  text,
+}) => {
+  const parts = text.split(/(\(.*?\))/g);
+  return (
+    <SectionTitle>
+      {parts.map((part, index) =>
+        part.startsWith('(') && part.endsWith(')') ? (
+          <ParenText key={index}>{part}</ParenText>
+        ) : (
+          <span key={index}>{part}</span>
+        )
+      )}
+    </SectionTitle>
+  );
+};
 
 const slideUp = keyframes`
   0% {
