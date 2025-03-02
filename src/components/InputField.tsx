@@ -211,9 +211,11 @@ const PrefixText = styled.span`
 const PrefixcontentText = styled.span`
   margin-left: 10px;
   font-family: 'NanumSquare Neo OTF';
-  font-weight: 700;
+  font-style: normal;
+  font-weight: 800;
   font-size: 13px;
   line-height: 14px;
+
   color: #000000;
 `;
 
