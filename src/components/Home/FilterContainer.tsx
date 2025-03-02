@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import FilterIcon from '../../assets/FilterIcon.svg';
+import FilterModal from '../../components/FilterModal';
+
+interface FilterContainerProps {
+  seasonToggle: boolean;
+  setSeasonToggle: (toggle: boolean) => void;
+}
 
 export const SeasonToggle = ({
   isActive,
@@ -15,15 +21,12 @@ export const SeasonToggle = ({
   </StyledSeasonToggle>
 );
 
-interface FilterContainerProps {
-  seasonToggle: boolean;
-  setSeasonToggle: (toggle: boolean) => void;
-}
-
 const FilterContainer: React.FC<FilterContainerProps> = ({
   seasonToggle,
   setSeasonToggle,
 }) => {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
   return (
     <Container>
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -33,10 +36,15 @@ const FilterContainer: React.FC<FilterContainerProps> = ({
         />
         <ToggleLabel>대여전용</ToggleLabel>
       </div>
-      <FilterIconContainer>
+      {/* FilterIconContainer 클릭 시 모달 열기 */}
+      <FilterIconContainer onClick={() => setIsFilterOpen(true)}>
         <span>필터</span>
         <img src={FilterIcon} alt='필터' />
       </FilterIconContainer>
+      <FilterModal
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+      />
     </Container>
   );
 };
@@ -89,7 +97,6 @@ const ToggleLabel = styled.span`
   font-weight: 700;
   font-size: 12px;
   line-height: 13px;
-
   color: #000000;
   margin-left: 10px;
 `;

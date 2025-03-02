@@ -108,8 +108,6 @@ const Content = styled.div`
   flex: 1;
 `;
 
-// SubHeader 위아래에 border 추가
 const SubHeaderContainer = styled.div`
   margin: 20px 0;
-  border-top: 1px solid #eeeeee;
 `;

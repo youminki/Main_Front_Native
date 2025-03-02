@@ -144,11 +144,14 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
               )}
             </InputWrapper>
 
-            {/* 이메일 필드 형태라면 @ + 뒤쪽 도메인 select 노출 */}
             {isEmailField && <AtSymbol>@</AtSymbol>}
             {isEmailField && (
               <InputWrapper>
-                <EmailDropdown id={`${id}-domain`} defaultValue='naver.com'>
+                <EmailDropdown
+                  id={`${id}-domain`}
+                  defaultValue='naver.com'
+                  disabled={rest.readOnly} // readOnly가 true면 disabled 적용
+                >
                   <option value='gmail.com'>gmail.com</option>
                   <option value='naver.com'>naver.com</option>
                   <option value='daum.net'>daum.net</option>
@@ -208,9 +211,11 @@ const PrefixText = styled.span`
 const PrefixcontentText = styled.span`
   margin-left: 10px;
   font-family: 'NanumSquare Neo OTF';
-  font-weight: 700;
+  font-style: normal;
+  font-weight: 800;
   font-size: 13px;
   line-height: 14px;
+
   color: #000000;
 `;
 
@@ -265,7 +270,8 @@ const Input = styled.input`
   font-weight: 400;
   font-size: 13px;
   line-height: 14px;
-
+  background-color: ${({ readOnly }) => (readOnly ? '#f0f0f0' : 'white')};
+  color: ${({ readOnly }) => (readOnly ? '#999999' : '#000000')};
   &:focus {
     outline: none;
   }
