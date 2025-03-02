@@ -242,7 +242,7 @@ const ItemTitle = styled.div`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 13px;
   color: #000000;
 `;
@@ -261,7 +261,7 @@ const BoldText = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 13px;
   color: #000000;
 `;
