@@ -47,16 +47,9 @@ const MyInfo: React.FC = () => {
     formState: { errors, isSubmitting },
   } = methods;
 
-  const [gender, setGender] = useState<string>('여성');
-  const [selectedGenderButton, setSelectedGenderButton] =
-    useState<string>('여성');
+  const [gender] = useState<string>('여성');
   const [melpickAddress, setMelpickAddress] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const handleGenderChange = (selectedGender: string): void => {
-    setGender(selectedGender);
-    setSelectedGenderButton(selectedGender);
-  };
 
   const handlePhoneNumberChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -339,6 +332,8 @@ const InputFieldLabel = styled.label`
   font-weight: 700;
   font-size: 11px;
   line-height: 11px;
+
+  margin-top: 30px;
 `;
 const GenderRow = styled.div`
   display: flex;
@@ -347,6 +342,8 @@ const GenderRow = styled.div`
 `;
 const GenderButton = styled.button<{ selected: boolean; isSelected: boolean }>`
   flex: 1;
+  padding: 10px;
+
   border: ${({ isSelected }) => (isSelected ? '2px solid #f6ae24' : 'none')};
   border-radius: 10px;
   background-color: ${({ selected }) => (selected ? '#FFFFFF' : '#EEEEEE')};
@@ -371,7 +368,6 @@ const GenderButton = styled.button<{ selected: boolean; isSelected: boolean }>`
     cursor: not-allowed;
   }
 `;
-
 const PhoneField = styled.div`
   display: flex;
   align-items: center;
