@@ -66,7 +66,7 @@ const ControlButton = styled.button`
 
 const ControlText = styled.p`
   font-weight: 700;
-  font-size: 12px;
+  font-size: 14px;
   color: #000;
 `;
 

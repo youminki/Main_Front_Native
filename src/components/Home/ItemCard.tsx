@@ -98,7 +98,7 @@ const Brand = styled.h3`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   /* identical to box height */
 
@@ -111,7 +111,7 @@ const Description = styled.p`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 13px;
 
   color: #999999;
@@ -140,7 +140,7 @@ const NowLabel = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 8px;
+  font-size: 10px;
   line-height: 9px;
   color: #000000;
 `;
@@ -149,7 +149,7 @@ const DiscountLabel = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   color: #f6ae24;
 `;
