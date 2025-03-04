@@ -62,7 +62,7 @@ const pointHistory = [
     total: '27,000',
   },
   {
-    date: '2025-03-03 / 제품평가 작성--',
+    date: '2025-03-03 / 제품평가 작성',
     detail: '포인트 적립',
     detailColor: '#EF4523',
     change: '500',
@@ -210,7 +210,6 @@ const Section = styled.div`
 const HistoryContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px; /* 각 행 간격 */
   margin-top: 20px;
 `;
 
@@ -227,15 +226,16 @@ const HistoryHeader = styled.div`
 const LeftHeader = styled.div`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
+
   color: #000000;
 `;
 
 const RightHeader = styled.div`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   color: #000000;
   text-align: right;
@@ -247,7 +247,7 @@ const HistoryRow = styled.div`
   justify-content: space-between;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid #dddddd;
-  padding: 10px;
+  padding: 20px;
 `;
 
 // 왼쪽(일자, 내역)
@@ -255,21 +255,21 @@ const RowLeft = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
+  gap: 15px;
 `;
 
 // 날짜와 슬래시 부분을 한 줄에 배치하기 위한 래퍼
 const DateRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 5px;
 `;
 
 // 날짜 부분 (기존 굵게)
 const DatePart = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 13px;
   color: #000000;
 `;
@@ -278,7 +278,7 @@ const DatePart = styled.span`
 const Slash = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 13px;
   color: #000000;
 `;
@@ -288,7 +288,7 @@ const SlashPart = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 13px;
   color: #000000;
 `;
@@ -298,14 +298,14 @@ const RowRight = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: 15px;
 `;
 
 // "포인트 적립"/"포인트 사용" 등
 const DetailText = styled.p<{ color?: string }>`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 13px;
   margin: 0;
   color: ${({ color }) => color || '#000000'};
@@ -315,7 +315,7 @@ const DetailText = styled.p<{ color?: string }>`
 const ChangeText = styled.p`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 13px;
   margin: 0;
   color: #000000;
@@ -326,7 +326,7 @@ const ChangeText = styled.p`
 const TotalText = styled.p`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
-  font-size: 12px;
+  font-size: 16px;
   line-height: 13px;
   margin: 0;
   color: #000000;

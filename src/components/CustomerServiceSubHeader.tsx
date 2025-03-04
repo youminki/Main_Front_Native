@@ -65,7 +65,7 @@ const PeriodButton = styled.button<{ active: boolean }>`
   margin-left: 8px;
   font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   color: ${({ active }) => (active ? '#fff' : '#000')};
   background: ${({ active }) => (active ? '#000' : '#fff')};
