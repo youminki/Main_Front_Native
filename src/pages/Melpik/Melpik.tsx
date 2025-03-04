@@ -33,8 +33,8 @@ const MelpikPage: React.FC = () => {
     <ThemeProvider theme={Theme}>
       <Container>
         <Header>
-          <Title>락커룸</Title>
-          <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
+          <Title>멜픽</Title>
+          <Subtitle>내 채널를 통해 나는 브랜드가 된다 </Subtitle>
         </Header>
 
         <StatsRow>

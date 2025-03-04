@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Theme from '../../styles/Theme';
 import StatsSection from '../../components/LockerRoom/StatsSection';
 
-import LockerRoomIcons from '../../assets/LockerRoom/LockerRoomIcons.svg';
+import LockerRoomIcons from '../../assets/CustomerServiceIcons.svg';
 import FrequentlyAskedQuestionsBox from '../../assets/CustomerService/FrequentlyAskedQuestionsBox.svg';
 import NoticeBox from '../../assets/CustomerService/NoticeBox.svg';
 import PersonalInformationProcessingPolicyBox from '../../assets/CustomerService/PersonalInformationProcessingPolicyBox.svg';
@@ -14,11 +14,11 @@ import TermsAndConditionsOfUseBox from '../../assets/CustomerService/TermsAndCon
 const CustomerService: React.FC = () => {
   const navigate = useNavigate();
 
-  const visits = '구독자';
-  const sales = '26,000';
-  const dateRange = '요약정보';
-  const visitLabel = '그룹';
-  const salesLabel = '보유 포인트';
+  const visits = '999';
+  const sales = '999';
+  const dateRange = 'NEW 2025. 03.';
+  const visitLabel = '공지사항';
+  const salesLabel = '자주 묻는 질문';
 
   const menuItems = [
     {
@@ -40,8 +40,8 @@ const CustomerService: React.FC = () => {
     <ThemeProvider theme={Theme}>
       <Container>
         <Header>
-          <Title>락커룸</Title>
-          <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
+          <Title>고객센터</Title>
+          <Subtitle>새로운 소식 및 서비스 안내를 드립니다.</Subtitle>
         </Header>
 
         <StatsRow>
