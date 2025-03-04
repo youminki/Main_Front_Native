@@ -73,6 +73,13 @@ const PeriodButton = styled.button<{ active: boolean }>`
   border-radius: 14px;
   cursor: pointer;
   white-space: nowrap;
+
+  white-space: nowrap;
+  min-width: 60px;
+  height: 36px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border-radius: 18px;
 `;
 
 // 검색 바 컨테이너

@@ -215,7 +215,7 @@ const PeriodSelector = styled.div`
 
 const PeriodButton = styled.button<{ active: boolean }>`
   padding: 8px 12px;
-  margin-right: 8px;
+
   font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 12px;
@@ -225,7 +225,20 @@ const PeriodButton = styled.button<{ active: boolean }>`
   border: 1px solid ${({ active }) => (active ? '#000' : '#ccc')};
   border-radius: 14px;
   cursor: pointer;
+
   white-space: nowrap;
+  min-width: 60px;
+  height: 36px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border-radius: 18px;
+
+  white-space: nowrap;
+  min-width: 60px;
+  height: 36px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border-radius: 18px;
 `;
 
 const FrequentlyAskedQuestionsListContainer = styled.div`
