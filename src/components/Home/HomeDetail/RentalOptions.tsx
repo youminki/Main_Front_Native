@@ -300,7 +300,7 @@ const ModalTitle = styled.h2`
 
 const MenuBar = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 20px;
 `;
 
