@@ -1,3 +1,4 @@
+// App.tsx
 import React from 'react';
 import {
   HashRouter,
@@ -5,8 +6,11 @@ import {
   Routes,
   useLocation,
   matchPath,
+  Navigate,
 } from 'react-router-dom';
 import styled from 'styled-components';
+
+// 페이지 컴포넌트 임포트
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FindId from './pages/FindId';
@@ -63,12 +67,8 @@ import ScheduleReservation2 from './pages/Melpik/Schedule/ScheduleReservation2';
 import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
 
 import BottomNav from './components/BottomNav1';
-import Header1 from './components/Header1';
-import Header2 from './components/Header2';
-import Header3 from './components/Header3';
-import Header4 from './components/Header4';
+import UnifiedHeader from './components/UnifiedHeader';
 
-import { Navigate } from 'react-router-dom';
 const App: React.FC = () => {
   const location = useLocation();
 
@@ -81,7 +81,7 @@ const App: React.FC = () => {
     '/customerService',
   ];
 
-  // Header1이 포함될 경로 패턴
+  // Header1 (기본헤더) 경로 패턴
   const header1Paths = [
     '/home',
     '/melpik',
@@ -90,7 +90,7 @@ const App: React.FC = () => {
     '/customerService',
   ];
 
-  // Header2가 포함될 경로 패턴
+  // Header2 (원뎁쓰) 경로 패턴
   const header2Paths = [
     '/create-melpik',
     '/brand/:brandName',
@@ -110,7 +110,7 @@ const App: React.FC = () => {
     '/CustomerService/TermsAndConditionsOfUse',
   ];
 
-  // Header3가 포함될 경로 패턴
+  // Header3 (투뎁쓰) 경로 패턴
   const header3Paths = [
     '/item/:id',
     '/createMelpik/settings',
@@ -120,7 +120,7 @@ const App: React.FC = () => {
     '/schedule/reservation2',
     '/schedule/reservation3',
     '/sales-settlement-detail/:id',
-    'settlement-request',
+    '/settlement-request',
     '/payment-review/Write',
     '/payment-method/addcard',
     '/payment-method/cardDetail',
@@ -133,10 +133,11 @@ const App: React.FC = () => {
     '/customerService/TermsAndConditionsOfUseDetail',
   ];
 
+  // Header4 (쓰리뎁쓰) 경로 패턴
   const header4Paths = [
     '/signup',
     '/findid',
-    'findPassword',
+    '/findPassword',
     '/basket',
     '/payment',
     '/MyInfo',
@@ -166,7 +167,6 @@ const App: React.FC = () => {
     if (matchPath('/sales-schedule', location.pathname)) {
       return '판매 스케줄';
     }
-
     if (matchPath('/schedule/confirmation', location.pathname)) {
       return '예약 스케줄 확인';
     }
@@ -233,16 +233,19 @@ const App: React.FC = () => {
     if (matchPath('/MyStyle', location.pathname)) {
       return '내 스타일';
     }
-
     return '';
   };
 
   return (
     <AppContainer>
-      {includeHeader1 && <Header1 />}
-      {includeHeader2 && <Header2 />}
-      {includeHeader3 && <Header3 title={getHeader3Title()} />}
-      {includeHeader4 && <Header4 title={getHeader4Title()} />}
+      {includeHeader1 && <UnifiedHeader variant='default' />}
+      {includeHeader2 && <UnifiedHeader variant='oneDepth' />}
+      {includeHeader3 && (
+        <UnifiedHeader variant='twoDepth' title={getHeader3Title()} />
+      )}
+      {includeHeader4 && (
+        <UnifiedHeader variant='threeDepth' title={getHeader4Title()} />
+      )}
       <ContentContainer>
         <Routes>
           <Route path='/' element={<Navigate to='/home' replace />} />
@@ -370,5 +373,5 @@ const AppContainer = styled.div`
 
 const ContentContainer = styled.div`
   flex: 1;
-  padding: 88px 0 120px 0;
+  padding: 100px 0 120px 0;
 `;
