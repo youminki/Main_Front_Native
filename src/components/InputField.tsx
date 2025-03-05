@@ -181,7 +181,7 @@ const InputContainer = styled.div`
 const Label = styled.label<{ $isEmpty: boolean }>`
   margin-bottom: 10px;
   font-family: 'NanumSquare Neo OTF';
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 11.05px;
   text-align: left;
@@ -191,7 +191,7 @@ const Label = styled.label<{ $isEmpty: boolean }>`
 const GrayText = styled.span`
   padding-left: 3px;
   color: #888888;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 14px;
 `;
 

@@ -4,11 +4,9 @@ import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { schemaSignup } from '../hooks/ValidationYup';
 import InputField from '../components/InputField';
-
 import Theme from '../styles/Theme';
 import BottomBar from '../components/BottomNav2';
 import ResetButtonIcon from '../assets/ResetButton.png';
-
 import { CustomSelect } from '../components/CustomSelect';
 
 type MyInfoFormData = {
@@ -51,6 +49,23 @@ const MyInfo: React.FC = () => {
   const [melpickAddress, setMelpickAddress] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // 프로필 이미지 상태 (초기에는 빈 문자열)
+  const [profileImage, setProfileImage] = useState<string>('');
+
+  // 파일 인풋 ref 없이 버튼 클릭 시 직접 file input click 트리거
+  const handleImageChangeClick = () => {
+    document.getElementById('profile-image-input')?.click();
+  };
+
+  // 파일 선택 시 이미지 URL을 state에 저장
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      setProfileImage(imageUrl);
+    }
+  };
+
   const handlePhoneNumberChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ): void => {
@@ -88,6 +103,7 @@ const MyInfo: React.FC = () => {
       return;
     }
     setErrorMessage(null);
+    // 회원가입 처리...
   };
 
   return (
@@ -281,6 +297,27 @@ const MyInfo: React.FC = () => {
               readOnly
             />
 
+            {/* 프로필 이미지 변경 필드 */}
+            <ProfileImageLabel>프로필 이미지 변경</ProfileImageLabel>
+            <ProfileImageField>
+              {profileImage ? (
+                <ProfileImageDisplay src={profileImage} alt='프로필 이미지' />
+              ) : (
+                <PlaceholderText>이미지를 추가해 주세요</PlaceholderText>
+              )}
+              <ChangeImageButton type='button' onClick={handleImageChangeClick}>
+                이미지 변경
+              </ChangeImageButton>
+              {/* 숨겨진 파일 인풋 */}
+              <HiddenFileInput
+                id='profile-image-input'
+                type='file'
+                accept='image/*'
+                onChange={handleImageFileChange}
+                style={{ display: 'none' }}
+              />
+            </ProfileImageField>
+
             <BlackContainer />
             <BottomBar
               imageSrc={ResetButtonIcon}
@@ -332,7 +369,6 @@ const InputFieldLabel = styled.label`
   font-weight: 700;
   font-size: 11px;
   line-height: 11px;
-
   margin-top: 30px;
 `;
 const GenderRow = styled.div`
@@ -343,7 +379,6 @@ const GenderRow = styled.div`
 const GenderButton = styled.button<{ selected: boolean; isSelected: boolean }>`
   flex: 1;
   padding: 10px;
-
   border: ${({ isSelected }) => (isSelected ? '2px solid #f6ae24' : 'none')};
   border-radius: 10px;
   background-color: ${({ selected }) => (selected ? '#FFFFFF' : '#EEEEEE')};
@@ -377,10 +412,58 @@ const PhoneField = styled.div`
     padding-right: 120px;
   }
 `;
+
+const ProfileImageLabel = styled.div`
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 30px;
+  text-align: left;
+`;
+
+const ProfileImageField = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px;
+  gap: 30px;
+
+  border: 1px solid #ccc;
+  justify-content: center;
+`;
+const ProfileImageDisplay = styled.img`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+const PlaceholderText = styled.div`
+  width: 60px;
+  height: 60px;
+  border: 1px dashed #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 10px;
+  text-align: center;
+`;
+const ChangeImageButton = styled.button`
+  padding: 8px 12px;
+  font-size: 12px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+`;
 const BlackContainer = styled.div`
   margin-bottom: 100px;
 `;
 const ErrorText = styled.div`
   color: red;
   text-align: center;
+`;
+const HiddenFileInput = styled.input`
+  display: none;
 `;
