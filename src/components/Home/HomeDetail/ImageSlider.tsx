@@ -1,7 +1,7 @@
-import React from "react";
-import styled from "styled-components";
-import Theme from "../../../styles/Theme";
-import { useSwipeable } from "react-swipeable";
+import React from 'react';
+import styled from 'styled-components';
+import Theme from '../../../styles/Theme';
+import { useSwipeable } from 'react-swipeable';
 
 type ImageSliderProps = {
   images: string[];
@@ -51,11 +51,11 @@ const ImageWrapper = styled.div`
 
 const ImageContainer = styled.div`
   width: 100%;
-  height: 466px;
+  height: 500px;
   position: relative;
   overflow: hidden;
   cursor: grab;
-  background-color: ${Theme.colors.gray1};
+  background-color: ${Theme.colors.gray0};
 `;
 
 const Image = styled.img`
@@ -82,4 +82,5 @@ const Indicator = styled.div<IndicatorProps>`
   background-color: ${({ active }) =>
     active ? Theme.colors.yellow : Theme.colors.white};
   border-radius: 50%;
+  border: 1px solid #999;
 `;
