@@ -292,7 +292,7 @@ const SettingMelpik: React.FC = () => {
               <PlaceholderText>이미지를 추가해 주세요</PlaceholderText>
             )}
             <ChangeImageButton type='button' onClick={handleImageChangeClick}>
-              이미지 변경
+              이미지 수정
             </ChangeImageButton>
             <HiddenFileInput
               id='profile-image-input'
