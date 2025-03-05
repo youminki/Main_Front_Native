@@ -33,6 +33,21 @@ const SettingMelpik: React.FC = () => {
   const [isAccountModalOpen, setAccountModalOpen] = useState(false);
   const [isLinkModalOpen, setLinkModalOpen] = useState(false);
 
+  // ✅ 프로필 이미지 상태 관리
+  const [profileImage, setProfileImage] = useState<string>('');
+
+  const handleImageChangeClick = () => {
+    document.getElementById('profile-image-input')?.click();
+  };
+
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      setProfileImage(imageUrl);
+    }
+  };
+
   // ✅ 계좌번호 마스킹 처리 함수
   const maskAccountNumber = (number: string) => {
     if (number.length > 5) {
@@ -117,7 +132,6 @@ const SettingMelpik: React.FC = () => {
             maxLength={12}
             prefix='melpick.com/'
             readOnly
-            // defaultValue='styleweex' 대신 아래 value 사용
             value={melpickAddress}
             buttonLabel='링크복사'
             buttonColor='black'
@@ -184,84 +198,111 @@ const SettingMelpik: React.FC = () => {
             ))}
           </LinkList>
         </Section>
-      </Container>
 
-      {/* 계좌등록 모달 */}
-      <ReusableModal
-        isOpen={isAccountModalOpen}
-        onClose={() => setAccountModalOpen(false)}
-        title='정산 계좌등록'
-      >
-        <ModalContent>
-          <InputField
-            label='계좌번호 *'
-            id='account-number'
-            type='text'
-            placeholder='계좌번호를 입력하세요'
-            value={accountInfo.accountNumber}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setAccountInfo({ ...accountInfo, accountNumber: e.target.value })
-            }
-          />
-          <FlexRow>
+        {/* 계좌등록 모달 */}
+        <ReusableModal
+          isOpen={isAccountModalOpen}
+          onClose={() => setAccountModalOpen(false)}
+          title='정산 계좌등록'
+        >
+          <ModalContent>
             <InputField
-              label='은행 선택 *'
-              id='bank-select'
-              options={[
-                '국민은행',
-                '신한은행',
-                '하나은행',
-                '우리은행',
-                '카카오뱅크',
-              ]}
-              onSelectChange={(value: string) =>
-                setAccountInfo({ ...accountInfo, bank: value })
-              }
-              defaultValue={accountInfo.bank}
-            />
-            <InputField
-              label='예금주 입력 *'
-              id='account-owner'
+              label='계좌번호 *'
+              id='account-number'
               type='text'
-              placeholder='예금주를 입력하세요'
-              value={accountInfo.accountOwner}
+              placeholder='계좌번호를 입력하세요'
+              value={accountInfo.accountNumber}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setAccountInfo({ ...accountInfo, accountOwner: e.target.value })
+                setAccountInfo({
+                  ...accountInfo,
+                  accountNumber: e.target.value,
+                })
               }
             />
-          </FlexRow>
-        </ModalContent>
-      </ReusableModal>
+            <FlexRow>
+              <InputField
+                label='은행 선택 *'
+                id='bank-select'
+                options={[
+                  '국민은행',
+                  '신한은행',
+                  '하나은행',
+                  '우리은행',
+                  '카카오뱅크',
+                ]}
+                onSelectChange={(value: string) =>
+                  setAccountInfo({ ...accountInfo, bank: value })
+                }
+                defaultValue={accountInfo.bank}
+              />
+              <InputField
+                label='예금주 입력 *'
+                id='account-owner'
+                type='text'
+                placeholder='예금주를 입력하세요'
+                value={accountInfo.accountOwner}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setAccountInfo({
+                    ...accountInfo,
+                    accountOwner: e.target.value,
+                  })
+                }
+              />
+            </FlexRow>
+          </ModalContent>
+        </ReusableModal>
 
-      {/* 개인 링크등록 모달 */}
-      <ReusableModal
-        isOpen={isLinkModalOpen}
-        onClose={() => setLinkModalOpen(false)}
-        title='개인 링크등록'
-      >
-        <ModalContent>
-          <InputField
-            label='링크명 *'
-            id='link-name'
-            type='text'
-            placeholder='등록할 링크명을 입력하세요'
-            value={linkInfo.linkName}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setLinkInfo({ ...linkInfo, linkName: e.target.value })
-            }
-          />
-          <InputField
-            label='URL 입력 *'
-            id='link-url'
-            type='text'
-            placeholder='등록할 URL을 입력하세요'
-            value={linkInfo.linkUrl}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setLinkInfo({ ...linkInfo, linkUrl: e.target.value })
-            }
-          />
-        </ModalContent>
-      </ReusableModal>
+        {/* 개인 링크등록 모달 */}
+        <ReusableModal
+          isOpen={isLinkModalOpen}
+          onClose={() => setLinkModalOpen(false)}
+          title='개인 링크등록'
+        >
+          <ModalContent>
+            <InputField
+              label='링크명 *'
+              id='link-name'
+              type='text'
+              placeholder='등록할 링크명을 입력하세요'
+              value={linkInfo.linkName}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setLinkInfo({ ...linkInfo, linkName: e.target.value })
+              }
+            />
+            <InputField
+              label='URL 입력 *'
+              id='link-url'
+              type='text'
+              placeholder='등록할 URL을 입력하세요'
+              value={linkInfo.linkUrl}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setLinkInfo({ ...linkInfo, linkUrl: e.target.value })
+              }
+            />
+          </ModalContent>
+        </ReusableModal>
+
+        {/* ↓ 개인 링크모달 아래에 프로필 이미지 수정 필드 추가 */}
+        <Section>
+          <ProfileImageLabel>프로필 이미지 수정</ProfileImageLabel>
+          <ProfileImageField>
+            {profileImage ? (
+              <ProfileImageDisplay src={profileImage} alt='프로필 이미지' />
+            ) : (
+              <PlaceholderText>이미지를 추가해 주세요</PlaceholderText>
+            )}
+            <ChangeImageButton type='button' onClick={handleImageChangeClick}>
+              이미지 변경
+            </ChangeImageButton>
+            <HiddenFileInput
+              id='profile-image-input'
+              type='file'
+              accept='image/*'
+              onChange={handleImageFileChange}
+            />
+          </ProfileImageField>
+        </Section>
+      </Container>
     </ThemeProvider>
   );
 };
@@ -345,10 +386,8 @@ const Label = styled.label<{ $isEmpty: boolean }>`
   font-weight: 900;
   font-size: 12px;
   line-height: 16px;
-
   color: #000000;
   text-align: left;
-
   flex-shrink: 0;
 `;
 
@@ -382,7 +421,6 @@ const LinkUrl = styled.a`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
   display: inline-block;
   text-decoration: none;
   font-family: 'NanumSquare Neo OTF';
@@ -400,4 +438,59 @@ const DeleteButton = styled.button`
   display: flex;
   align-items: center;
   margin-left: auto;
+`;
+
+/* 프로필 이미지 관련 스타일 */
+const ProfileImageLabel = styled.div`
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 30px;
+  text-align: left;
+
+  margin-bottom: 10px;
+`;
+
+const ProfileImageField = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px;
+  gap: 30px;
+  border: 1px solid #ccc;
+  justify-content: center;
+`;
+
+const ProfileImageDisplay = styled.img`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ccc;
+`;
+
+const PlaceholderText = styled.div`
+  width: 60px;
+  height: 60px;
+  border: 1px dashed #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 10px;
+  text-align: center;
+`;
+
+const ChangeImageButton = styled.button`
+  padding: 8px 12px;
+  font-size: 12px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+`;
+
+const HiddenFileInput = styled.input`
+  display: none;
 `;
