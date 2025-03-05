@@ -48,7 +48,7 @@ const SettlementHeader = styled.div`
   /* 원하는 경우 높이나 폭을 조절할 수 있습니다 */
   background: #f3f3f3;
   border: 1px solid #dddddd;
-  padding: 20px;
+  padding: 10px;
   white-space: nowrap;
 `;
 
@@ -62,7 +62,11 @@ const PeriodSelector = styled.div`
 // 버튼 스타일
 const PeriodButton = styled.button<{ active: boolean }>`
   padding: 8px 12px;
-  margin-left: 8px;
+
+  height: 36px;
+  margin-right: 8px;
+  border-radius: 18px;
+
   font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 12px;
@@ -70,16 +74,8 @@ const PeriodButton = styled.button<{ active: boolean }>`
   color: ${({ active }) => (active ? '#fff' : '#000')};
   background: ${({ active }) => (active ? '#000' : '#fff')};
   border: 1px solid ${({ active }) => (active ? '#000' : '#ccc')};
-  border-radius: 14px;
   cursor: pointer;
   white-space: nowrap;
-
-  white-space: nowrap;
-  min-width: 60px;
-  height: 36px;
-  margin-right: 8px;
-  margin-bottom: 8px;
-  border-radius: 18px;
 `;
 
 // 검색 바 컨테이너

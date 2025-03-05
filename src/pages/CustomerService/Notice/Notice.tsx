@@ -150,7 +150,7 @@ const SettlementHeader = styled.div`
   align-items: center;
   background: #f3f3f3;
   border: 1px solid #dddddd;
-  padding: 20px;
+  padding: 10px;
   white-space: nowrap;
 `;
 
@@ -163,6 +163,10 @@ const PeriodSelector = styled.div`
 const PeriodButton = styled.button<{ active: boolean }>`
   padding: 8px 12px;
 
+  height: 36px;
+  margin-right: 8px;
+  border-radius: 18px;
+
   font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 12px;
@@ -170,16 +174,8 @@ const PeriodButton = styled.button<{ active: boolean }>`
   color: ${({ active }) => (active ? '#fff' : '#000')};
   background: ${({ active }) => (active ? '#000' : '#fff')};
   border: 1px solid ${({ active }) => (active ? '#000' : '#ccc')};
-  border-radius: 14px;
   cursor: pointer;
   white-space: nowrap;
-
-  white-space: nowrap;
-  min-width: 60px;
-  height: 36px;
-  margin-right: 8px;
-  margin-bottom: 8px;
-  border-radius: 18px;
 `;
 
 const SearchBarContainer = styled.div`

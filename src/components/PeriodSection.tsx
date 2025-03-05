@@ -45,7 +45,7 @@ const SettlementHeader = styled.div`
   align-items: center;
   background: #f3f3f3;
   border: 1px solid #dddddd;
-  padding: 20px;
+  padding: 10px;
   white-space: nowrap;
 `;
 
@@ -68,10 +68,8 @@ const PeriodSelector = styled.div`
 const PeriodButton = styled.button<{ active: boolean }>`
   padding: 8px 12px;
 
-  min-width: 60px;
   height: 36px;
   margin-right: 8px;
-  margin-bottom: 8px;
   border-radius: 18px;
 
   font-family: 'NanumSquare Neo OTF';
