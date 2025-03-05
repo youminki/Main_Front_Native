@@ -2,7 +2,6 @@ import { useState } from 'react';
 import styled from 'styled-components';
 
 const AgreementSection = () => {
-  const [allChecked, setAllChecked] = useState(false);
   const [individualChecks, setIndividualChecks] = useState({
     agree1: false,
     agree2: false,
@@ -10,15 +9,6 @@ const AgreementSection = () => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState('');
-
-  const handleAllChecked = () => {
-    const newValue = !allChecked;
-    setAllChecked(newValue);
-    setIndividualChecks({
-      agree1: newValue,
-      agree2: newValue,
-    });
-  };
 
   const handleIndividualCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, checked } = e.target;
@@ -39,16 +29,6 @@ const AgreementSection = () => {
 
   return (
     <AgreementWrapper>
-      <AllAgreeWrapper>
-        <Checkbox
-          type='checkbox'
-          id='agreeAll'
-          checked={allChecked}
-          onChange={handleAllChecked}
-        />
-        <Label htmlFor='agreeAll'>전체동의</Label>
-      </AllAgreeWrapper>
-
       <ContentContainer>
         <CheckboxWrapper>
           <Checkbox
@@ -59,12 +39,12 @@ const AgreementSection = () => {
             onChange={handleIndividualCheck}
           />
           <Label htmlFor='agree1'>
-            이용약관 동의 <RequiredText>(필수)</RequiredText>
+            정보입력 동의 <RequiredText>(필수)</RequiredText>
           </Label>
         </CheckboxWrapper>
         <InputWrapper>
           <DescriptionWrapper>
-            <Description>이용 전 필수사항 및 주의사항 안내.</Description>
+            <Description>설정에 필요한 정보입력 동의 안내.</Description>
           </DescriptionWrapper>
           <ViewDetailsButton
             onClick={() =>
@@ -72,28 +52,6 @@ const AgreementSection = () => {
                 본 약관은 주식회사 멜픽(이하 "회사"라 합니다.)가 제공하는 의류 및 잡화(이하 "제품"이라 합니다.) 판매 및 전자상거래에 관한 온/오프라인상의 제반 서비스(이하 "서비스"라 합니다.)를 이용함에 있어서 회사와 회원의 권리와 의무에 대한 책임사항을 규정함을 목적으로 합니다.
               `)
             }
-          >
-            전체보기
-          </ViewDetailsButton>
-        </InputWrapper>
-        <CheckboxWrapper>
-          <Checkbox
-            type='checkbox'
-            id='agree2'
-            required
-            checked={individualChecks.agree2}
-            onChange={handleIndividualCheck}
-          />
-          <Label htmlFor='agree2'>
-            개인정보수집 동의 <RequiredText>(필수)</RequiredText>
-          </Label>
-        </CheckboxWrapper>
-        <InputWrapper>
-          <DescriptionWrapper>
-            <Description>서비스 이용에 필요한 개인정보 수집 안내.</Description>
-          </DescriptionWrapper>
-          <ViewDetailsButton
-            onClick={() => handleViewDetails('개인정보수집 내용')}
           >
             전체보기
           </ViewDetailsButton>
@@ -129,12 +87,6 @@ const AgreementWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
   margin-bottom: 20px;
   z-index: 110;
-`;
-
-const AllAgreeWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
 `;
 
 const CheckboxWrapper = styled.div`
@@ -202,14 +154,19 @@ const ViewDetailsButton = styled.button`
   width: 69px;
   height: 34px;
   background-color: ${({ theme }) => theme.colors.black};
-  color: ${({ theme }) => theme.colors.white};
+
   border: none;
   cursor: pointer;
-  font-size: 12px;
+
   border-radius: 5px;
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
+  font-size: 12px;
+  line-height: 13px;
   text-align: center;
+
+  color: #ffffff;
 `;
 
 const DescriptionWrapper = styled.div`
