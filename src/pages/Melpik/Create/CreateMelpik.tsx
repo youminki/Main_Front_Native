@@ -5,10 +5,10 @@ import ContentList from '../../../components/Melpik/CreateMelpik/ContentList';
 
 // 동적 데이터
 const visitLabel = '인스타 계정';
-const salesLabel = '나만의 코드';
+const salesLabel = '현재 등록수  ';
 const visits = '@styleweex';
-const sales = 'ENFJ';
-const dateRange = '2025.01.06 ~ 01.10';
+const sales = '2';
+const dateRange = 'Now';
 
 const CreateMelpik: React.FC = () => {
   return (
