@@ -44,3 +44,8 @@
 .read-the-docs {
   color: #888;
 }
+
+html,
+body {
+  overflow-x: hidden;
+}
