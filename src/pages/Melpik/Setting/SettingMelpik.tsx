@@ -14,6 +14,9 @@ const SettingMelpik: React.FC = () => {
   const visitLabel = '인스타 계정';
   const salesLabel = '등록된 링크';
 
+  // 멜픽 주소 상태 (readOnly이지만, 내부에서 value를 가져오기 위함)
+  const [melpickAddress] = useState('styleweex');
+
   // ✅ 계좌 및 링크 정보 상태 관리
   const [accountInfo, setAccountInfo] = useState({
     bank: '국민은행',
@@ -37,6 +40,7 @@ const SettingMelpik: React.FC = () => {
     }
     return number;
   };
+
   // ✅ 링크 데이터
   const [links, setLinks] = useState([
     {
@@ -69,6 +73,20 @@ const SettingMelpik: React.FC = () => {
     setLinks(links.filter((link) => link.id !== linkId));
   };
 
+  // ✅ 링크 복사 버튼 동작 (InputField value에서 가져옴)
+  const handleCopyLink = () => {
+    const linkToCopy = `melpick.com/${melpickAddress}`;
+
+    navigator.clipboard
+      .writeText(linkToCopy)
+      .then(() => {
+        // alert('링크가 복사되었습니다!');
+      })
+      .catch(() => {
+        // alert('링크 복사에 실패했습니다.');
+      });
+  };
+
   return (
     <ThemeProvider theme={Theme}>
       <Container>
@@ -89,6 +107,7 @@ const SettingMelpik: React.FC = () => {
         <Divider />
 
         <Section>
+          {/* ✅ 멜픽 주소 (변경불가) + 링크복사 버튼 */}
           <InputField
             label='멜픽 주소 (변경불가)'
             id='melpickAddress'
@@ -98,7 +117,11 @@ const SettingMelpik: React.FC = () => {
             maxLength={12}
             prefix='melpick.com/'
             readOnly
-            defaultValue='styleweex'
+            // defaultValue='styleweex' 대신 아래 value 사용
+            value={melpickAddress}
+            buttonLabel='링크복사'
+            buttonColor='black'
+            onButtonClick={handleCopyLink}
           />
 
           <InputField
@@ -163,6 +186,7 @@ const SettingMelpik: React.FC = () => {
         </Section>
       </Container>
 
+      {/* 계좌등록 모달 */}
       <ReusableModal
         isOpen={isAccountModalOpen}
         onClose={() => setAccountModalOpen(false)}
@@ -209,7 +233,7 @@ const SettingMelpik: React.FC = () => {
         </ModalContent>
       </ReusableModal>
 
-      {/* ✅ 개인 링크등록 모달 */}
+      {/* 개인 링크등록 모달 */}
       <ReusableModal
         isOpen={isLinkModalOpen}
         onClose={() => setLinkModalOpen(false)}
@@ -244,6 +268,7 @@ const SettingMelpik: React.FC = () => {
 
 export default SettingMelpik;
 
+/* 스타일 정의 */
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -291,10 +316,26 @@ const ModalContent = styled.div`
   width: 100%;
 `;
 
+const StatsRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 20px;
+`;
+
 const LinkList = styled.ul`
   margin-top: 10px;
   list-style: none;
   padding: 0;
+`;
+
+const LinkItem = styled.li`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
 `;
 
 const Label = styled.label<{ $isEmpty: boolean }>`
@@ -309,13 +350,6 @@ const Label = styled.label<{ $isEmpty: boolean }>`
   text-align: left;
 
   flex-shrink: 0;
-`;
-const LinkItem = styled.li`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 10px;
 `;
 
 const LinkContent = styled.div`
@@ -366,11 +400,4 @@ const DeleteButton = styled.button`
   display: flex;
   align-items: center;
   margin-left: auto;
-`;
-const StatsRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0 20px;
 `;
