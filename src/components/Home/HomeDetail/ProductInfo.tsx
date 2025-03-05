@@ -1,7 +1,7 @@
-import React from "react";
-import styled from "styled-components";
-import Theme from "../../../styles/Theme";
-import AddTekImage from "../../../assets/ClosetIcon.svg";
+import React from 'react';
+import styled from 'styled-components';
+import Theme from '../../../styles/Theme';
+import AddTekImage from '../../../assets/ClosetIcon.svg';
 
 type ProductInfoProps = {
   item: {
@@ -17,7 +17,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ item }) => {
   return (
     <InfoContainer>
       <CategoryText>
-        브랜드 <span className="gt">&gt;</span>{" "}
+        브랜드 <span className='gt'>&gt;</span>{' '}
         <BrandText>{item.brand}</BrandText>
       </CategoryText>
 
@@ -37,7 +37,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ item }) => {
           </PriceContainer>
         </TextGroup>
         <TekImageContainer>
-          <TekImage src={AddTekImage} alt="Tek 추가 이미지" />
+          <TekImage src={AddTekImage} alt='Tek 추가 이미지' />
         </TekImageContainer>
       </ContentContainer>
     </InfoContainer>
@@ -52,19 +52,19 @@ const InfoContainer = styled.div`
 `;
 
 const CategoryText = styled.p`
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
 
   color: #000000;
 
   & > span {
-    font-family: "NanumSquare Neo OTF";
+    font-family: 'NanumSquare Neo OTF';
     font-style: normal;
     font-weight: 800;
-    font-size: 10px;
+    font-size: 12px;
     line-height: 11px;
     color: #000000;
   }
@@ -76,7 +76,7 @@ const CategoryText = styled.p`
 `;
 
 const BrandText = styled.span`
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 16px;
@@ -128,10 +128,10 @@ const PriceContainer = styled.div`
 `;
 
 const OriginalPrice = styled.span`
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 13px;
   text-decoration-line: line-through;
 

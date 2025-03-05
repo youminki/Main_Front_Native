@@ -1,6 +1,6 @@
-import React from "react";
-import styled from "styled-components";
-import Theme from "../../../styles/Theme";
+import React from 'react';
+import styled from 'styled-components';
+import Theme from '../../../styles/Theme';
 
 interface MaterialData {
   [key: string]: string;
@@ -11,11 +11,11 @@ interface MaterialInfoProps {
 }
 
 const sampleMaterialData: MaterialData = {
-  두께감: "매우 두꺼움",
-  신축성: "없음",
-  안감: "부분안감",
-  촉감: "적당",
-  비침: "없음",
+  두께감: '매우 두꺼움',
+  신축성: '없음',
+  안감: '부분안감',
+  촉감: '적당',
+  비침: '없음',
 };
 
 const MaterialInfo: React.FC<MaterialInfoProps> = ({
@@ -26,11 +26,11 @@ const MaterialInfo: React.FC<MaterialInfoProps> = ({
   };
 
   const materialOptions: { [key: string]: string[] } = {
-    두께감: ["매우 두꺼움", "두꺼움", "적당", "얇음"],
-    신축성: ["좋음", "약간있음", "없음", "허리밴딩"],
-    안감: ["전체안감", "부분안감", "기모안감", "없음"],
-    촉감: ["뻣뻣함", "까슬함", "적당", "부드러움"],
-    비침: ["비침있음", "약간있음", "부분있음", "없음"],
+    두께감: ['매우 두꺼움', '두꺼움', '적당', '얇음'],
+    신축성: ['좋음', '약간있음', '없음', '허리밴딩'],
+    안감: ['전체안감', '부분안감', '기모안감', '없음'],
+    촉감: ['뻣뻣함', '까슬함', '적당', '부드러움'],
+    비침: ['비침있음', '약간있음', '부분있음', '없음'],
   };
 
   return (
@@ -83,7 +83,7 @@ const MaterialInfoContainer = styled.div`
 const Title = styled.h3`
   font-style: normal;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   margin-bottom: 10px;
 `;
@@ -98,7 +98,7 @@ const InfoRow = styled.div`
 
 const Label = styled.div`
   font-weight: 800;
-  font-size: 12px;
+  font-size: 14px;
   text-align: center;
   width: 100%;
   max-width: 100px;
@@ -143,10 +143,10 @@ const Options = styled.div`
 const Option = styled.div<{ isSelected: boolean }>`
   font-style: normal;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
-  color: ${(props) => (props.isSelected ? "#FFA500" : "#000000")};
-  font-weight: ${(props) => (props.isSelected ? "bold" : "normal")};
+  color: ${(props) => (props.isSelected ? '#FFA500' : '#000000')};
+  font-weight: ${(props) => (props.isSelected ? 'bold' : 'normal')};
   transition: color 0.3s ease;
   width: 100%;
   min-width: 50px;

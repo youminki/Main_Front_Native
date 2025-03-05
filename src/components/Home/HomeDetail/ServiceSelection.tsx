@@ -1,6 +1,6 @@
-import React from "react";
-import styled from "styled-components";
-import Theme from "../../../styles/Theme";
+import React from 'react';
+import styled from 'styled-components';
+import Theme from '../../../styles/Theme';
 
 type ServiceSelectionProps = {
   selectedService: string;
@@ -18,9 +18,9 @@ const ServiceSelection: React.FC<ServiceSelectionProps> = ({
         value={selectedService}
         onChange={(e) => setSelectedService(e.target.value)}
       >
-        <option value="">서비스 선택 (대여 or 구매)</option>
-        <option value="rental">대여</option>
-        <option value="purchase">구매</option>
+        <option value=''>서비스 선택 (대여 or 구매)</option>
+        <option value='rental'>대여</option>
+        <option value='purchase'>구매</option>
       </Select>
     </ServiceContainer>
   );
@@ -34,15 +34,11 @@ const ServiceContainer = styled.div`
   width: 100%;
 
   label {
-    font-family: "NanumSquare Neo OTF";
-    font-style: normal;
+    font-family: 'NanumSquare Neo OTF';
     font-weight: 700;
-    font-size: 10px;
-    line-height: 11px;
-    /* identical to box height */
-
-    color: #000000;
+    font-size: 12px;
     margin-bottom: 10px;
+    display: block;
   }
 `;
 
@@ -54,11 +50,11 @@ const Select = styled.select`
   border: 1px solid ${Theme.colors.black};
   border-radius: 4px;
   background-color: ${Theme.colors.white};
-  font-size: 14px;
+  font-size: 16px;
   color: ${Theme.colors.black};
 
   &:focus {
     outline: none;
-    border-color: ${Theme.colors.black || "#007bff"};
+    border-color: ${Theme.colors.black || '#007bff'};
   }
 `;

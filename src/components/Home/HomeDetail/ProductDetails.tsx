@@ -123,7 +123,7 @@ const DetailSection = styled.div`
 const Title = styled.div`
   font-style: normal;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   margin-bottom: 10px;
 `;
@@ -141,7 +141,7 @@ const MaterialRow = styled.div`
 const MaterialLabel = styled.div`
   width: 50px;
   font-weight: 800;
-  font-size: 12px;
+  font-size: 13px;
   color: #000000;
   text-align: center;
   margin-right: 20px;
@@ -158,7 +158,7 @@ const MaterialValue = styled.div<{ bgColor: string }>`
   border-radius: 2px;
   padding: 4px 4px;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   color: #ffffff;
 `;
@@ -180,7 +180,7 @@ const Label = styled.div`
   width: 50px;
   font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
-  font-size: 12px;
+  font-size: 13px;
   color: #000000;
   text-align: center;
   margin-right: 20px;
@@ -189,7 +189,7 @@ const Label = styled.div`
 const Value = styled.div`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
   color: #000000;
 `;
 
@@ -204,7 +204,7 @@ const SeasonValue = styled.div<{ bgColor: string }>`
   padding: 4px 4px;
   font-style: normal;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   color: #ffffff;
 `;

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import Theme from "../../../styles/Theme";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import Theme from '../../../styles/Theme';
 
 const PaymentMethod: React.FC = () => {
-  const [selectedOption, setSelectedOption] = useState<string>("12");
+  const [selectedOption, setSelectedOption] = useState<string>('12');
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
@@ -13,14 +13,14 @@ const PaymentMethod: React.FC = () => {
     <PaymentMethodContainer>
       <PaymentMethodText>결제방식 (선택)</PaymentMethodText>
       <InstallmentOptions>
-        <NowOptionWrapper onClick={() => handleOptionClick("NOW")}>
-          <NowOption active={selectedOption === "NOW"}>
-            {selectedOption === "NOW" && <Circle />}
+        <NowOptionWrapper onClick={() => handleOptionClick('NOW')}>
+          <NowOption active={selectedOption === 'NOW'}>
+            {selectedOption === 'NOW' && <Circle />}
             <OptionText>NOW</OptionText>
           </NowOption>
         </NowOptionWrapper>
         <OptionContainer>
-          {["6", "12", "18", "24", "36"].map((option) => (
+          {['6', '12', '18', '24', '36'].map((option) => (
             <OptionWrapper
               key={option}
               onClick={() => handleOptionClick(option)}
@@ -45,10 +45,10 @@ const PaymentMethodContainer = styled.div`
 `;
 
 const PaymentMethodText = styled.div`
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   /* identical to box height */
 
@@ -123,10 +123,10 @@ const Option = styled.div<{ active: boolean }>`
 const OptionText = styled.div`
   position: relative;
   z-index: 2;
-  font-family: "NanumSquare Neo OTF";
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 15px;
   text-align: center;
 

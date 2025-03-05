@@ -251,8 +251,8 @@ const Container = styled.div`
 const Label = styled.label`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
-  font-size: 14px;
-  margin-bottom: 5px;
+  font-size: 12px;
+  margin-bottom: 10px;
   display: block;
 `;
 
@@ -263,10 +263,11 @@ const Wrapper = styled.div`
 
 const Select = styled.select`
   flex: 1;
-  padding: 10px;
-  border: 1px solid ${Theme.colors.gray4};
+  padding: 20px 10px;
+  border: 1px solid ${Theme.colors.black};
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
 `;
 
 const Button = styled.button<{ disabled?: boolean }>`
@@ -275,10 +276,11 @@ const Button = styled.button<{ disabled?: boolean }>`
   justify-content: space-between;
   align-items: center;
   padding: 0 15px;
-  height: 50px;
+  font-size: 16px;
+
   background-color: ${({ disabled }) =>
     disabled ? Theme.colors.gray3 : '#ffffff'};
-  border: 1px solid ${Theme.colors.gray4};
+  border: 1px solid ${Theme.colors.black};
   border-radius: 4px;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 `;
@@ -311,7 +313,7 @@ const DropdownContainer = styled.div`
 const DropdownLabel = styled.div`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
-  font-size: 12px;
+  font-size: 14px;
   margin-bottom: 5px;
 `;
 
@@ -384,7 +386,7 @@ const Notice = styled.p`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 20px;
   color: #999999;
 `;
