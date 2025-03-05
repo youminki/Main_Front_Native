@@ -19,6 +19,7 @@ import FindPassword from './pages/FindPassword';
 import MyInfo from './pages/MyInfo';
 import MyStyle from './pages/MyStyle';
 import Basket from './pages/Basket';
+import Alarm from './pages/Alarm';
 import Payment from './pages/Payment';
 
 import Home from './pages/Home/Home';
@@ -169,6 +170,7 @@ const App: React.FC = () => {
     '/findid',
     '/findPassword',
     '/basket',
+    '/alarm',
     '/payment',
     '/MyInfo',
     '/MyStyle',
@@ -254,6 +256,10 @@ const App: React.FC = () => {
     if (matchPath('/basket', location.pathname)) {
       return '장바구니';
     }
+    if (matchPath('/alarm', location.pathname)) {
+      return '알람';
+    }
+
     if (matchPath('/payment', location.pathname)) {
       return '결제하기';
     }
@@ -309,6 +315,7 @@ const App: React.FC = () => {
           <Route path='/MyStyle' element={<MyStyle />} />
           <Route path='/analysis' element={<Analysis />} />
           <Route path='/basket' element={<Basket />} />
+          <Route path='/alarm' element={<Alarm />} />
           <Route path='/payment' element={<Payment />} />
 
           <Route path='/brand' element={<Brand />} />
