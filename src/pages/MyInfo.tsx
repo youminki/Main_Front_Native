@@ -435,6 +435,7 @@ const ProfileImageDisplay = styled.img`
   height: 60px;
   border-radius: 50%;
   object-fit: cover;
+  border: 1px solid #ccc;
 `;
 const PlaceholderText = styled.div`
   width: 60px;
