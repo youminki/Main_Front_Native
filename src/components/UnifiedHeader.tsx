@@ -41,7 +41,7 @@ const slideOut = keyframes`
   }
 `;
 
-// 두 뎁스와 쓰리 뎁스 헤더에 애니메이션을 적용할 래퍼 컴포넌트
+// 애니메이션을 적용할 래퍼 컴포넌트 (threeDepth에만 사용)
 const AnimatedHeaderWrapper = styled.div<{ exit?: boolean }>`
   animation: ${({ exit }) => (exit ? slideOut : slideIn)} 0.3s ease-out;
 `;
@@ -77,18 +77,18 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     }
   }, [variant]);
 
-  // 기본 뒤로가기 핸들러
-  const handleBackClick = () => {
-    navigate(-1);
-  };
-
-  // onBack prop이 있다면 해당 함수 호출, 없으면 기본 뒤로가기 동작
-  const handleBack = () => {
+  // 기본 뒤로가기 핸들러 (애니메이션 효과 적용)
+  const handleBackWithAnimation = () => {
     if (onBack) {
       onBack();
     } else {
-      handleBackClick();
+      navigate(-1);
     }
+  };
+
+  // 취소 버튼 (twoDepth)에서는 애니메이션 효과 없이 바로 뒤로가기
+  const handleCancel = () => {
+    navigate(-1);
   };
 
   if (variant === 'default') {
@@ -164,7 +164,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
             <BackButton
               src={BackButtonIcon}
               alt='뒤로가기'
-              onClick={handleBack}
+              onClick={handleBackWithAnimation}
             />
           </LeftSection>
           <RightSection>
@@ -201,29 +201,27 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     );
   }
 
-  // 투뎁쓰 (애니메이션 적용)
+  // twoDepth: 취소 버튼( CancleIconIcon ) 클릭 시 애니메이션 효과 없이 바로 뒤로가기
   if (variant === 'twoDepth') {
     return (
-      <AnimatedHeaderWrapper exit={exit}>
-        <HeaderWrapper>
-          <HeaderContainer>
-            <LeftSection>
-              <CancelIcon
-                src={CancleIconIcon}
-                alt='뒤로가기'
-                onClick={handleBack}
-              />
-            </LeftSection>
-            <CenterSection>
-              <Title>{title || ''}</Title>
-            </CenterSection>
-          </HeaderContainer>
-        </HeaderWrapper>
-      </AnimatedHeaderWrapper>
+      <HeaderWrapper>
+        <HeaderContainer>
+          <LeftSection>
+            <CancelIcon
+              src={CancleIconIcon}
+              alt='취소'
+              onClick={handleCancel}
+            />
+          </LeftSection>
+          <CenterSection>
+            <Title>{title || ''}</Title>
+          </CenterSection>
+        </HeaderContainer>
+      </HeaderWrapper>
     );
   }
 
-  // 쓰리뎁쓰 (애니메이션 적용)
+  // threeDepth: 백 버튼( BackButtonIcon ) 클릭 시 exit 애니메이션 효과 적용
   if (variant === 'threeDepth') {
     return (
       <AnimatedHeaderWrapper exit={exit}>
@@ -233,7 +231,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
               <BackButton
                 src={BackButtonIcon}
                 alt='뒤로가기'
-                onClick={handleBack}
+                onClick={handleBackWithAnimation}
               />
             </LeftSection>
             <CenterSection>

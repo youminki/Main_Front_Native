@@ -162,6 +162,7 @@ const App: React.FC = () => {
     '/customerService/NoticeDetail',
     '/customerService/PersonalInformationProcessingPolicyDetail',
     '/customerService/TermsAndConditionsOfUseDetail',
+    '/payment',
   ];
 
   // Header4 (쓰리뎁쓰) 경로 패턴
@@ -171,7 +172,7 @@ const App: React.FC = () => {
     '/findPassword',
     '/basket',
     '/alarm',
-    '/payment',
+
     '/MyInfo',
     '/MyStyle',
   ];
@@ -240,6 +241,9 @@ const App: React.FC = () => {
     if (matchPath('/my-ticket/OnetimePass', location.pathname)) {
       return '이용권 상세';
     }
+    if (matchPath('/payment', location.pathname)) {
+      return '결제하기';
+    }
     return '';
   };
 
@@ -260,9 +264,6 @@ const App: React.FC = () => {
       return '알람';
     }
 
-    if (matchPath('/payment', location.pathname)) {
-      return '결제하기';
-    }
     if (matchPath('/MyInfo', location.pathname)) {
       return '내 정보';
     }
