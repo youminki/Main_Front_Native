@@ -202,7 +202,7 @@ const Title = styled.div`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   color: #000000;
   margin-bottom: 10px;
@@ -227,7 +227,7 @@ const SubscriptionLabel = styled.div`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   color: #000000;
   margin-bottom: 10px;
@@ -246,7 +246,7 @@ const MainTitle = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 22px;
   color: #000000;
 `;
@@ -256,7 +256,7 @@ const SubTitle = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #999999;
 `;
@@ -293,7 +293,7 @@ const RowLabel = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #000000;
 `;
@@ -303,7 +303,7 @@ const RowValue = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #000000;
 `;
@@ -313,7 +313,7 @@ const RowPeriod = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #000000;
 `;

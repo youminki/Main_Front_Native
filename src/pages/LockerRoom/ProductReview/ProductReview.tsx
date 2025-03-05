@@ -296,7 +296,7 @@ const ItemDetails = styled.div`
 const Brand = styled.div`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   color: #000;
 `;
@@ -310,7 +310,7 @@ const ItemName = styled.div`
 const NameCode = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 22px;
   color: #000;
 `;
@@ -318,7 +318,7 @@ const NameCode = styled.span`
 const Slash = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #dddddd;
   margin: 0 4px;
@@ -327,7 +327,7 @@ const Slash = styled.span`
 const ItemType = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #999;
 `;
@@ -370,7 +370,7 @@ const AdditionalText = styled.div`
 const DetailText = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #000;
   white-space: nowrap;
@@ -379,7 +379,7 @@ const DetailText = styled.span`
 const DetailHighlight = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #000;
   white-space: nowrap;
@@ -439,7 +439,7 @@ const LabelDetailText = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #000000;
   white-space: nowrap;

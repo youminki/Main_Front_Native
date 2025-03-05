@@ -287,7 +287,7 @@ const CardTop = styled.div`
 const CardRegisterDate = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
-  font-size: 8px;
+  font-size: 10px;
   line-height: 9px;
   color: #ffffff;
 `;
@@ -316,7 +316,7 @@ const CardIconImg = styled.img`
 const CardBrandText = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
-  font-size: 8px;
+  font-size: 10px;
   line-height: 9px;
   color: #ffffff;
 `;
@@ -324,7 +324,7 @@ const CardBrandText = styled.span`
 const CardNumber = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 13px;
   color: #ffffff;
 `;
@@ -418,7 +418,7 @@ const TableHeader = styled.div`
 const LeftHeader = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   color: #000000;
 `;
@@ -426,7 +426,7 @@ const LeftHeader = styled.span`
 const RightHeader = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   color: #000000;
   text-align: right;
@@ -452,7 +452,7 @@ const PaymentInfo = styled.div`
 const PaymentMainText = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 13px;
   color: #000000;
 `;
@@ -460,15 +460,17 @@ const PaymentMainText = styled.span`
 const PaymentSubText = styled.span<{ color?: string }>`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 13px;
   color: ${({ color }) => color || '#000000'};
+
+  margin-top: 5px;
 `;
 
 const PaymentPrice = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 15px;
   color: #000000;
   text-align: right;

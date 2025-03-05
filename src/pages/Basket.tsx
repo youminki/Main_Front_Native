@@ -327,7 +327,7 @@ const Brand = styled.div`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
-  font-size: 10px;
+  font-size: 14px;
   line-height: 11px;
   color: #000000;
 `;
@@ -343,7 +343,7 @@ const NameCode = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 22px;
   color: #000000;
 `;
@@ -352,7 +352,7 @@ const ItemType = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #999999;
 `;
@@ -361,7 +361,7 @@ const Slash = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #dddddd;
   margin: 0 4px;
@@ -371,7 +371,7 @@ const LabelDetailText = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #000000;
   white-space: nowrap;
@@ -381,7 +381,7 @@ const DetailText = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #000000;
   white-space: nowrap;
@@ -391,7 +391,7 @@ const DetailHighlight = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 22px;
   color: #000000;
   white-space: nowrap;

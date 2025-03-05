@@ -86,25 +86,19 @@ const StatLabel = styled.div`
   line-height: 13px;
   color: #000000;
   margin-right: 5px;
-
   white-space: nowrap;
 `;
-
 const DateLabel = styled.div`
   position: absolute;
-  width: 62px;
-  height: 7px;
-  top: -5px;
+  top: -10px;
   right: 10px;
+  padding: 4px 8px;
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
-  font-size: 6px;
-  line-height: 7px;
+  font-size: 8px;
+  line-height: 1.2;
   color: #fff;
   background: #f6ae24;
-  text-align: center;
-  padding: 3px;
-
   white-space: nowrap;
 `;

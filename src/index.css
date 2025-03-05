@@ -24,6 +24,10 @@
   }
   to {
     transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
   }
 }
 
@@ -39,4 +43,10 @@
 
 .read-the-docs {
   color: #888;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  scrollbar-width: none;
 }

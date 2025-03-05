@@ -28,6 +28,7 @@ const StatsSection: React.FC<StatsSectionProps> = ({
         <StatLabel>{salesLabel}</StatLabel>
         <StatNumber>{sales}</StatNumber>
       </Row>
+      {/* 수정된 DateLabel */}
       <DateLabel>{dateRange}</DateLabel>
     </StatBox>
   </StatsContainer>
@@ -54,7 +55,6 @@ const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
   padding: 15px 20px;
   position: relative;
   margin-right: 0px;
-
   white-space: nowrap;
 `;
 
@@ -63,7 +63,6 @@ const Row = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-
   white-space: nowrap;
 `;
 
@@ -74,7 +73,6 @@ const StatNumber = styled.div`
   font-size: 12px;
   line-height: 13px;
   color: #f6ae24;
-
   white-space: nowrap;
 `;
 
@@ -86,25 +84,20 @@ const StatLabel = styled.div`
   line-height: 13px;
   color: #000000;
   margin-right: 5px;
-
   white-space: nowrap;
 `;
 
 const DateLabel = styled.div`
   position: absolute;
-  width: 62px;
-  height: 7px;
-  top: -5px;
+  top: -10px;
   right: 10px;
+  padding: 4px 8px;
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
-  font-size: 6px;
-  line-height: 7px;
+  font-size: 8px;
+  line-height: 1.2;
   color: #fff;
   background: #f6ae24;
-  text-align: center;
-  padding: 3px;
-
   white-space: nowrap;
 `;

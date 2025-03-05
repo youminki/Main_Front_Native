@@ -1,7 +1,26 @@
+@font-face {
+  font-family: 'NanumSquare Neo OTF';
+  src:
+    local('NanumSquare Neo OTF'),
+    url('/fonts/NanumSquareNeoTTF.ttf') format('ttf'),
+    url('/fonts/NanumSquareNeoOTF.otf') format('otf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 2. 전역 폰트 설정 */
+html,
+body {
+  font-family: 'NanumSquare Neo OTF', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* 나머지 스타일 */
 #root {
   max-width: 600px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .logo {
@@ -10,9 +29,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }

@@ -37,7 +37,7 @@ const GroupSection = styled.section`
 
 const GroupTitle = styled.h2`
   font-weight: 900;
-  font-size: 14px;
+  font-size: 16px;
   background-color: #555;
   padding: 12px 20px;
   color: white;

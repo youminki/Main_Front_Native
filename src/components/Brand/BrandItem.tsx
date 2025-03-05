@@ -57,7 +57,7 @@ const BrandName = styled.span`
 
 const BrandCompany = styled.span`
   font-weight: 400;
-  font-size: 10px;
+  font-size: 12px;
   color: #999;
 `;
 
@@ -70,6 +70,6 @@ const BrandCategoryWrapper = styled.div`
 
 const BrandCategory = styled.span`
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   color: #999;
 `;

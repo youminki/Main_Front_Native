@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Theme from '../../styles/Theme';
 import StatsSection from '../../components/LockerRoom/StatsSection';
 
-import LockerRoomIcons from '../../assets/LockerRoom/LockerRoomIcons.svg';
+import LockerRoomIcons from '../../assets/LockerRoomIcons.svg';
 import ClosetIcon from '../../assets/LockerRoom/ClosetIconBox.svg';
 import HistoryIcon from '../../assets/LockerRoom/HistoryIconBox.svg';
 import PointsIcon from '../../assets/LockerRoom/PointsIconBox.svg';
@@ -72,7 +72,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
   background-color: #fff;
   font-family: 'NanumSquare Neo OTF', sans-serif;
 `;

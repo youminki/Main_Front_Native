@@ -106,7 +106,6 @@ const SettingMelpik: React.FC = () => {
             label='멜픽 자동생성 설정'
             id='auto-create-toggle'
             type='text'
-            readOnly
             useToggle={true}
           />
 

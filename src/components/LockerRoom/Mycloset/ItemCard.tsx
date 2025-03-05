@@ -105,6 +105,7 @@ export default ItemCard;
 
 // 기존 스타일 정의
 const CardContainer = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -140,8 +141,14 @@ const DeleteButtonIcon = styled.img`
 `;
 
 const Brand = styled.h3`
-  font-size: 14px;
-  font-weight: bold;
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 11px;
+  /* identical to box height */
+
+  color: #000000;
   margin-bottom: 2px;
 `;
 
@@ -150,8 +157,9 @@ const Description = styled.p`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 13px;
+  margin-top: 5px;
   color: #999999;
 `;
 
@@ -160,16 +168,17 @@ const PriceWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-left: 6px;
+
+  border-left: 1px solid #e0e0e0;
 `;
 
 const OriginalPrice = styled.span`
-  position: relative;
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 15px;
+  margin-left: 6px;
   color: #000000;
 `;
 
@@ -178,7 +187,7 @@ const NowLabel = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 8px;
+  font-size: 10px;
   line-height: 9px;
   color: #000000;
 `;
@@ -188,7 +197,7 @@ const DiscountLabel = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   color: #f6ae24;
 `;
