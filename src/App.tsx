@@ -1,5 +1,5 @@
 // App.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import {
   HashRouter,
   Route,
@@ -7,8 +7,9 @@ import {
   useLocation,
   matchPath,
   Navigate,
+  useNavigate,
 } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 // 페이지 컴포넌트 임포트
 import Login from './pages/Login';
@@ -69,8 +70,37 @@ import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
 import BottomNav from './components/BottomNav1';
 import UnifiedHeader from './components/UnifiedHeader';
 
+// 페이지 컨텐츠 애니메이션 keyframes
+const slideIn = keyframes`
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+`;
+
+const slideOut = keyframes`
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+`;
+
+const ContentContainer = styled.div<{ animate: boolean; exit: boolean }>`
+  flex: 1;
+  padding: 100px 0 120px 0;
+  animation: ${({ exit, animate }) =>
+      exit ? slideOut : animate ? slideIn : 'none'}
+    0.3s ease-out;
+`;
+
 const App: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [exit, setExit] = useState(false);
 
   // BottomNav가 포함될 경로 패턴
   const bottomNavPaths = [
@@ -106,8 +136,8 @@ const App: React.FC = () => {
     '/my-ticket',
     '/CustomerService/Notice',
     '/CustomerService/FrequentlyAskedQuestions',
-    '/CustomerService/PersonalInformationProcessingPolicy',
-    '/CustomerService/TermsAndConditionsOfUse',
+    '/customerService/PersonalInformationProcessingPolicy',
+    '/customerService/TermsAndConditionsOfUse',
   ];
 
   // Header3 (투뎁쓰) 경로 패턴
@@ -236,17 +266,36 @@ const App: React.FC = () => {
     return '';
   };
 
+  // 백버튼 또는 캔슬 버튼 클릭 시 exit 애니메이션 적용 후 뒤로가기 처리
+  const handleBackWithExit = () => {
+    setExit(true);
+    setTimeout(() => {
+      navigate(-1);
+      setExit(false);
+    }, 300); // 0.3초 애니메이션 시간과 동일
+  };
+
   return (
     <AppContainer>
       {includeHeader1 && <UnifiedHeader variant='default' />}
-      {includeHeader2 && <UnifiedHeader variant='oneDepth' />}
+      {includeHeader2 && <UnifiedHeader variant='oneDepth' exit={exit} />}
       {includeHeader3 && (
-        <UnifiedHeader variant='twoDepth' title={getHeader3Title()} />
+        <UnifiedHeader
+          variant='twoDepth'
+          title={getHeader3Title()}
+          onBack={handleBackWithExit}
+          exit={exit}
+        />
       )}
       {includeHeader4 && (
-        <UnifiedHeader variant='threeDepth' title={getHeader4Title()} />
+        <UnifiedHeader
+          variant='threeDepth'
+          title={getHeader4Title()}
+          onBack={handleBackWithExit}
+          exit={exit}
+        />
       )}
-      <ContentContainer>
+      <ContentContainer animate={includeHeader3 || includeHeader4} exit={exit}>
         <Routes>
           <Route path='/' element={<Navigate to='/home' replace />} />
           <Route path='/home' element={<Home />} />
@@ -358,6 +407,11 @@ const App: React.FC = () => {
   );
 };
 
+const AppContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 const AppWrapper: React.FC = () => (
   <HashRouter>
     <App />
@@ -365,13 +419,3 @@ const AppWrapper: React.FC = () => (
 );
 
 export default AppWrapper;
-
-const AppContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ContentContainer = styled.div`
-  flex: 1;
-  padding: 100px 0 120px 0;
-`;

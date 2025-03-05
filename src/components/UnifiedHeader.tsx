@@ -1,7 +1,7 @@
 // UnifiedHeader.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import Cookies from 'js-cookie';
 
 // asset imports
@@ -18,20 +18,47 @@ import MypageModal from '../components/MypageModal';
 interface UnifiedHeaderProps {
   variant?: 'default' | 'oneDepth' | 'twoDepth' | 'threeDepth';
   title?: string;
+  onBack?: () => void;
+  exit?: boolean;
 }
+
+// 애니메이션 keyframes (App.tsx의 것과 동일)
+const slideIn = keyframes`
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+`;
+
+const slideOut = keyframes`
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+`;
+
+// 두 뎁스와 쓰리 뎁스 헤더에 애니메이션을 적용할 래퍼 컴포넌트
+const AnimatedHeaderWrapper = styled.div<{ exit?: boolean }>`
+  animation: ${({ exit }) => (exit ? slideOut : slideIn)} 0.3s ease-out;
+`;
 
 const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   variant = 'default',
   title,
+  onBack,
+  exit,
 }) => {
   const navigate = useNavigate();
 
-  // 기본헤더와 원뎁쓰에서 로그인 상태를 체크합니다.
+  // 로그인 상태 체크
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [nickname, setNickname] = useState<string>('사용자');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // 헤더 상태를 지속적으로 업데이트하기 위해 쿠키를 주기적으로 확인합니다.
   useEffect(() => {
     if (variant === 'default' || variant === 'oneDepth') {
       const updateAuth = () => {
@@ -50,31 +77,32 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     }
   }, [variant]);
 
-  // 공통: 뒤로가기 핸들러
+  // 기본 뒤로가기 핸들러
   const handleBackClick = () => {
     navigate(-1);
   };
 
-  // 기본헤더: 장바구니, 마이페이지, 알림 핸들러
-  const handleBasketClick = () => navigate('/basket');
-  const handleLeftSectionClick = () => {
-    if (isLoggedIn) {
-      setIsModalOpen(true);
+  // onBack prop이 있다면 해당 함수 호출, 없으면 기본 뒤로가기 동작
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      handleBackClick();
     }
   };
 
-  // AlarmIcon 클릭 시 /Alarm 페이지로 이동
-  const handleAlarmClick = () => {
-    navigate('/Alarm');
-  };
-
-  // variant 별 렌더링
   if (variant === 'default') {
     return (
       <>
         <HeaderWrapper>
           <HeaderContainer>
-            <LeftSection onClick={handleLeftSectionClick}>
+            <LeftSection
+              onClick={() => {
+                if (isLoggedIn) {
+                  setIsModalOpen(true);
+                }
+              }}
+            >
               {isLoggedIn ? (
                 <Greeting>
                   <ProfileImage
@@ -95,9 +123,13 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                   <Icon
                     src={BasketIcon}
                     alt='장바구니'
-                    onClick={handleBasketClick}
+                    onClick={() => navigate('/basket')}
                   />
-                  <Icon src={AlarmIcon} alt='알림' onClick={handleAlarmClick} />
+                  <Icon
+                    src={AlarmIcon}
+                    alt='알림'
+                    onClick={() => navigate('/Alarm')}
+                  />
                 </>
               ) : (
                 <>
@@ -106,7 +138,11 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                     alt='마이페이지'
                     onClick={() => navigate('/login')}
                   />
-                  <Icon src={AlarmIcon} alt='알림' onClick={handleAlarmClick} />
+                  <Icon
+                    src={AlarmIcon}
+                    alt='알림'
+                    onClick={() => navigate('/Alarm')}
+                  />
                 </>
               )}
             </RightSection>
@@ -128,7 +164,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
             <BackButton
               src={BackButtonIcon}
               alt='뒤로가기'
-              onClick={handleBackClick}
+              onClick={handleBack}
             />
           </LeftSection>
           <RightSection>
@@ -137,9 +173,13 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                 <Icon
                   src={BasketIcon}
                   alt='장바구니'
-                  onClick={handleBasketClick}
+                  onClick={() => navigate('/basket')}
                 />
-                <Icon src={AlarmIcon} alt='알림' onClick={handleAlarmClick} />
+                <Icon
+                  src={AlarmIcon}
+                  alt='알림'
+                  onClick={() => navigate('/Alarm')}
+                />
               </>
             ) : (
               <>
@@ -148,7 +188,11 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                   alt='마이페이지'
                   onClick={() => navigate('/login')}
                 />
-                <Icon src={AlarmIcon} alt='알림' onClick={handleAlarmClick} />
+                <Icon
+                  src={AlarmIcon}
+                  alt='알림'
+                  onClick={() => navigate('/Alarm')}
+                />
               </>
             )}
           </RightSection>
@@ -157,41 +201,47 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     );
   }
 
+  // 투뎁쓰 (애니메이션 적용)
   if (variant === 'twoDepth') {
     return (
-      <HeaderWrapper>
-        <HeaderContainer>
-          <LeftSection>
-            <CancelIcon
-              src={CancleIconIcon}
-              alt='뒤로가기'
-              onClick={handleBackClick}
-            />
-          </LeftSection>
-          <CenterSection>
-            <Title>{title || ''}</Title>
-          </CenterSection>
-        </HeaderContainer>
-      </HeaderWrapper>
+      <AnimatedHeaderWrapper exit={exit}>
+        <HeaderWrapper>
+          <HeaderContainer>
+            <LeftSection>
+              <CancelIcon
+                src={CancleIconIcon}
+                alt='뒤로가기'
+                onClick={handleBack}
+              />
+            </LeftSection>
+            <CenterSection>
+              <Title>{title || ''}</Title>
+            </CenterSection>
+          </HeaderContainer>
+        </HeaderWrapper>
+      </AnimatedHeaderWrapper>
     );
   }
 
+  // 쓰리뎁쓰 (애니메이션 적용)
   if (variant === 'threeDepth') {
     return (
-      <HeaderWrapper>
-        <HeaderContainer>
-          <LeftSection>
-            <BackButton
-              src={BackButtonIcon}
-              alt='뒤로가기'
-              onClick={handleBackClick}
-            />
-          </LeftSection>
-          <CenterSection>
-            <Title>{title || ''}</Title>
-          </CenterSection>
-        </HeaderContainer>
-      </HeaderWrapper>
+      <AnimatedHeaderWrapper exit={exit}>
+        <HeaderWrapper>
+          <HeaderContainer>
+            <LeftSection>
+              <BackButton
+                src={BackButtonIcon}
+                alt='뒤로가기'
+                onClick={handleBack}
+              />
+            </LeftSection>
+            <CenterSection>
+              <Title>{title || ''}</Title>
+            </CenterSection>
+          </HeaderContainer>
+        </HeaderWrapper>
+      </AnimatedHeaderWrapper>
     );
   }
 
@@ -200,7 +250,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
 
 export default UnifiedHeader;
 
-// styled-components
+// 기존 스타일들 (변경 없음)
 const HeaderWrapper = styled.div`
   position: fixed;
   top: 0;
