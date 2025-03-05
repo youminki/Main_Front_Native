@@ -31,16 +31,22 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   const [nickname, setNickname] = useState<string>('사용자');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
+  // 헤더 상태를 지속적으로 업데이트하기 위해 쿠키를 주기적으로 확인합니다.
   useEffect(() => {
     if (variant === 'default' || variant === 'oneDepth') {
-      const accessToken = Cookies.get('accessToken');
-      const userNickname = Cookies.get('nickname');
-      if (accessToken) {
-        setIsLoggedIn(true);
-        setNickname(userNickname || '멜픽 회원');
-      } else {
-        setIsLoggedIn(false);
-      }
+      const updateAuth = () => {
+        const accessToken = Cookies.get('accessToken');
+        const userNickname = Cookies.get('nickname');
+        if (accessToken) {
+          setIsLoggedIn(true);
+          setNickname(userNickname || '멜픽 회원');
+        } else {
+          setIsLoggedIn(false);
+        }
+      };
+      updateAuth();
+      const intervalId = setInterval(updateAuth, 1000);
+      return () => clearInterval(intervalId);
     }
   }, [variant]);
 
@@ -55,6 +61,11 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     if (isLoggedIn) {
       setIsModalOpen(true);
     }
+  };
+
+  // AlarmIcon 클릭 시 /Alarm 페이지로 이동
+  const handleAlarmClick = () => {
+    navigate('/Alarm');
   };
 
   // variant 별 렌더링
@@ -86,7 +97,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                     alt='장바구니'
                     onClick={handleBasketClick}
                   />
-                  <Icon src={AlarmIcon} alt='알림' />
+                  <Icon src={AlarmIcon} alt='알림' onClick={handleAlarmClick} />
                 </>
               ) : (
                 <>
@@ -95,7 +106,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                     alt='마이페이지'
                     onClick={() => navigate('/login')}
                   />
-                  <Icon src={AlarmIcon} alt='알림' />
+                  <Icon src={AlarmIcon} alt='알림' onClick={handleAlarmClick} />
                 </>
               )}
             </RightSection>
@@ -128,7 +139,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                   alt='장바구니'
                   onClick={handleBasketClick}
                 />
-                <Icon src={AlarmIcon} alt='알림' />
+                <Icon src={AlarmIcon} alt='알림' onClick={handleAlarmClick} />
               </>
             ) : (
               <>
@@ -137,7 +148,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                   alt='마이페이지'
                   onClick={() => navigate('/login')}
                 />
-                <Icon src={AlarmIcon} alt='알림' />
+                <Icon src={AlarmIcon} alt='알림' onClick={handleAlarmClick} />
               </>
             )}
           </RightSection>
