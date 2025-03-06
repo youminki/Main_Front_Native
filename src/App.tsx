@@ -21,6 +21,7 @@ import MyStyle from './pages/MyStyle';
 import Basket from './pages/Basket';
 import Alarm from './pages/Alarm';
 import Payment from './pages/Payment';
+import PersonalLink from './pages/PersonalLink';
 
 import Home from './pages/Home/Home';
 import HomeDetail from './pages/Home/HomeDetail';
@@ -318,6 +319,7 @@ const App: React.FC = () => {
           <Route path='/basket' element={<Basket />} />
           <Route path='/alarm' element={<Alarm />} />
           <Route path='/payment' element={<Payment />} />
+          <Route path='/personalLink' element={<PersonalLink />} />
 
           <Route path='/brand' element={<Brand />} />
           <Route path='/brand/:brandName' element={<BrandDetail />} />
