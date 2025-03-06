@@ -8,10 +8,10 @@ import AgreementSection from '../components/Signup/AgreementSection';
 import Theme from '../styles/Theme';
 import BottomBar from '../components/BottomNav2';
 import ResetButtonIcon from '../assets/ResetButton.png';
-import { signupUser } from '../api/user/signupPost';
 import { useNavigate } from 'react-router-dom';
 import { CustomSelect } from '../components/CustomSelect';
 import ReusableModal from '../components/ReusableModal';
+import { signUpUser } from '../api/user/userApi';
 
 type SignupFormData = {
   email: string;
@@ -338,6 +338,7 @@ const Signup: React.FC = () => {
 
   // 중복확인 버튼 클릭 시 모달 띄움 (닉네임)
   const handleNicknameCheck = (): void => {
+    // 여기에 실제 중복확인 API 호출 로직 추가 가능
     const isAvailable = true;
     setDuplicateResult(isAvailable ? '사용 가능합니다' : '이미 존재합니다');
     setShowDuplicateModal(true);
@@ -390,17 +391,16 @@ const Signup: React.FC = () => {
       address: `${data.region} ${data.district}`,
       phoneNumber: data.phoneNumber,
       gender: gender === '여성' ? 'female' : 'male',
+      instagramId: '', // 인스타그램 아이디 연결은 생략
+      agreeToTerms: true,
+      agreeToPrivacyPolicy: true,
     };
 
     try {
-      const response = await signupUser(formattedData as any);
-      if (response && response.success) {
-        console.log('회원가입 성공:', response);
-        alert('🎉 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
-        navigate('/login');
-      } else {
-        throw new Error(response.data?.message || '회원가입 실패');
-      }
+      const response = await signUpUser(formattedData);
+      console.log('회원가입 성공:', response);
+      alert('🎉 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
+      navigate('/login');
     } catch (error) {
       console.error('회원가입 실패:', error);
       setErrorMessage(
@@ -422,7 +422,8 @@ const Signup: React.FC = () => {
               type='text'
               error={errors.email}
               placeholder='계정을 입력하세요'
-              isEmailField
+              buttonLabel='중복확인'
+              // isEmailField
               {...register('email')}
               required
               maxLength={20}
@@ -713,8 +714,6 @@ const ErrorText = styled.div`
   color: red;
   text-align: center;
 `;
-
-// 본인인증 인풋 필드 영역 (display:flex 사용)
 const VerificationWrapper = styled.div`
   display: flex;
   align-items: center;
