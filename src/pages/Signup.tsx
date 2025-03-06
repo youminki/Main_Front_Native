@@ -528,7 +528,8 @@ const Signup: React.FC = () => {
 
             {/* 본인인증 버튼 클릭 시 전화번호 인풋 하단에 인증번호 입력 인풋 필드 추가 */}
             {showVerificationInput && (
-              <VerificationContainer>
+              <VerificationWrapper>
+                <VerificationLabel>인증번호 입력</VerificationLabel>
                 <VerificationInput
                   type='text'
                   placeholder='인증번호를 입력하세요'
@@ -542,7 +543,7 @@ const Signup: React.FC = () => {
                 >
                   인증
                 </VerificationBtn>
-              </VerificationContainer>
+              </VerificationWrapper>
             )}
 
             {/* 지역 선택 및 구 선택 */}
@@ -712,34 +713,32 @@ const ErrorText = styled.div`
   text-align: center;
 `;
 
-// 본인인증 인풋 필드 영역 (수정된 스타일)
-const VerificationContainer = styled.div`
-  position: relative;
-  width: 100%;
+// 본인인증 인풋 필드 영역
+const VerificationWrapper = styled.div`
+  display: flex;
+  align-items: center;
   margin-top: 10px;
-  height: 40px;
+  gap: 20px;
 `;
-
+const VerificationLabel = styled.label`
+  font-size: 13px;
+  font-weight: bold;
+`;
 const VerificationInput = styled.input`
-  width: 100%;
-  height: 100%;
-  padding: 0 100px 0 10px; /* 오른쪽에 버튼 공간 확보 */
+  flex: 1;
+  height: 40px;
+  padding: 0 10px;
   font-size: 14px;
   border: 1px solid #dddddd;
   border-radius: 4px;
-  box-sizing: border-box;
 `;
-
 const VerificationBtn = styled.button`
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
-  width: 80px;
+  height: 40px;
+  padding: 0 20px;
   background-color: #000;
   color: #fff;
   border: none;
-  border-radius: 0 4px 4px 0;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
 `;
