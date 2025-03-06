@@ -135,7 +135,7 @@ const PersonalLink: React.FC = () => {
 
       {activeTab === 'productIntro' && (
         <ProductListWrapper>
-          <IntroText>직접 입어보고 멜픽 드는 것만 소개해드려요</IntroText>
+          <IntroText>👉 직접 입어보고 맘에 드는 것만 소개해드려요 👈</IntroText>
           {/* ItemList 컴포넌트 사용 (2열 그리드) */}
           <ItemList items={dummyItems} />
         </ProductListWrapper>
@@ -371,7 +371,7 @@ const IntroText = styled.div`
   font-weight: 400;
   font-size: 14px;
   color: #000;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 `;
 
 /* 하단 영역 */
