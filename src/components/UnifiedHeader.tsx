@@ -11,6 +11,8 @@ import MypageIcon from '../assets/Header/MypageIcon.svg';
 import Logo from '../assets/Logo.svg';
 import BackButtonIcon from '../assets/BackButton.svg';
 import CancleIconIcon from '../assets/Header/CancleIcon.svg';
+import ShareIcon from '../assets/Header/ShareIcon.svg';
+import HomeIcon from '../assets/Header/HomeIcon.svg';
 
 // 모달 (기본헤더에서 사용)
 import MypageModal from '../components/MypageModal';
@@ -201,7 +203,8 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     );
   }
 
-  // twoDepth: 취소 버튼( CancleIconIcon ) 클릭 시 애니메이션 효과 없이 바로 뒤로가기
+  // twoDepth: 취소 버튼(CancleIconIcon) 클릭 시 애니메이션 효과 없이 바로 뒤로가기
+  // 오른쪽 섹션에 ShareIcon과 HomeIcon을 추가함
   if (variant === 'twoDepth') {
     return (
       <HeaderWrapper>
@@ -216,12 +219,22 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
           <CenterSection>
             <Title>{title || ''}</Title>
           </CenterSection>
+          <RightSection>
+            <Icon
+              src={ShareIcon}
+              alt='공유'
+              onClick={() => {
+                // 공유 기능 구현
+              }}
+            />
+            <Icon src={HomeIcon} alt='홈' onClick={() => navigate('/')} />
+          </RightSection>
         </HeaderContainer>
       </HeaderWrapper>
     );
   }
 
-  // threeDepth: 백 버튼( BackButtonIcon ) 클릭 시 exit 애니메이션 효과 적용
+  // threeDepth: 백 버튼(BackButtonIcon) 클릭 시 exit 애니메이션 효과 적용
   if (variant === 'threeDepth') {
     return (
       <AnimatedHeaderWrapper exit={exit}>
