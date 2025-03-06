@@ -422,7 +422,7 @@ const Signup: React.FC = () => {
               type='text'
               error={errors.email}
               placeholder='계정을 입력하세요'
-              buttonLabel='중복확인'
+              buttonLabel='중복확인'
               // isEmailField
               {...register('email')}
               required
