@@ -12,7 +12,6 @@ import { signupUser } from '../api/user/signupPost';
 import { useNavigate } from 'react-router-dom';
 import { CustomSelect } from '../components/CustomSelect';
 import ReusableModal from '../components/ReusableModal';
-// VerificationModal 모달은 사용하지 않으므로 임포트하지 않음
 
 type SignupFormData = {
   email: string;
@@ -314,10 +313,14 @@ const Signup: React.FC = () => {
   const [showDuplicateModal, setShowDuplicateModal] = useState<boolean>(false);
   const [duplicateResult, setDuplicateResult] = useState<string>('');
 
-  // 기존 본인인증 모달 대신 전화번호 인풋 아래에 인증 인풋 필드를 추가하기 위한 상태
+  // 본인인증 인풋 필드 추가용 상태
   const [showVerificationInput, setShowVerificationInput] =
     useState<boolean>(false);
   const [verificationCode, setVerificationCode] = useState<string>('');
+  // 인증 결과 모달 제어용 상태
+  const [showVerificationResultModal, setShowVerificationResultModal] =
+    useState<boolean>(false);
+  const [verificationResult, setVerificationResult] = useState<string>('');
 
   const handleGenderChange = (selectedGender: string): void => {
     setGender(selectedGender);
@@ -335,18 +338,16 @@ const Signup: React.FC = () => {
 
   // 중복확인 버튼 클릭 시 모달 띄움 (닉네임)
   const handleNicknameCheck = (): void => {
-    // 실제 중복확인 API 호출 대신 결과를 시뮬레이션
-    const isAvailable = true; // true이면 사용 가능, false이면 중복됨
+    const isAvailable = true;
     setDuplicateResult(isAvailable ? '사용 가능합니다' : '이미 존재합니다');
     setShowDuplicateModal(true);
   };
 
-  // 인스타그램 버튼 클릭 시 처리
   const handleInstagramCheck = (): void => {
     console.log('인스타그램 아이디 확인 클릭');
   };
 
-  // 본인인증 버튼 클릭 시 모달 대신 인증 인풋 필드 노출
+  // 본인인증 버튼 클릭 시 인증 인풋 필드 노출
   const handleVerification = (): void => {
     setShowVerificationInput(true);
   };
@@ -359,9 +360,18 @@ const Signup: React.FC = () => {
 
   // 멜픽 주소 체크 버튼 클릭 시 모달 띄움
   const handleCheckClick = (): void => {
-    // 실제 체크 결과 대신 시뮬레이션 (예: 사용 가능)
     setDuplicateResult('사용 가능합니다');
     setShowDuplicateModal(true);
+  };
+
+  // 인증 버튼 클릭 시 인증번호 검사 후 모달 띄움 (예: 입력값이 '1234'이면 성공)
+  const handleVerifyCode = (): void => {
+    if (verificationCode === '1234') {
+      setVerificationResult('인증에 성공했습니다');
+    } else {
+      setVerificationResult('인증에 실패했습니다');
+    }
+    setShowVerificationResultModal(true);
   };
 
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
@@ -405,9 +415,7 @@ const Signup: React.FC = () => {
         <Container>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <AgreementSection />
-
             {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
-
             <InputField
               label='계정(이메일)'
               id='email'
@@ -420,7 +428,6 @@ const Signup: React.FC = () => {
               maxLength={20}
               onButtonClick={handleInstagramCheck}
             />
-
             <InputField
               label='비밀번호(숫자, 문자를 조합하여 8자리 이상 입력하세요)'
               id='password'
@@ -432,7 +439,6 @@ const Signup: React.FC = () => {
               maxLength={20}
               autoComplete='current-password'
             />
-
             <InputField
               label='비밀번호 확인'
               id='passwordConfirm'
@@ -443,7 +449,6 @@ const Signup: React.FC = () => {
               required
               maxLength={20}
             />
-
             <InputField
               label='닉네임(8글자 이내)'
               id='nickname'
@@ -456,7 +461,6 @@ const Signup: React.FC = () => {
               buttonLabel='중복확인'
               onButtonClick={handleNicknameCheck}
             />
-
             <RowLabel>
               <InputField
                 label='이름'
@@ -468,7 +472,6 @@ const Signup: React.FC = () => {
                 required
                 maxLength={5}
               />
-
               <InputField
                 label='태어난 해'
                 id='birthYear'
@@ -487,7 +490,6 @@ const Signup: React.FC = () => {
                 ))}
               </InputField>
             </RowLabel>
-
             <GenderField>
               <InputFieldLabel>성별</InputFieldLabel>
               <GenderRow>
@@ -509,7 +511,6 @@ const Signup: React.FC = () => {
                 </GenderButton>
               </GenderRow>
             </GenderField>
-
             <PhoneField>
               <InputField
                 label='전화번호(11자를 입력하세요)'
@@ -525,28 +526,22 @@ const Signup: React.FC = () => {
                 onButtonClick={handleVerification}
               />
             </PhoneField>
-
-            {/* 본인인증 버튼 클릭 시 전화번호 인풋 하단에 인증번호 입력 인풋 필드 추가 */}
             {showVerificationInput && (
               <VerificationWrapper>
                 <VerificationLabel>인증번호 입력</VerificationLabel>
-                <VerificationInput
-                  type='text'
-                  placeholder='인증번호를 입력하세요'
-                  value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value)}
-                />
-                <VerificationBtn
-                  onClick={() =>
-                    console.log('인증번호 확인:', verificationCode)
-                  }
-                >
-                  인증
-                </VerificationBtn>
+                <VerificationContainer>
+                  <VerificationInput
+                    type='text'
+                    placeholder='인증번호를 입력하세요'
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                  />
+                  <VerificationBtn onClick={handleVerifyCode}>
+                    인증
+                  </VerificationBtn>
+                </VerificationContainer>
               </VerificationWrapper>
             )}
-
-            {/* 지역 선택 및 구 선택 */}
             <RowLabel>
               <InputField
                 label='지역'
@@ -568,7 +563,6 @@ const Signup: React.FC = () => {
                   </option>
                 ))}
               </InputField>
-
               <InputField
                 label='구'
                 id='district'
@@ -591,7 +585,6 @@ const Signup: React.FC = () => {
                 )}
               </InputField>
             </RowLabel>
-
             <InputField
               label='멜픽 주소설정(영문, 숫자 12글자 이내)'
               id='melpickAddress'
@@ -608,7 +601,6 @@ const Signup: React.FC = () => {
               onButtonClick={handleCheckClick}
               prefix='melpick.com/'
             />
-
             <BlackContainer />
             <BottomBar
               imageSrc={ResetButtonIcon}
@@ -627,6 +619,15 @@ const Signup: React.FC = () => {
         title='중복확인'
       >
         {duplicateResult}
+      </ReusableModal>
+
+      {/* 인증 결과 모달 */}
+      <ReusableModal
+        isOpen={showVerificationResultModal}
+        onClose={() => setShowVerificationResultModal(false)}
+        title='인증 결과'
+      >
+        {verificationResult}
       </ReusableModal>
     </ThemeProvider>
   );
@@ -713,32 +714,40 @@ const ErrorText = styled.div`
   text-align: center;
 `;
 
-// 본인인증 인풋 필드 영역
+// 본인인증 인풋 필드 영역 (display:flex 사용)
 const VerificationWrapper = styled.div`
   display: flex;
   align-items: center;
   margin-top: 10px;
-  gap: 20px;
+  gap: 10px;
 `;
 const VerificationLabel = styled.label`
   font-size: 13px;
   font-weight: bold;
 `;
-const VerificationInput = styled.input`
+const VerificationContainer = styled.div`
+  display: flex;
+  align-items: center;
   flex: 1;
   height: 40px;
-  padding: 0 10px;
-  font-size: 14px;
   border: 1px solid #dddddd;
   border-radius: 4px;
+  overflow: hidden;
+`;
+const VerificationInput = styled.input`
+  flex: 1;
+  height: 100%;
+  padding: 0 10px;
+  font-size: 14px;
+  border: none;
+  outline: none;
 `;
 const VerificationBtn = styled.button`
-  height: 40px;
-  padding: 0 20px;
+  height: 100%;
+  width: 80px;
   background-color: #000;
   color: #fff;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
   font-size: 14px;
+  cursor: pointer;
 `;
