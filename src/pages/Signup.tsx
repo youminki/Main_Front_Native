@@ -11,6 +11,8 @@ import ResetButtonIcon from '../assets/ResetButton.png';
 import { signupUser } from '../api/user/signupPost';
 import { useNavigate } from 'react-router-dom';
 import { CustomSelect } from '../components/CustomSelect';
+import ReusableModal from '../components/ReusableModal';
+// VerificationModal 모달은 사용하지 않으므로 임포트하지 않음
 
 type SignupFormData = {
   email: string;
@@ -308,6 +310,15 @@ const Signup: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string>('');
 
+  // 모달 제어용 상태 (중복확인/체크 모달)
+  const [showDuplicateModal, setShowDuplicateModal] = useState<boolean>(false);
+  const [duplicateResult, setDuplicateResult] = useState<string>('');
+
+  // 기존 본인인증 모달 대신 전화번호 인풋 아래에 인증 인풋 필드를 추가하기 위한 상태
+  const [showVerificationInput, setShowVerificationInput] =
+    useState<boolean>(false);
+  const [verificationCode, setVerificationCode] = useState<string>('');
+
   const handleGenderChange = (selectedGender: string): void => {
     setGender(selectedGender);
     setSelectedGenderButton(selectedGender);
@@ -322,16 +333,22 @@ const Signup: React.FC = () => {
     e.target.value = value;
   };
 
+  // 중복확인 버튼 클릭 시 모달 띄움 (닉네임)
   const handleNicknameCheck = (): void => {
-    console.log('닉네임 중복 확인 클릭');
+    // 실제 중복확인 API 호출 대신 결과를 시뮬레이션
+    const isAvailable = true; // true이면 사용 가능, false이면 중복됨
+    setDuplicateResult(isAvailable ? '사용 가능합니다' : '이미 존재합니다');
+    setShowDuplicateModal(true);
   };
 
+  // 인스타그램 버튼 클릭 시 처리
   const handleInstagramCheck = (): void => {
     console.log('인스타그램 아이디 확인 클릭');
   };
 
+  // 본인인증 버튼 클릭 시 모달 대신 인증 인풋 필드 노출
   const handleVerification = (): void => {
-    console.log('본인 인증 클릭');
+    setShowVerificationInput(true);
   };
 
   const handleMelpickAddressChange = (
@@ -340,8 +357,11 @@ const Signup: React.FC = () => {
     setMelpickAddress(e.target.value);
   };
 
+  // 멜픽 주소 체크 버튼 클릭 시 모달 띄움
   const handleCheckClick = (): void => {
-    console.log('멜픽 주소 확인:', melpickAddress);
+    // 실제 체크 결과 대신 시뮬레이션 (예: 사용 가능)
+    setDuplicateResult('사용 가능합니다');
+    setShowDuplicateModal(true);
   };
 
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
@@ -506,6 +526,25 @@ const Signup: React.FC = () => {
               />
             </PhoneField>
 
+            {/* 본인인증 버튼 클릭 시 전화번호 인풋 하단에 인증번호 입력 인풋 필드 추가 */}
+            {showVerificationInput && (
+              <VerificationContainer>
+                <VerificationInput
+                  type='text'
+                  placeholder='인증번호를 입력하세요'
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                />
+                <VerificationBtn
+                  onClick={() =>
+                    console.log('인증번호 확인:', verificationCode)
+                  }
+                >
+                  인증
+                </VerificationBtn>
+              </VerificationContainer>
+            )}
+
             {/* 지역 선택 및 구 선택 */}
             <RowLabel>
               <InputField
@@ -579,6 +618,15 @@ const Signup: React.FC = () => {
           </Form>
         </Container>
       </FormProvider>
+
+      {/* 중복확인/체크 모달 */}
+      <ReusableModal
+        isOpen={showDuplicateModal}
+        onClose={() => setShowDuplicateModal(false)}
+        title='중복확인'
+      >
+        {duplicateResult}
+      </ReusableModal>
     </ThemeProvider>
   );
 };
@@ -662,4 +710,36 @@ const BlackContainer = styled.div`
 const ErrorText = styled.div`
   color: red;
   text-align: center;
+`;
+
+// 본인인증 인풋 필드 영역 (수정된 스타일)
+const VerificationContainer = styled.div`
+  position: relative;
+  width: 100%;
+  margin-top: 10px;
+  height: 40px;
+`;
+
+const VerificationInput = styled.input`
+  width: 100%;
+  height: 100%;
+  padding: 0 100px 0 10px; /* 오른쪽에 버튼 공간 확보 */
+  font-size: 14px;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+`;
+
+const VerificationBtn = styled.button`
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 80px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-size: 14px;
 `;
