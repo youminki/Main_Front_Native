@@ -50,7 +50,7 @@ const BrandDetails = styled.div`
 
 const BrandName = styled.span`
   font-weight: 900;
-  font-size: 14px;
+  font-size: 16px;
   color: #000;
   margin-bottom: 4px;
 `;
