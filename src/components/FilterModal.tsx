@@ -3,7 +3,7 @@ import styled, { keyframes, css } from 'styled-components';
 
 const seasonData = ['봄', '여름', '가을', '겨울'];
 const sizeData = ['44(S)', '55(M)', '66(L)', '77(XL)'];
-const colorMap: Record<string, string> = {
+const colorMap = {
   화이트: '#FFFFFF',
   블랙: '#000000',
   그레이: '#808080',
@@ -94,117 +94,118 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
   return (
     <Overlay onClick={handleClose}>
       <Container onClick={(e) => e.stopPropagation()} isClosing={isClosing}>
-        <ModalHandle>
-          <HandleBar />
-        </ModalHandle>
-        <Header>
-          <Title>필터</Title>
-        </Header>
+        {/* 상단 고정 영역 */}
+        <FixedHeader>
+          <ModalHandle>
+            <HandleBar />
+          </ModalHandle>
+          <Header>
+            <Title>필터</Title>
+          </Header>
+          <Divider />
+        </FixedHeader>
 
-        <Divider />
+        {/* 스크롤 영역 */}
+        <ScrollContent>
+          {/* 계절 */}
+          <Section>
+            <SectionTitleWithParen text='계절 (셋팅 : 없음)' />
+            <ButtonRow>
+              {seasonData.map((season) => (
+                <FilterButton
+                  key={season}
+                  selected={selectedSeason.includes(season)}
+                  onClick={() =>
+                    toggleSelected(selectedSeason, season, setSelectedSeason)
+                  }
+                >
+                  {season}
+                </FilterButton>
+              ))}
+            </ButtonRow>
+          </Section>
+          <DashedDivider />
+          {/* 사이즈 */}
+          <Section>
+            <SectionTitleWithParen text='사이즈 (셋팅 : 없음)' />
+            <ButtonRow>
+              {sizeData.map((size) => (
+                <FilterButton
+                  key={size}
+                  selected={selectedSize.includes(size)}
+                  onClick={() =>
+                    toggleSelected(selectedSize, size, setSelectedSize)
+                  }
+                >
+                  {size}
+                </FilterButton>
+              ))}
+            </ButtonRow>
+          </Section>
+          <DashedDivider />
+          {/* 색상 */}
+          <Section>
+            <SectionTitleWithParen text='색상 (셋팅 : 없음)' />
+            <ColorButtonGrid>
+              {Object.keys(colorMap).map((color) => (
+                <ColorButton
+                  key={color}
+                  selected={selectedColors.includes(color)}
+                  onClick={() =>
+                    toggleSelected(selectedColors, color, setSelectedColors)
+                  }
+                >
+                  {color}
+                </ColorButton>
+              ))}
+            </ColorButtonGrid>
+          </Section>
+          <DashedDivider />
+          {/* 스타일 */}
+          <Section>
+            <SectionTitleWithParen text='스타일 (셋팅 : 없음)' />
+            <ButtonRow>
+              {styleData.map((style) => (
+                <FilterButton
+                  key={style}
+                  selected={selectedStyle.includes(style)}
+                  onClick={() =>
+                    toggleSelected(selectedStyle, style, setSelectedStyle)
+                  }
+                >
+                  {style}
+                </FilterButton>
+              ))}
+            </ButtonRow>
+          </Section>
+          <DashedDivider />
+          {/* 소재 */}
+          <Section>
+            <SectionTitleWithParen text='소재 (셋팅 : 없음)' />
+            <ButtonRow>
+              {materialData.map((mat) => (
+                <FilterButton
+                  key={mat}
+                  selected={selectedMaterial.includes(mat)}
+                  onClick={() =>
+                    toggleSelected(selectedMaterial, mat, setSelectedMaterial)
+                  }
+                >
+                  {mat}
+                </FilterButton>
+              ))}
+            </ButtonRow>
+          </Section>
+          <Divider />
+        </ScrollContent>
 
-        {/* 계절 */}
-        <Section>
-          <SectionTitleWithParen text='계절 (셋팅 : 없음)' />
-          <ButtonRow>
-            {seasonData.map((season) => (
-              <FilterButton
-                key={season}
-                selected={selectedSeason.includes(season)}
-                onClick={() =>
-                  toggleSelected(selectedSeason, season, setSelectedSeason)
-                }
-              >
-                {season}
-              </FilterButton>
-            ))}
-          </ButtonRow>
-        </Section>
-
-        <DashedDivider />
-
-        {/* 사이즈 */}
-        <Section>
-          <SectionTitleWithParen text='사이즈 (셋팅 : 없음)' />
-          <ButtonRow>
-            {sizeData.map((size) => (
-              <FilterButton
-                key={size}
-                selected={selectedSize.includes(size)}
-                onClick={() =>
-                  toggleSelected(selectedSize, size, setSelectedSize)
-                }
-              >
-                {size}
-              </FilterButton>
-            ))}
-          </ButtonRow>
-        </Section>
-
-        <DashedDivider />
-
-        {/* 색상 */}
-        <Section>
-          <SectionTitleWithParen text='색상 (셋팅 : 없음)' />
-          <ColorButtonGrid>
-            {Object.keys(colorMap).map((color) => (
-              <ColorButton
-                key={color}
-                selected={selectedColors.includes(color)}
-                onClick={() =>
-                  toggleSelected(selectedColors, color, setSelectedColors)
-                }
-              >
-                {color}
-              </ColorButton>
-            ))}
-          </ColorButtonGrid>
-        </Section>
-
-        <DashedDivider />
-
-        {/* 스타일 */}
-        <Section>
-          <SectionTitleWithParen text='스타일 (셋팅 : 없음)' />
-          <ButtonRow>
-            {styleData.map((style) => (
-              <FilterButton
-                key={style}
-                selected={selectedStyle.includes(style)}
-                onClick={() =>
-                  toggleSelected(selectedStyle, style, setSelectedStyle)
-                }
-              >
-                {style}
-              </FilterButton>
-            ))}
-          </ButtonRow>
-        </Section>
-
-        <DashedDivider />
-
-        {/* 소재 */}
-        <Section>
-          <SectionTitleWithParen text='소재 (셋팅 : 없음)' />
-          <ButtonRow>
-            {materialData.map((mat) => (
-              <FilterButton
-                key={mat}
-                selected={selectedMaterial.includes(mat)}
-                onClick={() =>
-                  toggleSelected(selectedMaterial, mat, setSelectedMaterial)
-                }
-              >
-                {mat}
-              </FilterButton>
-            ))}
-          </ButtonRow>
-        </Section>
-        <Divider />
-        <CloseButtonWrapper>
-          <NoButton onClick={onClose}>취소</NoButton>
-          <YesButton onClick={onClose}>설정적용</YesButton>
-        </CloseButtonWrapper>
+        {/* 하단 고정 영역 */}
+        <FixedFooter>
+          <CloseButtonWrapper>
+            <NoButton onClick={onClose}>취소</NoButton>
+            <YesButton onClick={onClose}>설정적용</YesButton>
+          </CloseButtonWrapper>
+        </FixedFooter>
       </Container>
     </Overlay>
   );
@@ -212,6 +213,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
 
 export default FilterModal;
 
+// Section 제목 내 괄호 스타일
 const ParenText = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
@@ -265,6 +267,48 @@ const slideDown = keyframes`
   }
 `;
 
+// 모달 전체 컨테이너 (상단, 스크롤, 하단 영역으로 구성)
+interface ContainerProps {
+  isClosing: boolean;
+}
+const Container = styled.div<ContainerProps>`
+  max-width: 600px;
+  width: 100%;
+  height: 800px;
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  animation: ${({ isClosing }) =>
+    isClosing
+      ? css`
+          ${slideDown} 0.4s ease-out forwards
+        `
+      : css`
+          ${slideUp} 0.4s ease-out forwards
+        `};
+`;
+
+// 상단 고정 영역 (모달 핸들, 헤더, 구분선 포함)
+const FixedHeader = styled.div`
+  flex-shrink: 0;
+  padding: 0 40px;
+`;
+
+// 스크롤 영역 (필터 섹션들)
+const ScrollContent = styled.div`
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0 40px;
+`;
+
+// 하단 고정 영역 (취소/설정 버튼)
+const FixedFooter = styled.div`
+  flex-shrink: 0;
+  padding: 0 40px 40px 40px;
+`;
+
 const ModalHandle = styled.div`
   width: 100%;
   display: flex;
@@ -281,53 +325,11 @@ const HandleBar = styled.div`
   border-radius: 2px;
 `;
 
-const Overlay = styled.div`
-  position: fixed;
-  z-index: 10000;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-`;
-
-interface ContainerProps {
-  isClosing: boolean;
-}
-
-const Container = styled.div<ContainerProps>`
-  max-width: 600px;
-  width: 100%;
-  height: 600px;
-  padding: 40px;
-  background: #ffffff;
-  border-radius: 20px 20px 0 0;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow-y: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  animation: ${({ isClosing }) =>
-    isClosing
-      ? css`
-          ${slideDown} 0.4s ease-out forwards
-        `
-      : css`
-          ${slideUp} 0.4s ease-out forwards
-        `};
-`;
-
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 40px;
 `;
 
 const Title = styled.h2`
@@ -378,32 +380,9 @@ const FilterButton = styled.button<FilterButtonProps>`
   font-size: 12px;
   cursor: pointer;
   transition: background 0.3s;
-  &:last-child {
-    margin-right: 0;
-  }
 `;
 
-const ColorButton = styled.button<FilterButtonProps>`
-  min-width: 60px;
-  height: 36px;
-  margin-right: 8px;
-  margin-bottom: 8px;
-  border-radius: 18px;
-  background: ${({ selected }) => (selected ? '#000' : '#fff')};
-  color: ${({ selected }) => (selected ? '#fff' : '#000')};
-  border: 1px solid #000;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 700;
-  font-size: 12px;
-  cursor: pointer;
-  transition:
-    background 0.3s,
-    color 0.3s,
-    border 0.3s;
-  &:last-child {
-    margin-right: 0;
-  }
-`;
+const ColorButton = styled(FilterButton)``;
 
 const ButtonRow = styled.div`
   display: flex;
@@ -446,3 +425,20 @@ const YesButton = styled.button`
   font-size: 16px;
   font-weight: bold;
 `;
+
+const Overlay = styled.div`
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+`;
+
+interface ContainerProps {
+  isClosing: boolean;
+}
