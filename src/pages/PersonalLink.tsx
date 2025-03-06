@@ -205,8 +205,6 @@ const IconButton = styled.button`
   align-items: center;
 
   img {
-    width: 24px;
-    height: 24px;
     object-fit: contain;
   }
 `;
