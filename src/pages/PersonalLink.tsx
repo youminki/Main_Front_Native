@@ -302,15 +302,12 @@ const LinkLabelBox = styled.div`
   align-items: center;
   justify-content: center;
 
-  /* 자동 너비를 위해 width: auto */
-  width: 40px;
-  height: 25px;
-  padding: 0 12px; /* 양옆 패딩 */
+  padding: 7px 12px;
   background: #000000;
   color: #ffffff;
   font-family: 'Inter', sans-serif;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 12px;
   border-radius: 5px 20px 20px 5px;
 
