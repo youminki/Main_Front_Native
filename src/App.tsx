@@ -91,14 +91,9 @@ const slideOut = keyframes`
   }
 `;
 
-// PersonalLink 페이지에서는 padding을 제거할 수 있도록 noPadding prop을 추가
-const ContentContainer = styled.div<{
-  animate: boolean;
-  exit: boolean;
-  noPadding?: boolean;
-}>`
+const ContentContainer = styled.div<{ animate: boolean; exit: boolean }>`
   flex: 1;
-  padding: ${({ noPadding }) => (noPadding ? '0' : '100px 0 120px 0')};
+  padding: 100px 0 120px 0;
   animation: ${({ exit, animate }) =>
       exit ? slideOut : animate ? slideIn : 'none'}
     0.3s ease-out;
@@ -165,6 +160,9 @@ const App: React.FC = () => {
     '/my-ticket/PurchaseOfPasses/TicketPayment',
     '/my-ticket/SubscriptionPass',
     '/my-ticket/OnetimePass',
+    '/customerService/NoticeDetail',
+    '/customerService/PersonalInformationProcessingPolicyDetail',
+    '/customerService/TermsAndConditionsOfUseDetail',
     '/payment',
   ];
 
@@ -175,6 +173,7 @@ const App: React.FC = () => {
     '/findPassword',
     '/basket',
     '/alarm',
+
     '/MyInfo',
     '/MyStyle',
   ];
@@ -265,6 +264,7 @@ const App: React.FC = () => {
     if (matchPath('/alarm', location.pathname)) {
       return '알람';
     }
+
     if (matchPath('/MyInfo', location.pathname)) {
       return '내 정보';
     }
@@ -282,9 +282,6 @@ const App: React.FC = () => {
       setExit(false);
     }, 300); // 0.3초 애니메이션 시간과 동일
   };
-
-  // PersonalLink 페이지에서는 padding을 제거하기 위한 체크
-  const isPersonalLink = location.pathname === '/personalLink';
 
   return (
     <AppContainer>
@@ -306,11 +303,7 @@ const App: React.FC = () => {
           exit={exit}
         />
       )}
-      <ContentContainer
-        animate={includeHeader3 || includeHeader4}
-        exit={exit}
-        noPadding={isPersonalLink}
-      >
+      <ContentContainer animate={includeHeader3 || includeHeader4} exit={exit}>
         <Routes>
           <Route path='/' element={<Navigate to='/home' replace />} />
           <Route path='/home' element={<Home />} />
