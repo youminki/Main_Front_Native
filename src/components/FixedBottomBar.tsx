@@ -36,7 +36,7 @@ const BottomBar = styled.div`
   text-align: center;
   max-width: 600px;
   background: #eeeeee;
-  padding: 10px 0px 34px 0px;
+  padding: 15px 0 34px 0;
   text-align: center;
 `;
 

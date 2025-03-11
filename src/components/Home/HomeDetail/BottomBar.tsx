@@ -30,9 +30,10 @@ const BottomBarContainer = styled.div`
   z-index: 9999;
 
   max-width: 600px;
-  margin: 0 auto;
-  padding: 1rem;
+
+  padding: 10px 0 34px 0;
   text-align: center;
+  gap: 21px;
 `;
 
 const CartButton = styled.button`
@@ -45,6 +46,8 @@ const CartButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
+  margin-left: 27px;
 `;
 
 const CartImage = styled.img`
@@ -62,5 +65,6 @@ const OrderButton = styled.button`
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
-  margin: 0 21px;
+
+  margin-right: 27px;
 `;

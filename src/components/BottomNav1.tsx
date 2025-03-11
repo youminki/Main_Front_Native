@@ -158,8 +158,8 @@ const BottomNavContainer = styled.nav`
   z-index: 1000;
   max-width: 600px;
   margin: 0 auto;
-  padding: 1rem;
   text-align: center;
+  padding: 15px 0 34px 0;
 `;
 
 const IndicatorContainer = styled.div`
