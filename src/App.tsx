@@ -91,9 +91,14 @@ const slideOut = keyframes`
   }
 `;
 
-const ContentContainer = styled.div<{ animate: boolean; exit: boolean }>`
+// ContentContainer에 disablePadding prop 추가 (personalLink인 경우 padding 제거)
+const ContentContainer = styled.div<{
+  animate: boolean;
+  exit: boolean;
+  disablePadding?: boolean;
+}>`
   flex: 1;
-  padding: 120px 0px;
+  padding: ${({ disablePadding }) => (disablePadding ? '0' : '120px 0')};
   animation: ${({ exit, animate }) =>
       exit ? slideOut : animate ? slideIn : 'none'}
     0.3s ease-out;
@@ -173,7 +178,6 @@ const App: React.FC = () => {
     '/findPassword',
     '/basket',
     '/alarm',
-
     '/MyInfo',
     '/MyStyle',
   ];
@@ -264,7 +268,6 @@ const App: React.FC = () => {
     if (matchPath('/alarm', location.pathname)) {
       return '알람';
     }
-
     if (matchPath('/MyInfo', location.pathname)) {
       return '내 정보';
     }
@@ -303,7 +306,11 @@ const App: React.FC = () => {
           exit={exit}
         />
       )}
-      <ContentContainer animate={includeHeader3 || includeHeader4} exit={exit}>
+      <ContentContainer
+        animate={includeHeader3 || includeHeader4}
+        exit={exit}
+        disablePadding={location.pathname === '/personalLink'}
+      >
         <Routes>
           <Route path='/' element={<Navigate to='/home' replace />} />
           <Route path='/home' element={<Home />} />
