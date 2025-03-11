@@ -68,4 +68,6 @@ html,
 body {
   overflow-x: hidden;
   scrollbar-width: none;
+  font-family: 'NanumSquare Neo', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
