@@ -10,7 +10,6 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import GlobalStyle from './styles/GlobalStyle';
 
 // 페이지 컴포넌트 임포트
 import Login from './pages/Login';
@@ -441,7 +440,6 @@ const AppContainer = styled.div`
 
 const AppWrapper: React.FC = () => (
   <HashRouter>
-    <GlobalStyle />
     <App />
   </HashRouter>
 );

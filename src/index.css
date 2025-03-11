@@ -1,3 +1,15 @@
+@font-face {
+  font-family: 'NanumSquare Neo';
+  src:
+    url('/fonts/woff2/NanumSquareNeo-Variable.woff2') format('woff2'),
+    url('/fonts/woff/NanumSquareNeo-Variable.woff') format('woff'),
+    url('/fonts/TTF/NanumSquareNeo-aLt.ttf') format('truetype'),
+    url('/fonts/OTF/NanumSquareNeoOTF-Bd.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 #root {
   max-width: 600px;
   margin: 0 auto;
@@ -23,7 +35,6 @@ body.personalLink #root {
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
-  -webkit-filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
 @keyframes logo-spin {
