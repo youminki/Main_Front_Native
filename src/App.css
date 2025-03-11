@@ -10,12 +10,14 @@
   font-display: swap;
 }
 
-/* 2. 전역 폰트 설정 */
+/* 전역 폰트 설정 및 폰트 스무딩 */
 html,
 body {
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+  font-family: 'NanumSquare Neo', sans-serif;
   margin: 0;
   padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* 나머지 스타일 */
@@ -25,17 +27,16 @@ body {
   padding: 1rem;
 }
 
+/* 기타 스타일 (중복 제거) */
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
-
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
-
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -61,4 +62,10 @@ body {
 
 .read-the-docs {
   color: #888;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  scrollbar-width: none;
 }
