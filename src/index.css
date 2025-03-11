@@ -5,6 +5,11 @@
   font-family: 'NanumSquare Neo OTF';
 }
 
+body.personalLink #root {
+  padding: 0 !important;
+}
+
+/* 기타 기존 스타일들 */
 .logo {
   height: 6em;
   padding: 1.5em;

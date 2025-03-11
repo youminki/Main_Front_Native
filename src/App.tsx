@@ -1,5 +1,5 @@
 // App.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   HashRouter,
   Route,
@@ -108,6 +108,15 @@ const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [exit, setExit] = useState(false);
+
+  // personalLink 경로일 때 body에 클래스 추가
+  useEffect(() => {
+    if (location.pathname === '/personalLink') {
+      document.body.classList.add('personalLink');
+    } else {
+      document.body.classList.remove('personalLink');
+    }
+  }, [location.pathname]);
 
   // BottomNav가 포함될 경로 패턴
   const bottomNavPaths = [
