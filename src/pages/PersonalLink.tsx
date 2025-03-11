@@ -248,10 +248,11 @@ const TabSection = styled.div`
 `;
 
 /* 탭 아이템: 항상 border: 2px solid #f6ae24 */
+/* 탭 아이템 */
 const TabItem = styled.div<{ active: boolean }>`
   width: 50%;
   height: 50px;
-  border: 2px solid #f6ae24;
+  border: 2px solid transparent; /* 변경: 모든 탭에 기본 투명 테두리 적용 */
   background: ${({ active }) => (active ? '#ffffff' : '#eeeeee')};
   color: ${({ active }) => (active ? '#000' : '#999')};
   font-family: 'NanumSquare Neo OTF', sans-serif;
@@ -262,13 +263,21 @@ const TabItem = styled.div<{ active: boolean }>`
   align-items: center;
   cursor: pointer;
 
+  /* 각 탭의 외곽 테두리 설정 */
   &:first-child {
     border-radius: 10px 0 0 10px;
   }
   &:last-child {
-    border-left: 2px solid #f6ae24;
     border-radius: 0 10px 10px 0;
   }
+
+  /* 탭 활성화 시 외곽 테두리 색상 변경 */
+  ${({ active }) =>
+    active &&
+    `
+    border-color: #f6ae24;
+    border-style: solid;
+  `}
 `;
 
 /* 개인링크 리스트 래퍼 */
