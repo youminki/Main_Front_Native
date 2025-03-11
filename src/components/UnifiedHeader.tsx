@@ -269,7 +269,7 @@ const HeaderWrapper = styled.div`
   right: 0;
   max-width: 600px;
   margin: 0 auto;
-  padding: 10px 30px;
+  padding: 0px 27px;
   text-align: center;
   z-index: 100;
   background-color: #fff;
@@ -279,7 +279,8 @@ const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 100px;
+  margin-top: 69px;
+  margin-bottom: 27px;
 `;
 
 const LeftSection = styled.div`
@@ -291,7 +292,7 @@ const LeftSection = styled.div`
 const RightSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 19px;
 `;
 
 const CenterSection = styled.div`

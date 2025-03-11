@@ -93,7 +93,7 @@ const slideOut = keyframes`
 
 const ContentContainer = styled.div<{ animate: boolean; exit: boolean }>`
   flex: 1;
-  padding: 100px 0 120px 0;
+  padding: 120px 0px;
   animation: ${({ exit, animate }) =>
       exit ? slideOut : animate ? slideIn : 'none'}
     0.3s ease-out;
