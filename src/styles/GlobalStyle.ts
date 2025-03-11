@@ -13,7 +13,8 @@ const GlobalStyle = createGlobalStyle`
     text-decoration: none;
     box-sizing: border-box;
     ${({ theme }) => theme.fonts.default};
-    font-family: 'NanumSquare Neo OTF', sans-serif;
+    /* 변경: 'NanumSquare Neo OTF' -> 'NanumSquare Neo' */
+    font-family: 'NanumSquare Neo', sans-serif;
     &:visited {
       text-decoration: none;
       color: black;

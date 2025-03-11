@@ -1,1 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+@font-face {
+  font-family: 'NanumSquare Neo';
+  src:
+    local('NanumSquare Neo'),
+    url('/fonts/woff2/NanumSquareNeo-Variable.woff2') format('woff2'),
+    url('/fonts/woff/NanumSquareNeo-Variable.woff') format('woff'),
+    url('/fonts/TTF/NanumSquareNeo-aLt.ttf') format('truetype'),
+    url('/fonts/OTF/NanumSquareNeoOTF-Bd.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

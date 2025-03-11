@@ -14,7 +14,8 @@
   max-width: 600px;
   margin: 0 auto;
   padding: 1rem;
-  font-family: 'NanumSquare Neo OTF';
+  /* 변경: font-family 'NanumSquare Neo OTF' -> 'NanumSquare Neo' */
+  font-family: 'NanumSquare Neo', sans-serif;
 }
 
 body.personalLink #root {
