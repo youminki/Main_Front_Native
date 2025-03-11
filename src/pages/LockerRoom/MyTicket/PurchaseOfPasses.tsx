@@ -55,7 +55,6 @@ const PurchaseOfPasses: React.FC = () => {
             label='이용권 사용기간'
             id='usagePeriod'
             prefixcontent='2025.03.01 ~ 2025.03.31 (1개월)'
-            readOnly
           />
 
           {/* (row 정렬) 결제금액 & 이용권 설정 */}
@@ -65,7 +64,6 @@ const PurchaseOfPasses: React.FC = () => {
                 label='이용권 결제금액'
                 id='paymentAmount'
                 prefixcontent='120,000'
-                readOnly
               />
             </HalfBox>
 
@@ -77,7 +75,6 @@ const PurchaseOfPasses: React.FC = () => {
                   isOneTime ? undefined : ['월 4회권', '월 8회권', '무제한']
                 }
                 prefixcontent={isOneTime ? '해당없음' : undefined}
-                readOnly={isOneTime}
               />
             </HalfBox>
           </RowWrapper>
@@ -87,7 +84,6 @@ const PurchaseOfPasses: React.FC = () => {
             label='진행 중인 시즌표시'
             id='currentSeason'
             prefixcontent='2025 SPRING | 2025.03 ~ 2025.05'
-            readOnly
           />
 
           {/* 자동결제 일자 */}
@@ -95,7 +91,6 @@ const PurchaseOfPasses: React.FC = () => {
             label='자동결제 일자'
             id='autoPaymentDate'
             prefixcontent={isOneTime ? '해당없음' : '매달 1일 (진행예정)'}
-            readOnly
           />
 
           <Divider />
