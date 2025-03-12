@@ -98,7 +98,7 @@ const ContentContainer = styled.div<{
   disablePadding?: boolean;
 }>`
   flex: 1;
-  padding: ${({ disablePadding }) => (disablePadding ? '0' : '120px 0')};
+  padding: ${({ disablePadding }) => (disablePadding ? '0' : '60px 0')};
   animation: ${({ exit, animate }) =>
       exit ? slideOut : animate ? slideIn : 'none'}
     0.3s ease-out;

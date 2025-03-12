@@ -279,7 +279,7 @@ const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 69px;
+  margin-top: 10px;
   margin-bottom: 27px;
 `;
 
