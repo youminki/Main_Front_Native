@@ -48,7 +48,6 @@ const PaymentMethodText = styled.div`
   font-weight: 700;
   font-size: 12px;
   line-height: 11px;
-  /* identical to box height */
 
   color: #000000;
   margin-bottom: 10px;
@@ -123,7 +122,7 @@ const OptionText = styled.div`
   z-index: 2;
 
   font-weight: 800;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 15px;
   text-align: center;
 
@@ -132,8 +131,8 @@ const OptionText = styled.div`
 
 const Circle = styled.div`
   position: absolute;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border: 5px solid ${Theme.colors.yellow};
   background-color: white;
   border-radius: 50%;
