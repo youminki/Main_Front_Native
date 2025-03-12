@@ -233,7 +233,6 @@ const AmountWrapper = styled.div`
 `;
 
 const PendingLabel = styled.span`
-  font-style: normal;
   font-weight: 400;
   font-size: 14px;
   line-height: 15px;
@@ -249,7 +248,6 @@ const StatusDate = styled.div`
 `;
 
 const StatusTag = styled.span<{ pending?: boolean; confirmed?: boolean }>`
-  font-style: normal;
   font-weight: 900;
   font-size: 8px;
   line-height: 9px;
@@ -262,7 +260,6 @@ const StatusTag = styled.span<{ pending?: boolean; confirmed?: boolean }>`
 `;
 
 const Date = styled.p`
-  font-style: normal;
   font-weight: 700;
   font-size: 18px;
   line-height: 20px;
@@ -272,7 +269,6 @@ const Date = styled.p`
 `;
 
 const SubDate = styled.p`
-  font-style: normal;
   font-weight: 400;
   font-size: 10px;
   line-height: 11px;
@@ -281,7 +277,6 @@ const SubDate = styled.p`
 `;
 
 const Amount = styled.p`
-  font-style: normal;
   font-weight: 900;
   font-size: 20px;
   line-height: 22px;
@@ -294,7 +289,6 @@ const Amount = styled.p`
   margin-bottom: 10px;
 `;
 const Deduction = styled.p`
-  font-style: normal;
   font-weight: 400;
   font-size: 10px;
   line-height: 11px;

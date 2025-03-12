@@ -73,7 +73,6 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-style: normal;
   font-weight: 800;
   font-size: 24px;
   line-height: 27px;

@@ -398,7 +398,6 @@ const Icon = styled.img`
 `;
 
 const LabelDetailText = styled.span`
-  font-style: normal;
   font-weight: 700;
   font-size: 14px;
   line-height: 22px;

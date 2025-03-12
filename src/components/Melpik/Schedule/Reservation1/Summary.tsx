@@ -54,7 +54,6 @@ const ScheduleInfo = styled.div`
 `;
 
 const Label = styled.label`
-  font-style: normal;
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
@@ -73,7 +72,6 @@ const InfoText = styled.div`
   align-items: center;
   margin-top: 10px;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;

@@ -1,13 +1,13 @@
-import React from "react";
-import styled from "styled-components";
-import Theme from "../../../styles/Theme";
-import SizeInfoImageSrc from "../../../assets/Home/HomeDetail/SizeInfo.svg";
+import React from 'react';
+import styled from 'styled-components';
+import Theme from '../../../styles/Theme';
+import SizeInfoImageSrc from '../../../assets/Home/HomeDetail/SizeInfo.svg';
 
 const SizeInfo: React.FC = () => {
   return (
     <SizeInfoContainer>
       <label>사이즈 정보</label>
-      <img src={SizeInfoImageSrc} alt="Size Information" />
+      <img src={SizeInfoImageSrc} alt='Size Information' />
       <TableRow>
         <TableHeader></TableHeader>
         <TableHeader>A</TableHeader>
@@ -52,7 +52,6 @@ const SizeInfoContainer = styled.div`
   align-items: center;
   width: 100%;
   label {
-    font-style: normal;
     font-weight: 700;
     font-size: 10px;
     line-height: 11px;

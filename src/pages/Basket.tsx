@@ -324,7 +324,6 @@ const ItemDetails = styled.div`
 `;
 
 const Brand = styled.div`
-  font-style: normal;
   font-weight: 900;
   font-size: 14px;
   line-height: 11px;
@@ -339,7 +338,6 @@ const ItemName = styled.div`
 `;
 
 const NameCode = styled.span`
-  font-style: normal;
   font-weight: 900;
   font-size: 18px;
   line-height: 22px;
@@ -347,7 +345,6 @@ const NameCode = styled.span`
 `;
 
 const ItemType = styled.span`
-  font-style: normal;
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
@@ -355,7 +352,6 @@ const ItemType = styled.span`
 `;
 
 const Slash = styled.span`
-  font-style: normal;
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
@@ -364,7 +360,6 @@ const Slash = styled.span`
 `;
 
 const LabelDetailText = styled.span`
-  font-style: normal;
   font-weight: 700;
   font-size: 14px;
   line-height: 22px;
@@ -373,7 +368,6 @@ const LabelDetailText = styled.span`
 `;
 
 const DetailText = styled.span`
-  font-style: normal;
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
@@ -382,7 +376,6 @@ const DetailText = styled.span`
 `;
 
 const DetailHighlight = styled.span`
-  font-style: normal;
   font-weight: 900;
   font-size: 14px;
   line-height: 22px;

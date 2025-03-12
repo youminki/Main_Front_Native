@@ -303,7 +303,6 @@ const LabelText = styled.span`
 `;
 
 const RequiredText = styled.span`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;
@@ -353,7 +352,6 @@ const InfoRow = styled.div`
 `;
 
 const InfoText = styled.span`
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 13px;

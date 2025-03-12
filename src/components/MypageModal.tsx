@@ -188,7 +188,6 @@ const ModalHeader = styled.div`
 `;
 
 const Title = styled.h2`
-  font-style: normal;
   font-weight: 800;
   font-size: 16px;
   line-height: 18px;

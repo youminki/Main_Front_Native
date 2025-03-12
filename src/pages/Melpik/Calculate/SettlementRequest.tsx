@@ -78,7 +78,6 @@ const RowContainer = styled.div`
 `;
 
 const Notice1 = styled.p`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;
@@ -87,7 +86,6 @@ const Notice1 = styled.p`
   margin-top: 10px;
 `;
 const Notice2 = styled.p`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;
@@ -98,7 +96,6 @@ const Notice2 = styled.p`
 `;
 
 const Highlight = styled.span`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;

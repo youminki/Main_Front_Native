@@ -197,7 +197,6 @@ export default ScheduleReservation2;
 const Container = styled.div``;
 
 const Label = styled.label`
-  font-style: normal;
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
@@ -224,7 +223,6 @@ const InfoText = styled.div`
   display: flex;
   align-items: center;
 
-  font-style: normal;
   font-weight: 700;
   font-size: 13px;
   line-height: 14px;
@@ -249,7 +247,6 @@ const GrayText2 = styled.span`
   margin-left: 5px;
   color: ${Theme.colors.gray3};
 
-  font-style: normal;
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;

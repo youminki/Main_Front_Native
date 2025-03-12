@@ -30,7 +30,6 @@ const Divider = styled.div`
 `;
 
 const FooterText = styled.div`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 20px;
@@ -38,7 +37,6 @@ const FooterText = styled.div`
   color: #999999;
 
   .highlight {
-    font-style: normal;
     font-weight: 400;
     font-size: 12px;
     line-height: 20px;
@@ -50,7 +48,6 @@ const FooterText = styled.div`
 const FooterCopyright = styled.div`
   margin-top: 20px;
 
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 20px;

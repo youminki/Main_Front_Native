@@ -365,7 +365,7 @@ const GenderField = styled.div`
 const InputFieldLabel = styled.label`
   margin-bottom: 10px;
   color: ${({ theme }) => theme.colors.black};
-  font-style: normal;
+
   font-weight: 700;
   font-size: 11px;
   line-height: 11px;

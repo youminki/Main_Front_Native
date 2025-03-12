@@ -81,7 +81,6 @@ const MaterialInfoContainer = styled.div`
 `;
 
 const Title = styled.h3`
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 11px;
@@ -141,7 +140,6 @@ const Options = styled.div`
 `;
 
 const Option = styled.div<{ isSelected: boolean }>`
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 11px;

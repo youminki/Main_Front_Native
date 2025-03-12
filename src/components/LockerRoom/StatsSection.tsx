@@ -67,7 +67,6 @@ const Row = styled.div`
 `;
 
 const StatNumber = styled.div`
-  font-style: normal;
   font-weight: 800;
   font-size: 12px;
   line-height: 13px;
@@ -76,7 +75,6 @@ const StatNumber = styled.div`
 `;
 
 const StatLabel = styled.div`
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 13px;
@@ -91,7 +89,6 @@ const DateLabel = styled.div`
   right: 10px;
   padding: 4px 8px;
 
-  font-style: normal;
   font-weight: 900;
   font-size: 8px;
   line-height: 1.2;

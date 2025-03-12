@@ -179,7 +179,6 @@ const SmallText = styled.div`
 `;
 
 const LargeText = styled.div`
-  font-style: normal;
   font-weight: 350;
   font-size: 30px;
   line-height: 33px;
@@ -206,7 +205,6 @@ const Label = styled.span`
 `;
 
 const Data = styled.span`
-  font-style: normal;
   font-weight: 900;
   font-size: 12px;
   line-height: 13px;
@@ -244,7 +242,6 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-  font-style: normal;
   font-weight: 800;
   font-size: 14px;
   line-height: 15px;

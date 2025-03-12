@@ -223,7 +223,7 @@ const ViewDetailsButton = styled.button`
   cursor: pointer;
   font-size: 12px;
   border-radius: 5px;
-  font-style: normal;
+
   font-weight: 800;
   text-align: center;
 `;
@@ -238,7 +238,7 @@ const DescriptionWrapper = styled.div`
 const Description = styled.p`
   color: ${({ theme }) => theme.colors.gray};
   margin: 0;
-  font-style: normal;
+
   font-weight: 700;
   font-size: 12px;
   line-height: 13px;

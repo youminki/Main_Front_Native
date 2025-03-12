@@ -8,7 +8,7 @@
     url('/fonts/TTF/NanumSquareNeo-aLt.ttf') format('truetype'),
     url('/fonts/OTF/NanumSquareNeoOTF-Bd.otf') format('opentype');
   font-weight: 100 900;
-  font-style: normal;
+
   font-display: swap;
 }
 

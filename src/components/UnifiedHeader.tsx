@@ -315,7 +315,6 @@ const Greeting = styled.div`
 `;
 
 const GreetingText = styled.div`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;
@@ -323,7 +322,6 @@ const GreetingText = styled.div`
 `;
 
 const Nickname = styled.span`
-  font-style: normal;
   font-weight: 800;
   font-size: 18px;
   line-height: 20px;
@@ -350,7 +348,6 @@ const CancelIcon = styled.img`
 `;
 
 const Title = styled.h1`
-  font-style: normal;
   font-weight: 700;
   font-size: 20px;
   line-height: 22px;

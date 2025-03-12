@@ -121,7 +121,6 @@ const DetailSection = styled.div`
 `;
 
 const Title = styled.div`
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 11px;
@@ -201,7 +200,7 @@ const SeasonValue = styled.div<{ bgColor: string }>`
   background: ${(props) => props.bgColor || '#AAAAAA'};
   border-radius: 2px;
   padding: 4px 4px;
-  font-style: normal;
+
   font-weight: 700;
   font-size: 12px;
   line-height: 11px;

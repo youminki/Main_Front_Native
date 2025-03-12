@@ -155,7 +155,6 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-style: normal;
   font-weight: 800;
   font-size: 24px;
   line-height: 27px;
@@ -257,7 +256,6 @@ const TextWrapper = styled.div`
 `;
 
 const ItemTitle = styled.div`
-  font-style: normal;
   font-weight: 400;
   font-size: 14px;
   line-height: 13px;
@@ -267,7 +265,6 @@ const ItemTitle = styled.div`
 const ItemDate = styled.div`
   margin-top: 10px;
 
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;
@@ -275,7 +272,6 @@ const ItemDate = styled.div`
 `;
 
 const BoldText = styled.span`
-  font-style: normal;
   font-weight: 800;
   font-size: 14px;
   line-height: 13px;

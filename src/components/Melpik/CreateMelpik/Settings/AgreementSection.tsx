@@ -160,7 +160,6 @@ const ViewDetailsButton = styled.button`
 
   border-radius: 5px;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 12px;
   line-height: 13px;
@@ -179,7 +178,7 @@ const DescriptionWrapper = styled.div`
 const Description = styled.p`
   color: ${({ theme }) => theme.colors.gray};
   margin: 0;
-  font-style: normal;
+
   font-weight: 700;
   font-size: 12px;
   line-height: 13px;

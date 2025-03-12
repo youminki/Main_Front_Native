@@ -46,7 +46,6 @@ const DateSelectionContainer = styled.div`
 `;
 
 const Label = styled.label`
-  font-style: normal;
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
@@ -66,7 +65,6 @@ const DateInput = styled.select`
   border-radius: 5px;
   flex: 1;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
@@ -81,7 +79,6 @@ const DateDropdown = styled.select`
   flex: 1;
   margin-left: 10px;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;

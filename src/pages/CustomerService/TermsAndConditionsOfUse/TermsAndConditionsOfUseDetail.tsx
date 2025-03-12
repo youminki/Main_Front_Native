@@ -66,7 +66,6 @@ const Section = styled.div`
 `;
 
 const Label = styled.div`
-  font-style: normal;
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
@@ -85,7 +84,6 @@ const Box = styled.div`
 `;
 
 const BoxText = styled.div`
-  font-style: normal;
   font-weight: 700;
   font-size: 13px;
   line-height: 14px;
@@ -97,7 +95,6 @@ const ContentBox = styled(Box)`
 `;
 
 const ContentText = styled.div`
-  font-style: normal;
   font-weight: 400;
   font-size: 13px;
   line-height: 20px;
@@ -120,7 +117,6 @@ const NoticeMessage = styled.div`
 `;
 
 const Bullet = styled.div`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 23px;
@@ -130,7 +126,6 @@ const Bullet = styled.div`
 `;
 
 const NoticeText = styled.div`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 23px;

@@ -109,7 +109,6 @@ const Content = styled.div`
 `;
 
 const Label = styled.label`
-  font-style: normal;
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
@@ -175,7 +174,6 @@ const ProductLabel = styled.div`
 `;
 
 const ProductName = styled.div`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;

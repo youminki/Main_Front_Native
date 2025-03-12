@@ -92,7 +92,6 @@ const ToggleText = styled.span<{ $isActive: boolean }>`
 `;
 
 const ToggleLabel = styled.span`
-  font-style: normal;
   font-weight: 700;
   font-size: 14px;
   line-height: 13px;

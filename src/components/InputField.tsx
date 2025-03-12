@@ -211,7 +211,6 @@ const PrefixText = styled.span`
 const PrefixcontentText = styled.span`
   margin-left: 10px;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
@@ -266,7 +265,6 @@ const Input = styled.input`
   height: 57px;
   width: 100%;
 
-  font-style: normal;
   font-weight: 400;
   font-size: 13px;
   line-height: 14px;
@@ -285,7 +283,6 @@ const Select = styled.select`
   width: 100%;
   padding: 0 40px 0 16px;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;

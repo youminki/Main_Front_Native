@@ -334,7 +334,6 @@ const CalendarContainer = styled.div`
   gap: 5px;
   padding: 20px;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 13px;
   line-height: 13px;
@@ -382,7 +381,6 @@ const EmptyDay = styled.div``;
 const Notice = styled.p`
   margin: 0 20px;
 
-  font-style: normal;
   font-weight: 400;
   font-size: 14px;
   line-height: 20px;

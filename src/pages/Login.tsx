@@ -204,7 +204,6 @@ const NormalText = styled.span`
 `;
 
 const SubDescription = styled.div`
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 28px;

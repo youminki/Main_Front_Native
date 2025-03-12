@@ -215,7 +215,6 @@ export default FilterModal;
 
 // Section 제목 내 괄호 스타일
 const ParenText = styled.span`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;

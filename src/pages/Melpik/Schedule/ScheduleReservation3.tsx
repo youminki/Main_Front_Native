@@ -221,7 +221,6 @@ const ColumnWrapper = styled.div`
 const Label = styled.label`
   margin-bottom: 8px;
 
-  font-style: normal;
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
@@ -235,7 +234,6 @@ const StyledSelect = styled.select`
   border-radius: 5px;
   border: 1px solid ${Theme.colors.black};
 
-  font-style: normal;
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
@@ -250,7 +248,6 @@ const GrayText = styled.span`
 `;
 
 const BlackText = styled.span`
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 13px;
@@ -294,7 +291,6 @@ const InfoText = styled.div`
   display: flex;
   align-items: center;
 
-  font-style: normal;
   font-weight: 700;
   font-size: 13px;
   line-height: 14px;

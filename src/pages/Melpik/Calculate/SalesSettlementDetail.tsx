@@ -166,7 +166,6 @@ const Input = styled.input`
 `;
 
 const Note = styled.p`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;
@@ -221,7 +220,6 @@ const TdLeft = styled.td`
   border: 1px solid #dddddd;
   text-align: left;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 12px;
   line-height: 13px;
@@ -233,7 +231,6 @@ const TdRight = styled.td`
   padding: 20px;
   border: 1px solid #dddddd;
 
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;
@@ -248,7 +245,6 @@ const ProductName = styled.span<{ isBold?: boolean }>`
 const SubInfo = styled.p<{ isBold?: boolean }>`
   white-space: nowrap; /* 텍스트 줄바꿈 방지 */
 
-  font-style: normal;
   font-weight: ${({ isBold }) => (isBold ? 800 : 400)};
   font-size: 12px;
   line-height: 13px;

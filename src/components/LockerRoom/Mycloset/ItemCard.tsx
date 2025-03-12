@@ -141,7 +141,6 @@ const DeleteButtonIcon = styled.img`
 `;
 
 const Brand = styled.h3`
-  font-style: normal;
   font-weight: 900;
   font-size: 12px;
   line-height: 11px;
@@ -154,7 +153,6 @@ const Brand = styled.h3`
 const Description = styled.p`
   margin-top: 0;
 
-  font-style: normal;
   font-weight: 400;
   font-size: 14px;
   line-height: 13px;
@@ -172,7 +170,6 @@ const PriceWrapper = styled.div`
 `;
 
 const OriginalPrice = styled.span`
-  font-style: normal;
   font-weight: 900;
   font-size: 16px;
   line-height: 15px;
@@ -183,7 +180,6 @@ const OriginalPrice = styled.span`
 const NowLabel = styled.span`
   position: relative;
 
-  font-style: normal;
   font-weight: 400;
   font-size: 10px;
   line-height: 9px;
@@ -193,7 +189,6 @@ const NowLabel = styled.span`
 const DiscountLabel = styled.span`
   position: relative;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 12px;
   line-height: 11px;
@@ -214,7 +209,6 @@ const ModalImage = styled.img`
 `;
 
 const ModalMessage = styled.p`
-  font-style: normal;
   font-weight: 400;
   font-size: 14px;
   line-height: 15px;

@@ -34,7 +34,6 @@ const NoticeTag = styled.div`
   padding: 5px 8px;
   border-radius: 4px;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 10px;
   line-height: 11px;
@@ -48,7 +47,6 @@ const NoticeText = styled.div`
   flex: 1;
   margin-left: 12px;
 
-  font-style: normal;
   font-weight: 400;
   font-size: 14px;
   line-height: 15px;

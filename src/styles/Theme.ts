@@ -18,25 +18,21 @@ const Theme = {
       line-height: 1.5;
     `,
     default0: css`
-      font-style: normal;
       font-weight: 800;
       font-size: 10px;
       line-height: 11px;
     `,
     default1: css`
-      font-style: normal;
       font-weight: 800;
       font-size: 16px;
       line-height: 18px;
     `,
     default2: css`
-      font-style: normal;
       font-weight: 400;
       font-size: 12px;
       line-height: 13px;
     `,
     default3: css`
-      font-style: normal;
       font-weight: 400;
       font-size: 12px;
       line-height: 13px;

@@ -219,7 +219,6 @@ const SeasonWrapper = styled.div`
 `;
 
 const Season = styled.span`
-  font-style: normal;
   font-weight: 900;
   font-size: 16px;
   line-height: 18px;
@@ -250,7 +249,6 @@ const DateWrapper = styled.div`
 const DateTitle = styled.span`
   color: ${Theme.colors.gray2};
 
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;
@@ -258,7 +256,6 @@ const DateTitle = styled.span`
 `;
 
 const DateText = styled.span`
-  font-style: normal;
   font-weight: 800;
   font-size: 14px;
   line-height: 15px;
@@ -278,7 +275,6 @@ const InfoColumn = styled.div`
 const MiniTitle = styled.div`
   display: flex;
 
-  font-style: normal;
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;

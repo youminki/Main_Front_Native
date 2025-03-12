@@ -45,7 +45,6 @@ const PaymentMethodContainer = styled.div`
 `;
 
 const PaymentMethodText = styled.div`
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 11px;
@@ -123,7 +122,6 @@ const OptionText = styled.div`
   position: relative;
   z-index: 2;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 16px;
   line-height: 15px;

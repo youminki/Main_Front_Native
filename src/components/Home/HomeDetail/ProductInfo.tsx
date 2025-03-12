@@ -52,7 +52,6 @@ const InfoContainer = styled.div`
 `;
 
 const CategoryText = styled.p`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 11px;
@@ -60,7 +59,6 @@ const CategoryText = styled.p`
   color: #000000;
 
   & > span {
-    font-style: normal;
     font-weight: 800;
     font-size: 12px;
     line-height: 11px;
@@ -74,7 +72,6 @@ const CategoryText = styled.p`
 `;
 
 const BrandText = styled.span`
-  font-style: normal;
   font-weight: 700;
   font-size: 16px;
   line-height: 18px;
@@ -111,7 +108,7 @@ const TekImage = styled.img`
 const DescriptionText = styled.p`
   margin: 8px 0;
   color: ${Theme.colors.black};
-  font-style: normal;
+
   font-weight: 700;
   font-size: 16px;
   line-height: 18px;
@@ -125,7 +122,6 @@ const PriceContainer = styled.div`
 `;
 
 const OriginalPrice = styled.span`
-  font-style: normal;
   font-weight: 700;
   font-size: 14px;
   line-height: 13px;
@@ -143,13 +139,12 @@ const DiscountRow = styled.div`
 const DiscountPercent = styled.span`
   color: ${Theme.colors.yellow};
   margin-right: 10px;
-  font-style: normal;
+
   font-weight: 900;
   font-size: 18px;
 `;
 
 const DiscountPrice = styled.span`
-  font-style: normal;
   font-weight: 900;
   font-size: 18px;
   line-height: 20px;

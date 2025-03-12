@@ -191,7 +191,6 @@ const BrandOption = styled.div<{ selected: boolean }>`
   align-items: center;
   justify-content: center;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 12px;
   line-height: 13px;

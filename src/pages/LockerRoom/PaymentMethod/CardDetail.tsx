@@ -343,7 +343,6 @@ const DeleteButton = styled.button`
   align-items: center;
   justify-content: center;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 16px;
   line-height: 18px;

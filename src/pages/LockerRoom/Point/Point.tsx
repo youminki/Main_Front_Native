@@ -169,7 +169,6 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-style: normal;
   font-weight: 800;
   font-size: 24px;
   line-height: 27px;
@@ -279,7 +278,6 @@ const Slash = styled.span`
 
 // 슬래시 이후 텍스트 ("/ 구매사용", "/ 제품평가 작성" 등)
 const SlashPart = styled.span`
-  font-style: normal;
   font-weight: 400;
   font-size: 14px;
   line-height: 13px;

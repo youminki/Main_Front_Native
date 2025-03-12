@@ -382,7 +382,6 @@ const LinkItem = styled.li`
 const Label = styled.label<{ $isEmpty: boolean }>`
   margin-bottom: 10px;
 
-  font-style: normal;
   font-weight: 900;
   font-size: 12px;
   line-height: 16px;
@@ -404,7 +403,6 @@ const LinkContent = styled.div`
 `;
 
 const LinkTitle = styled.span`
-  font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
@@ -423,7 +421,6 @@ const LinkUrl = styled.a`
   display: inline-block;
   text-decoration: none;
 
-  font-style: normal;
   font-weight: 800;
   font-size: 12px;
   line-height: 16px;
