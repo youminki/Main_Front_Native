@@ -563,7 +563,6 @@ const Section = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
@@ -624,7 +623,7 @@ const DetailAddressInput = styled.input`
   border: 1px solid #dddddd;
   border-radius: 4px;
   padding: 0 10px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 400;
   font-size: 13px;
   line-height: 14px;
@@ -641,7 +640,7 @@ const ReturnOption = styled.div`
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 30px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 800;
   font-size: 13px;
   text-align: center;
@@ -723,7 +722,6 @@ const TotalAmount = styled.div`
 `;
 
 const AdditionalCost = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 14px;
   color: #000000;
@@ -731,7 +729,7 @@ const AdditionalCost = styled.div`
 
 const Amount = styled.div`
   margin-left: auto;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 900;
   font-size: 16px;
   color: #000000;
@@ -761,7 +759,6 @@ const ItemDetails = styled.div`
 `;
 
 const Brand = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
   font-size: 10px;
   color: #000000;
@@ -774,21 +771,18 @@ const ItemName = styled.div`
 `;
 
 const NameCode = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
   font-size: 16px;
   color: #000000;
 `;
 
 const ItemType = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 12px;
   color: #999999;
 `;
 
 const Slash = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 12px;
   color: #dddddd;
@@ -796,7 +790,6 @@ const Slash = styled.span`
 `;
 
 const LabelDetailText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 12px;
   color: #000000;
@@ -804,7 +797,6 @@ const LabelDetailText = styled.span`
 `;
 
 const DetailText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 12px;
   color: #000000;
@@ -812,7 +804,6 @@ const DetailText = styled.span`
 `;
 
 const DetailHighlight = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
   font-size: 12px;
   color: #000000;
@@ -927,7 +918,6 @@ const ModalBodyContent = styled.div`
 `;
 
 const DeliveryListLabel = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
@@ -936,7 +926,6 @@ const DeliveryListLabel = styled.div`
 `;
 
 const DeliverySelect = styled.select`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;

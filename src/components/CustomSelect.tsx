@@ -8,7 +8,7 @@ export const CustomSelect = styled.select`
   height: 57px;
   width: 100%;
   padding: 0 40px 0 16px; /* 오른쪽에 아이콘 들어갈 공간 확보 */
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 13px;

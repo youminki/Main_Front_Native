@@ -52,7 +52,6 @@ const InfoContainer = styled.div`
 `;
 
 const CategoryText = styled.p`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -61,7 +60,6 @@ const CategoryText = styled.p`
   color: #000000;
 
   & > span {
-    font-family: 'NanumSquare Neo OTF';
     font-style: normal;
     font-weight: 800;
     font-size: 12px;
@@ -76,7 +74,6 @@ const CategoryText = styled.p`
 `;
 
 const BrandText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 16px;
@@ -128,7 +125,6 @@ const PriceContainer = styled.div`
 `;
 
 const OriginalPrice = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 14px;

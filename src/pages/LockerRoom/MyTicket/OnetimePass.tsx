@@ -120,7 +120,6 @@ const Divider = styled.div`
 `;
 
 const SectionTitle = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
@@ -149,7 +148,7 @@ const ReadOnlyBox = styled.div`
   display: flex;
   align-items: center;
   padding: 0 16px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
@@ -157,7 +156,6 @@ const ReadOnlyBox = styled.div`
 `;
 
 const PriceText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
   font-size: 13px;
   line-height: 14px;
@@ -165,7 +163,6 @@ const PriceText = styled.span`
 `;
 
 const PassName = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
@@ -196,7 +193,6 @@ const InFieldBoxGray = styled.div`
 `;
 
 const CodeLabel = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 13px;
   line-height: 14px;
@@ -205,7 +201,6 @@ const CodeLabel = styled.span`
 `;
 
 const Pipe = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 13px;
   line-height: 14px;
@@ -214,7 +209,6 @@ const Pipe = styled.span`
 `;
 
 const CodeValue = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
@@ -223,7 +217,6 @@ const CodeValue = styled.span`
 `;
 
 const SeasonLabel = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 13px;
   line-height: 14px;
@@ -232,7 +225,6 @@ const SeasonLabel = styled.span`
 `;
 
 const SeasonValue = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
@@ -248,7 +240,7 @@ const NoticeArea = styled.div`
 
 const NoticeText = styled.p`
   margin: 0;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 400;
   font-size: 12px;
   line-height: 13px;
@@ -256,7 +248,6 @@ const NoticeText = styled.p`
 `;
 
 const OrangeBold = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 12px;
   line-height: 13px;
@@ -265,7 +256,7 @@ const OrangeBold = styled.span`
 
 const GrayText = styled.span`
   padding-left: 3px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 700;
   font-size: 13px;
   line-height: 14px;

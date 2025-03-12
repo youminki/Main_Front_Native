@@ -23,7 +23,7 @@ const StyledButton = styled.button<{ color: 'yellow' | 'black' }>`
   border-radius: 5px;
   border: none;
   color: #ffffff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   font-weight: 800;
   font-size: 12px;
   line-height: 13px;

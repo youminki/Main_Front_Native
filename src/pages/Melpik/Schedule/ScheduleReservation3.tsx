@@ -220,7 +220,7 @@ const ColumnWrapper = styled.div`
 
 const Label = styled.label`
   margin-bottom: 8px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 700;
   font-size: 10px;
@@ -234,7 +234,7 @@ const StyledSelect = styled.select`
   padding: 20px;
   border-radius: 5px;
   border: 1px solid ${Theme.colors.black};
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 13px;
@@ -245,12 +245,11 @@ const StyledSelect = styled.select`
 
 const GrayText = styled.span`
   color: ${Theme.colors.gray1};
-  font-family: 'NanumSquare Neo OTF';
+
   font-size: 12px;
 `;
 
 const BlackText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -294,7 +293,7 @@ const InfoText = styled.div`
   border-radius: 5px;
   display: flex;
   align-items: center;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 700;
   font-size: 13px;
@@ -349,7 +348,7 @@ const CustomHeader = styled.div`
 const GrayText2 = styled.span`
   margin-left: 5px;
   color: ${Theme.colors.gray3};
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;

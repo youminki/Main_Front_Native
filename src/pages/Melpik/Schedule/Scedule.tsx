@@ -115,7 +115,6 @@ const ScheduleContainer = styled.div`
   flex-direction: column;
   width: 100%;
   background-color: #fff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
 `;
 const Header = styled.div`
   display: flex;
@@ -220,7 +219,6 @@ const SeasonWrapper = styled.div`
 `;
 
 const Season = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
   font-size: 16px;
@@ -251,7 +249,7 @@ const DateWrapper = styled.div`
 
 const DateTitle = styled.span`
   color: ${Theme.colors.gray2};
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -260,7 +258,6 @@ const DateTitle = styled.span`
 `;
 
 const DateText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 14px;
@@ -280,7 +277,7 @@ const InfoColumn = styled.div`
 
 const MiniTitle = styled.div`
   display: flex;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 700;
   font-size: 10px;

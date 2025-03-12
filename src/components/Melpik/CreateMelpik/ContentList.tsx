@@ -179,7 +179,6 @@ const SmallText = styled.div`
 `;
 
 const LargeText = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 350;
   font-size: 30px;
@@ -207,7 +206,6 @@ const Label = styled.span`
 `;
 
 const Data = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
   font-size: 12px;
@@ -246,7 +244,6 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 14px;

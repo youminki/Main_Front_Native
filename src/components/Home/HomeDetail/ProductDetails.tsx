@@ -178,7 +178,7 @@ const InfoRow = styled.div`
 
 const Label = styled.div`
   width: 50px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 800;
   font-size: 13px;
   color: #000000;
@@ -187,7 +187,6 @@ const Label = styled.div`
 `;
 
 const Value = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 12px;
   color: #000000;

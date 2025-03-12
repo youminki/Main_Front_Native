@@ -149,7 +149,6 @@ const InputField = styled.div`
 `;
 
 const Label = styled.label`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 10px;
   color: #000;
@@ -167,7 +166,6 @@ const Input = styled.input`
 `;
 
 const Note = styled.p`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -222,7 +220,7 @@ const TdLeft = styled.td`
   padding: 20px;
   border: 1px solid #dddddd;
   text-align: left;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 12px;
@@ -234,7 +232,7 @@ const TdRight = styled.td`
   white-space: nowrap; /* 텍스트 줄바꿈 방지 */
   padding: 20px;
   border: 1px solid #dddddd;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -249,7 +247,7 @@ const ProductName = styled.span<{ isBold?: boolean }>`
 
 const SubInfo = styled.p<{ isBold?: boolean }>`
   white-space: nowrap; /* 텍스트 줄바꿈 방지 */
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: ${({ isBold }) => (isBold ? 800 : 400)};
   font-size: 12px;

@@ -231,7 +231,7 @@ const UserImageWrapper = styled.div`
 /* 사용자 이름 (프로필 하단에 위치) */
 const UserName = styled.div`
   margin-top: 8px;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   font-weight: 700;
   font-size: 18px;
   line-height: 20px;
@@ -255,7 +255,7 @@ const TabItem = styled.div<{ active: boolean }>`
   border: 2px solid transparent; /* 변경: 모든 탭에 기본 투명 테두리 적용 */
   background: ${({ active }) => (active ? '#ffffff' : '#eeeeee')};
   color: ${({ active }) => (active ? '#000' : '#999')};
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   font-weight: 800;
   font-size: 14px;
   display: flex;
@@ -332,7 +332,6 @@ const LinkTextWrapper = styled.div`
 
 /* 링크 제목 */
 const LinkTitle = styled.div`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 800;
   font-size: 14px;
   color: #000000;
@@ -341,7 +340,6 @@ const LinkTitle = styled.div`
 
 /* 링크 설명 */
 const LinkDesc = styled.div`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 12px;
   color: #999999;
@@ -371,7 +369,6 @@ const ProductListWrapper = styled.div`
 
 /* 상단 안내문 */
 const IntroText = styled.div`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 14px;
   color: #000;
@@ -383,7 +380,7 @@ const Footer = styled.div`
   width: 100%;
   height: 20px;
   text-align: center;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   font-weight: 400;
   font-size: 12px;
   line-height: 20px;

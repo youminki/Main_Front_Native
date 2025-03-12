@@ -100,7 +100,6 @@ const Container = styled.div`
   flex-direction: column;
   width: 100%;
   background-color: #fff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
 `;
 
 const Content = styled.div`
@@ -110,7 +109,6 @@ const Content = styled.div`
 `;
 
 const Label = styled.label`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 10px;
@@ -121,7 +119,7 @@ const TextBox = styled.div`
   padding: 21px 10px;
   border: 1px solid ${Theme.colors.gray4};
   border-radius: 5px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
@@ -177,7 +175,6 @@ const ProductLabel = styled.div`
 `;
 
 const ProductName = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;

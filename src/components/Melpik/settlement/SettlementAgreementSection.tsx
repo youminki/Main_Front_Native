@@ -171,7 +171,6 @@ const Checkbox = styled.input`
 `;
 
 const Label = styled.label`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -221,7 +220,6 @@ const ReadonlyInput = styled.input`
   border: 1px solid #ccc;
   font-size: 14px;
 
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 12px;

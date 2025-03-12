@@ -68,7 +68,6 @@ const Section = styled.div`
 `;
 
 const Label = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 10px;
@@ -88,7 +87,6 @@ const Box = styled.div`
 `;
 
 const BoxText = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 13px;
@@ -101,7 +99,6 @@ const ContentBox = styled(Box)`
 `;
 
 const ContentText = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
@@ -125,7 +122,6 @@ const NoticeMessage = styled.div`
 `;
 
 const Bullet = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -136,7 +132,6 @@ const Bullet = styled.div`
 `;
 
 const NoticeText = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;

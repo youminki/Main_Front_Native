@@ -78,7 +78,6 @@ const RowContainer = styled.div`
 `;
 
 const Notice1 = styled.p`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -88,7 +87,6 @@ const Notice1 = styled.p`
   margin-top: 10px;
 `;
 const Notice2 = styled.p`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -100,7 +98,6 @@ const Notice2 = styled.p`
 `;
 
 const Highlight = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;

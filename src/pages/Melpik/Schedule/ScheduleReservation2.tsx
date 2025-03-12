@@ -197,7 +197,6 @@ export default ScheduleReservation2;
 const Container = styled.div``;
 
 const Label = styled.label`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 10px;
@@ -224,7 +223,7 @@ const InfoText = styled.div`
   border-radius: 5px;
   display: flex;
   align-items: center;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 700;
   font-size: 13px;
@@ -249,7 +248,7 @@ const CustomHeader = styled.div`
 const GrayText2 = styled.span`
   margin-left: 5px;
   color: ${Theme.colors.gray3};
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 700;
   font-size: 10px;
@@ -347,7 +346,7 @@ const CheckIcon = styled.img`
 
 const SelectText = styled.div`
   margin-top: 10px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 700;
   font-size: 12px;
   color: white;
@@ -382,7 +381,6 @@ const ModalHeader = styled.div`
 `;
 
 const ModalTitle = styled.p`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 800;
   font-size: 16px;
 `;
@@ -414,7 +412,6 @@ const CancelButton = styled.button`
   border-radius: 6px;
   cursor: pointer;
 
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 16px;
 `;
@@ -433,7 +430,7 @@ const WarningModalContent = styled(ModalContent)`
 
 const WarningMessage = styled.p`
   color: ${Theme.colors.black};
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 400;
   font-size: 14px;
   text-align: center;

@@ -72,7 +72,6 @@ const Container = styled.div`
   align-items: center;
 
   background-color: #fff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
 `;
 
 const Header = styled.div`

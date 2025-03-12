@@ -157,7 +157,6 @@ const PointContainer = styled.div`
   align-items: center;
   width: 100%;
   background-color: #fff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
 `;
 
 // 상단 헤더
@@ -170,7 +169,6 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 24px;
@@ -224,7 +222,6 @@ const HistoryHeader = styled.div`
 `;
 
 const LeftHeader = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 12px;
   line-height: 11px;
@@ -233,7 +230,6 @@ const LeftHeader = styled.div`
 `;
 
 const RightHeader = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 12px;
   line-height: 11px;
@@ -267,7 +263,6 @@ const DateRow = styled.div`
 
 // 날짜 부분 (기존 굵게)
 const DatePart = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 14px;
   line-height: 13px;
@@ -276,7 +271,6 @@ const DatePart = styled.span`
 
 // 슬래시 문자 (날짜와 구분되는 느낌을 위해 분리)
 const Slash = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 14px;
   line-height: 13px;
@@ -285,7 +279,6 @@ const Slash = styled.span`
 
 // 슬래시 이후 텍스트 ("/ 구매사용", "/ 제품평가 작성" 등)
 const SlashPart = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -303,7 +296,6 @@ const RowRight = styled.div`
 
 // "포인트 적립"/"포인트 사용" 등
 const DetailText = styled.p<{ color?: string }>`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 14px;
   line-height: 13px;
@@ -313,7 +305,6 @@ const DetailText = styled.p<{ color?: string }>`
 
 // 변동 포인트
 const ChangeText = styled.p`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 14px;
   line-height: 13px;
@@ -324,7 +315,6 @@ const ChangeText = styled.p`
 
 // 누적 포인트
 const TotalText = styled.p`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 16px;
   line-height: 13px;

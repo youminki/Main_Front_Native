@@ -16,7 +16,7 @@ const StyledButton = styled.button`
 
   height: 56px;
   padding: 15px;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   font-size: 16px;
   font-weight: 800;
   line-height: 17.68px;

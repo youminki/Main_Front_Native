@@ -78,7 +78,6 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: #fff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
 `;
 
 const Header = styled.div`

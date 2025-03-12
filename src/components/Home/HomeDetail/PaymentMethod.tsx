@@ -45,7 +45,6 @@ const PaymentMethodContainer = styled.div`
 `;
 
 const PaymentMethodText = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -123,7 +122,7 @@ const Option = styled.div<{ active: boolean }>`
 const OptionText = styled.div`
   position: relative;
   z-index: 2;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 16px;

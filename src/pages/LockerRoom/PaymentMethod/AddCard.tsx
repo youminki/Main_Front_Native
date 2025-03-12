@@ -297,14 +297,12 @@ const CheckboxLabel = styled.label`
 `;
 
 const LabelText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 12px;
   color: #000000;
 `;
 
 const RequiredText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -355,7 +353,6 @@ const InfoRow = styled.div`
 `;
 
 const InfoText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -370,7 +367,7 @@ const ViewAllButton = styled.button`
   border-radius: 5px;
   border: none;
   color: #ffffff;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 800;
   font-size: 12px;
   cursor: pointer;
@@ -387,7 +384,7 @@ const ColumnItem = styled.div`
 
 const GuideMessage = styled.div`
   margin-top: 30px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-size: 12px;
   color: #999999;
   line-height: 1.4;

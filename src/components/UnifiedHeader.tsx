@@ -315,7 +315,6 @@ const Greeting = styled.div`
 `;
 
 const GreetingText = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -324,7 +323,6 @@ const GreetingText = styled.div`
 `;
 
 const Nickname = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 18px;
@@ -352,7 +350,6 @@ const CancelIcon = styled.img`
 `;
 
 const Title = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 20px;

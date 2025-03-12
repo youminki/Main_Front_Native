@@ -188,7 +188,6 @@ const ModalHeader = styled.div`
 `;
 
 const Title = styled.h2`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 16px;
@@ -227,7 +226,7 @@ const LogoutButton = styled.button`
   margin: 16px auto;
   background: #000000;
   color: #ffffff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   font-weight: 800;
   font-size: 16px;
   line-height: 18px;

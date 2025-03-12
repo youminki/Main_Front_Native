@@ -54,7 +54,6 @@ const ScheduleInfo = styled.div`
 `;
 
 const Label = styled.label`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 10px;
@@ -73,7 +72,7 @@ const InfoText = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 13px;

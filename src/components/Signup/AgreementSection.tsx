@@ -281,7 +281,6 @@ const ModalHeader = styled.div`
 `;
 
 const ModalTitle = styled.p`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 800;
   font-size: 16px;
   line-height: 16px;
@@ -289,7 +288,6 @@ const ModalTitle = styled.p`
 `;
 
 const SectionTitle = styled.p`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 12px;
   line-height: 13.26px;
@@ -297,7 +295,6 @@ const SectionTitle = styled.p`
 `;
 
 const SubTitle = styled.p`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 12px;
   line-height: 13.26px;
@@ -306,7 +303,7 @@ const SubTitle = styled.p`
 
 const Text = styled.p`
   height: 386px;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   font-weight: 400;
   font-size: 12px;
   line-height: 13.26px;

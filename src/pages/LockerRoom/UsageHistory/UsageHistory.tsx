@@ -195,7 +195,6 @@ const UsageHistoryContainer = styled.div`
   align-items: center;
   width: 100%;
   background-color: #fff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
 `;
 
 const Header = styled.div`
@@ -207,7 +206,6 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 24px;
   line-height: 27px;
@@ -265,7 +263,6 @@ const ItemDetails = styled.div`
 `;
 
 const Brand = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
   font-size: 12px;
   line-height: 11px;
@@ -279,7 +276,6 @@ const ItemName = styled.div`
 `;
 
 const NameCode = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
   font-size: 18px;
   line-height: 22px;
@@ -287,7 +283,6 @@ const NameCode = styled.span`
 `;
 
 const Slash = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
@@ -296,7 +291,6 @@ const Slash = styled.span`
 `;
 
 const ItemType = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
@@ -338,7 +332,6 @@ const AdditionalText = styled.div`
 `;
 
 const DetailText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
@@ -347,7 +340,6 @@ const DetailText = styled.span`
 `;
 
 const DetailHighlight = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
   font-size: 14px;
   line-height: 22px;
@@ -406,7 +398,6 @@ const Icon = styled.img`
 `;
 
 const LabelDetailText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 14px;

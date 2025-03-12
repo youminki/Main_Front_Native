@@ -381,7 +381,7 @@ const LinkItem = styled.li`
 
 const Label = styled.label<{ $isEmpty: boolean }>`
   margin-bottom: 10px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 900;
   font-size: 12px;
@@ -404,7 +404,6 @@ const LinkContent = styled.div`
 `;
 
 const LinkTitle = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -423,7 +422,7 @@ const LinkUrl = styled.a`
   text-overflow: ellipsis;
   display: inline-block;
   text-decoration: none;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 12px;

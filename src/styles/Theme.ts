@@ -3,71 +3,60 @@ import { css } from 'styled-components';
 const Theme = {
   fonts: {
     mainTitle: css`
-      font-family: 'NanumSquare Neo OTF', sans-serif;
       font-weight: 600;
       font-size: 28px;
       line-height: 1.2;
     `,
     heading: css`
-      font-family: 'NanumSquare Neo OTF', sans-serif;
       font-weight: 500;
       font-size: 18px;
       line-height: 1.3;
     `,
     default: css`
-      font-family: 'NanumSquare Neo OTF', sans-serif;
       font-weight: 400;
       font-size: 14px;
       line-height: 1.5;
     `,
     default0: css`
-      font-family: 'NanumSquare Neo OTF', sans-serif;
       font-style: normal;
       font-weight: 800;
       font-size: 10px;
       line-height: 11px;
     `,
     default1: css`
-      font-family: 'NanumSquare Neo OTF', sans-serif;
       font-style: normal;
       font-weight: 800;
       font-size: 16px;
       line-height: 18px;
     `,
     default2: css`
-      font-family: 'NanumSquare Neo OTF', sans-serif;
       font-style: normal;
       font-weight: 400;
       font-size: 12px;
       line-height: 13px;
     `,
     default3: css`
-      font-family: 'NanumSquare Neo OTF', sans-serif;
       font-style: normal;
       font-weight: 400;
       font-size: 12px;
       line-height: 13px;
     `,
     helperText: css`
-      font-family: 'NanumSquare Neo OTF', sans-serif;
       font-weight: 400;
       font-size: 12px;
       line-height: 1.4;
     `,
     BigButton: css`
-      font-family: 'NanumSquare Neo OTF', sans-serif;
       font-weight: 600;
       font-size: 16px;
       line-height: 1.2;
     `,
     SmallButton: css`
-      font-family: 'NanumSquare Neo OTF', sans-serif;
       font-weight: 800;
       font-size: 14px;
       line-height: 1.2;
     `,
     subTitle: css`
-      font-family: 'NanumSquare Neo OTF', sans-serif;
       font-weight: 600;
       font-size: 18px;
       line-height: 24px;

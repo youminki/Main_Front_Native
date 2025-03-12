@@ -180,7 +180,7 @@ const InputContainer = styled.div`
 
 const Label = styled.label<{ $isEmpty: boolean }>`
   margin-bottom: 10px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-size: 12px;
   font-weight: 700;
   line-height: 11.05px;
@@ -210,7 +210,7 @@ const PrefixText = styled.span`
 /** prefixcontent(문구) 통째로 감싸는 영역 */
 const PrefixcontentText = styled.span`
   margin-left: 10px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 13px;
@@ -265,7 +265,7 @@ const Input = styled.input`
   flex: 1;
   height: 57px;
   width: 100%;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 400;
   font-size: 13px;
@@ -284,7 +284,7 @@ const Select = styled.select`
   height: 57px;
   width: 100%;
   padding: 0 40px 0 16px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 13px;
@@ -306,7 +306,7 @@ const ErrorMessage = styled.span`
   margin-left: 4px;
   color: blue;
   font-size: 12px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 400;
 `;
 

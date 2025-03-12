@@ -92,7 +92,6 @@ const ToggleText = styled.span<{ $isActive: boolean }>`
 `;
 
 const ToggleLabel = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 14px;
@@ -105,7 +104,7 @@ const FilterIconContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 700;
   font-size: 14px;
   line-height: 13px;

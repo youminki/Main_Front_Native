@@ -211,7 +211,6 @@ const PaymentMethodContainer = styled.div`
   align-items: center;
   width: 100%;
   background-color: #fff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
 `;
 
 const Header = styled.div`
@@ -223,7 +222,6 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 24px;
@@ -285,7 +283,6 @@ const CardTop = styled.div`
 `;
 
 const CardRegisterDate = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 10px;
   line-height: 9px;
@@ -314,7 +311,6 @@ const CardIconImg = styled.img`
 `;
 
 const CardBrandText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 10px;
   line-height: 9px;
@@ -322,7 +318,6 @@ const CardBrandText = styled.span`
 `;
 
 const CardNumber = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 14px;
   line-height: 13px;
@@ -376,7 +371,6 @@ const PlusLineHorz = styled.div`
 `;
 
 const CardAddText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 14px;
   line-height: 15px;
@@ -416,7 +410,6 @@ const TableHeader = styled.div`
 `;
 
 const LeftHeader = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 12px;
   line-height: 11px;
@@ -424,7 +417,6 @@ const LeftHeader = styled.span`
 `;
 
 const RightHeader = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 12px;
   line-height: 11px;
@@ -450,7 +442,6 @@ const PaymentInfo = styled.div`
 `;
 
 const PaymentMainText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 14px;
   line-height: 13px;
@@ -458,7 +449,6 @@ const PaymentMainText = styled.span`
 `;
 
 const PaymentSubText = styled.span<{ color?: string }>`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 14px;
   line-height: 13px;
@@ -468,7 +458,6 @@ const PaymentSubText = styled.span<{ color?: string }>`
 `;
 
 const PaymentPrice = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 16px;
   line-height: 15px;

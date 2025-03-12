@@ -50,7 +50,6 @@ const SettlementHeader = styled.div`
 `;
 
 const DateRange = styled.p`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 14px;
   line-height: 13px;
@@ -72,7 +71,6 @@ const PeriodButton = styled.button<{ active: boolean }>`
   margin-right: 8px;
   border-radius: 18px;
 
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 12px;
   line-height: 11px;

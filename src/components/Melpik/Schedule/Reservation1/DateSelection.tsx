@@ -46,7 +46,6 @@ const DateSelectionContainer = styled.div`
 `;
 
 const Label = styled.label`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 10px;
@@ -66,7 +65,7 @@ const DateInput = styled.select`
   border: 1px solid ${Theme.colors.gray4};
   border-radius: 5px;
   flex: 1;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 13px;
@@ -81,7 +80,7 @@ const DateDropdown = styled.select`
   border-radius: 5px;
   flex: 1;
   margin-left: 10px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 13px;

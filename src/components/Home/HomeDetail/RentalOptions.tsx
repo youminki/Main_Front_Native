@@ -249,7 +249,6 @@ const Container = styled.div`
 `;
 
 const Label = styled.label`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 12px;
   margin-bottom: 10px;
@@ -311,7 +310,6 @@ const DropdownContainer = styled.div`
 `;
 
 const DropdownLabel = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 14px;
   margin-bottom: 5px;
@@ -324,7 +322,7 @@ const Dropdown = styled.select`
   border: 1px solid #000000;
   border-radius: 4px;
   padding: 0 10px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 800;
   font-size: 13px;
   cursor: pointer;
@@ -335,7 +333,7 @@ const CalendarContainer = styled.div`
   grid-template-columns: repeat(7, 1fr);
   gap: 5px;
   padding: 20px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 13px;
@@ -374,7 +372,7 @@ const DayBox = styled.div<DayBoxProps>`
   align-items: center;
   justify-content: center;
   cursor: ${(props) => (props.isSunday ? 'default' : 'pointer')};
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 800;
   font-size: 12px;
 `;
@@ -383,7 +381,7 @@ const EmptyDay = styled.div``;
 
 const Notice = styled.p`
   margin: 0 20px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -420,7 +418,6 @@ const ConfirmButton = styled.button`
 `;
 
 const ErrorMessage = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-size: 14px;
   font-weight: 700;
   text-align: center;

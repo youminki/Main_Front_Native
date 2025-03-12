@@ -89,7 +89,6 @@ const MyClosetContainer = styled.div`
   align-items: center;
   width: 100%;
   background-color: #fff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
 `;
 
 const Header = styled.div`
@@ -101,7 +100,6 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 24px;

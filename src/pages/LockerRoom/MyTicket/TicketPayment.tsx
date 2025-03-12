@@ -154,7 +154,6 @@ const Section = styled.div`
 
 /* "총 결제금액" 라벨 */
 const CustomLabel = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 10px;
@@ -179,7 +178,6 @@ const PaymentAmountWrapper = styled.div`
 
 /* 총 결제금액 텍스트 */
 const PaymentAmount = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
   font-size: 16px;
@@ -199,7 +197,6 @@ const ProductInfoContainer = styled.div`
 
 // 상단 타이틀 ("결제할 이용권")
 const Title = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -224,7 +221,6 @@ const LeftSide = styled.div`
 `;
 
 const SubscriptionLabel = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
   font-size: 12px;
@@ -243,7 +239,7 @@ const ProductTitle = styled.div`
 
 const MainTitle = styled.span`
   /* 정기 구독권 */
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 900;
   font-size: 18px;
@@ -253,7 +249,7 @@ const MainTitle = styled.span`
 
 const SubTitle = styled.span`
   /* / 월 4회권 */
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -290,7 +286,6 @@ const RowTextContainer = styled.div`
 
 /* 시즌 - , 결제금액 - (볼드 700, size 12) */
 const RowLabel = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 14px;
@@ -300,7 +295,6 @@ const RowLabel = styled.span`
 
 /* - 2025 SPRING, 120,000원 (볼드 900, size 12) */
 const RowValue = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
   font-size: 14px;
@@ -310,7 +304,6 @@ const RowValue = styled.span`
 
 /* 2025.03.01 ~ 03.31, 매월 1일 (자동결제) (weight 400, size 12) */
 const RowPeriod = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;

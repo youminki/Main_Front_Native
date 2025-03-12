@@ -319,7 +319,7 @@ const Column = styled.div`
 
 const GuideMessage = styled.div`
   margin-top: 30px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-size: 12px;
   color: #999999;
   line-height: 1.4;
@@ -342,7 +342,7 @@ const DeleteButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 16px;

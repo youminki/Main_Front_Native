@@ -150,7 +150,6 @@ const ModalHeader = styled.div`
 `;
 
 const ModalTitle = styled.p`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 800;
   font-size: 16px;
 `;
@@ -191,7 +190,7 @@ const BrandOption = styled.div<{ selected: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 800;
   font-size: 12px;
@@ -213,7 +212,7 @@ const CancelButton = styled.button`
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-family: 'NanumSquare Neo OTF';
+
   font-weight: 800;
   font-size: 16px;
 `;

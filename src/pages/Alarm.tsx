@@ -71,7 +71,7 @@ export default Alarm;
 const AlarmContainer = styled.div`
   margin: 0 auto;
   background-color: #ffffff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   position: relative;
 `;
 
@@ -117,7 +117,6 @@ const AlarmContent = styled.div`
 `;
 
 const AlarmTitle = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 800;
   font-size: 16px;
   line-height: 15px;
@@ -126,7 +125,6 @@ const AlarmTitle = styled.div`
 `;
 
 const AlarmText = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 14px;
   line-height: 18px;
@@ -135,7 +133,6 @@ const AlarmText = styled.div`
 `;
 
 const AlarmDate = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 900;
   font-size: 12px;
   line-height: 11px;

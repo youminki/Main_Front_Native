@@ -95,7 +95,6 @@ const Image = styled.img`
 `;
 
 const Brand = styled.h3`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
   font-size: 12px;
@@ -108,7 +107,7 @@ const Brand = styled.h3`
 
 const Description = styled.p`
   margin-top: 6px;
-  font-family: 'NanumSquare Neo OTF';
+
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -127,7 +126,6 @@ const PriceWrapper = styled.div`
 `;
 
 const OriginalPrice = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
   font-size: 16px;
@@ -137,7 +135,6 @@ const OriginalPrice = styled.span`
 `;
 
 const NowLabel = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 10px;
@@ -146,7 +143,6 @@ const NowLabel = styled.span`
 `;
 
 const DiscountLabel = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 12px;

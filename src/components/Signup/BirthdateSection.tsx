@@ -1,6 +1,6 @@
 // src/components/BirthdateSection.tsx
-import React, { useState } from "react";
-import styled from "styled-components";
+import React, { useState } from 'react';
+import styled from 'styled-components';
 
 interface BirthdateSectionProps {
   onChange?: (birthdate: { year: string; month: string; day: string }) => void; // 생년월일 선택 시 호출되는 콜백
@@ -8,9 +8,9 @@ interface BirthdateSectionProps {
 }
 
 const BirthdateSection: React.FC<BirthdateSectionProps> = ({ onChange }) => {
-  const [birthYear, setBirthYear] = useState("");
-  const [birthMonth, setBirthMonth] = useState("");
-  const [birthDay, setBirthDay] = useState("");
+  const [birthYear, setBirthYear] = useState('');
+  const [birthMonth, setBirthMonth] = useState('');
+  const [birthDay, setBirthDay] = useState('');
 
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
@@ -32,16 +32,16 @@ const BirthdateSection: React.FC<BirthdateSectionProps> = ({ onChange }) => {
 
   return (
     <BirthdateWrapper>
-      <Label htmlFor="birthYear">생년월일</Label>
+      <Label htmlFor='birthYear'>생년월일</Label>
       <BirthdateContainer>
         <StyledSelect
-          name="birthYear"
-          id="birthYear"
+          name='birthYear'
+          id='birthYear'
           value={birthYear}
           onChange={handleYearChange}
           required
         >
-          <option value="" disabled>
+          <option value='' disabled>
             년도를 선택하세요
           </option>
           {Array.from({ length: 100 }, (_, i) => {
@@ -54,13 +54,13 @@ const BirthdateSection: React.FC<BirthdateSectionProps> = ({ onChange }) => {
           })}
         </StyledSelect>
         <StyledSelect
-          name="birthMonth"
-          id="birthMonth"
+          name='birthMonth'
+          id='birthMonth'
           value={birthMonth}
           onChange={handleMonthChange}
           required
         >
-          <option value="" disabled>
+          <option value='' disabled>
             월을 선택하세요
           </option>
           {Array.from({ length: 12 }, (_, i) => {
@@ -73,13 +73,13 @@ const BirthdateSection: React.FC<BirthdateSectionProps> = ({ onChange }) => {
           })}
         </StyledSelect>
         <StyledSelect
-          name="birthDay"
-          id="birthDay"
+          name='birthDay'
+          id='birthDay'
           value={birthDay}
           onChange={handleDayChange}
           required
         >
-          <option value="" disabled>
+          <option value='' disabled>
             일을 선택하세요
           </option>
           {Array.from({ length: 31 }, (_, i) => {
@@ -106,7 +106,6 @@ const BirthdateWrapper = styled.div`
 `;
 
 const Label = styled.label`
-  font-family: "NanumSquare Neo OTF";
   font-size: 14px;
   font-weight: 700;
   line-height: 1.5;

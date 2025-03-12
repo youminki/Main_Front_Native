@@ -215,7 +215,6 @@ export default FilterModal;
 
 // Section 제목 내 괄호 스타일
 const ParenText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -333,7 +332,6 @@ const Header = styled.div`
 `;
 
 const Title = styled.h2`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-size: 16px;
   font-weight: 800;
   margin: 0;
@@ -356,7 +354,6 @@ const Section = styled.div`
 `;
 
 const SectionTitle = styled.div`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 700;
   font-size: 14px;
   margin-bottom: 10px;
@@ -375,7 +372,7 @@ const FilterButton = styled.button<FilterButtonProps>`
   border: 1px solid #000;
   background: ${({ selected }) => (selected ? '#000' : '#fff')};
   color: ${({ selected }) => (selected ? '#fff' : '#000')};
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   font-weight: 700;
   font-size: 12px;
   cursor: pointer;

@@ -233,7 +233,6 @@ const AmountWrapper = styled.div`
 `;
 
 const PendingLabel = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -250,7 +249,6 @@ const StatusDate = styled.div`
 `;
 
 const StatusTag = styled.span<{ pending?: boolean; confirmed?: boolean }>`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
   font-size: 8px;
@@ -264,7 +262,6 @@ const StatusTag = styled.span<{ pending?: boolean; confirmed?: boolean }>`
 `;
 
 const Date = styled.p`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 18px;
@@ -275,7 +272,6 @@ const Date = styled.p`
 `;
 
 const SubDate = styled.p`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 10px;
@@ -285,7 +281,6 @@ const SubDate = styled.p`
 `;
 
 const Amount = styled.p`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
   font-size: 20px;
@@ -299,7 +294,6 @@ const Amount = styled.p`
   margin-bottom: 10px;
 `;
 const Deduction = styled.p`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 10px;

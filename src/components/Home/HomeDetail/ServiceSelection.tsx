@@ -34,7 +34,6 @@ const ServiceContainer = styled.div`
   width: 100%;
 
   label {
-    font-family: 'NanumSquare Neo OTF';
     font-weight: 700;
     font-size: 12px;
     margin-bottom: 10px;

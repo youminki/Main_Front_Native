@@ -87,7 +87,6 @@ const Row = styled.div`
 `;
 
 const StatNumber = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 800;
   font-size: 12px;
@@ -96,7 +95,6 @@ const StatNumber = styled.div`
 `;
 
 const StatLabel = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 12px;

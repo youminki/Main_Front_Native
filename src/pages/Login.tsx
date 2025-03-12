@@ -187,7 +187,7 @@ const SubContent = styled.div`
 
 const Highlighted = styled.span`
   color: ${({ theme }) => theme.colors.yellow};
-  font-family: 'NanumSquare Neo OTF';
+
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;
@@ -195,7 +195,6 @@ const Highlighted = styled.span`
 `;
 
 const NormalText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;
@@ -205,7 +204,6 @@ const NormalText = styled.span`
 `;
 
 const SubDescription = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -234,7 +232,6 @@ const CheckboxWrapper = styled.div`
 `;
 
 const CheckboxText = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-size: 12px;
   font-weight: 700;
   line-height: 13.26px;
@@ -288,7 +285,7 @@ const Link = styled.a`
   &:hover {
     text-decoration: underline;
   }
-  font-family: 'NanumSquare Neo OTF';
+
   font-size: 12px;
   font-weight: 700;
   line-height: 13.26px;
@@ -342,7 +339,7 @@ const SnsTextWrapper = styled.div`
 
 const SnsText = styled.span`
   color: #999999;
-  font-family: 'NanumSquare Neo OTF';
+
   font-size: 13px;
   font-weight: 700;
   line-height: 14.37px;

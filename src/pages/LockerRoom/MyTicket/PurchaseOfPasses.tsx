@@ -139,7 +139,7 @@ export default PurchaseOfPasses;
 /* --- styled-components --- */
 const Container = styled.div`
   background-color: #ffffff;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   display: flex;
   justify-content: center;
 `;
