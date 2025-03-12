@@ -17,7 +17,7 @@ const StatsSection: React.FC<Props> = ({
       <StatsContainer>
         <StatBox white>
           <Row>
-            <StatLabel>브랜드</StatLabel>
+            <StatLabel>종류</StatLabel>
             <StatNumber>{brandCount}</StatNumber>
           </Row>
         </StatBox>
