@@ -134,8 +134,8 @@ const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
   padding-bottom: 80px;
+  overflow-x: hidden;
 `;
 
 const ContentContainer = styled.div``;
