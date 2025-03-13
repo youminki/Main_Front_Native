@@ -13,8 +13,26 @@ const BottomNav: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [showYellowGlow, setShowYellowGlow] = useState<boolean>(false);
   const [barPosition, setBarPosition] = useState<number>(0);
-
+  const [isVisible, setIsVisible] = useState<boolean>(true);
   const navRef = useRef<HTMLDivElement | null>(null);
+
+  // 스크롤 방향 감지하여 바텀바 보임 여부 제어
+  useEffect(() => {
+    let lastScrollY = window.pageYOffset;
+    const handleScroll = () => {
+      const currentScrollY = window.pageYOffset;
+      if (currentScrollY > lastScrollY) {
+        // 아래로 스크롤 시
+        setIsVisible(false);
+      } else {
+        // 위로 스크롤 시
+        setIsVisible(true);
+      }
+      lastScrollY = currentScrollY;
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const updateTab = (tabName: string) => {
@@ -61,7 +79,7 @@ const BottomNav: React.FC = () => {
   };
 
   return (
-    <BottomNavContainer ref={navRef}>
+    <BottomNavContainer ref={navRef} isVisible={isVisible}>
       <NavItem
         data-tab='home'
         $isActive={activeTab === 'home'}
@@ -145,21 +163,22 @@ const BottomNav: React.FC = () => {
 export default BottomNav;
 
 // 스타일 컴포넌트
-const BottomNavContainer = styled.nav`
+const BottomNavContainer = styled.nav<{ isVisible: boolean }>`
   display: flex;
   justify-content: space-around;
   align-items: center;
   background-color: #1d1d1b;
   width: 100%;
+  max-width: 600px;
   position: fixed;
   bottom: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, ${({ isVisible }) => (isVisible ? '0' : '100%')});
   z-index: 1000;
-  max-width: 600px;
   margin: 0 auto;
   text-align: center;
   padding: 15px 0 34px 0;
+  transition: transform 0.3s ease-in-out;
 `;
 
 const IndicatorContainer = styled.div`
