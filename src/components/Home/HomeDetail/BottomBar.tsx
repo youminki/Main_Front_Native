@@ -27,7 +27,7 @@ const BottomBarContainer = styled.div`
 
   background-color: #eeeeee;
 
-  z-index: 9999;
+  z-index: 9998;
 
   max-width: 600px;
 

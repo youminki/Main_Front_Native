@@ -58,7 +58,7 @@ const StyledModal = styled.div`
   align-items: center;
   padding: 27px;
 
-  z-index: 99999;
+  z-index: 9999;
 `;
 
 const ModalContent = styled.div<{ width: string; height: string }>`
