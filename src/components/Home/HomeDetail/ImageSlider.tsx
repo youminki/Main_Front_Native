@@ -26,36 +26,44 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
   });
 
   return (
-    <ImageWrapper>
-      <ImageContainer {...handlers} onMouseDown={handleMouseDown}>
-        <Image
-          src={images[currentImageIndex]}
-          alt={`Slide ${currentImageIndex + 1}`}
-        />
-      </ImageContainer>
+    <SliderContainer {...handlers} onMouseDown={handleMouseDown}>
+      <SliderWrapper currentIndex={currentImageIndex}>
+        {images.map((src, index) => (
+          <SliderItem key={index}>
+            <Image src={src} alt={`Slide ${index + 1}`} loading='lazy' />
+          </SliderItem>
+        ))}
+      </SliderWrapper>
       <IndicatorContainer>
         {images.map((_, index) => (
           <Indicator key={index} active={index === currentImageIndex} />
         ))}
       </IndicatorContainer>
-    </ImageWrapper>
+    </SliderContainer>
   );
 };
 
 export default ImageSlider;
 
-const ImageWrapper = styled.div`
+const SliderContainer = styled.div`
   position: relative;
-  width: 100%;
-`;
-
-const ImageContainer = styled.div`
   width: 100%;
   height: 500px;
-  position: relative;
   overflow: hidden;
   cursor: grab;
   background-color: ${Theme.colors.gray0};
+`;
+
+const SliderWrapper = styled.div<{ currentIndex: number }>`
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s ease-in-out;
+  transform: translateX(-${(props) => props.currentIndex * 100}%);
+`;
+
+const SliderItem = styled.div`
+  flex: 0 0 100%;
+  height: 100%;
 `;
 
 const Image = styled.img`

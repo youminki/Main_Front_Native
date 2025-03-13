@@ -121,7 +121,6 @@ const HomeDetail: React.FC = () => {
         <MaterialInfo />
         <LinContainer />
         <ProductDetails />
-        <LinContainer />
       </ContentContainer>
       <BottomBar />
     </DetailContainer>
@@ -135,7 +134,6 @@ const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100vh;
 
   padding-bottom: 80px;
 `;
