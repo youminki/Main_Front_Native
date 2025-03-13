@@ -321,7 +321,7 @@ const MyInfo: React.FC = () => {
             <BlackContainer />
             <BottomBar
               imageSrc={ResetButtonIcon}
-              buttonText={isSubmitting ? '가입 중...' : '회원가입'}
+              buttonText={isSubmitting ? '수정 중...' : '수정하기'}
               type='submit'
               disabled={isSubmitting}
             />
