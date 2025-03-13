@@ -57,7 +57,7 @@ const SliderContainer = styled.div`
 const SliderWrapper = styled.div<{ currentIndex: number }>`
   display: flex;
   height: 100%;
-  transition: transform 0.5s ease-in-out;
+  transition: transform 0.3s ease-in-out;
   transform: translateX(-${(props) => props.currentIndex * 100}%);
 `;
 
