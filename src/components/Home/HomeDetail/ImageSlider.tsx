@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import Theme from '../../../styles/Theme';
 import { useSwipeable } from 'react-swipeable';
 
 type ImageSliderProps = {
@@ -26,41 +25,55 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
   });
 
   return (
-    <ImageWrapper>
-      <ImageContainer {...handlers} onMouseDown={handleMouseDown}>
-        <Image
-          src={images[currentImageIndex]}
-          alt={`Slide ${currentImageIndex + 1}`}
-        />
-      </ImageContainer>
+    <SliderWrapper {...handlers} onMouseDown={handleMouseDown}>
+      <SliderContainer currentIndex={currentImageIndex}>
+        {images.map((src, index) => (
+          <Slide key={index}>
+            <StyledImage src={src} alt={`Slide ${index + 1}`} loading='lazy' />
+          </Slide>
+        ))}
+      </SliderContainer>
       <IndicatorContainer>
         {images.map((_, index) => (
           <Indicator key={index} active={index === currentImageIndex} />
         ))}
       </IndicatorContainer>
-    </ImageWrapper>
+    </SliderWrapper>
   );
 };
 
 export default ImageSlider;
 
-const ImageWrapper = styled.div`
+const SliderWrapper = styled.div`
   position: relative;
   width: 100%;
+  /* overflow: hidden; */
 `;
 
-const ImageContainer = styled.div`
-  width: 100%;
-  height: 500px;
-  position: relative;
-  overflow: hidden;
-  cursor: grab;
-  background-color: ${Theme.colors.gray0};
+type SliderContainerProps = {
+  currentIndex: number;
+};
+
+const SliderContainer = styled.div<SliderContainerProps>`
+  display: flex;
+  transition: transform 0.3s ease;
+  transform: translateX(${(props) => props.currentIndex * -100}%);
 `;
 
-const Image = styled.img`
+const Slide = styled.div`
+  flex: 0 0 100%;
   width: 100%;
-  height: 100%;
+  height: 600px;
+  display: flex;
+
+  justify-content: center;
+  background-color: #f5f5f5;
+`;
+
+const StyledImage = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 `;
 
 const IndicatorContainer = styled.div`
@@ -79,8 +92,7 @@ const Indicator = styled.div<IndicatorProps>`
   width: 14px;
   height: 14px;
   margin: 0 4px;
-  background-color: ${({ active }) =>
-    active ? Theme.colors.yellow : Theme.colors.white};
+  background-color: ${({ active }) => (active ? '#FFC107' : '#FFFFFF')};
   border-radius: 50%;
   border: 1px solid #999;
 `;

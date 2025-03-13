@@ -18,12 +18,10 @@ const HomeDetail: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
-  const [selectedService, setSelectedService] = useState<string>(''); // 서비스 선택 상태
-  // const [selectedPeriod, setSelectedPeriod] = useState<string>(""); // 대여 기간 선택 상태
+  const [selectedService, setSelectedService] = useState<string>('');
 
   const images = [ExIMG1, ExIMG2, ExIMG3];
 
-  // 슬라이드 관련 로직
   const handleSwipeLeft = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
@@ -94,12 +92,7 @@ const HomeDetail: React.FC = () => {
 
         {/* 조건부 렌더링 */}
         <ConditionalContainer>
-          {selectedService === 'rental' && (
-            <RentalOptions
-            // selectedPeriod={selectedPeriod}
-            // setSelectedPeriod={setSelectedPeriod}
-            />
-          )}
+          {selectedService === 'rental' && <RentalOptions />}
           {selectedService === 'purchase' && <PaymentMethod />}
           {selectedService === '' && <Message>서비스를 선택하세요</Message>}
         </ConditionalContainer>
@@ -130,13 +123,11 @@ const HomeDetail: React.FC = () => {
 
 export default HomeDetail;
 
-// 스타일 컴포넌트
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
-
   padding-bottom: 80px;
 `;
 
