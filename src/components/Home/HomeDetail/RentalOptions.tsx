@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import styled, { keyframes } from 'styled-components';
 import ReusableModal2 from '../../../components/Home/HomeDetail/HomeDetailModal';
 import ReusableModal from '../../../components/ReusableModal';
 import RentalSelectDateIcon from '../../../assets/Home/HomeDetail/RentalSelectDateIcon.svg';
@@ -7,9 +7,10 @@ import Theme from '../../../styles/Theme';
 
 interface DayBoxProps {
   selected: boolean;
+  isBoundary: boolean; // 선택 범위의 시작 또는 끝(경계)
   reserved: boolean;
   isWeekend: boolean;
-  isSunday?: boolean; // 일요일 여부 추가
+  isSunday?: boolean;
 }
 interface DayNameProps {
   isWeekend: boolean;
@@ -18,27 +19,64 @@ interface DayNameProps {
 const RentalOptions: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedDates, setSelectedDates] = useState<{
-    [key: string]: number[];
-  }>({});
-  const [yearMonth, setYearMonth] = useState<string>('2025-01');
-  const reservedDates = [22, 23, 24];
-  const [isAddingDates, setIsAddingDates] = useState<boolean>(false);
-
-  // 에러 모달 상태 (일요일 선택 시)
+  // 선택된 날짜 범위를 관리 (start와 end)
+  const [selectedRange, setSelectedRange] = useState<{
+    start: Date | null;
+    end: Date | null;
+  }>({
+    start: null,
+    end: null,
+  });
+  // 현재 모달에 표시되는 연월 (예: "2025-03")
+  const [yearMonth, setYearMonth] = useState<string>('');
+  // 추가된 일수를 관리 (기본 블록 외 추가된 일수)
+  const [extraDays, setExtraDays] = useState<number>(0);
+  // 에러 모달 (일요일이 시작 또는 마지막으로 선택된 경우)
   const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
 
-  const getYearMonthList = () => {
-    const years = Array.from({ length: 5 }, (_, i) => 2025 + i);
-    const months = Array.from({ length: 12 }, (_, i) => i + 1);
-    const yearMonthList: string[] = [];
-    years.forEach((year) => {
-      months.forEach((month) => {
-        yearMonthList.push(`${year}-${String(month).padStart(2, '0')}`);
-      });
+  /**
+   * 현재 날짜 기준 시즌에 해당하는 연월 배열 반환
+   * 봄: 3,4,5 / 여름: 6,7,8 / 가을: 9,10,11 / 겨울: 12,1,2
+   */
+  const getSeasonMonths = (): string[] => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    let seasonMonths: number[] = [];
+    if ([3, 4, 5].includes(currentMonth)) {
+      seasonMonths = [3, 4, 5];
+    } else if ([6, 7, 8].includes(currentMonth)) {
+      seasonMonths = [6, 7, 8];
+    } else if ([9, 10, 11].includes(currentMonth)) {
+      seasonMonths = [9, 10, 11];
+    } else {
+      seasonMonths = [12, 1, 2];
+    }
+    return seasonMonths.map((m) => {
+      let year = currentYear;
+      if (m === 12 && currentMonth !== 12) {
+        year = currentYear - 1;
+      }
+      return `${year}-${String(m).padStart(2, '0')}`;
     });
-    return yearMonthList;
   };
+
+  // 모달 오픈 시 시즌 내 기본 연월, 선택범위, 추가일수 초기화
+  useEffect(() => {
+    if (isModalOpen) {
+      const seasonMonths = getSeasonMonths();
+      const today = new Date();
+      const currentMonth = today.getMonth() + 1;
+      const defaultYM =
+        seasonMonths.find((ym) => {
+          const m = Number(ym.split('-')[1]);
+          return m >= currentMonth;
+        }) || seasonMonths[0];
+      setYearMonth(defaultYM);
+      setSelectedRange({ start: null, end: null });
+      setExtraDays(0);
+    }
+  }, [isModalOpen]);
 
   const toggleModal = () => {
     if (selectedPeriod) {
@@ -48,95 +86,151 @@ const RentalOptions: React.FC = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    // 필요시 선택 날짜 초기화: setSelectedDates({});
   };
 
   const closeErrorModal = () => {
     setErrorModalOpen(false);
   };
 
+  // 날짜에 days를 더한 새 Date 반환
+  const addDays = (date: Date, days: number): Date => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  };
+
+  // Date를 "YYYY.MM.DD" 형식으로 변환
+  const formatDate = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}.${month}.${day}`;
+  };
+
   /**
-   * 날짜 클릭 핸들러
+   * 초기 캘린더에서 날짜 클릭 시
+   * - 클릭한 날짜가 일요일이면 에러 모달을 띄워 선택 불가 처리
+   * - 선택된 대여기간(3박4일: 4일, 5박6일: 6일)에 따라 연속 날짜 블록 선택
+   * - 선택 범위의 시작은 일요일이 될 수 없음
    */
   const handleDateClick = (day: number) => {
-    const currentDates = selectedDates[yearMonth] || [];
-    if (!reservedDates.includes(day)) {
-      if (isAddingDates) {
-        // 일정 추가 모드: 첫 날짜 선택 후 바로 다음 날짜만 추가 가능
-        if (currentDates.length === 0) {
-          setSelectedDates((prev) => ({
-            ...prev,
-            [yearMonth]: [day],
-          }));
-        } else {
-          const lastSelected = Math.max(...currentDates);
-          if (day === lastSelected + 1) {
-            setSelectedDates((prev) => ({
-              ...prev,
-              [yearMonth]: [...currentDates, day],
-            }));
-          }
-        }
-      } else {
-        // 일반 모드: 선택된 기간에 맞춰 날짜 연속 선택 (3박4일: 4일, 5박6일: 6일)
-        const periodDays = selectedPeriod === '3박4일' ? 4 : 6;
-        const newSelectedDates = Array.from(
-          { length: periodDays },
-          (_, i) => day + i
-        ).filter((date) => date <= getDaysInMonth());
-        setSelectedDates((prev) => ({
-          ...prev,
-          [yearMonth]: newSelectedDates,
-        }));
-      }
+    const [year, month] = yearMonth.split('-').map(Number);
+    const clickedDate = new Date(year, month - 1, day);
+    if (clickedDate.getDay() === 0) {
+      setErrorModalOpen(true);
+      return;
+    }
+    const blockLength = selectedPeriod === '3박4일' ? 4 : 6;
+    const baseEnd = addDays(clickedDate, blockLength - 1);
+    // 만약 시작이나 기본 끝이 일요일이면 에러 처리
+    if (clickedDate.getDay() === 0 || baseEnd.getDay() === 0) {
+      setErrorModalOpen(true);
+      return;
+    }
+    setSelectedRange({ start: clickedDate, end: baseEnd });
+    setExtraDays(0);
+  };
+
+  /**
+   * 추가 버튼 동작
+   * - 1일, 2일, 3일 추가 버튼을 통해 선택 범위를 확장하며, 이전 추가 상태를 덮어씀
+   * - 추가 시 새로 계산된 마지막 날짜가 일요일이면 에러 모달을 띄워 추가 불가 처리
+   */
+  const handleAddDays = (daysToAdd: number) => {
+    if (!selectedRange.start) return;
+    const blockLength = selectedPeriod === '3박4일' ? 4 : 6;
+    const newEnd = addDays(selectedRange.start, blockLength - 1 + daysToAdd);
+    if (newEnd.getDay() === 0) {
+      setErrorModalOpen(true);
+      return;
+    }
+    setSelectedRange({ ...selectedRange, end: newEnd });
+    setExtraDays(daysToAdd);
+  };
+
+  // 페이지네이션: 시즌 내에서 이전/다음 연월 이동
+  const handlePrevMonth = () => {
+    const seasonMonths = getSeasonMonths();
+    const currentIndex = seasonMonths.indexOf(yearMonth);
+    if (currentIndex > 0) {
+      setYearMonth(seasonMonths[currentIndex - 1]);
     }
   };
 
-  const getDaysInMonth = (): number => {
-    const [year, month] = yearMonth.split('-').map(Number);
-    return new Date(year, month, 0).getDate();
+  const handleNextMonth = () => {
+    const seasonMonths = getSeasonMonths();
+    const currentIndex = seasonMonths.indexOf(yearMonth);
+    if (currentIndex < seasonMonths.length - 1) {
+      setYearMonth(seasonMonths[currentIndex + 1]);
+    }
   };
 
   /**
-   * 달력 렌더링 함수 (일요일 선택 시 에러 모달 띄움)
+   * 현재 연월 캘린더 렌더링
+   * - 기본적으로 일요일은 예약(회색) 처리됨
+   * - 선택 범위에 포함되면 노란색으로 표시
+   * - 범위의 시작 또는 끝(경계)이 일요일이면 선택 처리되지 않고 예약(회색)으로 표시함
+   * - 단, 선택 범위의 중간에 포함된 일요일은 노란색(선택)으로 표시
    */
   const renderCalendar = () => {
-    const daysInMonth = getDaysInMonth();
     const [year, month] = yearMonth.split('-').map(Number);
+    const daysInMonth = new Date(year, month, 0).getDate();
     const firstDay = new Date(year, month - 1, 1).getDay();
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
     const emptyDays = Array.from({ length: firstDay }, (_, i) => (
       <EmptyDay key={`empty-${i}`} />
     ));
-    const currentDates = selectedDates[yearMonth] || [];
-
     return [
       ...emptyDays,
       ...days.map((day) => {
-        const dayIndex = (firstDay + day - 1) % 7;
-        const isSunday = dayIndex === 0; // 일요일
-        const isWeekend = dayIndex === 0 || dayIndex === 6;
+        const currentDate = new Date(year, month - 1, day);
+        const dayOfWeek = currentDate.getDay();
+        const isSunday = dayOfWeek === 0;
+        const isWeekend = isSunday || dayOfWeek === 6;
+        const isInRange =
+          selectedRange.start &&
+          selectedRange.end &&
+          currentDate >= selectedRange.start &&
+          currentDate <= selectedRange.end;
+        let isSelected = isInRange;
+        let isBoundary = false;
+        if (isInRange) {
+          const isStart =
+            currentDate.getTime() === selectedRange.start!.getTime();
+          const isEnd = currentDate.getTime() === selectedRange.end!.getTime();
+          if ((isStart || isEnd) && currentDate.getDay() !== 0) {
+            isBoundary = true;
+          }
+          // 경계가 일요일이면 선택 처리하지 않음
+          if ((isStart || isEnd) && currentDate.getDay() === 0) {
+            isSelected = false;
+          }
+        }
+        // 기본적으로 일요일은 선택되지 않으면 예약(회색) 처리
+        const reserved = isSunday && !isSelected;
         return (
           <DayBox
             key={day}
-            selected={currentDates.includes(day)}
-            reserved={reservedDates.includes(day)}
+            selected={isSelected}
+            isBoundary={isBoundary}
+            reserved={reserved}
             isWeekend={isWeekend}
             isSunday={isSunday}
-            onClick={() => {
-              if (isSunday) {
-                // 일요일 선택 시 에러 모달 띄움
-                setErrorModalOpen(true);
-              } else {
-                handleDateClick(day);
-              }
-            }}
+            onClick={() => handleDateClick(day)}
           >
             {day}
           </DayBox>
         );
       }),
     ];
+  };
+
+  // 선택된 날짜 범위를 "YYYY.MM.DD ~ YYYY.MM.DD" 형식으로 표시
+  const displaySelectedDates = () => {
+    if (selectedRange.start && selectedRange.end) {
+      return `${formatDate(selectedRange.start)} ~ ${formatDate(selectedRange.end)}`;
+    }
+    return '날짜를 선택해주세요';
   };
 
   return (
@@ -164,34 +258,28 @@ const RentalOptions: React.FC = () => {
           height='auto'
         >
           <ModalHeader>
-            <ModalTitle>
-              대여일정 - {selectedPeriod.replace('박', '일').replace('일', '')}
-            </ModalTitle>
+            <ModalTitle>대여일정</ModalTitle>
+            <SelectedDatesDisplay>
+              선택된 날짜: {displaySelectedDates()}
+            </SelectedDatesDisplay>
+            <Pagination>
+              <PageButton onClick={handlePrevMonth}>이전</PageButton>
+              <CurrentMonth>{yearMonth.replace('-', '.')}월</CurrentMonth>
+              <PageButton onClick={handleNextMonth}>다음</PageButton>
+            </Pagination>
           </ModalHeader>
           <MenuBar>
-            <DropdownContainer>
-              <DropdownLabel>일정선택</DropdownLabel>
-              <Dropdown
-                value={yearMonth}
-                onChange={(e) => setYearMonth(e.target.value)}
-              >
-                {getYearMonthList().map((ym) => (
-                  <option key={ym} value={ym}>
-                    {ym.replace('-', '.')}월
-                  </option>
-                ))}
-              </Dropdown>
-            </DropdownContainer>
-            <DropdownContainer>
-              <DropdownLabel>일정추가 (선택)</DropdownLabel>
-              <Dropdown
-                value={isAddingDates ? '추가중' : '추가없음'}
-                onChange={(e) => setIsAddingDates(e.target.value === '추가중')}
-              >
-                <option value='추가없음'>추가없음</option>
-                <option value='추가중'>추가중</option>
-              </Dropdown>
-            </DropdownContainer>
+            <ButtonGroup>
+              <AdditionalButton onClick={() => handleAddDays(1)}>
+                1일추가하기
+              </AdditionalButton>
+              <AdditionalButton onClick={() => handleAddDays(2)}>
+                2일추가하기
+              </AdditionalButton>
+              <AdditionalButton onClick={() => handleAddDays(3)}>
+                3일추가하기
+              </AdditionalButton>
+            </ButtonGroup>
           </MenuBar>
           <CalendarContainer>
             {['일', '월', '화', '수', '목', '금', '토'].map((name, index) => (
@@ -205,14 +293,14 @@ const RentalOptions: React.FC = () => {
             ※ 서비스 시작일 전에 받아보실 수 있게 발송해 드립니다.
           </Notice>
           <Notice>
-            <br />※ 일정 선택시 이용하시는 실제 일자보다 하루정도 여유있게
-            신청하시는 것을 추천 드립니다.
+            <br />※ 일정 선택 시 실제 이용일보다 하루 정도 여유 있게 신청하시는
+            것을 추천드립니다.
           </Notice>
           <ButtonRow>
             <CancelButton onClick={closeModal}>취소</CancelButton>
             <ConfirmButton
               onClick={() => {
-                console.log('선택된 날짜:', selectedDates);
+                console.log('선택된 날짜:', displaySelectedDates());
                 closeModal();
               }}
             >
@@ -221,8 +309,6 @@ const RentalOptions: React.FC = () => {
           </ButtonRow>
         </ReusableModal2>
       )}
-
-      {/* 에러 모달: 일요일 선택 시 */}
       {errorModalOpen && (
         <ReusableModal
           isOpen={errorModalOpen}
@@ -231,7 +317,9 @@ const RentalOptions: React.FC = () => {
           width='80%'
           height='200px'
         >
-          <ErrorMessage>일요일은 선택할 수 없습니다</ErrorMessage>
+          <ErrorMessage>
+            일요일은 시작, 마지막 요일에 선택할 수 없습니다!
+          </ErrorMessage>
         </ReusableModal>
       )}
     </Container>
@@ -241,6 +329,11 @@ const RentalOptions: React.FC = () => {
 export default RentalOptions;
 
 /* ============ 스타일 정의 ============ */
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
 
 const Container = styled.div`
   display: flex;
@@ -267,6 +360,7 @@ const Select = styled.select`
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
+  transition: all 0.3s ease;
 `;
 
 const Button = styled.button<{ disabled?: boolean }>`
@@ -276,12 +370,12 @@ const Button = styled.button<{ disabled?: boolean }>`
   align-items: center;
   padding: 0 15px;
   font-size: 16px;
-
   background-color: ${({ disabled }) =>
     disabled ? Theme.colors.gray3 : '#ffffff'};
   border: 1px solid ${Theme.colors.black};
   border-radius: 4px;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  transition: background-color 0.3s ease;
 `;
 
 const Icon = styled.img`
@@ -292,40 +386,71 @@ const Icon = styled.img`
 const ModalHeader = styled.div`
   padding: 20px;
   border-bottom: 2px solid #e0e0e0;
+  text-align: center;
+  animation: ${fadeIn} 0.3s ease;
 `;
 
 const ModalTitle = styled.h2`
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+`;
+
+const SelectedDatesDisplay = styled.div`
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  animation: ${fadeIn} 0.3s ease;
+`;
+
+const Pagination = styled.div`
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  animation: ${fadeIn} 0.3s ease;
+`;
+
+const PageButton = styled.button`
+  padding: 5px 10px;
+  border: 1px solid ${Theme.colors.black};
+  background: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+`;
+
+const CurrentMonth = styled.span`
   font-size: 16px;
   font-weight: bold;
 `;
 
 const MenuBar = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   padding: 20px;
+  animation: ${fadeIn} 0.3s ease;
 `;
 
-const DropdownContainer = styled.div`
-  width: 45%;
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 10px;
 `;
 
-const DropdownLabel = styled.div`
-  font-weight: 700;
-  font-size: 14px;
-  margin-bottom: 5px;
-`;
-
-const Dropdown = styled.select`
-  width: 100%;
-  height: 50px;
-  background: #ffffff;
-  border: 1px solid #000000;
+const AdditionalButton = styled.button`
+  padding: 10px 20px;
+  border: none;
+  background-color: ${Theme.colors.black};
+  color: #fff;
   border-radius: 4px;
-  padding: 0 10px;
-
-  font-weight: 800;
-  font-size: 13px;
   cursor: pointer;
+  font-weight: 700;
+  transition:
+    transform 0.3s ease,
+    background-color 0.3s ease;
+  &:hover {
+    transform: scale(1.05);
+  }
 `;
 
 const CalendarContainer = styled.div`
@@ -333,64 +458,74 @@ const CalendarContainer = styled.div`
   grid-template-columns: repeat(7, 1fr);
   gap: 5px;
   padding: 20px;
-
   font-weight: 800;
   font-size: 13px;
   line-height: 13px;
   text-align: center;
+  animation: ${fadeIn} 0.3s ease;
 `;
 
 const DayName = styled.div<DayNameProps>`
   text-align: center;
   font-weight: bold;
   color: ${(props) => (props.isWeekend ? Theme.colors.gray1 : '#000')};
+  transition: color 0.3s ease;
 `;
 
 const DayBox = styled.div<DayBoxProps>`
-  border: 1px solid
-    ${(props) =>
-      props.isSunday
-        ? Theme.colors.gray3
-        : props.selected
-          ? Theme.colors.yellow
-          : props.isWeekend
-            ? Theme.colors.gray3
-            : Theme.colors.gray4};
-  background-color: ${(props) =>
-    props.isSunday
-      ? Theme.colors.gray3
-      : props.selected
-        ? Theme.colors.yellow
-        : '#fff'};
-  color: ${(props) =>
-    props.isSunday ? '#fff' : props.selected ? '#fff' : '#000'};
   width: 100%;
   min-width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: ${(props) => (props.isSunday ? 'default' : 'pointer')};
-
+  cursor: pointer;
   font-weight: 800;
   font-size: 12px;
+  border: 1px solid
+    ${(props) =>
+      props.isBoundary
+        ? Theme.colors.yellow
+        : props.reserved
+          ? Theme.colors.gray3
+          : props.selected
+            ? Theme.colors.yellow
+            : Theme.colors.gray4};
+  background-color: ${(props) =>
+    props.isBoundary
+      ? '#fff'
+      : props.reserved
+        ? Theme.colors.gray3
+        : props.selected
+          ? Theme.colors.yellow
+          : '#fff'};
+  color: ${(props) =>
+    props.isBoundary
+      ? Theme.colors.yellow
+      : props.reserved
+        ? '#fff'
+        : props.selected
+          ? '#fff'
+          : '#000'};
+  transition: all 0.3s ease;
 `;
 
 const EmptyDay = styled.div``;
 
 const Notice = styled.p`
   margin: 0 20px;
-
   font-weight: 400;
   font-size: 14px;
   line-height: 20px;
   color: #999999;
+  animation: ${fadeIn} 0.3s ease;
 `;
 
 const ButtonRow = styled.div`
   display: flex;
   gap: 10px;
   padding: 20px;
+  animation: ${fadeIn} 0.3s ease;
 `;
 
 const CancelButton = styled.button`
@@ -402,6 +537,7 @@ const CancelButton = styled.button`
   border-radius: 4px;
   cursor: pointer;
   font-weight: 700;
+  transition: background-color 0.3s ease;
 `;
 
 const ConfirmButton = styled.button`
@@ -413,10 +549,12 @@ const ConfirmButton = styled.button`
   border-radius: 4px;
   cursor: pointer;
   font-weight: 700;
+  transition: background-color 0.3s ease;
 `;
 
 const ErrorMessage = styled.div`
   font-size: 14px;
   font-weight: 700;
   text-align: center;
+  animation: ${fadeIn} 0.3s ease;
 `;
