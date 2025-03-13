@@ -56,7 +56,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
       <Brand>{brand}</Brand>
       <Description>{description}</Description>
       <PriceWrapper>
-        <OriginalPrice>{price.toLocaleString()}원</OriginalPrice>
+        <OriginalPrice>{price.toLocaleString()}</OriginalPrice>
         <NowLabel>NOW</NowLabel>
         <DiscountLabel>{discount}%</DiscountLabel>
       </PriceWrapper>

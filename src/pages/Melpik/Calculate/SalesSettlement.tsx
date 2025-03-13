@@ -25,7 +25,7 @@ const SalesSettlement: React.FC = () => {
       status: 'pending',
       date: '2025-02 (1차)',
       subDate: '2025-02-07',
-      amount: '67,200원',
+      amount: '67,200',
       deduction: '공제 2,800원',
     },
     {
@@ -33,7 +33,7 @@ const SalesSettlement: React.FC = () => {
       status: 'confirmed',
       date: '2025-01 (2차)',
       subDate: '2025-01-24 (18:30:40)',
-      amount: '86,400원',
+      amount: '86,400',
       deduction: '공제 3,600원',
     },
     {
@@ -41,15 +41,15 @@ const SalesSettlement: React.FC = () => {
       status: 'confirmed',
       date: '2025-01 (1차)',
       subDate: '2025-01-10 (18:30:40)',
-      amount: '144,000원',
-      deduction: '공제 6,000원',
+      amount: '144,000',
+      deduction: '공제 6,000',
     },
     {
       id: 4,
       status: 'confirmed',
       date: '2024-12 (2차)',
       subDate: '2024-12-27 (18:30:40)',
-      amount: '94,080원',
+      amount: '94,080',
       deduction: '공제 3,920원',
     },
     {
@@ -57,7 +57,7 @@ const SalesSettlement: React.FC = () => {
       status: 'confirmed',
       date: '2024-12 (1차)',
       subDate: '2024-12-11',
-      amount: '67,200원',
+      amount: '67,200',
       deduction: '공제 2,800원',
     },
     {
@@ -65,7 +65,7 @@ const SalesSettlement: React.FC = () => {
       status: 'confirmed',
       date: '2024-11 (2차)',
       subDate: '2024-11-24',
-      amount: '86,400원',
+      amount: '86,400',
       deduction: '공제 3,600원',
     },
     {
@@ -73,7 +73,7 @@ const SalesSettlement: React.FC = () => {
       status: 'confirmed',
       date: '2024-11 (1차)',
       subDate: '2024-11-10',
-      amount: '144,000원',
+      amount: '144,000',
       deduction: '공제 6,000원',
     },
   ];

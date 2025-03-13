@@ -11,7 +11,7 @@ const SalesSettlementDetail: React.FC = () => {
       id: 1,
       date: '2025-01-15',
       time: '2025년 1월 24일 (금) - 18:30:40',
-      amount: '86,400원',
+      amount: '86,400',
       deduction: '-3,600원',
       salesList: [
         {

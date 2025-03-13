@@ -25,13 +25,11 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ item }) => {
         <TextGroup>
           <DescriptionText>{item.description}</DescriptionText>
           <PriceContainer>
-            <OriginalPrice>
-              {item.originalPrice.toLocaleString()}원
-            </OriginalPrice>
+            <OriginalPrice>{item.originalPrice.toLocaleString()}</OriginalPrice>
             <DiscountRow>
               <DiscountPercent>{item.discountPercent}%</DiscountPercent>
               <DiscountPrice>
-                {item.discountPrice.toLocaleString()}원
+                {item.discountPrice.toLocaleString()}
               </DiscountPrice>
             </DiscountRow>
           </PriceContainer>
