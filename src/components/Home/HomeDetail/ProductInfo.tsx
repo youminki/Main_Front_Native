@@ -53,14 +53,14 @@ const InfoContainer = styled.div`
 
 const CategoryText = styled.p`
   font-weight: 400;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 11px;
 
   color: #000000;
 
   & > span {
     font-weight: 800;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 11px;
     color: #000000;
   }
@@ -73,7 +73,7 @@ const CategoryText = styled.p`
 
 const BrandText = styled.span`
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 18px;
   /* identical to box height */
 
@@ -110,7 +110,7 @@ const DescriptionText = styled.p`
   color: ${Theme.colors.black};
 
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 18px;
 `;
 
@@ -123,7 +123,7 @@ const PriceContainer = styled.div`
 
 const OriginalPrice = styled.span`
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 13px;
   text-decoration-line: line-through;
 
@@ -141,11 +141,11 @@ const DiscountPercent = styled.span`
   margin-right: 10px;
 
   font-weight: 900;
-  font-size: 18px;
+  font-size: 16px;
 `;
 
 const DiscountPrice = styled.span`
   font-weight: 900;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 20px;
 `;
