@@ -69,6 +69,8 @@ const SliderItem = styled.div`
 const Image = styled.img`
   width: 100%;
   height: 100%;
+  object-fit: contain; /* 전체 이미지가 보이도록 조정 */
+  object-position: center; /* 중앙 정렬 */
 `;
 
 const IndicatorContainer = styled.div`
