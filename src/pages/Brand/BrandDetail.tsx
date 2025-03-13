@@ -207,7 +207,7 @@ const Content = styled.div`
 // 스크롤 최상단으로 이동 버튼 (BrandDetail용)
 const ScrollToTopButton = styled.button`
   position: fixed;
-  bottom: 60px;
+  bottom: 120px;
   right: 20px;
   width: 60px;
   height: 60px;
