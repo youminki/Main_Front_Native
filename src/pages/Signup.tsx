@@ -11,22 +11,16 @@ import ResetButtonIcon from '../assets/ResetButton.png';
 import { useNavigate } from 'react-router-dom';
 import { CustomSelect } from '../components/CustomSelect';
 import ReusableModal from '../components/ReusableModal';
-import { signUpUser } from '../api/user/userApi';
+import {
+  signUpUser,
+  getUserByEmail,
+  verifyPhone,
+  verifyCode,
+  checkWebpage,
+  checkNickname,
+} from '../api/user/userApi';
 
-type SignupFormData = {
-  email: string;
-  password: string;
-  passwordConfirm: string;
-  nickname: string;
-  name: string;
-  birthYear: string;
-  phoneNumber: string;
-  region: string;
-  district: string;
-  melpickAddress: string;
-};
-
-// 대한민국의 지역별 구 옵션 데이터
+// 직접 선언하는 지역/구 옵션 데이터
 const regionDistrictData: { [key: string]: string[] } = {
   서울특별시: [
     '종로구',
@@ -278,6 +272,19 @@ const regionDistrictData: { [key: string]: string[] } = {
   제주특별자치도: ['제주시', '서귀포시'],
 };
 
+type SignupFormData = {
+  email: string;
+  password: string;
+  passwordConfirm: string;
+  nickname: string;
+  name: string;
+  birthYear: string;
+  phoneNumber: string;
+  region: string;
+  district: string;
+  melpickAddress: string;
+};
+
 const Signup: React.FC = () => {
   const navigate = useNavigate();
   const methods = useForm<SignupFormData>({
@@ -300,6 +307,7 @@ const Signup: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    getValues,
   } = methods;
 
   const [gender, setGender] = useState<string>('여성');
@@ -309,24 +317,23 @@ const Signup: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string>('');
 
-  // 모달 제어용 상태 (중복확인/체크 모달)
+  // 모달 및 본인인증 관련 상태
   const [showDuplicateModal, setShowDuplicateModal] = useState<boolean>(false);
   const [duplicateResult, setDuplicateResult] = useState<string>('');
-
-  // 본인인증 인풋 필드 추가용 상태
   const [showVerificationInput, setShowVerificationInput] =
     useState<boolean>(false);
   const [verificationCode, setVerificationCode] = useState<string>('');
-  // 인증 결과 모달 제어용 상태
   const [showVerificationResultModal, setShowVerificationResultModal] =
     useState<boolean>(false);
   const [verificationResult, setVerificationResult] = useState<string>('');
 
-  const handleGenderChange = (selectedGender: string): void => {
-    setGender(selectedGender);
-    setSelectedGenderButton(selectedGender);
+  // 성별 변경
+  const handleGenderChange = (selected: string): void => {
+    setGender(selected);
+    setSelectedGenderButton(selected);
   };
 
+  // 전화번호 포맷팅
   const handlePhoneNumberChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ): void => {
@@ -336,52 +343,105 @@ const Signup: React.FC = () => {
     e.target.value = value;
   };
 
-  // 중복확인 버튼 클릭 시 모달 띄움 (닉네임)
-  const handleNicknameCheck = (): void => {
-    // 여기에 실제 중복확인 API 호출 로직 추가 가능
-    const isAvailable = true;
-    setDuplicateResult(isAvailable ? '사용 가능합니다' : '이미 존재합니다');
-    setShowDuplicateModal(true);
-  };
-
-  const handleInstagramCheck = (): void => {
-    console.log('인스타그램 아이디 확인 클릭');
-  };
-
-  // 본인인증 버튼 클릭 시 인증 인풋 필드 노출
-  const handleVerification = (): void => {
-    setShowVerificationInput(true);
-  };
-
+  // 멜픽 주소 onChange 핸들러
   const handleMelpickAddressChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ): void => {
     setMelpickAddress(e.target.value);
   };
 
-  // 멜픽 주소 체크 버튼 클릭 시 모달 띄움
-  const handleCheckClick = (): void => {
-    setDuplicateResult('사용 가능합니다');
+  // 계정(이메일) 중복 확인 (GET /user/{email})
+  const handleEmailCheck = async (): Promise<void> => {
+    const email = getValues('email');
+    try {
+      await getUserByEmail(email);
+      setDuplicateResult('이미 존재합니다.');
+    } catch (err: unknown) {
+      if (err && (err as any).response?.status === 404) {
+        setDuplicateResult('사용 가능합니다.');
+      } else if (err instanceof Error) {
+        setDuplicateResult('에러 발생: ' + err.message);
+      } else {
+        setDuplicateResult('알 수 없는 에러 발생');
+      }
+    }
     setShowDuplicateModal(true);
   };
 
-  // 인증 버튼 클릭 시 인증번호 검사 후 모달 띄움 (예: 입력값이 '1234'이면 성공)
-  const handleVerifyCode = (): void => {
-    if (verificationCode === '1234') {
-      setVerificationResult('인증에 성공했습니다');
-    } else {
-      setVerificationResult('인증에 실패했습니다');
+  // 닉네임 중복 확인 (GET /user/check-nickname)
+  const handleNicknameCheck = async (): Promise<void> => {
+    const nickname = getValues('nickname');
+    try {
+      const result = await checkNickname(nickname);
+      setDuplicateResult(
+        result.isAvailable ? '사용 가능합니다.' : '이미 존재합니다.'
+      );
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setDuplicateResult('에러 발생: ' + err.message);
+      } else {
+        setDuplicateResult('알 수 없는 에러 발생');
+      }
+    }
+    setShowDuplicateModal(true);
+  };
+
+  // 본인인증 요청 (POST /user/verify-phone)
+  const handleVerification = async (): Promise<void> => {
+    const phoneNumber = getValues('phoneNumber');
+    try {
+      const result = await verifyPhone({ phoneNumber });
+      alert(result.message || '인증 코드 전송 성공');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        alert('본인 인증 요청 실패: ' + err.message);
+      } else {
+        alert('본인 인증 요청 실패');
+      }
+    }
+    setShowVerificationInput(true);
+  };
+
+  // 인증 코드 검증 (POST /user/verify-code)
+  const handleVerifyCode = async (): Promise<void> => {
+    const phoneNumber = getValues('phoneNumber');
+    try {
+      const result = await verifyCode({ phoneNumber, code: verificationCode });
+      setVerificationResult(result.message || '인증에 성공했습니다.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setVerificationResult('인증에 실패했습니다: ' + err.message);
+      } else {
+        setVerificationResult('인증에 실패했습니다.');
+      }
     }
     setShowVerificationResultModal(true);
   };
 
+  // 멜픽 주소 중복 체크 (GET /user/check-webpage)
+  const handleCheckClick = async (): Promise<void> => {
+    try {
+      const result = await checkWebpage(melpickAddress);
+      setDuplicateResult(
+        result.isAvailable ? '사용 가능합니다.' : '이미 존재합니다.'
+      );
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setDuplicateResult('에러 발생: ' + err.message);
+      } else {
+        setDuplicateResult('알 수 없는 에러 발생');
+      }
+    }
+    setShowDuplicateModal(true);
+  };
+
+  // 회원가입 (POST /user)
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
     if (data.password !== data.passwordConfirm) {
       setErrorMessage('비밀번호가 일치하지 않습니다.');
       return;
     }
     setErrorMessage(null);
-
     const formattedData = {
       email: data.email,
       password: data.password,
@@ -391,21 +451,22 @@ const Signup: React.FC = () => {
       address: `${data.region} ${data.district}`,
       phoneNumber: data.phoneNumber,
       gender: gender === '여성' ? 'female' : 'male',
-      instagramId: '', // 인스타그램 아이디 연결은 생략
+      instagramId: '',
       agreeToTerms: true,
       agreeToPrivacyPolicy: true,
     };
-
     try {
       const response = await signUpUser(formattedData);
       console.log('회원가입 성공:', response);
       alert('🎉 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
       navigate('/login');
-    } catch (error) {
-      console.error('회원가입 실패:', error);
-      setErrorMessage(
-        typeof error === 'string' ? error : '회원가입 중 오류가 발생했습니다.'
-      );
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error('회원가입 실패:', err);
+        setErrorMessage('회원가입 중 오류가 발생했습니다: ' + err.message);
+      } else {
+        setErrorMessage('회원가입 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -423,11 +484,10 @@ const Signup: React.FC = () => {
               error={errors.email}
               placeholder='계정을 입력하세요'
               buttonLabel='중복확인'
-              // isEmailField
               {...register('email')}
               required
               maxLength={20}
-              onButtonClick={handleInstagramCheck}
+              onButtonClick={handleEmailCheck}
             />
             <InputField
               label='비밀번호(숫자, 문자를 조합하여 8자리 이상 입력하세요)'
@@ -576,7 +636,7 @@ const Signup: React.FC = () => {
                   구를 선택하세요
                 </option>
                 {selectedRegion && regionDistrictData[selectedRegion] ? (
-                  regionDistrictData[selectedRegion].map((district) => (
+                  regionDistrictData[selectedRegion].map((district: string) => (
                     <option key={district} value={district}>
                       {district}
                     </option>
@@ -613,7 +673,7 @@ const Signup: React.FC = () => {
         </Container>
       </FormProvider>
 
-      {/* 중복확인/체크 모달 */}
+      {/* 중복확인/체크 결과 모달 */}
       <ReusableModal
         isOpen={showDuplicateModal}
         onClose={() => setShowDuplicateModal(false)}
@@ -645,18 +705,21 @@ const Container = styled.div`
   width: 100%;
   margin: 0 auto;
 `;
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 15px;
   width: 100%;
 `;
+
 const RowLabel = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
   width: 100%;
 `;
+
 const GenderField = styled.div`
   width: 100%;
   height: 57px;
@@ -664,19 +727,21 @@ const GenderField = styled.div`
   flex-direction: column;
   margin-bottom: 20px;
 `;
+
 const InputFieldLabel = styled.label`
   margin-bottom: 10px;
   color: ${({ theme }) => theme.colors.black};
-
   font-weight: 700;
   font-size: 11px;
   line-height: 11px;
 `;
+
 const GenderRow = styled.div`
   display: flex;
   height: 100%;
   justify-content: space-between;
 `;
+
 const GenderButton = styled.button<{ selected: boolean; isSelected: boolean }>`
   flex: 1;
   border: ${({ isSelected }) => (isSelected ? '2px solid #f6ae24' : 'none')};
@@ -698,6 +763,7 @@ const GenderButton = styled.button<{ selected: boolean; isSelected: boolean }>`
     border-radius: 0 10px 10px 0;
   }
 `;
+
 const PhoneField = styled.div`
   display: flex;
   align-items: center;
@@ -707,23 +773,28 @@ const PhoneField = styled.div`
     padding-right: 120px;
   }
 `;
+
 const BlackContainer = styled.div`
   margin-bottom: 100px;
 `;
+
 const ErrorText = styled.div`
   color: red;
   text-align: center;
 `;
+
 const VerificationWrapper = styled.div`
   display: flex;
   align-items: center;
   margin-top: 10px;
   gap: 10px;
 `;
+
 const VerificationLabel = styled.label`
   font-size: 13px;
   font-weight: bold;
 `;
+
 const VerificationContainer = styled.div`
   display: flex;
   align-items: center;
@@ -733,6 +804,7 @@ const VerificationContainer = styled.div`
   border-radius: 4px;
   overflow: hidden;
 `;
+
 const VerificationInput = styled.input`
   flex: 1;
   height: 100%;
@@ -741,6 +813,7 @@ const VerificationInput = styled.input`
   border: none;
   outline: none;
 `;
+
 const VerificationBtn = styled.button`
   height: 100%;
   width: 80px;
