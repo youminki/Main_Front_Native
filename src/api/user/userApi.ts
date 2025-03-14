@@ -1,5 +1,9 @@
 import { Axios } from '../Axios';
 
+// =====================
+// 인터페이스 정의
+// =====================
+
 // 회원가입 요청 및 응답 인터페이스
 export interface SignupRequest {
   email: string;
@@ -48,13 +52,6 @@ export interface UserDetail {
   instagramId: string;
 }
 
-// 사용자 정보 업데이트 요청 인터페이스
-export interface UpdateUserRequest {
-  nickname?: string;
-  address?: string;
-  phoneNumber?: string;
-}
-
 // 공통 메시지 응답 인터페이스
 export interface MessageResponse {
   message: string;
@@ -70,17 +67,35 @@ export interface GetBlockedUsersResponse {
   total: number;
 }
 
-// 이메일 중복 체크 응답 인터페이스
-export interface CheckEmailResponse {
+// 중복 여부 응답 인터페이스 (개인 웹페이지, 닉네임)
+export interface AvailabilityResponse {
   isAvailable: boolean;
 }
 
-// 이름과 생년월일로 이메일 찾기 응답 인터페이스
-export interface FindEmailResponse {
-  email: string;
+// 휴대폰 인증 관련 인터페이스
+export interface VerifyPhoneRequest {
+  phoneNumber: string;
 }
 
+export interface VerifyPhoneResponse {
+  message: string;
+}
+
+export interface VerifyCodeRequest {
+  phoneNumber: string;
+  code: string;
+}
+
+export interface VerifyCodeResponse {
+  message: string;
+}
+
+// =====================
+// API 호출 함수
+// =====================
+
 // 회원가입 API 호출 (POST /user)
+// ✅ 휴대폰 인증을 완료한 사용자만 회원가입 가능
 export const signUpUser = async (
   data: SignupRequest
 ): Promise<SignupResponse> => {
@@ -105,15 +120,6 @@ export const getUserByEmail = async (email: string): Promise<UserDetail> => {
   return response.data;
 };
 
-// 사용자 정보 업데이트 API 호출 (PUT /user/{email})
-export const updateUser = async (
-  email: string,
-  data: UpdateUserRequest
-): Promise<MessageResponse> => {
-  const response = await Axios.put(`/user/${email}`, data);
-  return response.data;
-};
-
 // 사용자 삭제 API 호출 (DELETE /user/{email})
 export const deleteUser = async (email: string): Promise<MessageResponse> => {
   const response = await Axios.delete(`/user/${email}`);
@@ -131,23 +137,38 @@ export const getBlockedUsers = async (
   return response.data;
 };
 
-// 이메일 중복 체크 API 호출 (GET /user/check-email)
-export const checkEmail = async (
-  email: string
-): Promise<CheckEmailResponse> => {
-  const response = await Axios.get('/user/check-email', {
-    params: { email },
+// 개인 웹페이지 주소 중복 체크 API 호출 (GET /user/check-webpage)
+export const checkWebpage = async (
+  personalWebpage: string
+): Promise<AvailabilityResponse> => {
+  const response = await Axios.get('/user/check-webpage', {
+    params: { personalWebpage },
   });
   return response.data;
 };
 
-// 이름과 생년월일로 이메일 찾기 API 호출 (GET /user/find-email)
-export const findEmail = async (
-  name: string,
-  birthdate: string
-): Promise<FindEmailResponse> => {
-  const response = await Axios.get('/user/find-email', {
-    params: { name, birthdate },
+// 닉네임 중복 체크 API 호출 (GET /user/check-nickname)
+export const checkNickname = async (
+  nickname: string
+): Promise<AvailabilityResponse> => {
+  const response = await Axios.get('/user/check-nickname', {
+    params: { nickname },
   });
+  return response.data;
+};
+
+// 휴대폰 인증 요청 API 호출 (POST /user/verify-phone)
+export const verifyPhone = async (
+  data: VerifyPhoneRequest
+): Promise<VerifyPhoneResponse> => {
+  const response = await Axios.post('/user/verify-phone', data);
+  return response.data;
+};
+
+// 휴대폰 인증 코드 검증 API 호출 (POST /user/verify-code)
+export const verifyCode = async (
+  data: VerifyCodeRequest
+): Promise<VerifyCodeResponse> => {
+  const response = await Axios.post('/user/verify-code', data);
   return response.data;
 };
