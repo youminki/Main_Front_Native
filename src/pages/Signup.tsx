@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -20,7 +20,6 @@ import {
   checkNickname,
 } from '../api/user/userApi';
 
-// 직접 선언하는 지역/구 옵션 데이터
 const regionDistrictData: { [key: string]: string[] } = {
   서울특별시: [
     '종로구',
@@ -317,7 +316,6 @@ const Signup: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string>('');
 
-  // 모달 및 본인인증 관련 상태
   const [showDuplicateModal, setShowDuplicateModal] = useState<boolean>(false);
   const [duplicateResult, setDuplicateResult] = useState<string>('');
   const [showVerificationInput, setShowVerificationInput] =
@@ -327,13 +325,63 @@ const Signup: React.FC = () => {
     useState<boolean>(false);
   const [verificationResult, setVerificationResult] = useState<string>('');
 
-  // 성별 변경
+  // 회원가입 결과 모달 상태
+  const [showSignupResultModal, setShowSignupResultModal] =
+    useState<boolean>(false);
+  const [signupResult, setSignupResult] = useState<string>('');
+
+  // 타이머 상태 (3분 = 180초)
+  const [timer, setTimer] = useState<number>(0);
+  const timerRef = useRef<number | null>(null);
+
+  const formatTime = (seconds: number): string => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+
+  const startTimer = () => {
+    setTimer(180);
+    if (timerRef.current !== null) clearInterval(timerRef.current);
+    timerRef.current = window.setInterval(() => {
+      setTimer((prev) => {
+        if (prev <= 1) {
+          if (timerRef.current !== null) clearInterval(timerRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  // 컴포넌트 언마운트 시 타이머 클린업
+  useEffect(() => {
+    return () => {
+      if (timerRef.current !== null) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  const handleVerification = async (): Promise<void> => {
+    const phoneNumber = getValues('phoneNumber');
+    try {
+      const result = await verifyPhone({ phoneNumber });
+      alert(result.message || '인증 코드 전송 성공');
+      startTimer();
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        alert('본인 인증 요청 실패: ' + err.message);
+      } else {
+        alert('본인 인증 요청 실패');
+      }
+    }
+    setShowVerificationInput(true);
+  };
+
   const handleGenderChange = (selected: string): void => {
     setGender(selected);
     setSelectedGenderButton(selected);
   };
 
-  // 전화번호 포맷팅
   const handlePhoneNumberChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ): void => {
@@ -343,14 +391,12 @@ const Signup: React.FC = () => {
     e.target.value = value;
   };
 
-  // 멜픽 주소 onChange 핸들러
   const handleMelpickAddressChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ): void => {
     setMelpickAddress(e.target.value);
   };
 
-  // 계정(이메일) 중복 확인 (GET /user/{email})
   const handleEmailCheck = async (): Promise<void> => {
     const email = getValues('email');
     try {
@@ -368,7 +414,6 @@ const Signup: React.FC = () => {
     setShowDuplicateModal(true);
   };
 
-  // 닉네임 중복 확인 (GET /user/check-nickname)
   const handleNicknameCheck = async (): Promise<void> => {
     const nickname = getValues('nickname');
     try {
@@ -386,23 +431,6 @@ const Signup: React.FC = () => {
     setShowDuplicateModal(true);
   };
 
-  // 본인인증 요청 (POST /user/verify-phone)
-  const handleVerification = async (): Promise<void> => {
-    const phoneNumber = getValues('phoneNumber');
-    try {
-      const result = await verifyPhone({ phoneNumber });
-      alert(result.message || '인증 코드 전송 성공');
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        alert('본인 인증 요청 실패: ' + err.message);
-      } else {
-        alert('본인 인증 요청 실패');
-      }
-    }
-    setShowVerificationInput(true);
-  };
-
-  // 인증 코드 검증 (POST /user/verify-code)
   const handleVerifyCode = async (): Promise<void> => {
     const phoneNumber = getValues('phoneNumber');
     try {
@@ -418,7 +446,6 @@ const Signup: React.FC = () => {
     setShowVerificationResultModal(true);
   };
 
-  // 멜픽 주소 중복 체크 (GET /user/check-webpage)
   const handleCheckClick = async (): Promise<void> => {
     try {
       const result = await checkWebpage(melpickAddress);
@@ -435,7 +462,6 @@ const Signup: React.FC = () => {
     setShowDuplicateModal(true);
   };
 
-  // 회원가입 (POST /user)
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
     if (data.password !== data.passwordConfirm) {
       setErrorMessage('비밀번호가 일치하지 않습니다.');
@@ -458,15 +484,18 @@ const Signup: React.FC = () => {
     try {
       const response = await signUpUser(formattedData);
       console.log('회원가입 성공:', response);
-      alert('🎉 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
-      navigate('/login');
+      setSignupResult(
+        '🎉 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.'
+      );
+      setShowSignupResultModal(true);
     } catch (err: unknown) {
       if (err instanceof Error) {
         console.error('회원가입 실패:', err);
-        setErrorMessage('회원가입 중 오류가 발생했습니다: ' + err.message);
+        setSignupResult('회원가입 중 오류가 발생했습니다: ' + err.message);
       } else {
-        setErrorMessage('회원가입 중 오류가 발생했습니다.');
+        setSignupResult('회원가입 중 오류가 발생했습니다.');
       }
+      setShowSignupResultModal(true);
     }
   };
 
@@ -590,17 +619,20 @@ const Signup: React.FC = () => {
             {showVerificationInput && (
               <VerificationWrapper>
                 <VerificationLabel>인증번호 입력</VerificationLabel>
-                <VerificationContainer>
-                  <VerificationInput
-                    type='text'
-                    placeholder='인증번호를 입력하세요'
-                    value={verificationCode}
-                    onChange={(e) => setVerificationCode(e.target.value)}
-                  />
-                  <VerificationBtn onClick={handleVerifyCode}>
-                    인증
-                  </VerificationBtn>
-                </VerificationContainer>
+                <VerificationRow>
+                  <VerificationContainer>
+                    <VerificationInput
+                      type='text'
+                      placeholder='인증번호를 입력하세요'
+                      value={verificationCode}
+                      onChange={(e) => setVerificationCode(e.target.value)}
+                    />
+                    <VerificationBtn onClick={handleVerifyCode}>
+                      인증
+                    </VerificationBtn>
+                  </VerificationContainer>
+                  <TimerDisplay>{formatTime(timer)}</TimerDisplay>
+                </VerificationRow>
               </VerificationWrapper>
             )}
             <RowLabel>
@@ -673,7 +705,6 @@ const Signup: React.FC = () => {
         </Container>
       </FormProvider>
 
-      {/* 중복확인/체크 결과 모달 */}
       <ReusableModal
         isOpen={showDuplicateModal}
         onClose={() => setShowDuplicateModal(false)}
@@ -682,13 +713,23 @@ const Signup: React.FC = () => {
         {duplicateResult}
       </ReusableModal>
 
-      {/* 인증 결과 모달 */}
       <ReusableModal
         isOpen={showVerificationResultModal}
         onClose={() => setShowVerificationResultModal(false)}
         title='인증 결과'
       >
         {verificationResult}
+      </ReusableModal>
+
+      <ReusableModal
+        isOpen={showSignupResultModal}
+        onClose={() => {
+          setShowSignupResultModal(false);
+          navigate('/login');
+        }}
+        title='회원가입 결과'
+      >
+        {signupResult}
       </ReusableModal>
     </ThemeProvider>
   );
@@ -722,10 +763,10 @@ const RowLabel = styled.div`
 
 const GenderField = styled.div`
   width: 100%;
-  height: 57px;
+  height: 67px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-top: 20px;
 `;
 
 const InputFieldLabel = styled.label`
@@ -785,8 +826,14 @@ const ErrorText = styled.div`
 
 const VerificationWrapper = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 10px;
   margin-top: 10px;
+`;
+
+const VerificationRow = styled.div`
+  display: flex;
+  align-items: center;
   gap: 10px;
 `;
 
@@ -822,4 +869,13 @@ const VerificationBtn = styled.button`
   border: none;
   font-size: 14px;
   cursor: pointer;
+`;
+
+const TimerDisplay = styled.div`
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 `;
