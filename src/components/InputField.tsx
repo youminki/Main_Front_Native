@@ -12,7 +12,7 @@ type InputFieldProps = {
   buttonColor?: 'yellow' | 'black';
   onButtonClick?: () => void;
   prefix?: string;
-  prefixcontent?: string | React.ReactNode; // 문자열 말고 ReactNode도 허용
+  prefixcontent?: string | React.ReactNode;
   as?: React.ElementType;
   isEmailField?: boolean;
   useToggle?: boolean;
@@ -22,20 +22,17 @@ type InputFieldProps = {
 };
 
 function parsePrefixContent(content: string) {
-  // '해당없음', '( ... )', '|' 토큰을 캡처
   const tokens = content.split(/(해당없음|\(.*?\)|\|)/g);
-  let applyGray = false; // '|' 이후부터 true로 전환
+  let applyGray = false;
 
   return tokens.map((token, i) => {
     if (token === '|') {
       applyGray = true;
       return <GraySpan key={i}>{token}</GraySpan>;
     }
-    // '|' 이후의 모든 토큰은 그레이 텍스트로 감싸기
     if (applyGray) {
       return <GraySpan key={i}>{token}</GraySpan>;
     }
-    // 그 외 조건: 토큰이 '(1개월)', '(진행예정)', '해당없음'인 경우 그레이 텍스트 적용
     if (
       (token.startsWith('(') && token.endsWith(')')) ||
       token === '해당없음'
@@ -79,7 +76,6 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       }
     };
 
-    // prefixcontent가 문자열이면 parsePrefixContent를 통해 토큰만 부분 컬러링
     const renderPrefixContent = () => {
       if (!prefixcontent) return null;
       if (typeof prefixcontent === 'string') {
@@ -89,7 +85,6 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
           </PrefixcontentText>
         );
       }
-      // 이미 ReactNode라면 그대로 렌더
       return <PrefixcontentText>{prefixcontent}</PrefixcontentText>;
     };
 
@@ -108,7 +103,6 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             <InputWrapper>
               {prefixcontent && renderPrefixContent()}
 
-              {/* options가 있으면 select, 없으면 input */}
               {options ? (
                 <Select
                   id={id}
@@ -150,7 +144,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                 <EmailDropdown
                   id={`${id}-domain`}
                   defaultValue='naver.com'
-                  disabled={rest.readOnly} // readOnly가 true면 disabled 적용
+                  disabled={rest.readOnly}
                 >
                   <option value='gmail.com'>gmail.com</option>
                   <option value='naver.com'>naver.com</option>
@@ -160,8 +154,10 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             )}
           </InputRow>
 
-          {/* 에러 메시지 */}
-          {error && <ErrorMessage>{error.message}</ErrorMessage>}
+          {/* 에러 메시지 영역 (항상 일정 높이 확보) */}
+          <ErrorContainer>
+            {error && <ErrorMessage>{error.message}</ErrorMessage>}
+          </ErrorContainer>
         </div>
       </InputContainer>
     );
@@ -180,7 +176,6 @@ const InputContainer = styled.div`
 
 const Label = styled.label<{ $isEmpty: boolean }>`
   margin-bottom: 10px;
-
   font-size: 12px;
   font-weight: 700;
   line-height: 11.05px;
@@ -207,14 +202,11 @@ const PrefixText = styled.span`
   color: #000000;
 `;
 
-/** prefixcontent(문구) 통째로 감싸는 영역 */
 const PrefixcontentText = styled.span`
   margin-left: 10px;
-
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
-
   color: #000000;
 `;
 
@@ -264,7 +256,6 @@ const Input = styled.input`
   flex: 1;
   height: 57px;
   width: 100%;
-
   font-weight: 400;
   font-size: 13px;
   line-height: 14px;
@@ -282,11 +273,9 @@ const Select = styled.select`
   height: 57px;
   width: 100%;
   padding: 0 40px 0 16px;
-
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
-
   color: #000000;
   appearance: none;
   background: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'10'%20height%3D'6'%20viewBox%3D'0%200%2010%206'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M0%200l5%206l5-6z'%20fill%3D'%23000'%20/%3E%3C/svg%3E")
@@ -297,13 +286,16 @@ const Select = styled.select`
   }
 `;
 
-const ErrorMessage = styled.span`
-  display: block;
+const ErrorContainer = styled.div`
+  min-height: 18px;
   margin-top: 6px;
   margin-left: 4px;
+`;
+
+const ErrorMessage = styled.span`
+  display: block;
   color: blue;
   font-size: 12px;
-
   font-weight: 400;
 `;
 
