@@ -24,9 +24,10 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({
           onChange={(e) => setSelectedSize(e.target.value)}
         >
           <option value=''>사이즈 선택</option>
-          <option value='S'>S</option>
-          <option value='M'>M</option>
-          <option value='L'>L</option>
+          <option value='S'>S(44)</option>
+          <option value='M'>M(55)</option>
+          <option value='L'>L(66)</option>
+          <option value='XL'>XL(77)</option>
         </select>
         <select
           value={selectedColor}
