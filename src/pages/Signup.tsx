@@ -13,7 +13,7 @@ import { CustomSelect } from '../components/CustomSelect';
 import ReusableModal from '../components/ReusableModal';
 import {
   signUpUser,
-  getUserByEmail,
+  checkEmail,
   verifyPhone,
   verifyCode,
   checkWebpage,
@@ -397,15 +397,16 @@ const Signup: React.FC = () => {
     setMelpickAddress(e.target.value);
   };
 
+  // ★ 이메일 중복 체크 (checkEmail 사용)
   const handleEmailCheck = async (): Promise<void> => {
     const email = getValues('email');
     try {
-      await getUserByEmail(email);
-      setDuplicateResult('이미 존재합니다.');
+      const result = await checkEmail(email);
+      setDuplicateResult(
+        result.isAvailable ? '사용 가능합니다.' : '이미 존재합니다.'
+      );
     } catch (err: unknown) {
-      if (err && (err as any).response?.status === 404) {
-        setDuplicateResult('사용 가능합니다.');
-      } else if (err instanceof Error) {
+      if (err instanceof Error) {
         setDuplicateResult('에러 발생: ' + err.message);
       } else {
         setDuplicateResult('알 수 없는 에러 발생');
@@ -462,12 +463,25 @@ const Signup: React.FC = () => {
     setShowDuplicateModal(true);
   };
 
+  // ★ 회원가입 제출 전 이메일 중복 여부 재확인
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
     if (data.password !== data.passwordConfirm) {
       setErrorMessage('비밀번호가 일치하지 않습니다.');
       return;
     }
     setErrorMessage(null);
+
+    try {
+      const emailCheckResult = await checkEmail(data.email);
+      if (!emailCheckResult.isAvailable) {
+        setErrorMessage('이미 존재하는 이메일입니다.');
+        return;
+      }
+    } catch (err: unknown) {
+      setErrorMessage('이메일 중복 체크 중 오류가 발생했습니다.');
+      return;
+    }
+
     const formattedData = {
       email: data.email,
       password: data.password,

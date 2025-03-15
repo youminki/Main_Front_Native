@@ -95,7 +95,6 @@ export interface VerifyCodeResponse {
 // =====================
 
 // 회원가입 API 호출 (POST /user)
-// ✅ 휴대폰 인증을 완료한 사용자만 회원가입 가능
 export const signUpUser = async (
   data: SignupRequest
 ): Promise<SignupResponse> => {
@@ -170,5 +169,17 @@ export const verifyCode = async (
   data: VerifyCodeRequest
 ): Promise<VerifyCodeResponse> => {
   const response = await Axios.post('/user/verify-code', data);
+  return response.data;
+};
+
+// =====================
+// (추가) 이메일 중복 체크 API 호출 (GET /user/check-email)
+// =====================
+export const checkEmail = async (
+  email: string
+): Promise<AvailabilityResponse> => {
+  const response = await Axios.get('/user/check-email', {
+    params: { email },
+  });
   return response.data;
 };
