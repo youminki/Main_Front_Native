@@ -124,7 +124,7 @@ const Login: React.FC = () => {
             <LinkSeparator>|</LinkSeparator>
             <Link onClick={() => navigate('/signup')}>회원가입</Link>
           </ExtraLinks>
-
+          {/* 
           <SnsTextWrapper>
             <SnsText>SNS 계정으로 로그인</SnsText>
           </SnsTextWrapper>
@@ -142,7 +142,7 @@ const Login: React.FC = () => {
 
           <BrowseLink onClick={handleBrowseWithoutSignupClick}>
             회원가입 없이 둘러보기
-          </BrowseLink>
+          </BrowseLink> */}
         </LoginContainer>
         {isModalOpen && (
           <Modal>
