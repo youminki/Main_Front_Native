@@ -178,7 +178,7 @@ export const verifyCode = async (
 export const checkEmail = async (
   email: string
 ): Promise<AvailabilityResponse> => {
-  const response = await Axios.get('/user/check-email', {
+  const response = await Axios.get(`/user/check-email`, {
     params: { email },
   });
   return response.data;
