@@ -9,9 +9,9 @@ import InputField from '../components/InputField';
 import Theme from '../styles/Theme';
 import { LoginPost } from '../api/auth/LoginPost';
 import MelpikLogo from '../assets/LoginLogo.svg';
-import KakaoImg from '../assets/KakaoImg.svg';
-import NaverImg from '../assets/NaverImg.svg';
-import GoogleImg from '../assets/GoogleImg.svg';
+// import KakaoImg from '../assets/KakaoImg.svg';
+// import NaverImg from '../assets/NaverImg.svg';
+// import GoogleImg from '../assets/GoogleImg.svg';
 
 const schemaLogin = yup.object({
   id: yup.string().required('사용자 ID는 필수 입력 사항입니다'),
@@ -60,7 +60,7 @@ const Login: React.FC = () => {
 
   const handleModalClose = () => setIsModalOpen(false);
 
-  const handleBrowseWithoutSignupClick = () => navigate('/home');
+  // const handleBrowseWithoutSignupClick = () => navigate('/home');
 
   return (
     <ThemeProvider theme={Theme}>
@@ -299,15 +299,15 @@ const LinkSeparator = styled.span`
   opacity: 1;
 `;
 
-const BrowseLink = styled.a`
-  margin-top: 15px;
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.DarkBrown3};
-  cursor: pointer;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
+// const BrowseLink = styled.a`
+//   margin-top: 15px;
+//   font-size: 14px;
+//   color: ${({ theme }) => theme.colors.DarkBrown3};
+//   cursor: pointer;
+//   &:hover {
+//     text-decoration: underline;
+//   }
+// `;
 
 const Modal = styled.div`
   position: fixed;
@@ -320,49 +320,49 @@ const Modal = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
 `;
-const SnsTextWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
+// const SnsTextWrapper = styled.div`
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   width: 100%;
 
-  margin-bottom: 27px;
+//   margin-bottom: 27px;
 
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    border-top: 1px solid #eeeeee;
-  }
-`;
+//   &::before,
+//   &::after {
+//     content: '';
+//     flex: 1;
+//     border-top: 1px solid #eeeeee;
+//   }
+// `;
 
-const SnsText = styled.span`
-  color: #999999;
+// const SnsText = styled.span`
+//   color: #999999;
 
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 14.37px;
-  text-align: center;
-`;
+//   font-size: 13px;
+//   font-weight: 700;
+//   line-height: 14.37px;
+//   text-align: center;
+// `;
 
-const IconWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  width: 100%;
-`;
+// const IconWrapper = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   gap: 30px;
+//   width: 100%;
+// `;
 
-const IconButton = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-`;
+// const IconButton = styled.div`
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   border-radius: 50%;
+//   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+//   cursor: pointer;
+// `;
 
-const Icon = styled.img`
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-`;
+// const Icon = styled.img`
+//   width: 50px;
+//   height: 50px;
+//   object-fit: cover;
+// `;
