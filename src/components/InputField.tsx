@@ -138,7 +138,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
               )}
             </InputWrapper>
 
-            {isEmailField && <AtSymbol>@</AtSymbol>}
+            {/* {isEmailField && <AtSymbol>@</AtSymbol>}
             {isEmailField && (
               <InputWrapper>
                 <EmailDropdown
@@ -151,7 +151,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                   <option value='daum.net'>daum.net</option>
                 </EmailDropdown>
               </InputWrapper>
-            )}
+            )} */}
           </InputRow>
 
           {/* 에러 메시지 영역 (항상 일정 높이 확보) */}
