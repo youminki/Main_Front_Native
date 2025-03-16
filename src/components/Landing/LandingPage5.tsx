@@ -18,7 +18,8 @@ const screens: Screen[] = [
     img: ScreenImg1,
     subtitle: (
       <>
-        인스타그램으로 나의 스타일 파악 후 <br />
+        인스타그램으로 <br />
+        나의 스타일 파악 후 <br />
         브랜드 매칭하기
       </>
     ),
@@ -66,13 +67,16 @@ const LandingPage5: React.FC = () => {
 
   return (
     <Container>
-      <LandingTitle3>
-        <MelpicHighlight>melpik</MelpicHighlight>은 <br />
-        <BrandHighlight>어떤 서비스인가요?</BrandHighlight>
-      </LandingTitle3>
-      <LandingSubtitle3>
-        {screens[currentScreenIndex].subtitle}
-      </LandingSubtitle3>
+      <LandingTitle>
+        <BoldText>
+          멜픽앱으로 편하게 관리하세요! <br />
+        </BoldText>
+        <Text>
+          판매에 관련된 모든 진행사항을
+          <br /> 앱에서 편리하게 관리할 수 있어요
+        </Text>
+      </LandingTitle>
+      <LandingSubtitle>{screens[currentScreenIndex].subtitle}</LandingSubtitle>
       <ScreenContainer>
         <ArrowButton onClick={handlePrevClick}>
           <ArrowIcon src={LeftArrowIcon} alt='Previous' />
@@ -117,41 +121,17 @@ const Container = styled.div`
   border-radius: 20px;
 `;
 
-const LandingTitle3 = styled.h1`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 30px;
-  text-align: center;
-  margin-bottom: 50px;
-  color: #000000;
-`;
-
-const BrandHighlight = styled.span`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 30px;
-  text-align: center;
-  color: #f6ae24;
-`;
-
-const MelpicHighlight = styled.span`
-  color: #f6ae24;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 30px;
+const LandingTitle = styled.h1`
   text-align: center;
 `;
 
-const LandingSubtitle3 = styled.p`
+const LandingSubtitle = styled.p`
   font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 18px;
   line-height: 30px;
   text-align: center;
-  height: 60px;
+
   margin-bottom: 32px;
   color: #000000;
 `;
@@ -244,4 +224,31 @@ const LoadingSpinner = styled.div`
       transform: rotate(360deg);
     }
   }
+`;
+
+const Text = styled.div`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 30px;
+  /* or 176% */
+  text-align: center;
+
+  color: #000000;
+  margin-top: 20px;
+  margin-bottom: 30px;
+`;
+
+// BoldText를 인라인 요소인 span으로 변경
+const BoldText = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 30px;
+
+  text-align: center;
+
+  color: #000000;
 `;

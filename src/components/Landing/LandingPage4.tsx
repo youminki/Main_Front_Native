@@ -126,7 +126,6 @@ const Text = styled.div`
   color: #000000;
 `;
 
-// BoldText를 인라인 요소인 span으로 변경
 const BoldText = styled.span`
   font-family: 'NanumSquare Neo OTF';
   font-style: normal;
