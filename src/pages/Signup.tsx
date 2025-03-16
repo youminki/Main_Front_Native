@@ -529,7 +529,7 @@ const Signup: React.FC = () => {
               buttonLabel='중복확인'
               {...register('email')}
               required
-              maxLength={20}
+              maxLength={50}
               onButtonClick={handleEmailCheck}
             />
             <InputField

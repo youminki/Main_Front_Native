@@ -17,7 +17,11 @@ export const schemaSignup = yup
       .string()
       .required('이메일을 입력해주세요.')
       .min(5, '이메일은 최소 5자 이상이어야 합니다.')
-      .max(50, '이메일은 최대 50자까지 입력 가능합니다.'),
+      .max(50, '이메일은 최대 50자까지 입력 가능합니다.')
+      .matches(
+        /^(?=.*@)(?=.*\.com).+$/,
+        '이메일은 "@"와 ".com"을 포함해야 합니다.'
+      ), // 추가된 검증
     password: yup
       .string()
       .required('비밀번호를 입력해주세요.')
@@ -53,7 +57,6 @@ export const schemaSignup = yup
         /^010\d{8}$/,
         '전화번호는 010으로 시작하는 11자리 숫자여야 합니다.'
       ),
-
     region: yup.string().required('지역을 선택해주세요.'),
     district: yup.string().required('구를 선택해주세요.'),
     melpickAddress: yup
@@ -63,10 +66,6 @@ export const schemaSignup = yup
         /^[a-zA-Z0-9]{1,12}$/,
         '멜픽 주소는 영문과 숫자로 이루어진 1~12자 이내로 입력해주세요.'
       ),
-    // agreeToTerms: yup.boolean().oneOf([true], '약관에 동의해야 합니다.'), // .required() 제거
-    // agreeToPrivacyPolicy: yup
-    //   .boolean()
-    //   .oneOf([true], '개인정보 처리방침에 동의해야 합니다.'),
   })
   .required();
 
@@ -74,7 +73,12 @@ export const schemaLogin = yup.object({
   email: yup
     .string()
     .required('이메일을 입력해주세요.')
-    .email('유효한 이메일 형식이 아닙니다.'),
+    .min(5, '이메일은 최소 5자 이상이어야 합니다.')
+    .max(50, '이메일은 최대 50자까지 입력 가능합니다.')
+    .matches(
+      /^(?=.*@)(?=.*\.com).+$/,
+      '이메일은 "@"와 ".com"을 포함해야 합니다.'
+    ), // 추가된 검증
   password: yup
     .string()
     .required('비밀번호를 입력해주세요.')
@@ -82,7 +86,7 @@ export const schemaLogin = yup.object({
     .max(20, '비밀번호는 최대 20자까지 입력 가능합니다.')
     .matches(
       /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,20}$/,
-      '비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.'
+      '비밀번호는 영문과 숫자를 포함해야 합니다.'
     ),
 });
 

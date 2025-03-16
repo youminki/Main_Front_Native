@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import LoginButton from '../components/Button01';
 import InputField from '../components/InputField';
 import Theme from '../styles/Theme';
@@ -12,17 +11,11 @@ import MelpikLogo from '../assets/LoginLogo.svg';
 // import KakaoImg from '../assets/KakaoImg.svg';
 // import NaverImg from '../assets/NaverImg.svg';
 // import GoogleImg from '../assets/GoogleImg.svg';
-
-const schemaLogin = yup.object({
-  id: yup.string().required('사용자 ID는 필수 입력 사항입니다'),
-  password: yup
-    .string()
-    .min(6, '비밀번호는 최소 6자 이상이어야 합니다')
-    .required('비밀번호는 필수 입력 사항입니다'),
-});
+import { schemaLogin } from '../hooks/ValidationYup';
+import ReusableModal from '../components/ReusableModal';
 
 type LoginFormValues = {
-  id: string;
+  email: string;
   password: string;
 };
 
@@ -38,19 +31,19 @@ const Login: React.FC = () => {
   } = useForm<LoginFormValues>({
     resolver: yupResolver(schemaLogin),
     mode: 'onChange',
-    defaultValues: { id: '', password: '' },
+    defaultValues: { email: '', password: '' },
   });
 
   const handleLoginClick = async (data: LoginFormValues) => {
     try {
-      const response = await LoginPost(data.id, data.password);
+      const response = await LoginPost(data.email, data.password);
       console.log('✅ 로그인 성공:', response);
 
-      // ✅ 토큰 안전하게 저장
+      // 토큰 안전하게 저장
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
 
-      navigate('/home'); // 로그인 성공 후 이동
+      navigate('/home'); // 로그인 성공 후 홈으로 이동
     } catch (error: any) {
       console.error('❌ 로그인 실패:', error);
       setModalMessage(error?.message || '로그인 실패. 다시 시도해주세요.');
@@ -78,14 +71,14 @@ const Login: React.FC = () => {
             <InputFieldRow>
               <Controller
                 control={control}
-                name='id' // ✅ ID 필드로 변경
-                render={({ field }) => (
+                name='email'
+                render={({ field, fieldState: { error } }) => (
                   <InputField
-                    label='사용자 ID'
-                    id='id'
+                    label='사용자 이메일'
+                    id='email'
                     type='text'
-                    error={errors.id?.message}
-                    placeholder='사용자 ID를 입력하세요'
+                    error={error}
+                    placeholder='이메일을 입력하세요'
                     isEmailField={true}
                     {...field}
                   />
@@ -96,19 +89,18 @@ const Login: React.FC = () => {
               <Controller
                 control={control}
                 name='password'
-                render={({ field }) => (
+                render={({ field, fieldState: { error } }) => (
                   <InputField
                     label='비밀번호'
                     id='password'
                     type='password'
-                    error={errors.password?.message}
+                    error={error}
                     placeholder='비밀번호를 입력하세요'
                     {...field}
                   />
                 )}
               />
             </InputFieldRow>
-
             <CheckboxWrapper>
               <CheckboxLabel>
                 <CheckboxInput type='checkbox' />
@@ -124,32 +116,33 @@ const Login: React.FC = () => {
             <LinkSeparator>|</LinkSeparator>
             <Link onClick={() => navigate('/signup')}>회원가입</Link>
           </ExtraLinks>
-          {/* 
+          {/*
           <SnsTextWrapper>
             <SnsText>SNS 계정으로 로그인</SnsText>
           </SnsTextWrapper>
           <IconWrapper>
             <IconButton>
-              <Icon src={KakaoImg} alt='Kakao' />
+              <Icon src={KakaoImg} alt="Kakao" />
             </IconButton>
             <IconButton>
-              <Icon src={NaverImg} alt='Naver' />
+              <Icon src={NaverImg} alt="Naver" />
             </IconButton>
             <IconButton>
-              <Icon src={GoogleImg} alt='Google' />
+              <Icon src={GoogleImg} alt="Google" />
             </IconButton>
           </IconWrapper>
-
           <BrowseLink onClick={handleBrowseWithoutSignupClick}>
             회원가입 없이 둘러보기
-          </BrowseLink> */}
+          </BrowseLink>
+          */}
         </LoginContainer>
-        {isModalOpen && (
-          <Modal>
-            <p>{modalMessage}</p>
-            <button onClick={handleModalClose}>확인</button>
-          </Modal>
-        )}
+        <ReusableModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          title='로그인 실패'
+        >
+          {modalMessage}
+        </ReusableModal>
       </Container>
     </ThemeProvider>
   );
@@ -162,7 +155,6 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   margin: 0 auto;
 `;
 
@@ -187,7 +179,6 @@ const SubContent = styled.div`
 
 const Highlighted = styled.span`
   color: ${({ theme }) => theme.colors.yellow};
-
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;
@@ -251,7 +242,6 @@ const CheckboxInput = styled.input`
   appearance: none;
   position: relative;
   cursor: pointer;
-
   &:checked::after {
     content: '';
     position: absolute;
@@ -263,7 +253,6 @@ const CheckboxInput = styled.input`
     border-bottom: 3px solid orange;
     transform: rotate(-45deg);
   }
-
   &:focus {
     outline: none;
   }
@@ -284,12 +273,10 @@ const Link = styled.a`
   &:hover {
     text-decoration: underline;
   }
-
   font-size: 12px;
   font-weight: 700;
   line-height: 13.26px;
   text-align: center;
-
   margin-bottom: 47px;
 `;
 
@@ -326,9 +313,7 @@ const Modal = styled.div`
 //   align-items: center;
 //   justify-content: center;
 //   width: 100%;
-
 //   margin-bottom: 27px;
-
 //   &::before,
 //   &::after {
 //     content: '';
@@ -339,7 +324,6 @@ const Modal = styled.div`
 
 // const SnsText = styled.span`
 //   color: #999999;
-
 //   font-size: 13px;
 //   font-weight: 700;
 //   line-height: 14.37px;
