@@ -42,7 +42,7 @@ const LandingContainer = styled.div`
   min-height: 900px;
   max-width: 600px;
   margin: 0 auto;
-  border-radius: 20px;
+
   overflow: hidden;
 `;
 

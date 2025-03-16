@@ -28,7 +28,7 @@ export default LandingPage1;
 const Container = styled.div`
   width: 100%;
 
-  height: 784px;
+  height: 1000px;
   position: relative;
   margin: 0 auto;
   display: flex;
