@@ -50,4 +50,12 @@ const SettleButton = styled.button<{ color: 'yellow' | 'black' }>`
     color === 'yellow' ? '#F6AE24' : 'black'};
   color: ${({ color }) => (color === 'yellow' ? 'white' : 'white')};
   border: none;
+
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 18px;
+  /* identical to box height */
+  text-align: center;
+
+  color: #ffffff;
 `;
