@@ -78,13 +78,32 @@ const Signup: React.FC = () => {
   const [phoneVerificationButtonText, setPhoneVerificationButtonText] =
     useState<string>('인증');
 
+  // 버튼 색상 상태 (기본: 노란색, 성공: 파란색, 실패: 빨간색)
+  const [emailButtonColor, setEmailButtonColor] = useState<
+    'yellow' | 'blue' | 'red'
+  >('yellow');
+  const [nicknameButtonColor, setNicknameButtonColor] = useState<
+    'yellow' | 'blue' | 'red'
+  >('yellow');
+  const [phoneVerificationButtonColor, setPhoneVerificationButtonColor] =
+    useState<'yellow' | 'blue' | 'red'>('yellow');
+  const [melpickAddressButtonColor, setMelpickAddressButtonColor] = useState<
+    'yellow' | 'blue' | 'red'
+  >('yellow');
+
+  // API 에러 메시지 상태 (실패 사유를 인풋 아래에 표시)
+  const [emailApiError, setEmailApiError] = useState<string>('');
+  const [nicknameApiError, setNicknameApiError] = useState<string>('');
+  const [phoneApiError, setPhoneApiError] = useState<string>('');
+  const [melpickApiError, setMelpickApiError] = useState<string>('');
+
   // 성별 및 멜픽 주소 관련 상태
   const [gender, setGender] = useState<string>('여성');
   const [selectedGenderButton, setSelectedGenderButton] =
     useState<string>('여성');
   const [melpickAddress, setMelpickAddress] = useState<string>('');
 
-  // 회원가입 결과 메시지 및 모달 상태 (전체 검증 메시지는 회원가입 버튼을 통해서만 보여줌)
+  // 회원가입 결과 메시지 및 모달 상태
   const [signupResult, setSignupResult] = useState<string>('');
   const [isSignupSuccess, setIsSignupSuccess] = useState<boolean>(false);
   const [showSignupResultModal, setShowSignupResultModal] =
@@ -127,25 +146,33 @@ const Signup: React.FC = () => {
   const resetVerificationState = (
     field: 'email' | 'nickname' | 'phoneNumber' | 'melpickAddress'
   ) => {
-    if (field === 'email' && isEmailChecked) {
+    if (field === 'email') {
       setIsEmailChecked(false);
       setEmailButtonText('중복확인');
+      setEmailApiError('');
+      setEmailButtonColor('yellow');
     }
-    if (field === 'nickname' && isNicknameChecked) {
+    if (field === 'nickname') {
       setIsNicknameChecked(false);
       setNicknameButtonText('중복확인');
+      setNicknameApiError('');
+      setNicknameButtonColor('yellow');
     }
-    if (field === 'phoneNumber' && isPhoneVerified) {
+    if (field === 'phoneNumber') {
       setIsPhoneVerified(false);
       setPhoneVerificationButtonText('인증');
+      setPhoneApiError('');
+      setPhoneVerificationButtonColor('yellow');
     }
-    if (field === 'melpickAddress' && isMelpickAddressChecked) {
+    if (field === 'melpickAddress') {
       setIsMelpickAddressChecked(false);
       setMelpickAddressButtonText('체크');
+      setMelpickApiError('');
+      setMelpickAddressButtonColor('yellow');
     }
   };
 
-  // --- 개별 필드 검증 함수 ---
+  // 검증 함수 예시 - 이메일 인증
   const handleEmailCheck = async (): Promise<void> => {
     const valid = await trigger('email');
     if (!valid) return;
@@ -155,13 +182,20 @@ const Signup: React.FC = () => {
       if (result.isAvailable) {
         setEmailButtonText('인증 완료');
         setIsEmailChecked(true);
+        setEmailApiError('');
+        setEmailButtonColor('blue');
       } else {
         setEmailButtonText('인증 실패');
         setIsEmailChecked(false);
+        // result.message 대신 기본 오류 메시지 사용
+        setEmailApiError('이메일 인증 실패');
+        setEmailButtonColor('red');
       }
     } catch (err: unknown) {
       setEmailButtonText('인증 실패');
       setIsEmailChecked(false);
+      setEmailApiError(err instanceof Error ? err.message : '이메일 인증 실패');
+      setEmailButtonColor('red');
     }
   };
 
@@ -174,33 +208,46 @@ const Signup: React.FC = () => {
       if (result.isAvailable) {
         setNicknameButtonText('인증 완료');
         setIsNicknameChecked(true);
+        setNicknameApiError('');
+        setNicknameButtonColor('blue');
       } else {
         setNicknameButtonText('인증 실패');
         setIsNicknameChecked(false);
+        setNicknameApiError(result.message || '닉네임 인증 실패');
+        setNicknameButtonColor('red');
       }
     } catch (err: unknown) {
       setNicknameButtonText('인증 실패');
       setIsNicknameChecked(false);
+      setNicknameApiError(
+        err instanceof Error ? err.message : '닉네임 인증 실패'
+      );
+      setNicknameButtonColor('red');
     }
   };
 
   const handleSendVerification = async (): Promise<void> => {
     const valid = await trigger('phoneNumber');
     if (!valid) return;
-
-    // 인증 인풋 필드와 타이머를 우선 노출
     setIsPhoneVerificationSent(true);
     const phoneNumber = getValues('phoneNumber');
     try {
       const result = await verifyPhone({ phoneNumber });
       if (result.message && result.message.includes('성공')) {
-        // 인증 코드 전송 성공 시 타이머 시작
         startTimer();
+        setPhoneApiError('');
+        // 여기서는 버튼 텍스트 및 색상 업데이트는 handleVerifyCode에서 처리
       } else {
         setPhoneVerificationButtonText('인증 실패');
+        setPhoneApiError(result.message || '전화번호 인증 실패');
+        setPhoneVerificationButtonColor('red');
       }
     } catch (err: unknown) {
       setPhoneVerificationButtonText('인증 실패');
+      setPhoneApiError(
+        err instanceof Error ? err.message : '전화번호 인증 실패'
+      );
+      setPhoneVerificationButtonColor('red');
     }
   };
 
@@ -212,15 +259,22 @@ const Signup: React.FC = () => {
       if (result.message && result.message.includes('성공')) {
         setIsPhoneVerified(true);
         setPhoneVerificationButtonText('인증 완료');
-        // 인증 성공 시 타이머 중지
+        setPhoneApiError('');
+        setPhoneVerificationButtonColor('blue');
         if (timerRef.current !== null) clearInterval(timerRef.current);
       } else {
         setPhoneVerificationButtonText('인증 실패');
         setIsPhoneVerified(false);
+        setPhoneApiError(result.message || '전화번호 인증 실패');
+        setPhoneVerificationButtonColor('red');
       }
     } catch (err: unknown) {
       setPhoneVerificationButtonText('인증 실패');
       setIsPhoneVerified(false);
+      setPhoneApiError(
+        err instanceof Error ? err.message : '전화번호 인증 실패'
+      );
+      setPhoneVerificationButtonColor('red');
     }
   };
 
@@ -232,17 +286,25 @@ const Signup: React.FC = () => {
       if (result.isAvailable) {
         setMelpickAddressButtonText('인증 완료');
         setIsMelpickAddressChecked(true);
+        setMelpickApiError('');
+        setMelpickAddressButtonColor('blue');
       } else {
         setMelpickAddressButtonText('인증 실패');
         setIsMelpickAddressChecked(false);
+        setMelpickApiError(result.message || '멜픽 주소 인증 실패');
+        setMelpickAddressButtonColor('red');
       }
     } catch (err: unknown) {
       setMelpickAddressButtonText('인증 실패');
       setIsMelpickAddressChecked(false);
+      setMelpickApiError(
+        err instanceof Error ? err.message : '멜픽 주소 인증 실패'
+      );
+      setMelpickAddressButtonColor('red');
     }
   };
 
-  // --- 최종 전체 검증 및 회원가입 제출 (회원가입 버튼을 통해 검증 결과를 보여줌) ---
+  // --- 최종 전체 검증 및 회원가입 제출 ---
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
     if (data.password !== data.passwordConfirm) {
       setSignupResult('비밀번호가 일치하지 않습니다.');
@@ -292,7 +354,7 @@ const Signup: React.FC = () => {
     try {
       const response = await signUpUser(formattedData);
       setSignupResult(
-        '🎉 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.'
+        `🎉 ${response.nickname}님, 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.`
       );
       setIsSignupSuccess(true);
       setShowSignupResultModal(true);
@@ -348,9 +410,10 @@ const Signup: React.FC = () => {
               label='계정(이메일)'
               id='email'
               type='text'
-              error={errors.email}
+              error={emailApiError ? { message: emailApiError } : errors.email}
               placeholder='계정을 입력하세요'
               buttonLabel={emailButtonText}
+              buttonColor={emailButtonColor}
               {...register('email')}
               onChange={handleInputChange('email')}
               required
@@ -383,12 +446,17 @@ const Signup: React.FC = () => {
               id='nickname'
               type='text'
               placeholder='닉네임을 입력하세요'
-              error={errors.nickname}
+              error={
+                nicknameApiError
+                  ? { message: nicknameApiError }
+                  : errors.nickname
+              }
               {...register('nickname')}
               onChange={handleInputChange('nickname')}
               required
               maxLength={8}
               buttonLabel={nicknameButtonText}
+              buttonColor={nicknameButtonColor}
               onButtonClick={handleNicknameCheck}
             />
             <RowLabel>
@@ -447,12 +515,17 @@ const Signup: React.FC = () => {
                 id='phoneNumber'
                 type='text'
                 placeholder='전화번호를 입력하세요'
-                error={errors.phoneNumber}
+                error={
+                  phoneApiError
+                    ? { message: phoneApiError }
+                    : errors.phoneNumber
+                }
                 {...register('phoneNumber')}
                 required
                 maxLength={11}
                 onInput={handlePhoneNumberChange}
                 buttonLabel='본인인증'
+                buttonColor={phoneVerificationButtonColor}
                 onButtonClick={handleSendVerification}
               />
             </PhoneField>
@@ -471,7 +544,6 @@ const Signup: React.FC = () => {
                       {phoneVerificationButtonText}
                     </VerificationBtn>
                   </VerificationContainer>
-                  {/* 인증이 완료되지 않았을 때만 타이머 표시 */}
                   {!isPhoneVerified && (
                     <TimerDisplay>{formatTime(timer)}</TimerDisplay>
                   )}
@@ -526,12 +598,16 @@ const Signup: React.FC = () => {
               id='melpickAddress'
               type='text'
               placeholder='멜픽 주소를 입력하세요'
-              error={errors.melpickAddress}
+              error={
+                melpickApiError
+                  ? { message: melpickApiError }
+                  : errors.melpickAddress
+              }
               {...register('melpickAddress')}
               onChange={handleInputChange('melpickAddress')}
               value={melpickAddress}
               buttonLabel={melpickAddressButtonText}
-              buttonColor='yellow'
+              buttonColor={melpickAddressButtonColor}
               required
               maxLength={12}
               onButtonClick={handleMelpickAddressCheck}

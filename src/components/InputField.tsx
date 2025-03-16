@@ -9,7 +9,8 @@ type InputFieldProps = {
   type?: string;
   error?: { message: string };
   buttonLabel?: string;
-  buttonColor?: 'yellow' | 'black';
+  // 타입 수정: 'yellow' | 'blue' | 'red'
+  buttonColor?: 'yellow' | 'blue' | 'red';
   onButtonClick?: () => void;
   prefix?: string;
   prefixcontent?: string | React.ReactNode;
@@ -137,24 +138,9 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                 </ToggleWrapper>
               )}
             </InputWrapper>
-
-            {/* {isEmailField && <AtSymbol>@</AtSymbol>}
-            {isEmailField && (
-              <InputWrapper>
-                <EmailDropdown
-                  id={`${id}-domain`}
-                  defaultValue='naver.com'
-                  disabled={rest.readOnly}
-                >
-                  <option value='gmail.com'>gmail.com</option>
-                  <option value='naver.com'>naver.com</option>
-                  <option value='daum.net'>daum.net</option>
-                </EmailDropdown>
-              </InputWrapper>
-            )} */}
           </InputRow>
 
-          {/* 에러 메시지 영역 (항상 일정 높이 확보) */}
+          {/* 에러 메시지 영역 */}
           <ErrorContainer>
             {error && <ErrorMessage>{error.message}</ErrorMessage>}
           </ErrorContainer>
@@ -243,12 +229,6 @@ const ToggleWrapper = styled.div`
   align-items: center;
 `;
 
-// const AtSymbol = styled.span`
-//   margin: 0 10px;
-//   font-size: 16px;
-//   color: #000000;
-// `;
-
 const Input = styled.input`
   font-size: 16px;
   border: none;
@@ -298,14 +278,3 @@ const ErrorMessage = styled.span`
   font-size: 12px;
   font-weight: 400;
 `;
-
-// const EmailDropdown = styled.select`
-//   font-size: 16px;
-//   border: none;
-//   padding: 0 11px;
-//   flex: 1;
-//   height: 100%;
-//   appearance: none;
-//   background: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'10'%20height%3D'6'%20viewBox%3D'0%200%2010%206'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M0%200l5%206l5-6z'%20fill%3D'%23000'%20/%3E%3C/svg%3E")
-//     no-repeat right 16px center/10px 6px;
-// `;
