@@ -22,6 +22,10 @@ body.personalLink #root {
   max-width: 600px;
   padding: 0 !important;
 }
+body.personalLink #root {
+  max-width: 600px;
+  padding: 0 !important;
+}
 
 @keyframes logo-spin {
   from {

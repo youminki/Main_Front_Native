@@ -320,7 +320,10 @@ const App: React.FC = () => {
       <ContentContainer
         animate={includeHeader3 || includeHeader4}
         exit={exit}
-        disablePadding={location.pathname === '/personalLink'}
+        disablePadding={
+          location.pathname === '/personalLink' ||
+          location.pathname === '/landing'
+        }
       >
         <Routes>
           <Route path='/landing' element={<Landing />} />

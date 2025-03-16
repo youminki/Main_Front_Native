@@ -1,5 +1,6 @@
 // src/pages/Landing.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
+
 import styled from 'styled-components';
 import Header from '../components/Landing/Header';
 import LandingPage1 from '../components/Landing/LandingPage1';
@@ -11,6 +12,12 @@ import LandingPage6 from '../components/Landing/LandingPage6';
 import Footer from '../components/Landing/Footer';
 
 const Landing: React.FC = () => {
+  useEffect(() => {
+    document.body.classList.add('landing');
+    return () => {
+      document.body.classList.remove('landing');
+    };
+  }, []);
   return (
     <LandingContainer>
       <Header />
