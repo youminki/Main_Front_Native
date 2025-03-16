@@ -1,7 +1,7 @@
 // src/components/Landing/LandingPage2.tsx
 import React from 'react';
 import styled from 'styled-components';
-import HangerIcon from '../../assets/Landing/hangerIcon.svg';
+
 import ZOOCImage from '../../assets/Landing/ZoocImg.svg';
 import SANDROImage from '../../assets/Landing/Sandro.svg';
 import ITMICHAImage from '../../assets/Landing/ItMichaa.svg';
@@ -27,12 +27,13 @@ const LandingPage3: React.FC = () => {
 
   return (
     <Container>
-      <ScrollIndicator />
-      <Hanger src={HangerIcon} alt='Hanger Icon' />
       <LandingTitle>
-        당신의 취향에 꼭 맞는 <br />
-        <BrandHighlight>컨템포러리 브랜드들이</BrandHighlight> <br />
-        <MelpicHighlight>멜픽과 함께합니다!</MelpicHighlight>
+        <YellowHighlight>Matching Marketing System</YellowHighlight> <br />
+        <Text>당신의 취향에 꼭 맞는</Text>
+        <BoldText>
+          컨템포러리 브랜드들이 <br />
+          melpik과 함께합니다!
+        </BoldText>
       </LandingTitle>
       <BrandList>
         {brands.map((brand, idx) => (
@@ -43,9 +44,17 @@ const LandingPage3: React.FC = () => {
         ))}
       </BrandList>
       <Comment>
-        똑똑한 AI가 <br />
-        당신도 몰랐던, 당신만의 스타일을 <br />
-        매칭해드립니다.
+        <Text>
+          멜픽는 <YellowHighlight>이용자와 브랜드를 매칭하는</YellowHighlight>
+          <br /> <YellowHighlight>AI 기반의 서비스 </YellowHighlight>입니다
+          <br />
+        </Text>
+        <Text>
+          똑똑한 AI가 당신도 몰랐던, 당신만의 스타일을
+          <br />
+          알아서 매칭해드립니다
+          <br />
+        </Text>
       </Comment>
     </Container>
   );
@@ -66,37 +75,6 @@ const Container = styled.div`
   border-radius: 20px;
 `;
 
-const ScrollIndicator = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  width: 35px;
-  height: 31px;
-  margin-top: 35px;
-  margin-bottom: 117px;
-
-  &::before {
-    content: '↓';
-    font-size: 14px;
-    color: #767676;
-  }
-  &::after {
-    content: 'scroll';
-    font-family: 'Noto Sans', sans-serif;
-    font-weight: 400;
-    font-size: 15px;
-    line-height: 20px;
-    color: #767676;
-  }
-`;
-
-const Hanger = styled.img`
-  width: 40px;
-  height: 40px;
-  margin-bottom: 56px;
-`;
-
 const LandingTitle = styled.h1`
   font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
@@ -105,18 +83,45 @@ const LandingTitle = styled.h1`
   text-align: center;
   margin-bottom: 50px;
   color: #000000;
+
+  margin-top: 100px;
 `;
 
-const BrandHighlight = styled.span`
+const YellowHighlight = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
   font-weight: 700;
-  font-size: 24px;
-  color: #f6ae24;
+  font-size: 20px;
+  line-height: 40px;
+  /* identical to box height, or 200% */
+  text-align: center;
+
+  color: #f5ab35;
 `;
 
-const MelpicHighlight = styled.span`
-  color: #f6ae24;
+const Text = styled.div`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 40px;
+  /* or 235% */
+  text-align: center;
+  margin-top: 10px;
+
+  color: #000000;
+`;
+
+const BoldText = styled.div`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
   font-weight: 700;
-  font-size: 24px;
+  font-size: 25px;
+  line-height: 40px;
+  /* or 160% */
+  text-align: center;
+
+  color: #000000;
 `;
 
 const BrandList = styled.div`
@@ -125,7 +130,8 @@ const BrandList = styled.div`
   overflow-x: scroll;
   width: 100%;
   height: 250px;
-  margin-bottom: 90px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 
   &::-webkit-scrollbar {
     display: none;

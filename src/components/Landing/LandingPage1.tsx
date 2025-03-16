@@ -1,7 +1,7 @@
 // src/components/Landing/LandingPage1.tsx
 import React from 'react';
 import styled from 'styled-components';
-import LandingBackground from '../../assets/Landing/LandingBackground.svg';
+import LandingBackground from '../../assets/Landing/LandingBackground.png';
 
 const LandingPage1: React.FC = () => {
   const handleRegisterClick = () => {
