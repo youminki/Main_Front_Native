@@ -57,7 +57,8 @@ const LandingContainer = styled.div`
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
-  min-height: 100vh;
+
+  margin-top: 50px;
 `;
 
 const ContentWrapper = styled.div`

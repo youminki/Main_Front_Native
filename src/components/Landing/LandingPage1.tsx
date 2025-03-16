@@ -35,8 +35,8 @@ const Container = styled.div`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 세로 중앙 정렬 */
-  align-items: center; /* 가로 중앙 정렬 */
+  justify-content: center;
+  align-items: center;
 `;
 
 const BackgroundImage = styled.img`
