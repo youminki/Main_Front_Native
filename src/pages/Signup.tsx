@@ -187,7 +187,6 @@ const Signup: React.FC = () => {
       } else {
         setEmailButtonText('인증 실패');
         setIsEmailChecked(false);
-        // result.message 대신 기본 오류 메시지 사용
         setEmailApiError('이메일 인증 실패');
         setEmailButtonColor('red');
       }
@@ -236,7 +235,6 @@ const Signup: React.FC = () => {
       if (result.message && result.message.includes('성공')) {
         startTimer();
         setPhoneApiError('');
-        // 여기서는 버튼 텍스트 및 색상 업데이트는 handleVerifyCode에서 처리
       } else {
         setPhoneVerificationButtonText('인증 실패');
         setPhoneApiError(result.message || '전화번호 인증 실패');
@@ -529,27 +527,27 @@ const Signup: React.FC = () => {
                 onButtonClick={handleSendVerification}
               />
             </PhoneField>
-            {isPhoneVerificationSent && (
+            {isPhoneVerificationSent && !isPhoneVerified && (
               <VerificationWrapper>
-                <VerificationLabel>인증번호 입력</VerificationLabel>
-                <VerificationRow>
-                  <VerificationContainer>
-                    <VerificationInput
-                      type='text'
-                      placeholder='인증번호를 입력하세요'
-                      value={verificationCode}
-                      onChange={(e) => setVerificationCode(e.target.value)}
-                    />
-                    <VerificationBtn onClick={handleVerifyCode}>
-                      {phoneVerificationButtonText}
-                    </VerificationBtn>
-                  </VerificationContainer>
-                  {!isPhoneVerified && (
-                    <TimerDisplay>{formatTime(timer)}</TimerDisplay>
-                  )}
-                </VerificationRow>
+                {/* 인증번호 인풋 영역 */}
+                <InputField
+                  label='인증번호 입력'
+                  id='verificationCode'
+                  type='text'
+                  placeholder='인증번호를 입력하세요'
+                  value={verificationCode}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setVerificationCode(e.target.value)
+                  }
+                  buttonLabel={phoneVerificationButtonText}
+                  buttonColor={phoneVerificationButtonColor}
+                  onButtonClick={handleVerifyCode}
+                />
+                {/* 오른쪽 중앙에 위치한 타이머 */}
+                <TimerDisplay>{formatTime(timer)}</TimerDisplay>
               </VerificationWrapper>
             )}
+
             <RowLabel>
               <InputField
                 label='지역'
@@ -637,7 +635,7 @@ const Signup: React.FC = () => {
 
 export default Signup;
 
-/* 스타일 정의 */
+/* --- styled-components --- */
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -721,56 +719,20 @@ const BlackContainer = styled.div`
 
 const VerificationWrapper = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: 10px;
   margin-top: 10px;
 `;
 
-const VerificationRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-
-const VerificationLabel = styled.label`
-  font-size: 13px;
-  font-weight: bold;
-`;
-
-const VerificationContainer = styled.div`
-  display: flex;
-  align-items: center;
-  flex: 1;
-  height: 40px;
-  border: 1px solid #dddddd;
-  border-radius: 4px;
-  overflow: hidden;
-`;
-
-const VerificationInput = styled.input`
-  flex: 1;
-  height: 100%;
-  padding: 0 10px;
-  font-size: 14px;
-  border: none;
-  outline: none;
-`;
-
-const VerificationBtn = styled.button`
-  height: 40px;
-  width: 100px;
-  background-color: #000;
-  color: #fff;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-`;
-
 const TimerDisplay = styled.div`
+  margin-left: auto;
   font-size: 16px;
   font-weight: bold;
   color: #333;
   padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
+
+  margin-top: 20px;
 `;
