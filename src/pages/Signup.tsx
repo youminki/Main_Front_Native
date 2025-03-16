@@ -633,7 +633,10 @@ const Signup: React.FC = () => {
               buttonColor={melpickAddressButtonColor}
               required
               maxLength={12}
-              onButtonClick={handleMelpickAddressCheck}
+              onButtonClick={(e) => {
+                 e.preventDefault(); // ✅ 추가: 기본 submit 동작 방지
+                 handleMelpickAddressCheck();
+              }}
               prefix='melpick.com/'
             />
             <BlackContainer />
