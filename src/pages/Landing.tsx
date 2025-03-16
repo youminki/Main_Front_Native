@@ -6,6 +6,7 @@ import LandingPage2 from '../components/Landing/LandingPage2';
 import LandingPage3 from '../components/Landing/LandingPage3';
 import LandingPage4 from '../components/Landing/LandingPage4';
 import LandingPage5 from '../components/Landing/LandingPage5';
+import LandingPage6 from '../components/Landing/LandingPage6';
 
 const Landing: React.FC = () => {
   return (
@@ -24,7 +25,12 @@ const Landing: React.FC = () => {
         <LandingPageWrapper variant='even'>
           <LandingPage4 />
         </LandingPageWrapper>
-        <LandingPage5 />
+        <LandingPageWrapper variant='even'>
+          <LandingPage5 />
+        </LandingPageWrapper>
+        <LandingPageWrapper variant='even'>
+          <LandingPage6 />
+        </LandingPageWrapper>
       </ContentWrapper>
 
       <Footer>
