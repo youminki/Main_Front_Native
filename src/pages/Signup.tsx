@@ -304,68 +304,93 @@ const Signup: React.FC = () => {
 
   // --- 최종 전체 검증 및 회원가입 제출 ---
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
-    if (data.password !== data.passwordConfirm) {
-      setSignupResult('비밀번호가 일치하지 않습니다.');
-      setIsSignupSuccess(false);
-      setShowSignupResultModal(true);
-      return;
-    }
-    if (!isEmailChecked) {
-      setSignupResult('이메일 중복확인을 완료해주세요.');
-      setIsSignupSuccess(false);
-      setShowSignupResultModal(true);
-      return;
-    }
-    if (!isNicknameChecked) {
-      setSignupResult('닉네임 중복확인을 완료해주세요.');
-      setIsSignupSuccess(false);
-      setShowSignupResultModal(true);
-      return;
-    }
-    if (!isPhoneVerified) {
-      setSignupResult('본인 인증을 완료해주세요.');
-      setIsSignupSuccess(false);
-      setShowSignupResultModal(true);
-      return;
-    }
-    if (!isMelpickAddressChecked) {
-      setSignupResult('멜픽 주소 검증을 완료해주세요.');
-      setIsSignupSuccess(false);
-      setShowSignupResultModal(true);
-      return;
-    }
+  // 비밀번호 확인
+  if (data.password !== data.passwordConfirm) {
+    setSignupResult('비밀번호가 일치하지 않습니다.');
+    setIsSignupSuccess(false);
+    setShowSignupResultModal(true);
+    return;
+  }
 
-    const formattedData = {
-      email: data.email,
-      password: data.password,
-      name: data.name,
-      nickname: data.nickname,
-      birthdate: `${data.birthYear}-01-01`,
-      address: `${data.region} ${data.district}`,
-      phoneNumber: data.phoneNumber,
-      gender: gender === '여성' ? 'female' : 'male',
-      instagramId: '',
-      agreeToTerms: true,
-      agreeToPrivacyPolicy: true,
-    };
+  // 필수 검증 체크
+  if (!isEmailChecked) {
+    setSignupResult('이메일 중복확인을 완료해주세요.');
+    setIsSignupSuccess(false);
+    setShowSignupResultModal(true);
+    return;
+  }
+  if (!isNicknameChecked) {
+    setSignupResult('닉네임 중복확인을 완료해주세요.');
+    setIsSignupSuccess(false);
+    setShowSignupResultModal(true);
+    return;
+  }
+  if (!isPhoneVerified) {
+    setSignupResult('본인 인증을 완료해주세요.');
+    setIsSignupSuccess(false);
+    setShowSignupResultModal(true);
+    return;
+  }
+  if (!isMelpickAddressChecked) {
+    setSignupResult('멜픽 주소 검증을 완료해주세요.');
+    setIsSignupSuccess(false);
+    setShowSignupResultModal(true);
+    return;
+  }
 
-    try {
-      const response = await signUpUser(formattedData);
-      setSignupResult(
-        `🎉 ${response.nickname}님, 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.`
-      );
-      setIsSignupSuccess(true);
-      setShowSignupResultModal(true);
-    } catch (err: unknown) {
-      setSignupResult(
-        err instanceof Error
-          ? '회원가입 중 오류가 발생했습니다: ' + err.message
-          : '회원가입 중 오류가 발생했습니다.'
-      );
-      setIsSignupSuccess(false);
-      setShowSignupResultModal(true);
+  // phoneNumber가 undefined/null 방지 (sessionStorage 활용)
+  let verifiedPhoneNumber = sessionStorage.getItem("verifiedPhoneNumber") || data.phoneNumber;
+
+  // phoneNumber 형식 검사 및 변환 (010-xxxx-xxxx 형태 유지)
+  const formatPhoneNumber = (phone: string) => {
+    const cleaned = phone.replace(/[^0-9]/g, ''); // 숫자만 남기기
+    if (cleaned.length === 11) {
+      return cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
     }
+    return phone;
   };
+
+  verifiedPhoneNumber = formatPhoneNumber(verifiedPhoneNumber);
+
+  // 회원가입 데이터 변환 (백엔드 DTO와 일치하도록)
+  const formattedData = {
+    email: data.email,
+    password: data.password,
+    name: data.name,
+    nickname: data.nickname,
+    birthdate: `${data.birthYear}-01-01`, // "YYYY-MM-DD" 형식 유지
+    address: `${data.region} ${data.district}`,
+    phoneNumber: verifiedPhoneNumber, // 인증된 휴대폰 번호 사용
+    gender: gender === '여성' ? 'female' : 'male', // "female" 또는 "male" 변환
+    instagramId: '',
+    agreeToTerms: true,
+    agreeToPrivacyPolicy: true,
+  };
+
+  try {
+    const response = await signUpUser(formattedData);
+
+    setSignupResult(
+      `🎉 ${response.nickname}님, 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.`
+    );
+    setIsSignupSuccess(true);
+    setShowSignupResultModal(true);
+  } catch (err: any) {
+    if (err.response) {
+      console.error("❌ 서버 응답 상태 코드:", err.response.status);
+      console.error("❌ 서버 응답 데이터:", err.response.data);
+    }
+
+    setSignupResult(
+      err instanceof Error
+        ? '회원가입 중 오류가 발생했습니다: ' + err.message
+        : '회원가입 중 오류가 발생했습니다.'
+    );
+    setIsSignupSuccess(false);
+    setShowSignupResultModal(true);
+  }
+};
+
 
   const handleSignupResultModalClose = () => {
     setShowSignupResultModal(false);
