@@ -1,10 +1,4 @@
 import * as yup from 'yup';
-import {
-  checkEmail,
-  checkNickname,
-  checkWebpage,
-  verifyCode,
-} from '../api/user/userApi';
 
 export const schemaSignupContemporary = yup.object({
   height: yup.string().required('키를 선택해주세요.'),
@@ -27,17 +21,7 @@ export const schemaSignup = yup
       .matches(
         /^(?=.*@)(?=.*\.com).+$/,
         '이메일은 "@"와 ".com"을 포함해야 합니다.'
-      )
-      // API로 중복확인 검증
-      .test(
-        'check-duplicate-email',
-        '이미 사용중인 이메일입니다.',
-        async (value) => {
-          if (!value) return false;
-          const result = await checkEmail(value);
-          return result.isAvailable;
-        }
-      ),
+      ), // 추가된 검증
     password: yup
       .string()
       .required('비밀번호를 입력해주세요.')
@@ -55,17 +39,7 @@ export const schemaSignup = yup
       .string()
       .required('닉네임을 입력해주세요.')
       .max(8, '닉네임은 최대 8자까지 입력 가능합니다.')
-      .matches(/^[가-힣a-zA-Z0-9]{1,8}$/, '올바른 닉네임 형식을 입력해주세요.')
-      // API로 중복확인 검증
-      .test(
-        'check-duplicate-nickname',
-        '이미 사용중인 닉네임입니다.',
-        async (value) => {
-          if (!value) return false;
-          const result = await checkNickname(value);
-          return result.isAvailable;
-        }
-      ),
+      .matches(/^[가-힣a-zA-Z0-9]{1,8}$/, '올바른 닉네임 형식을 입력해주세요.'),
     name: yup
       .string()
       .required('이름을 입력해주세요.')
@@ -83,20 +57,6 @@ export const schemaSignup = yup
         /^010\d{8}$/,
         '전화번호는 010으로 시작하는 11자리 숫자여야 합니다.'
       ),
-    // 별도로 인증번호 필드를 추가하여 API 검증 진행
-    verificationCode: yup
-      .string()
-      .required('인증번호를 입력해주세요.')
-      .test(
-        'check-verification-code',
-        '인증번호가 올바르지 않습니다.',
-        async function (value) {
-          const { phoneNumber } = this.parent;
-          if (!phoneNumber || !value) return false;
-          const result = await verifyCode({ phoneNumber, code: value });
-          return result.message && result.message.includes('성공');
-        }
-      ),
     region: yup.string().required('지역을 선택해주세요.'),
     district: yup.string().required('구를 선택해주세요.'),
     melpickAddress: yup
@@ -105,16 +65,6 @@ export const schemaSignup = yup
       .matches(
         /^[a-zA-Z0-9]{1,12}$/,
         '멜픽 주소는 영문과 숫자로 이루어진 1~12자 이내로 입력해주세요.'
-      )
-      // API로 멜픽 주소 검증
-      .test(
-        'check-melpick-address',
-        '유효하지 않은 멜픽 주소입니다.',
-        async (value) => {
-          if (!value) return false;
-          const result = await checkWebpage(value);
-          return result.isAvailable;
-        }
       ),
   })
   .required();
