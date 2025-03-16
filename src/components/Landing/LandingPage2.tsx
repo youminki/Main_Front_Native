@@ -35,7 +35,7 @@ export default LandingPage2;
 const Container = styled.div`
   position: relative;
 
-  min-height: 1100px; /* 세로 공간 확보 */
+  min-height: 1000px; /* 세로 공간 확보 */
   margin: 0 auto;
   background: #fcf6e6;
   border-radius: 20px;

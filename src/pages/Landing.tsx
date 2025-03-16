@@ -49,6 +49,6 @@ const LandingContainer = styled.div`
 const LandingPageWrapper = styled.div<{ variant: WrapperVariant }>`
   width: 100%;
   position: relative;
-  margin-bottom: -20px;
+  margin-bottom: -40px;
   z-index: ${({ variant }) => (variant === 'even' ? 3 : 1)};
 `;
