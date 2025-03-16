@@ -15,13 +15,14 @@
 #root {
   max-width: 600px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 2rem;
 }
 
-body.personalLink #root {
+body.PersonalLink #root {
   max-width: 600px;
   padding: 0 !important;
 }
+
 body.landing #root {
   max-width: 600px;
   padding: 0 !important;
@@ -52,4 +53,7 @@ body {
   scrollbar-width: none;
   font-family: 'NanumSquare Neo', sans-serif;
   -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 /** 실제 사용 시 경로를 맞춰 import 해주세요. */
@@ -50,6 +50,15 @@ const PersonalLink: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'personalLink' | 'productIntro'>(
     'personalLink'
   );
+
+  // PersonalLink 페이지가 마운트될 때 body에 클래스를 추가하고,
+  // 언마운트될 때 제거하여 글로벌 CSS를 적용
+  useEffect(() => {
+    document.body.classList.add('PersonalLink');
+    return () => {
+      document.body.classList.remove('PersonalLink');
+    };
+  }, []);
 
   return (
     <Container>
