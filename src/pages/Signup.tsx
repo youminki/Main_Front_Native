@@ -213,7 +213,7 @@ const Signup: React.FC = () => {
       } else {
         setNicknameButtonText('인증 실패');
         setIsNicknameChecked(false);
-        setNicknameApiError(result.message || '닉네임 인증 실패');
+        setNicknameApiError('닉네임 인증 실패');
         setNicknameButtonColor('red');
       }
     } catch (err: unknown) {
@@ -291,7 +291,7 @@ const Signup: React.FC = () => {
       } else {
         setMelpickAddressButtonText('인증 실패');
         setIsMelpickAddressChecked(false);
-        setMelpickApiError(result.message || '멜픽 주소 인증 실패');
+        setMelpickApiError('멜픽 주소 인증 실패');
         setMelpickAddressButtonColor('red');
       }
     } catch (err: unknown) {

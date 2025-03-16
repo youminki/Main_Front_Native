@@ -1,11 +1,12 @@
+// Button02.tsx
 import React from 'react';
 import styled, { css, keyframes } from 'styled-components';
 
 interface Button02Props {
   children: React.ReactNode;
   onClick?: () => void;
-  // 기본 노란색, 성공 시 파란색, 실패 시 빨간색
-  color: 'yellow' | 'blue' | 'red';
+  // 기본 노란색, 성공 시 파란색, 실패 시 빨간색, 추가: 검정색
+  color: 'yellow' | 'blue' | 'red' | 'black';
 }
 
 const Button02: React.FC<Button02Props> = ({ children, onClick, color }) => {
@@ -27,7 +28,9 @@ const pressAnimation = keyframes`
   }
 `;
 
-const StyledButton = styled.button<{ color: 'yellow' | 'blue' | 'red' }>`
+const StyledButton = styled.button<{
+  color: 'yellow' | 'blue' | 'red' | 'black';
+}>`
   min-width: 69px;
   min-height: 34px;
   border-radius: 5px;
@@ -66,16 +69,28 @@ const StyledButton = styled.button<{ color: 'yellow' | 'blue' | 'red' }>`
               animation: ${pressAnimation} 0.2s ease;
             }
           `
-        : css`
-            background-color: #ff4d4d;
-            &:hover {
-              background-color: #ff3333;
-            }
-            &:active {
-              background-color: #cc2929;
-              animation: ${pressAnimation} 0.2s ease;
-            }
-          `}
+        : color === 'red'
+          ? css`
+              background-color: #ff4d4d;
+              &:hover {
+                background-color: #ff3333;
+              }
+              &:active {
+                background-color: #cc2929;
+                animation: ${pressAnimation} 0.2s ease;
+              }
+            `
+          : css`
+              /* black */
+              background-color: #333333;
+              &:hover {
+                background-color: #1a1a1a;
+              }
+              &:active {
+                background-color: #000000;
+                animation: ${pressAnimation} 0.2s ease;
+              }
+            `}
 
   &:disabled {
     background-color: #cccccc;
