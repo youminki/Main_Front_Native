@@ -111,6 +111,15 @@ const App: React.FC = () => {
   const navigate = useNavigate();
   const [exit, setExit] = useState(false);
 
+  // personalLink 경로일 때 body에 클래스 추가
+  useEffect(() => {
+    if (location.pathname === '/personalLink') {
+      document.body.classList.add('personalLink');
+    } else {
+      document.body.classList.remove('personalLink');
+    }
+  }, [location.pathname]);
+
   // BottomNav가 포함될 경로 패턴
   const bottomNavPaths = [
     '/home',
@@ -311,7 +320,10 @@ const App: React.FC = () => {
       <ContentContainer
         animate={includeHeader3 || includeHeader4}
         exit={exit}
-        disablePadding={location.pathname === '/PersonalLink'}
+        disablePadding={
+          location.pathname === '/PersonalLink' ||
+          location.pathname === '/landing'
+        }
       >
         <Routes>
           <Route path='/landing' element={<Landing />} />
@@ -330,7 +342,7 @@ const App: React.FC = () => {
           <Route path='/basket' element={<Basket />} />
           <Route path='/alarm' element={<Alarm />} />
           <Route path='/payment' element={<Payment />} />
-          <Route path='/PersonalLink' element={<PersonalLink />} />
+          <Route path='/personalLink' element={<PersonalLink />} />
 
           <Route path='/brand' element={<Brand />} />
           <Route path='/brand/:brandName' element={<BrandDetail />} />
