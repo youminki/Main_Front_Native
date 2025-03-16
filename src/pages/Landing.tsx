@@ -57,6 +57,7 @@ const LandingContainer = styled.div`
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
+  overflow-x: hidden;
 
   margin-top: 50px;
 `;

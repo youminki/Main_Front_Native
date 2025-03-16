@@ -169,6 +169,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow-x: hidden;
 `;
 
 /* 상단 영역 (노란색 + 대각선) */
