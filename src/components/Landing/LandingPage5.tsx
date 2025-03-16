@@ -1,7 +1,6 @@
 // src/components/Landing/LandingPage4.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import LeftArrowIcon from '../../assets/Landing/left-arrow.svg';
 import RightArrowIcon from '../../assets/Landing/right-arrow.svg';
 import ScreenImg1 from '../../assets/Landing/ScreenImg1.svg';
@@ -39,7 +38,6 @@ const screens: Screen[] = [
 const LandingPage5: React.FC = () => {
   const [currentScreenIndex, setCurrentScreenIndex] = useState<number>(0);
   const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     let loadedImages = 0;
@@ -130,9 +128,9 @@ const LandingSubtitle = styled.p`
   font-size: 18px;
   line-height: 30px;
   text-align: center;
-
-  margin-bottom: 32px;
   color: #000000;
+  min-height: 100px;
+  width: 100%;
 `;
 
 const ScreenContainer = styled.div`

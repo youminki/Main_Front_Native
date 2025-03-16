@@ -1,11 +1,14 @@
 // src/components/Landing/LandingPage1.tsx
 import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import LandingBackground from '../../assets/Landing/LandingBackground.png';
 
 const LandingPage1: React.FC = () => {
+  const navigate = useNavigate();
+
   const handleRegisterClick = () => {
-    window.location.href = 'https://me1pik.com/login';
+    navigate('/login');
   };
 
   return (
@@ -27,7 +30,6 @@ export default LandingPage1;
 
 const Container = styled.div`
   width: 100%;
-
   height: 820px;
   position: relative;
   margin: 0 auto;
@@ -53,7 +55,6 @@ const MainContent = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 10px;
-
   margin-top: 300px;
 `;
 
@@ -67,7 +68,7 @@ const Title = styled.h1`
 
 const BoldText = styled.div`
   font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 800; /* extra bold */
+  font-weight: 800;
   font-size: 25px;
   line-height: 50px;
   color: #000000;
@@ -78,7 +79,6 @@ const Subtitle = styled.h2`
   font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 17px;
-
   color: #000000;
   margin: 0;
 `;
@@ -95,10 +95,9 @@ const RegisterButton = styled.button`
   font-size: 15px;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-top: 23px;
 
   &:hover {
     background-color: #f0f0f0;
   }
-
-  margin-top: 23px;
 `;

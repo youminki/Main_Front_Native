@@ -1,10 +1,13 @@
-// src/components/Landing/LandingPage1.tsx
+// src/components/Landing/LandingPage6.tsx
 import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const LandingPage6: React.FC = () => {
+  const navigate = useNavigate();
+
   const handleStartClick = () => {
-    window.location.href = 'https://me1pik.com/login';
+    navigate('/login');
   };
 
   return (
@@ -30,7 +33,6 @@ const Container = styled.div`
   margin: 0 auto;
   background-color: #f5ab35;
   border-radius: 20px 20px 0 0;
-
   display: flex;
   flex-direction: column;
   align-items: center;
