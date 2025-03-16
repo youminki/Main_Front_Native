@@ -52,13 +52,17 @@ const Signup: React.FC = () => {
       melpickAddress: '',
     },
   });
+
   const {
     register,
     handleSubmit,
     trigger,
     formState: { errors, isSubmitting },
     getValues,
+    watch,
   } = methods;
+
+  const selectedRegion = watch('region');
 
   // 각 검증 성공 여부 상태
   const [isEmailChecked, setIsEmailChecked] = useState<boolean>(false);
@@ -304,93 +308,93 @@ const Signup: React.FC = () => {
 
   // --- 최종 전체 검증 및 회원가입 제출 ---
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
-  // 비밀번호 확인
-  if (data.password !== data.passwordConfirm) {
-    setSignupResult('비밀번호가 일치하지 않습니다.');
-    setIsSignupSuccess(false);
-    setShowSignupResultModal(true);
-    return;
-  }
-
-  // 필수 검증 체크
-  if (!isEmailChecked) {
-    setSignupResult('이메일 중복확인을 완료해주세요.');
-    setIsSignupSuccess(false);
-    setShowSignupResultModal(true);
-    return;
-  }
-  if (!isNicknameChecked) {
-    setSignupResult('닉네임 중복확인을 완료해주세요.');
-    setIsSignupSuccess(false);
-    setShowSignupResultModal(true);
-    return;
-  }
-  if (!isPhoneVerified) {
-    setSignupResult('본인 인증을 완료해주세요.');
-    setIsSignupSuccess(false);
-    setShowSignupResultModal(true);
-    return;
-  }
-  if (!isMelpickAddressChecked) {
-    setSignupResult('멜픽 주소 검증을 완료해주세요.');
-    setIsSignupSuccess(false);
-    setShowSignupResultModal(true);
-    return;
-  }
-
-  // phoneNumber가 undefined/null 방지 (sessionStorage 활용)
-  let verifiedPhoneNumber = sessionStorage.getItem("verifiedPhoneNumber") || data.phoneNumber;
-
-  // phoneNumber 형식 검사 및 변환 (010-xxxx-xxxx 형태 유지)
-  const formatPhoneNumber = (phone: string) => {
-    const cleaned = phone.replace(/[^0-9]/g, ''); // 숫자만 남기기
-    if (cleaned.length === 11) {
-      return cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-    }
-    return phone;
-  };
-
-  verifiedPhoneNumber = formatPhoneNumber(verifiedPhoneNumber);
-
-  // 회원가입 데이터 변환 (백엔드 DTO와 일치하도록)
-  const formattedData = {
-    email: data.email,
-    password: data.password,
-    name: data.name,
-    nickname: data.nickname,
-    birthdate: `${data.birthYear}-01-01`, // "YYYY-MM-DD" 형식 유지
-    address: `${data.region} ${data.district}`,
-    phoneNumber: verifiedPhoneNumber, // 인증된 휴대폰 번호 사용
-    gender: gender === '여성' ? 'female' : 'male', // "female" 또는 "male" 변환
-    instagramId: '',
-    agreeToTerms: true,
-    agreeToPrivacyPolicy: true,
-  };
-
-  try {
-    const response = await signUpUser(formattedData);
-
-    setSignupResult(
-      `🎉 ${response.nickname}님, 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.`
-    );
-    setIsSignupSuccess(true);
-    setShowSignupResultModal(true);
-  } catch (err: any) {
-    if (err.response) {
-      console.error("❌ 서버 응답 상태 코드:", err.response.status);
-      console.error("❌ 서버 응답 데이터:", err.response.data);
+    // 비밀번호 확인
+    if (data.password !== data.passwordConfirm) {
+      setSignupResult('비밀번호가 일치하지 않습니다.');
+      setIsSignupSuccess(false);
+      setShowSignupResultModal(true);
+      return;
     }
 
-    setSignupResult(
-      err instanceof Error
-        ? '회원가입 중 오류가 발생했습니다: ' + err.message
-        : '회원가입 중 오류가 발생했습니다.'
-    );
-    setIsSignupSuccess(false);
-    setShowSignupResultModal(true);
-  }
-};
+    // 필수 검증 체크
+    if (!isEmailChecked) {
+      setSignupResult('이메일 중복확인을 완료해주세요.');
+      setIsSignupSuccess(false);
+      setShowSignupResultModal(true);
+      return;
+    }
+    if (!isNicknameChecked) {
+      setSignupResult('닉네임 중복확인을 완료해주세요.');
+      setIsSignupSuccess(false);
+      setShowSignupResultModal(true);
+      return;
+    }
+    if (!isPhoneVerified) {
+      setSignupResult('본인 인증을 완료해주세요.');
+      setIsSignupSuccess(false);
+      setShowSignupResultModal(true);
+      return;
+    }
+    if (!isMelpickAddressChecked) {
+      setSignupResult('멜픽 주소 검증을 완료해주세요.');
+      setIsSignupSuccess(false);
+      setShowSignupResultModal(true);
+      return;
+    }
 
+    // phoneNumber가 undefined/null 방지 (sessionStorage 활용)
+    let verifiedPhoneNumber =
+      sessionStorage.getItem('verifiedPhoneNumber') || data.phoneNumber;
+
+    // phoneNumber 형식 검사 및 변환 (010-xxxx-xxxx 형태 유지)
+    const formatPhoneNumber = (phone: string) => {
+      const cleaned = phone.replace(/[^0-9]/g, ''); // 숫자만 남기기
+      if (cleaned.length === 11) {
+        return cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+      }
+      return phone;
+    };
+
+    verifiedPhoneNumber = formatPhoneNumber(verifiedPhoneNumber);
+
+    // 회원가입 데이터 변환 (백엔드 DTO와 일치하도록)
+    const formattedData = {
+      email: data.email,
+      password: data.password,
+      name: data.name,
+      nickname: data.nickname,
+      birthdate: `${data.birthYear}-01-01`, // "YYYY-MM-DD" 형식 유지
+      address: `${data.region} ${data.district}`,
+      phoneNumber: verifiedPhoneNumber, // 인증된 휴대폰 번호 사용
+      gender: gender === '여성' ? 'female' : 'male', // "female" 또는 "male" 변환
+      instagramId: '',
+      agreeToTerms: true,
+      agreeToPrivacyPolicy: true,
+    };
+
+    try {
+      const response = await signUpUser(formattedData);
+
+      setSignupResult(
+        `🎉 ${response.nickname}님, 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.`
+      );
+      setIsSignupSuccess(true);
+      setShowSignupResultModal(true);
+    } catch (err: any) {
+      if (err.response) {
+        console.error('❌ 서버 응답 상태 코드:', err.response.status);
+        console.error('❌ 서버 응답 데이터:', err.response.data);
+      }
+
+      setSignupResult(
+        err instanceof Error
+          ? '회원가입 중 오류가 발생했습니다: ' + err.message
+          : '회원가입 중 오류가 발생했습니다.'
+      );
+      setIsSignupSuccess(false);
+      setShowSignupResultModal(true);
+    }
+  };
 
   const handleSignupResultModalClose = () => {
     setShowSignupResultModal(false);
@@ -441,8 +445,12 @@ const Signup: React.FC = () => {
               onChange={handleInputChange('email')}
               required
               maxLength={50}
-              onButtonClick={handleEmailCheck}
+              onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.preventDefault();
+                handleEmailCheck();
+              }}
             />
+
             <InputField
               label='비밀번호(숫자, 문자를 조합하여 8자리 이상 입력하세요)'
               id='password'
@@ -480,7 +488,10 @@ const Signup: React.FC = () => {
               maxLength={8}
               buttonLabel={nicknameButtonText}
               buttonColor={nicknameButtonColor}
-              onButtonClick={handleNicknameCheck}
+              onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.preventDefault();
+                handleNicknameCheck();
+              }}
             />
             <RowLabel>
               <InputField
@@ -549,12 +560,15 @@ const Signup: React.FC = () => {
                 onInput={handlePhoneNumberChange}
                 buttonLabel='본인인증'
                 buttonColor={phoneVerificationButtonColor}
-                onButtonClick={handleSendVerification}
+                onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.preventDefault();
+                  handleSendVerification();
+                }}
               />
             </PhoneField>
+
             {isPhoneVerificationSent && !isPhoneVerified && (
               <VerificationWrapper>
-                {/* 인증번호 인풋 영역 */}
                 <InputField
                   label='인증번호 입력'
                   id='verificationCode'
@@ -566,13 +580,14 @@ const Signup: React.FC = () => {
                   }
                   buttonLabel={phoneVerificationButtonText}
                   buttonColor={phoneVerificationButtonColor}
-                  onButtonClick={handleVerifyCode}
+                  onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    e.preventDefault();
+                    handleVerifyCode();
+                  }}
                 />
-                {/* 오른쪽 중앙에 위치한 타이머 */}
                 <TimerDisplay>{formatTime(timer)}</TimerDisplay>
               </VerificationWrapper>
             )}
-
             <RowLabel>
               <InputField
                 label='지역'
@@ -602,15 +617,12 @@ const Signup: React.FC = () => {
                 <option value='' disabled>
                   구를 선택하세요
                 </option>
-                {getValues('region') &&
-                regionDistrictData[getValues('region')] ? (
-                  regionDistrictData[getValues('region')].map(
-                    (district: string) => (
-                      <option key={district} value={district}>
-                        {district}
-                      </option>
-                    )
-                  )
+                {selectedRegion && regionDistrictData[selectedRegion] ? (
+                  regionDistrictData[selectedRegion].map((district: string) => (
+                    <option key={district} value={district}>
+                      {district}
+                    </option>
+                  ))
                 ) : (
                   <option value=''>지역을 먼저 선택하세요</option>
                 )}
@@ -634,7 +646,7 @@ const Signup: React.FC = () => {
               required
               maxLength={12}
               onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.preventDefault(); // ✅ 기본 submit 동작 방지
+                e.preventDefault();
                 handleMelpickAddressCheck();
               }}
               prefix='melpick.com/'
