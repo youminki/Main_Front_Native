@@ -1,247 +1,138 @@
-// src/components/Landing/LandingPage4.tsx
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import LeftArrowIcon from '../../assets/Landing/left-arrow.svg';
-import RightArrowIcon from '../../assets/Landing/right-arrow.svg';
-import ScreenImg1 from '../../assets/Landing/ScreenImg1.svg';
-import ScreenImg2 from '../../assets/Landing/ScreenImg2.svg';
-import ScreenImg3 from '../../assets/Landing/ScreenImg3.svg';
-
-interface Screen {
-  img: string;
-  subtitle: React.ReactNode;
-}
-
-const screens: Screen[] = [
-  {
-    img: ScreenImg1,
-    subtitle: (
-      <>
-        인스타그램으로 나의 스타일 파악 후 <br />
-        브랜드 매칭하기
-      </>
-    ),
-  },
-  { img: ScreenImg2, subtitle: '노출 & 포스팅할 제품 선택하기' },
-  {
-    img: ScreenImg3,
-    subtitle: (
-      <>
-        콘텐츠 제작, 팔로워들과 소통하며 <br />
-        판매 수익 창출
-      </>
-    ),
-  },
-];
+import page4backgournd from '../../assets/Landing/page4backgournd.png';
+import LandingCheckIcon from '../../assets/Landing/LandingCheckIcon.svg';
 
 const LandingPage4: React.FC = () => {
-  const [currentScreenIndex, setCurrentScreenIndex] = useState<number>(0);
-  const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    let loadedImages = 0;
-    screens.forEach((screen) => {
-      const img = new Image();
-      img.src = screen.img;
-      img.onload = () => {
-        loadedImages += 1;
-        if (loadedImages === screens.length) {
-          setImagesLoaded(true);
-        }
-      };
-    });
-  }, []);
-
-  const handlePrevClick = () =>
-    setCurrentScreenIndex((prevIndex) =>
-      prevIndex === 0 ? screens.length - 1 : prevIndex - 1
-    );
-
-  const handleNextClick = () =>
-    setCurrentScreenIndex((prevIndex) =>
-      prevIndex === screens.length - 1 ? 0 : prevIndex + 1
-    );
-
   return (
     <Container>
-      <LandingTitle3>
-        <MelpicHighlight>melpik</MelpicHighlight>은 <br />
-        <BrandHighlight>어떤 서비스인가요?</BrandHighlight>
-      </LandingTitle3>
-      <LandingSubtitle3>
-        {screens[currentScreenIndex].subtitle}
-      </LandingSubtitle3>
-      <ScreenContainer>
-        <ArrowButton onClick={handlePrevClick}>
-          <ArrowIcon src={LeftArrowIcon} alt='Previous' />
-        </ArrowButton>
-        <ScreenImageContainer>
-          {imagesLoaded ? (
-            <ScreenImage
-              src={screens[currentScreenIndex].img}
-              alt='Screen'
-              loading='lazy'
-            />
-          ) : (
-            <LoadingSpinner />
-          )}
-        </ScreenImageContainer>
-        <ArrowButton onClick={handleNextClick}>
-          <ArrowIcon src={RightArrowIcon} alt='Next' />
-        </ArrowButton>
-      </ScreenContainer>
-      <PaginationDots>
-        {screens.map((_, idx) => (
-          <Dot key={idx} isActive={currentScreenIndex === idx} />
-        ))}
-      </PaginationDots>
+      <BackgroundImage src={page4backgournd} alt='Landing Background' />
+
+      {/* 텍스트 영역 */}
+      <ContentWrapper>
+        <Title>오직 나만의, 나를 위한 상품</Title>
+        <Text>
+          이제 일일이 찾지 마세요.
+          <br /> 브랜드는 <BoldText>멜픽이 PICK! 해줄게요</BoldText>
+        </Text>
+
+        <BulletList>
+          <BulletItem>
+            <CheckIcon src={LandingCheckIcon} alt='Check Icon' />
+            <ItemText>누구라도 판매를 시작할 수 있어요</ItemText>
+          </BulletItem>
+          <BulletItem>
+            <CheckIcon src={LandingCheckIcon} alt='Check Icon' />
+            <ItemText>프리미엄 브랜드의 셀러가 되어보세요</ItemText>
+          </BulletItem>
+          <BulletItem>
+            <CheckIcon src={LandingCheckIcon} alt='Check Icon' />
+            <ItemText>나만의 스타일로 판매 채널을 꾸며보세요</ItemText>
+          </BulletItem>
+          <BulletItem>
+            <CheckIcon src={LandingCheckIcon} alt='Check Icon' />
+            <ItemText>판매 스케줄을 간편하게 관리해 보세요</ItemText>
+          </BulletItem>
+          <BulletItem>
+            <CheckIcon src={LandingCheckIcon} alt='Check Icon' />
+            <ItemText>매출과 수익을 언제든 확인하세요</ItemText>
+          </BulletItem>
+        </BulletList>
+      </ContentWrapper>
     </Container>
   );
 };
 
-export default React.memo(LandingPage4);
+export default LandingPage4;
 
 const Container = styled.div`
+  position: relative;
+  min-height: 1100px;
+  margin: 0 auto;
+  background: #fcf6e6;
+  border-radius: 20px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 60px 20px;
-  background-color: #f5f5f5;
-  min-height: 932px;
-  max-width: 600px;
-  margin: 0 auto;
-  border-radius: 20px;
+  padding: 40px 20px;
 `;
 
-const LandingTitle3 = styled.h1`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 30px;
-  text-align: center;
-  margin-bottom: 50px;
-  color: #000000;
-`;
-
-const BrandHighlight = styled.span`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 30px;
-  text-align: center;
-  color: #f6ae24;
-`;
-
-const MelpicHighlight = styled.span`
-  color: #f6ae24;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 30px;
-  text-align: center;
-`;
-
-const LandingSubtitle3 = styled.p`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 400;
-  font-size: 18px;
-  line-height: 30px;
-  text-align: center;
-  height: 60px;
-  margin-bottom: 32px;
-  color: #000000;
-`;
-
-const ScreenContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  position: relative;
-  max-width: 800px;
-`;
-
-const ScreenImageContainer = styled.div`
-  width: 220px;
-  height: 466px;
-  background: #f0f0f0;
-  filter: drop-shadow(3px 5px 15px rgba(18, 18, 18, 0.15));
-  border-radius: 10px;
-  overflow: hidden;
-`;
-
-const ScreenImage = styled.img`
+const BackgroundImage = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: opacity 0.5s ease-in-out;
+  z-index: 0;
+  border-radius: 20px;
 `;
 
-const ArrowButton = styled.button`
-  cursor: pointer;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  padding: 10px;
+const ContentWrapper = styled.div`
+  position: relative;
   z-index: 1;
-
-  &:first-of-type {
-    left: 0;
-  }
-
-  &:last-of-type {
-    right: 0;
-  }
-`;
-
-const ArrowIcon = styled.img`
-  width: 24px;
-  height: 24px;
-`;
-
-const PaginationDots = styled.div`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+
   margin-top: 30px;
 `;
 
-interface DotProps {
-  isActive: boolean;
-}
-
-const Dot = styled.div<DotProps>`
-  width: ${(props) => (props.isActive ? '20px' : '10px')};
-  height: 10px;
-  background-color: ${(props) => (props.isActive ? '#f5ab35' : '#d9d9d9')};
-  border-radius: 100px;
-  transition:
-    width 0.3s,
-    background-color 0.3s;
+const Title = styled.h1`
+  font-family: 'NanumSquare Neo OTF', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 34px;
+  color: #000000;
+  margin: 0 0 14px;
 `;
 
-const LoadingSpinner = styled.div`
-  width: 50px;
-  height: 50px;
-  border: 5px solid #f0f0f0;
-  border-top: 5px solid #f5ab35;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
+/* ---------- 체크 아이콘이 포함된 리스트 ---------- */
+const BulletList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin-top: 31px;
+`;
 
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
+const BulletItem = styled.li`
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+`;
+
+const CheckIcon = styled.img`
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+`;
+
+const ItemText = styled.span`
+  font-family: 'NanumSquare Neo OTF', sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 24px;
+  color: #000000;
+`;
+
+const Text = styled.div`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 30px;
+  text-align: center;
+  margin-top: 10px;
+  color: #000000;
+`;
+
+// BoldText를 인라인 요소인 span으로 변경
+const BoldText = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 800;
+  font-size: 17px;
+  line-height: 30px;
+  text-align: center;
+  color: #000000;
 `;
