@@ -19,257 +19,7 @@ import {
   checkWebpage,
   checkNickname,
 } from '../api/user/userApi';
-
-const regionDistrictData: { [key: string]: string[] } = {
-  서울특별시: [
-    '종로구',
-    '중구',
-    '용산구',
-    '성동구',
-    '광진구',
-    '동대문구',
-    '중랑구',
-    '성북구',
-    '강북구',
-    '도봉구',
-    '노원구',
-    '은평구',
-    '서대문구',
-    '마포구',
-    '양천구',
-    '강서구',
-    '구로구',
-    '금천구',
-    '영등포구',
-    '동작구',
-    '관악구',
-    '서초구',
-    '강남구',
-    '송파구',
-    '강동구',
-  ],
-  부산광역시: [
-    '중구',
-    '서구',
-    '동구',
-    '영도구',
-    '부산진구',
-    '동래구',
-    '남구',
-    '북구',
-    '해운대구',
-    '사하구',
-    '금정구',
-    '강서구',
-    '연제구',
-    '수영구',
-    '사상구',
-    '기장군',
-  ],
-  대구광역시: [
-    '중구',
-    '동구',
-    '서구',
-    '남구',
-    '북구',
-    '수성구',
-    '달서구',
-    '달성군',
-  ],
-  인천광역시: [
-    '중구',
-    '동구',
-    '남구',
-    '연수구',
-    '부평구',
-    '계양구',
-    '서구',
-    '강화군',
-    '옹진군',
-  ],
-  광주광역시: ['동구', '서구', '남구', '북구', '광산구'],
-  대전광역시: ['동구', '중구', '서구', '유성구', '대덕구'],
-  울산광역시: ['중구', '남구', '동구', '북구', '울주군'],
-  세종특별자치시: ['세종특별자치시'],
-  경기도: [
-    '수원시 장안구',
-    '수원시 권선구',
-    '수원시 팔달구',
-    '수원시 영통구',
-    '성남시 수정구',
-    '성남시 중원구',
-    '성남시 분당구',
-    '안양시 만안구',
-    '안양시 동안구',
-    '부천시',
-    '광명시',
-    '평택시',
-    '동두천시',
-    '안산시 단원구',
-    '안산시 상록구',
-    '고양시 덕양구',
-    '고양시 일산동구',
-    '고양시 일산서구',
-    '과천시',
-    '구리시',
-    '용인시 처인구',
-    '용인시 기흥구',
-    '용인시 수지구',
-    '시흥시',
-    '파주시',
-    '이천시',
-    '안성시',
-    '김포시',
-    '화성시',
-    '광주시',
-    '양주시',
-    '포천시',
-    '여주시',
-  ],
-  강원도: [
-    '춘천시',
-    '원주시',
-    '강릉시',
-    '동해시',
-    '태백시',
-    '속초시',
-    '삼척시',
-    '홍천군',
-    '횡성군',
-    '영월군',
-    '평창군',
-    '정선군',
-    '철원군',
-    '화천군',
-    '양구군',
-    '인제군',
-    '고성군',
-    '양양군',
-  ],
-  충청북도: [
-    '청주시 상당구',
-    '청주시 서원구',
-    '청주시 흥덕구',
-    '충주시',
-    '제천시',
-    '보은군',
-    '옥천군',
-    '영동군',
-    '진천군',
-    '괴산군',
-    '음성군',
-    '단양군',
-    '증평군',
-  ],
-  충청남도: [
-    '천안시 동남구',
-    '천안시 서북구',
-    '공주시',
-    '보령시',
-    '아산시',
-    '서산시',
-    '논산시',
-    '계룡시',
-    '당진시',
-    '금산군',
-    '부여군',
-    '서천군',
-    '청양군',
-    '홍성군',
-    '예산군',
-    '태안군',
-  ],
-  전라북도: [
-    '전주시 완산구',
-    '전주시 덕진구',
-    '군산시',
-    '익산시',
-    '정읍시',
-    '남원시',
-    '김제시',
-    '완주군',
-    '진안군',
-    '무주군',
-    '장수군',
-    '임실군',
-    '순창군',
-    '고창군',
-    '부안군',
-  ],
-  전라남도: [
-    '목포시',
-    '여수시',
-    '순천시',
-    '나주시',
-    '광양시',
-    '담양군',
-    '곡성군',
-    '구례군',
-    '고흥군',
-    '보성군',
-    '화순군',
-    '장흥군',
-    '강진군',
-    '해남군',
-    '영암군',
-    '무안군',
-    '함평군',
-    '영광군',
-    '장성군',
-    '완도군',
-    '진도군',
-    '신안군',
-  ],
-  경상북도: [
-    '포항시 남구',
-    '포항시 북구',
-    '경주시',
-    '김천시',
-    '안동시',
-    '구미시',
-    '영주시',
-    '영천시',
-    '상주시',
-    '문경시',
-    '경산시',
-    '군위군',
-    '의성군',
-    '청송군',
-    '영양군',
-    '영덕군',
-    '청도군',
-    '고령군',
-    '성주군',
-    '칠곡군',
-    '예천군',
-    '봉화군',
-    '울진군',
-  ],
-  경상남도: [
-    '창원시 마산합포구',
-    '창원시 마산회원구',
-    '창원시 성산구',
-    '창원시 의창구',
-    '창원시 진해구',
-    '김해시',
-    '거제시',
-    '양산시',
-    '마산시',
-    '통영시',
-    '사천시',
-    '진주시',
-    '창녕군',
-    '고성군',
-    '남해군',
-    '함안군',
-    '의령군',
-    '산청군',
-    '함양군',
-    '거창군',
-    '합천군',
-  ],
-  제주특별자치도: ['제주시', '서귀포시'],
-};
+import { regionDistrictData } from '../components/Signup/regionDistrictData';
 
 type SignupFormData = {
   email: string;
@@ -305,40 +55,45 @@ const Signup: React.FC = () => {
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors, isSubmitting },
     getValues,
   } = methods;
 
+  // 각 검증 성공 여부 상태
+  const [isEmailChecked, setIsEmailChecked] = useState<boolean>(false);
+  const [isNicknameChecked, setIsNicknameChecked] = useState<boolean>(false);
+  const [isPhoneVerificationSent, setIsPhoneVerificationSent] =
+    useState<boolean>(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState<boolean>(false);
+  const [isMelpickAddressChecked, setIsMelpickAddressChecked] =
+    useState<boolean>(false);
+
+  // 버튼 텍스트 상태
+  const [emailButtonText, setEmailButtonText] = useState<string>('중복확인');
+  const [nicknameButtonText, setNicknameButtonText] =
+    useState<string>('중복확인');
+  const [melpickAddressButtonText, setMelpickAddressButtonText] =
+    useState<string>('체크');
+  const [phoneVerificationButtonText, setPhoneVerificationButtonText] =
+    useState<string>('인증');
+
+  // 성별 및 멜픽 주소 관련 상태
   const [gender, setGender] = useState<string>('여성');
   const [selectedGenderButton, setSelectedGenderButton] =
     useState<string>('여성');
   const [melpickAddress, setMelpickAddress] = useState<string>('');
-  // 회원가입 결과 메시지 및 성공 여부 (회원가입 버튼 클릭 시 모달 띄움)
+
+  // 회원가입 결과 메시지 및 모달 상태 (전체 검증 메시지는 회원가입 버튼을 통해서만 보여줌)
   const [signupResult, setSignupResult] = useState<string>('');
   const [isSignupSuccess, setIsSignupSuccess] = useState<boolean>(false);
   const [showSignupResultModal, setShowSignupResultModal] =
     useState<boolean>(false);
 
-  const [selectedRegion, setSelectedRegion] = useState<string>('');
-
-  // 체크 결과 메시지 모달 상태 (이메일, 닉네임, 본인인증, 멜픽주소)
-  const [showCheckResultModal, setShowCheckResultModal] =
-    useState<boolean>(false);
-  const [checkResult, setCheckResult] = useState<string>('');
-
-  // 추가: 중복확인, 본인인증, 주소 체크 성공 여부 플래그
-  const [isEmailChecked, setIsEmailChecked] = useState<boolean>(false);
-  const [isNicknameChecked, setIsNicknameChecked] = useState<boolean>(false);
-  const [isPhoneVerified, setIsPhoneVerified] = useState<boolean>(false);
-  const [isMelpickAddressChecked, setIsMelpickAddressChecked] =
-    useState<boolean>(false);
-
-  // 별도: 본인 인증 관련 상태
-  const [showVerificationInput, setShowVerificationInput] =
-    useState<boolean>(false);
+  // 본인 인증 관련 (인증번호 입력)
   const [verificationCode, setVerificationCode] = useState<string>('');
 
-  // 타이머 상태 (3분 = 180초)
+  // 타이머 (3분 = 180초)
   const [timer, setTimer] = useState<number>(0);
   const timerRef = useRef<number | null>(null);
 
@@ -368,135 +123,126 @@ const Signup: React.FC = () => {
     };
   }, []);
 
-  const handleVerification = async (): Promise<void> => {
-    const phoneNumber = getValues('phoneNumber');
-    try {
-      const result = await verifyPhone({ phoneNumber });
-      setCheckResult(result.message || '인증 코드 전송 성공');
-      startTimer();
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setCheckResult('본인 인증 요청 실패: ' + err.message);
-      } else {
-        setCheckResult('본인 인증 요청 실패');
-      }
+  // 필드별 인증 상태 초기화 함수 (입력값 변경 시 다시 검증하도록)
+  const resetVerificationState = (
+    field: 'email' | 'nickname' | 'phoneNumber' | 'melpickAddress'
+  ) => {
+    if (field === 'email' && isEmailChecked) {
+      setIsEmailChecked(false);
+      setEmailButtonText('중복확인');
     }
-    setShowCheckResultModal(true);
-    setShowVerificationInput(true);
+    if (field === 'nickname' && isNicknameChecked) {
+      setIsNicknameChecked(false);
+      setNicknameButtonText('중복확인');
+    }
+    if (field === 'phoneNumber' && isPhoneVerified) {
+      setIsPhoneVerified(false);
+      setPhoneVerificationButtonText('인증');
+    }
+    if (field === 'melpickAddress' && isMelpickAddressChecked) {
+      setIsMelpickAddressChecked(false);
+      setMelpickAddressButtonText('체크');
+    }
   };
 
-  const handleGenderChange = (selected: string): void => {
-    setGender(selected);
-    setSelectedGenderButton(selected);
-  };
-
-  const handlePhoneNumberChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    const value = e.target.value
-      .replace(/[^0-9]/g, '')
-      .replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-    e.target.value = value;
-  };
-
-  const handleMelpickAddressChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    setMelpickAddress(e.target.value);
-  };
-
-  // ★ 이메일 중복 체크
+  // --- 개별 필드 검증 함수 ---
   const handleEmailCheck = async (): Promise<void> => {
+    const valid = await trigger('email');
+    if (!valid) return;
     const email = getValues('email');
     try {
       const result = await checkEmail(email);
       if (result.isAvailable) {
-        setCheckResult('사용 가능합니다.');
+        setEmailButtonText('인증 완료');
         setIsEmailChecked(true);
       } else {
-        setCheckResult('이미 존재합니다.');
+        setEmailButtonText('인증 실패');
         setIsEmailChecked(false);
       }
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setCheckResult('에러 발생: ' + err.message);
-      } else {
-        setCheckResult('알 수 없는 에러 발생');
-      }
+      setEmailButtonText('인증 실패');
       setIsEmailChecked(false);
     }
-    setShowCheckResultModal(true);
   };
 
-  // ★ 닉네임 중복 체크
   const handleNicknameCheck = async (): Promise<void> => {
+    const valid = await trigger('nickname');
+    if (!valid) return;
     const nickname = getValues('nickname');
     try {
       const result = await checkNickname(nickname);
       if (result.isAvailable) {
-        setCheckResult('사용 가능합니다.');
+        setNicknameButtonText('인증 완료');
         setIsNicknameChecked(true);
       } else {
-        setCheckResult('이미 존재합니다.');
+        setNicknameButtonText('인증 실패');
         setIsNicknameChecked(false);
       }
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setCheckResult('에러 발생: ' + err.message);
-      } else {
-        setCheckResult('알 수 없는 에러 발생');
-      }
+      setNicknameButtonText('인증 실패');
       setIsNicknameChecked(false);
     }
-    setShowCheckResultModal(true);
   };
 
-  // ★ 본인 인증 체크
+  const handleSendVerification = async (): Promise<void> => {
+    const valid = await trigger('phoneNumber');
+    if (!valid) return;
+
+    // 인증 인풋 필드와 타이머를 우선 노출
+    setIsPhoneVerificationSent(true);
+    const phoneNumber = getValues('phoneNumber');
+    try {
+      const result = await verifyPhone({ phoneNumber });
+      if (result.message && result.message.includes('성공')) {
+        // 인증 코드 전송 성공 시 타이머 시작
+        startTimer();
+      } else {
+        setPhoneVerificationButtonText('인증 실패');
+      }
+    } catch (err: unknown) {
+      setPhoneVerificationButtonText('인증 실패');
+    }
+  };
+
   const handleVerifyCode = async (): Promise<void> => {
+    if (!verificationCode) return;
     const phoneNumber = getValues('phoneNumber');
     try {
       const result = await verifyCode({ phoneNumber, code: verificationCode });
       if (result.message && result.message.includes('성공')) {
-        setCheckResult(result.message);
         setIsPhoneVerified(true);
+        setPhoneVerificationButtonText('인증 완료');
+        // 인증 성공 시 타이머 중지
+        if (timerRef.current !== null) clearInterval(timerRef.current);
       } else {
-        setCheckResult(result.message || '인증에 실패했습니다.');
+        setPhoneVerificationButtonText('인증 실패');
         setIsPhoneVerified(false);
       }
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setCheckResult('인증에 실패했습니다: ' + err.message);
-      } else {
-        setCheckResult('인증에 실패했습니다.');
-      }
+      setPhoneVerificationButtonText('인증 실패');
       setIsPhoneVerified(false);
     }
-    setShowCheckResultModal(true);
   };
 
-  // ★ 멜픽 주소 체크
-  const handleCheckClick = async (): Promise<void> => {
+  const handleMelpickAddressCheck = async (): Promise<void> => {
+    const valid = await trigger('melpickAddress');
+    if (!valid) return;
     try {
       const result = await checkWebpage(melpickAddress);
       if (result.isAvailable) {
-        setCheckResult('사용 가능합니다.');
+        setMelpickAddressButtonText('인증 완료');
         setIsMelpickAddressChecked(true);
       } else {
-        setCheckResult('이미 존재합니다.');
+        setMelpickAddressButtonText('인증 실패');
         setIsMelpickAddressChecked(false);
       }
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setCheckResult('에러 발생: ' + err.message);
-      } else {
-        setCheckResult('알 수 없는 에러 발생');
-      }
+      setMelpickAddressButtonText('인증 실패');
       setIsMelpickAddressChecked(false);
     }
-    setShowCheckResultModal(true);
   };
 
-  // ★ 회원가입 제출 전 모든 검증 완료 여부 확인 (회원가입 버튼 클릭 시 모달로 결과 표시)
+  // --- 최종 전체 검증 및 회원가입 제출 (회원가입 버튼을 통해 검증 결과를 보여줌) ---
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
     if (data.password !== data.passwordConfirm) {
       setSignupResult('비밀번호가 일치하지 않습니다.');
@@ -545,31 +291,52 @@ const Signup: React.FC = () => {
 
     try {
       const response = await signUpUser(formattedData);
-      console.log('회원가입 성공:', response);
       setSignupResult(
         '🎉 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.'
       );
       setIsSignupSuccess(true);
       setShowSignupResultModal(true);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        console.error('회원가입 실패:', err);
-        setSignupResult('회원가입 중 오류가 발생했습니다: ' + err.message);
-      } else {
-        setSignupResult('회원가입 중 오류가 발생했습니다.');
-      }
+      setSignupResult(
+        err instanceof Error
+          ? '회원가입 중 오류가 발생했습니다: ' + err.message
+          : '회원가입 중 오류가 발생했습니다.'
+      );
       setIsSignupSuccess(false);
       setShowSignupResultModal(true);
     }
   };
 
-  // 회원가입 결과 모달 onClose 핸들러 (성공 시 /login 페이지로 이동, 실패 시 모달만 닫음)
   const handleSignupResultModalClose = () => {
     setShowSignupResultModal(false);
     if (isSignupSuccess) {
       navigate('/login');
     }
   };
+
+  const handleGenderChange = (selected: string): void => {
+    setGender(selected);
+    setSelectedGenderButton(selected);
+  };
+
+  // 전화번호 인풋 필드 수정 시 인증 상태 초기화 처리
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+      .replace(/[^0-9]/g, '')
+      .replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+    e.target.value = value;
+    resetVerificationState('phoneNumber');
+  };
+
+  // 이메일, 닉네임, 멜픽주소 필드 변경 시 인증 상태 초기화 처리
+  const handleInputChange =
+    (field: 'email' | 'nickname' | 'melpickAddress') =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      resetVerificationState(field);
+      if (field === 'melpickAddress') {
+        setMelpickAddress(e.target.value);
+      }
+    };
 
   return (
     <ThemeProvider theme={Theme}>
@@ -583,8 +350,9 @@ const Signup: React.FC = () => {
               type='text'
               error={errors.email}
               placeholder='계정을 입력하세요'
-              buttonLabel='중복확인'
+              buttonLabel={emailButtonText}
               {...register('email')}
+              onChange={handleInputChange('email')}
               required
               maxLength={50}
               onButtonClick={handleEmailCheck}
@@ -617,9 +385,10 @@ const Signup: React.FC = () => {
               placeholder='닉네임을 입력하세요'
               error={errors.nickname}
               {...register('nickname')}
+              onChange={handleInputChange('nickname')}
               required
               maxLength={8}
-              buttonLabel='중복확인'
+              buttonLabel={nicknameButtonText}
               onButtonClick={handleNicknameCheck}
             />
             <RowLabel>
@@ -684,10 +453,10 @@ const Signup: React.FC = () => {
                 maxLength={11}
                 onInput={handlePhoneNumberChange}
                 buttonLabel='본인인증'
-                onButtonClick={handleVerification}
+                onButtonClick={handleSendVerification}
               />
             </PhoneField>
-            {showVerificationInput && (
+            {isPhoneVerificationSent && (
               <VerificationWrapper>
                 <VerificationLabel>인증번호 입력</VerificationLabel>
                 <VerificationRow>
@@ -699,10 +468,13 @@ const Signup: React.FC = () => {
                       onChange={(e) => setVerificationCode(e.target.value)}
                     />
                     <VerificationBtn onClick={handleVerifyCode}>
-                      인증
+                      {phoneVerificationButtonText}
                     </VerificationBtn>
                   </VerificationContainer>
-                  <TimerDisplay>{formatTime(timer)}</TimerDisplay>
+                  {/* 인증이 완료되지 않았을 때만 타이머 표시 */}
+                  {!isPhoneVerified && (
+                    <TimerDisplay>{formatTime(timer)}</TimerDisplay>
+                  )}
                 </VerificationRow>
               </VerificationWrapper>
             )}
@@ -714,9 +486,6 @@ const Signup: React.FC = () => {
                 error={errors.region}
                 required
                 {...register('region')}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  setSelectedRegion(e.target.value);
-                }}
               >
                 <option value='' disabled>
                   지역을 선택하세요
@@ -738,12 +507,15 @@ const Signup: React.FC = () => {
                 <option value='' disabled>
                   구를 선택하세요
                 </option>
-                {selectedRegion && regionDistrictData[selectedRegion] ? (
-                  regionDistrictData[selectedRegion].map((district: string) => (
-                    <option key={district} value={district}>
-                      {district}
-                    </option>
-                  ))
+                {getValues('region') &&
+                regionDistrictData[getValues('region')] ? (
+                  regionDistrictData[getValues('region')].map(
+                    (district: string) => (
+                      <option key={district} value={district}>
+                        {district}
+                      </option>
+                    )
+                  )
                 ) : (
                   <option value=''>지역을 먼저 선택하세요</option>
                 )}
@@ -756,13 +528,13 @@ const Signup: React.FC = () => {
               placeholder='멜픽 주소를 입력하세요'
               error={errors.melpickAddress}
               {...register('melpickAddress')}
+              onChange={handleInputChange('melpickAddress')}
               value={melpickAddress}
-              onChange={handleMelpickAddressChange}
-              buttonLabel='체크'
+              buttonLabel={melpickAddressButtonText}
               buttonColor='yellow'
               required
               maxLength={12}
-              onButtonClick={handleCheckClick}
+              onButtonClick={handleMelpickAddressCheck}
               prefix='melpick.com/'
             />
             <BlackContainer />
@@ -775,14 +547,6 @@ const Signup: React.FC = () => {
           </Form>
         </Container>
       </FormProvider>
-
-      <ReusableModal
-        isOpen={showCheckResultModal}
-        onClose={() => setShowCheckResultModal(false)}
-        title='검증 결과'
-      >
-        {checkResult}
-      </ReusableModal>
 
       <ReusableModal
         isOpen={showSignupResultModal}
@@ -917,20 +681,20 @@ const VerificationInput = styled.input`
 `;
 
 const VerificationBtn = styled.button`
-  height: 100%;
-  width: 80px;
+  height: 40px;
+  width: 100px;
   background-color: #000;
   color: #fff;
   border: none;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
 `;
 
 const TimerDisplay = styled.div`
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   color: #333;
-  padding: 10px;
+  padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
 `;
