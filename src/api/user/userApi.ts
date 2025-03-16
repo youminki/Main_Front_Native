@@ -4,7 +4,6 @@ import { Axios } from '../Axios';
 // 인터페이스 정의
 // =====================
 
-// 회원가입 요청 및 응답 인터페이스
 export interface SignupRequest {
   email: string;
   password: string;
@@ -28,7 +27,6 @@ export interface SignupResponse {
   isComplete: boolean;
 }
 
-// 사용자 목록 관련 인터페이스
 export interface UserListItem {
   email: string;
   nickname: string;
@@ -41,7 +39,6 @@ export interface GetUsersResponse {
   total: number;
 }
 
-// 이메일로 조회 시 사용자 상세 정보 인터페이스
 export interface UserDetail {
   email: string;
   nickname: string;
@@ -52,12 +49,10 @@ export interface UserDetail {
   instagramId: string;
 }
 
-// 공통 메시지 응답 인터페이스
 export interface MessageResponse {
   message: string;
 }
 
-// 차단된 사용자 관련 인터페이스
 export interface BlockedUser extends UserListItem {
   status: string;
 }
@@ -67,12 +62,10 @@ export interface GetBlockedUsersResponse {
   total: number;
 }
 
-// 중복 여부 응답 인터페이스 (개인 웹페이지, 닉네임)
 export interface AvailabilityResponse {
   isAvailable: boolean;
 }
 
-// 휴대폰 인증 관련 인터페이스
 export interface VerifyPhoneRequest {
   phoneNumber: string;
 }
@@ -95,11 +88,20 @@ export interface VerifyCodeResponse {
 // =====================
 
 // 회원가입 API 호출 (POST /user)
+// 휴대폰 인증(verify-code API)을 먼저 진행한 경우에만 회원가입이 가능합니다.
 export const signUpUser = async (
   data: SignupRequest
 ): Promise<SignupResponse> => {
-  const response = await Axios.post('/user', data);
-  return response.data;
+  try {
+    const response = await Axios.post('/user', data);
+    return response.data;
+  } catch (error: any) {
+    // 서버에서 휴대폰 인증 미완료 시 400 응답을 반환하는 경우
+    if (error.response && error.response.status === 400) {
+      throw new Error('휴대폰 인증을 먼저 진행해주세요.');
+    }
+    throw error;
+  }
 };
 
 // 모든 사용자 조회 API 호출 (GET /user)
