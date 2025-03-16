@@ -34,9 +34,8 @@ export default LandingPage2;
 /* ---------- 전체 컨테이너 ---------- */
 const Container = styled.div`
   position: relative;
-  width: 100%;
-  max-width: 430px; /* 이미지에서 폭이 좁은 편이므로 430px 예시 */
-  min-height: 1000px; /* 세로 공간 확보 */
+
+  min-height: 1100px; /* 세로 공간 확보 */
   margin: 0 auto;
   background: #fcf6e6;
   border-radius: 20px;
