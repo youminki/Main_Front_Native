@@ -1,30 +1,61 @@
-// src/components/Landing/LandingPage3.tsx
+// src/components/Landing/LandingPage2.tsx
 import React from 'react';
 import styled from 'styled-components';
-import ServiceImg1 from '../../assets/Landing/ServiceImg1.svg';
-import ServiceImg2 from '../../assets/Landing/ServiceImg2.svg';
-import ServiceImg3 from '../../assets/Landing/ServiceImg3.svg';
+
+import ZOOCImage from '../../assets/Landing/ZoocImg.svg';
+import SANDROImage from '../../assets/Landing/Sandro.svg';
+import ITMICHAImage from '../../assets/Landing/ItMichaa.svg';
+import CC_Collect from '../../assets/Landing/CC_Collect.jpg';
+import DEW_L from '../../assets/Landing/DEW_L.jpg';
+import LIME from '../../assets/Landing/LIME.jpg';
+import MAJE from '../../assets/Landing/MAJE.jpg';
+import MICHAA from '../../assets/Landing/MICHAA.jpg';
+import MOJO_S_PHINE from '../../assets/Landing/MOJO_S_PHINE.jpg';
 
 const LandingPage3: React.FC = () => {
-  const serviceImages = [ServiceImg1, ServiceImg2, ServiceImg3];
+  const brands = [
+    { img: ZOOCImage, name: 'ZOOC' },
+    { img: SANDROImage, name: 'SANDRO' },
+    { img: ITMICHAImage, name: 'it MICHA' },
+    { img: CC_Collect, name: 'CC Collect' },
+    { img: DEW_L, name: 'DEW L' },
+    { img: LIME, name: 'LIME' },
+    { img: MAJE, name: 'MAJE' },
+    { img: MICHAA, name: 'MICHAA' },
+    { img: MOJO_S_PHINE, name: 'MOJO.S.PHINE' },
+  ];
 
   return (
     <Container>
       <LandingTitle>
-        오직 나만의, 나를 위한 상품
-        <LandingSubtitle>
-          이제 일일이 찾지 마세요
-          <br />
-          브랜드는 <YellowText>멜픽이 PICK 해줄게요!</YellowText>
-        </LandingSubtitle>
+        <YellowHighlight>Matching Marketing System</YellowHighlight> <br />
+        <Text>당신의 취향에 꼭 맞는</Text>
+        <BoldText>
+          컨템포러리 브랜드들이 <br />
+          melpik과 함께합니다!
+        </BoldText>
       </LandingTitle>
-      <ServiceList>
-        {serviceImages.map((img, idx) => (
-          <Service key={idx}>
-            <ServiceImage src={img} alt={`service-${idx}`} />
-          </Service>
+      <BrandList>
+        {brands.map((brand, idx) => (
+          <Brand key={idx}>
+            <BrandImage src={brand.img} alt={`brand-${idx}`} />
+            <BrandName>{brand.name}</BrandName>
+          </Brand>
         ))}
-      </ServiceList>
+      </BrandList>
+      <Comment>
+        <Text>
+          멜픽는 <YellowHighlight>이용자와 브랜드를 매칭하는</YellowHighlight>
+          <br /> <YellowHighlight>AI 기반의 서비스 </YellowHighlight>입니다
+          <br />
+        </Text>
+        <Text>
+          똑똑한 AI가 당신도 몰랐던, 당신만의 스타일을
+          <br />
+          알아서 매칭해드립니다
+          <br />
+        </Text>
+      </Comment>
     </Container>
   );
 };
@@ -35,61 +66,111 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
-  padding: 40px 20px;
   background-color: #ffffff;
-  min-height: 1232px;
+  min-height: 900px;
   max-width: 600px;
   margin: 0 auto;
+  border-radius: 20px;
 `;
 
 const LandingTitle = styled.h1`
-  font-weight: 700;
-  font-size: 24px;
-  text-align: center;
-  margin-bottom: 21px;
-  color: #000000;
-`;
-
-const LandingSubtitle = styled.p`
+  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
-  font-size: 18px;
-  line-height: 30px;
+  font-size: 24px;
+  line-height: 40px;
   text-align: center;
-  margin-top: 21px;
+  margin-bottom: 50px;
+  color: #000000;
+
+  margin-top: 100px;
+`;
+
+const YellowHighlight = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 40px;
+  /* identical to box height, or 200% */
+  text-align: center;
+
+  color: #f5ab35;
+`;
+
+const Text = styled.div`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 40px;
+  /* or 235% */
+  text-align: center;
+  margin-top: 10px;
+
   color: #000000;
 `;
 
-const YellowText = styled.span`
-  color: #f6ae24;
-  font-weight: 800;
-  font-size: 18px;
+const BoldText = styled.div`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 25px;
+  line-height: 40px;
+  /* or 160% */
+  text-align: center;
+
+  color: #000000;
 `;
 
-const ServiceList = styled.div`
+const BrandList = styled.div`
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+  width: 100%;
+  height: 250px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const Brand = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px;
-  margin-top: 50px;
-  width: 100%;
-  max-width: 1200px;
+  margin-right: 20px;
+  position: relative;
 `;
 
-const Service = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-`;
-
-const ServiceImage = styled.img`
-  width: 320px;
-  height: 240px;
+const BrandImage = styled.img`
+  width: 200px;
+  height: 250px;
   object-fit: cover;
   border-radius: 20px;
-  transition: transform 0.3s;
+  opacity: 0.6;
+`;
 
-  &:hover {
-    transform: scale(1.05);
-  }
+const BrandName = styled.span`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 900;
+  font-size: 20px;
+  width: 100%;
+  text-align: center;
+  color: #000000;
+`;
+
+const Comment = styled.div`
+  font-family: 'NanumSquare Neo OTF', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  text-align: center;
+  margin-bottom: 161px;
+  color: #000000;
 `;
