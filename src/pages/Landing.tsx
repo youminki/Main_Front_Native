@@ -1,6 +1,7 @@
 // src/pages/Landing.tsx
 import React from 'react';
 import styled from 'styled-components';
+import Header from '../components/Landing/Header';
 import LandingPage1 from '../components/Landing/LandingPage1';
 import LandingPage2 from '../components/Landing/LandingPage2';
 import LandingPage3 from '../components/Landing/LandingPage3';
@@ -12,6 +13,7 @@ import Footer from '../components/Landing/Footer';
 const Landing: React.FC = () => {
   return (
     <LandingContainer>
+      <Header />
       <ContentWrapper>
         <LandingPageWrapper variant='odd'>
           <LandingPage1 />
