@@ -1,52 +1,23 @@
 // src/components/Landing/LandingPage1.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import LandingBackground from '../../assets/Landing/LandingBackground.svg';
-import BoxBackgroundImg from '../../assets/Landing/BoxBackgroundImg.png';
-import SelectIcon from '../../assets/Landing/SelectIcon.svg';
-import HeartIcon from '../../assets/Landing/HeartIcon.svg';
-import HeartClickIcon from '../../assets/Landing/Heart_Click.png';
 
 const LandingPage1: React.FC = () => {
-  const navigate = useNavigate();
-  const [isHeartClicked, setIsHeartClicked] = useState<boolean>(false);
-
-  const handleHeartClick = (): void => {
-    setIsHeartClicked((prev) => !prev);
+  const handleRegisterClick = () => {
+    window.location.href = 'https://me1pik.com/login';
   };
 
   return (
     <Container>
-      <BackgroundImage src={LandingBackground} alt="Landing Background" />
-
+      <BackgroundImage src={LandingBackground} alt='Landing Background' />
       <MainContent>
-        <Title>
-          오직 나만의! 나를 위한! <br />
-          <HighlightText>패션 브랜드 대여 플랫폼</HighlightText>
-        </Title>
-        <Box>
-          <BoxImage src={BoxBackgroundImg} alt="Box Background" />
-          <ButtonContainer>
-            <StartButton onClick={() => navigate('/LandingDetail')}>
-              지금 시작하기
-            </StartButton>
-            <IconContainer>
-              <StyledIcon src={SelectIcon} alt="Select Icon" />
-              <HeartIconWrapper onClick={handleHeartClick}>
-                <StyledIcon src={HeartIcon} alt="Heart Icon" />
-                {isHeartClicked && (
-                  <OverlayIcon src={HeartClickIcon} alt="Heart Click Icon" />
-                )}
-              </HeartIconWrapper>
-            </IconContainer>
-          </ButtonContainer>
-        </Box>
-        <Subtitle>아직도 체험단, 기자단하시나요?</Subtitle>
-        <Description>
-          melpik과 함께 수익과 팔로워 <br />
-          모두 GET하는 인플루언서로 성장하세요
-        </Description>
+        <Title>멜픽과 함께</Title>
+        <BoldText>빌리고, 사고, 판매하세요</BoldText>
+        <Subtitle>내 취향에 맞는 브랜드 매칭 시스템</Subtitle>
+        <RegisterButton onClick={handleRegisterClick}>
+          사전등록하기
+        </RegisterButton>
       </MainContent>
     </Container>
   );
@@ -55,17 +26,15 @@ const LandingPage1: React.FC = () => {
 export default LandingPage1;
 
 const Container = styled.div`
+  width: 100%;
+  max-width: 430px;
+  height: 784px;
   position: relative;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding: 2rem;
-  padding-top: 80px;
-  background-color: transparent;
-  min-height: 857px;
-  max-width: 600px;
-  margin: 0 auto;
+  justify-content: center; /* 세로 중앙 정렬 */
+  align-items: center; /* 가로 중앙 정렬 */
 `;
 
 const BackgroundImage = styled.img`
@@ -76,123 +45,60 @@ const BackgroundImage = styled.img`
   height: 100%;
   object-fit: cover;
   z-index: -1;
-  filter: blur(2px);
 `;
 
 const MainContent = styled.div`
   text-align: center;
-  max-width: 50rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 300px;
 `;
 
 const Title = styled.h1`
   font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 25px;
+  color: #000000;
+  margin: 0;
+`;
+
+const BoldText = styled.div`
+  font-family: 'NanumSquare Neo OTF', sans-serif;
+  font-weight: 800; /* extra bold */
+  font-size: 25px;
   line-height: 50px;
   color: #000000;
-  margin-top: 28px;
-`;
-
-const HighlightText = styled.span`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 800;
-  font-size: 30px;
-  line-height: 50px;
-  color: #000000;
-`;
-
-const Box = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  height: 405px;
-  border-radius: 30px;
-  margin-top: 16px;
-`;
-
-const BoxImage = styled.img`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 30px;
-  z-index: -1;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  bottom: 18px;
-  width: 100%;
-  gap: 20px;
-`;
-
-const StartButton = styled.button`
-  width: 175px;
-  height: 45px;
-  background-color: #f6ae24;
-  color: #ffffff;
-  border: none;
-  border-radius: 30px;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 800;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #d9981f;
-  }
-`;
-
-const IconContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const HeartIconWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin-left: 8px;
-  cursor: pointer;
-`;
-
-const StyledIcon = styled.img`
-  width: 27px;
-  height: 24px;
-`;
-
-const OverlayIcon = styled.img`
-  position: absolute;
-  width: 61px;
-  height: 75px;
-  pointer-events: none;
-  top: -82px;
-  right: -15px;
+  margin: 0;
 `;
 
 const Subtitle = styled.h2`
   font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
-  font-size: 20px;
-  line-height: 30px;
+  font-size: 17px;
+
   color: #000000;
-  margin-top: 25px;
+  margin: 0;
 `;
 
-const Description = styled.p`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 400;
-  font-size: 17px;
-  line-height: 30px;
+const RegisterButton = styled.button`
+  width: 120px;
+  height: 40px;
+  background-color: #ffffff;
   color: #000000;
-  margin-top: 11px;
+  border: none;
+  border-radius: 20px;
+  font-family: 'NanumSquare Neo OTF', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+
+  margin-top: 23px;
 `;
