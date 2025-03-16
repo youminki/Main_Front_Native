@@ -27,7 +27,7 @@ const Login: React.FC = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: yupResolver(schemaLogin),
     mode: 'onChange',
@@ -286,17 +286,17 @@ const LinkSeparator = styled.span`
   opacity: 1;
 `;
 
-const Modal = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-`;
+// const Modal = styled.div`
+//   position: fixed;
+//   top: 50%;
+//   left: 50%;
+//   transform: translate(-50%, -50%);
+//   background-color: white;
+//   padding: 20px;
+//   border-radius: 10px;
+//   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+//   text-align: center;
+// `;
 
 // const BrowseLink = styled.a`
 //   margin-top: 15px;
