@@ -71,6 +71,7 @@ import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
 
 import BottomNav from './components/BottomNav1';
 import UnifiedHeader from './components/UnifiedHeader';
+import Landing from './pages/Landing';
 
 // 페이지 컨텐츠 애니메이션 keyframes
 const slideIn = keyframes`
@@ -322,6 +323,8 @@ const App: React.FC = () => {
         disablePadding={location.pathname === '/personalLink'}
       >
         <Routes>
+          <Route path='/landing' element={<Landing />} />
+
           <Route path='/' element={<Navigate to='/home' replace />} />
           <Route path='/home' element={<Home />} />
           <Route path='/item/:id' element={<HomeDetail />} />
