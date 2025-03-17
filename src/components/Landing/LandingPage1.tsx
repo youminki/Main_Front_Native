@@ -1,4 +1,3 @@
-// src/components/Landing/LandingPage1.tsx
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -30,7 +29,7 @@ export default LandingPage1;
 
 const Container = styled.div`
   width: 100%;
-  height: 820px;
+  height: 900px;
   position: relative;
   margin: 0 auto;
   display: flex;
@@ -94,10 +93,17 @@ const RegisterButton = styled.button`
   font-weight: 700;
   font-size: 15px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition:
+    background-color 0.3s,
+    transform 0.1s;
   margin-top: 23px;
 
   &:hover {
-    background-color: #f0f0f0;
+    background-color: #f6ae24;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 `;

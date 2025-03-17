@@ -7,15 +7,12 @@ const LandingPage4: React.FC = () => {
   return (
     <Container>
       <BackgroundImage src={page4backgournd} alt='Landing Background' />
-
-      {/* 텍스트 영역 */}
       <ContentWrapper>
         <Title>오직 나만의, 나를 위한 상품</Title>
         <Text>
           이제 일일이 찾지 마세요.
           <br /> 브랜드는 <BoldText>멜픽이 PICK! 해줄게요</BoldText>
         </Text>
-
         <BulletList>
           <BulletItem>
             <CheckIcon src={LandingCheckIcon} alt='Check Icon' />
@@ -51,7 +48,6 @@ const Container = styled.div`
   margin: 0 auto;
   background: #fcf6e6;
   border-radius: 20px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -75,7 +71,6 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
   margin-top: 30px;
 `;
 
@@ -88,7 +83,6 @@ const Title = styled.h1`
   margin: 0 0 14px;
 `;
 
-/* ---------- 체크 아이콘이 포함된 리스트 ---------- */
 const BulletList = styled.ul`
   list-style: none;
   padding: 0;
@@ -117,7 +111,6 @@ const ItemText = styled.span`
 
 const Text = styled.div`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 400;
   font-size: 17px;
   line-height: 30px;
@@ -128,7 +121,6 @@ const Text = styled.div`
 
 const BoldText = styled.span`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 800;
   font-size: 17px;
   line-height: 30px;

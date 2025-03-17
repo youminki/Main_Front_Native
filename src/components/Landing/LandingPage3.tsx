@@ -1,4 +1,3 @@
-// src/components/Landing/LandingPage2.tsx
 import React from 'react';
 import styled from 'styled-components';
 
@@ -45,8 +44,9 @@ const LandingPage3: React.FC = () => {
       </BrandList>
       <Comment>
         <Text>
-          멜픽는 <YellowHighlight>이용자와 브랜드를 매칭하는</YellowHighlight>
-          <br /> <YellowHighlight>AI 기반의 서비스 </YellowHighlight>입니다
+          멜픽은 <YellowHighlight>이용자와 브랜드를 매칭하는</YellowHighlight>
+          <br />
+          <YellowHighlight>AI 기반의 서비스 </YellowHighlight>입니다
           <br />
         </Text>
         <Text>
@@ -81,46 +81,36 @@ const LandingTitle = styled.h1`
   font-size: 24px;
   line-height: 40px;
   text-align: center;
+  margin-top: 100px;
   margin-bottom: 50px;
   color: #000000;
-
-  margin-top: 100px;
 `;
 
 const YellowHighlight = styled.span`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 700;
   font-size: 20px;
   line-height: 40px;
-  /* identical to box height, or 200% */
   text-align: center;
-
   color: #f5ab35;
 `;
 
 const Text = styled.div`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 400;
   font-size: 17px;
   line-height: 40px;
-  /* or 235% */
   text-align: center;
   margin-top: 10px;
-
   color: #000000;
 `;
 
 const BoldText = styled.div`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 700;
   font-size: 25px;
   line-height: 40px;
-  /* or 160% */
   text-align: center;
-
   color: #000000;
 `;
 
@@ -130,8 +120,8 @@ const BrandList = styled.div`
   overflow-x: scroll;
   width: 100%;
   height: 250px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin: 20px 0;
+  overflow-y: hidden;
 
   &::-webkit-scrollbar {
     display: none;
@@ -144,6 +134,11 @@ const Brand = styled.div`
   align-items: center;
   margin-right: 20px;
   position: relative;
+  transition: transform 0.3s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 `;
 
 const BrandImage = styled.img`
@@ -152,6 +147,11 @@ const BrandImage = styled.img`
   object-fit: cover;
   border-radius: 20px;
   opacity: 0.6;
+  transition: opacity 0.3s;
+
+  &:hover {
+    opacity: 1;
+  }
 `;
 
 const BrandName = styled.span`

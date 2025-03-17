@@ -1,4 +1,3 @@
-// src/components/Landing/LandingPage6.tsx
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -43,7 +42,6 @@ const Container = styled.div`
 
 const Text = styled.div`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 400;
   font-size: 17px;
   line-height: 25px;
@@ -66,9 +64,16 @@ const StartButton = styled.button`
   font-weight: 800;
   font-size: 15px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition:
+    background-color 0.3s,
+    transform 0.1s;
 
   &:hover {
     background-color: #f0f0f0;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 `;

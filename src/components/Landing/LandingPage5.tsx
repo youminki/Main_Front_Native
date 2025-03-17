@@ -1,6 +1,5 @@
-// src/components/Landing/LandingPage4.tsx
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import LeftArrowIcon from '../../assets/Landing/left-arrow.svg';
 import RightArrowIcon from '../../assets/Landing/right-arrow.svg';
 import ScreenImg1 from '../../assets/Landing/ScreenImg1.svg';
@@ -35,9 +34,34 @@ const screens: Screen[] = [
   },
 ];
 
+const slideInLeft = keyframes`
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+`;
+
+const slideInRight = keyframes`
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+`;
+
 const LandingPage5: React.FC = () => {
   const [currentScreenIndex, setCurrentScreenIndex] = useState<number>(0);
   const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
+  const [animationDirection, setAnimationDirection] = useState<
+    'left' | 'right'
+  >('right');
 
   useEffect(() => {
     let loadedImages = 0;
@@ -53,15 +77,19 @@ const LandingPage5: React.FC = () => {
     });
   }, []);
 
-  const handlePrevClick = () =>
+  const handlePrevClick = () => {
+    setAnimationDirection('left');
     setCurrentScreenIndex((prevIndex) =>
       prevIndex === 0 ? screens.length - 1 : prevIndex - 1
     );
+  };
 
-  const handleNextClick = () =>
+  const handleNextClick = () => {
+    setAnimationDirection('right');
     setCurrentScreenIndex((prevIndex) =>
       prevIndex === screens.length - 1 ? 0 : prevIndex + 1
     );
+  };
 
   return (
     <Container>
@@ -82,9 +110,11 @@ const LandingPage5: React.FC = () => {
         <ScreenImageContainer>
           {imagesLoaded ? (
             <ScreenImage
+              key={currentScreenIndex}
               src={screens[currentScreenIndex].img}
               alt='Screen'
               loading='lazy'
+              animationDirection={animationDirection}
             />
           ) : (
             <LoadingSpinner />
@@ -143,18 +173,25 @@ const ScreenContainer = styled.div`
 `;
 
 const ScreenImageContainer = styled.div`
-  width: 220px;
-  height: 466px;
+  width: 260px;
+  height: 550px;
   background: #f0f0f0;
   filter: drop-shadow(3px 5px 15px rgba(18, 18, 18, 0.15));
   border-radius: 10px;
   overflow: hidden;
 `;
 
-const ScreenImage = styled.img`
+interface ScreenImageProps {
+  animationDirection: 'left' | 'right';
+}
+
+const ScreenImage = styled.img<ScreenImageProps>`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  animation: ${({ animationDirection }) =>
+      animationDirection === 'left' ? slideInLeft : slideInRight}
+    0.5s ease-in-out;
   transition: opacity 0.5s ease-in-out;
 `;
 
@@ -167,6 +204,15 @@ const ArrowButton = styled.button`
   border: none;
   padding: 10px;
   z-index: 1;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
 
   &:first-of-type {
     left: 0;
@@ -225,27 +271,20 @@ const LoadingSpinner = styled.div`
 
 const Text = styled.div`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 400;
   font-size: 17px;
   line-height: 30px;
-  /* or 176% */
   text-align: center;
-
   color: #000000;
   margin-top: 20px;
   margin-bottom: 30px;
 `;
 
-// BoldText를 인라인 요소인 span으로 변경
 const BoldText = styled.span`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 700;
   font-size: 20px;
   line-height: 30px;
-
   text-align: center;
-
   color: #000000;
 `;
