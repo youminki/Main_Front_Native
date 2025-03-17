@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import ZOOCImage from '../../assets/Landing/ZoocImg.svg';
-import SANDROImage from '../../assets/Landing/Sandro.svg';
-import ITMICHAImage from '../../assets/Landing/ItMichaa.svg';
+import ZOOCImage from '../../assets/Landing/Zooc.jpg';
+import SANDROImage from '../../assets/Landing/Sandro.jpg';
+import ITMICHAImage from '../../assets/Landing/ItMichaa.jpg';
 import CC_Collect from '../../assets/Landing/CC_Collect.jpg';
 import DEW_L from '../../assets/Landing/DEW_L.jpg';
 import LIME from '../../assets/Landing/LIME.jpg';
@@ -135,10 +135,6 @@ const Brand = styled.div`
   margin-right: 20px;
   position: relative;
   transition: transform 0.3s;
-
-  &:hover {
-    transform: scale(1.05);
-  }
 `;
 
 const BrandImage = styled.img`
