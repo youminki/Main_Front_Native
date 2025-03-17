@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 
 import ZOOCImage from '../../assets/Landing/Zooc.jpg';
@@ -24,6 +24,51 @@ const LandingPage3: React.FC = () => {
     { img: MOJO_S_PHINE, name: 'MOJO.S.PHINE' },
   ];
 
+  // 드래그 스크롤을 위한 ref와 상태값 관리
+  const listRef = useRef<HTMLDivElement>(null);
+  const isDown = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!listRef.current) return;
+    isDown.current = true;
+    listRef.current.classList.add('active');
+    startX.current = e.pageX - listRef.current.offsetLeft;
+    scrollLeft.current = listRef.current.scrollLeft;
+  };
+
+  const handleMouseLeave = () => {
+    if (!listRef.current) return;
+    isDown.current = false;
+    listRef.current.classList.remove('active');
+  };
+
+  const handleMouseUp = () => {
+    if (!listRef.current) return;
+    isDown.current = false;
+    listRef.current.classList.remove('active');
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDown.current || !listRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - listRef.current.offsetLeft;
+    const walk = (x - startX.current) * 1; // 스크롤 속도 조절
+    listRef.current.scrollLeft = scrollLeft.current - walk;
+  };
+
+  // 이미지 클릭 이벤트를 막기 위한 핸들러
+  const handleImageClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  // 이미지의 기본 드래그 이벤트를 막기 위한 핸들러
+  const handleDragStart = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
   return (
     <Container>
       <LandingTitle>
@@ -34,10 +79,21 @@ const LandingPage3: React.FC = () => {
           melpik과 함께합니다!
         </BoldText>
       </LandingTitle>
-      <BrandList>
+      <BrandList
+        ref={listRef}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+      >
         {brands.map((brand, idx) => (
           <Brand key={idx}>
-            <BrandImage src={brand.img} alt={`brand-${idx}`} />
+            <BrandImage
+              src={brand.img}
+              alt={`brand-${idx}`}
+              onClick={handleImageClick}
+              onDragStart={handleDragStart}
+            />
             <BrandName>{brand.name}</BrandName>
           </Brand>
         ))}
@@ -122,6 +178,11 @@ const BrandList = styled.div`
   height: 250px;
   margin: 20px 0;
   overflow-y: hidden;
+  cursor: grab;
+
+  &.active {
+    cursor: grabbing;
+  }
 
   &::-webkit-scrollbar {
     display: none;
