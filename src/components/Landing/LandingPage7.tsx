@@ -1,11 +1,40 @@
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-// 실제 파일 경로에 맞춰 import를 수정하세요.
-// 예: import phoneImage from '../../assets/Landing/멜픽-멜픽생성.png';
-// import phoneImage from '../../assets/Landing/멜픽-멜픽생성.png';
+// 이미지 3장 (실제 경로에 맞춰 import 경로 수정)
+import Landing7Img1 from '../../assets/Landing/Landing7Img1.svg';
+import Landing7Img2 from '../../assets/Landing/Landing7Img2.svg';
+import Landing7Img3 from '../../assets/Landing/Landing7Img3.svg';
 
 const LandingPage7: React.FC = () => {
+  // 현재 슬라이드 인덱스(0, 1, 2)를 관리
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // PhoneWrapper의 DOM 참조
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // 스크롤 이벤트 핸들러
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+
+    const scrollLeft = scrollRef.current.scrollLeft;
+    const wrapperWidth = scrollRef.current.clientWidth;
+    // 현재 슬라이드 인덱스 계산 (가장 가까운 정수로 반올림)
+    const index = Math.round(scrollLeft / wrapperWidth);
+    setCurrentIndex(index);
+  };
+
+  // PhoneWrapper가 마운트된 후, 스크롤 이벤트 리스너 등록
+  useEffect(() => {
+    const wrapper = scrollRef.current;
+    if (!wrapper) return;
+
+    wrapper.addEventListener('scroll', handleScroll);
+    return () => {
+      wrapper.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <Container>
       <Title>melpik앱으로 편하게 관리하세요</Title>
@@ -15,16 +44,24 @@ const LandingPage7: React.FC = () => {
         앱에서 편리하게 관리할 수 있어요
       </Subtitle>
 
-      {/* 핸드폰 이미지를 가운데 배치 */}
-      <PhoneWrapper>
-        {/* <PhoneImage src={phoneImage} alt='멜픽앱 예시 화면' /> */}
+      {/* 가로 스크롤 래퍼 */}
+      <PhoneWrapper ref={scrollRef}>
+        <Slide>
+          <PhoneImage src={Landing7Img1} alt='첫 번째 화면' />
+        </Slide>
+        <Slide>
+          <PhoneImage src={Landing7Img2} alt='두 번째 화면' />
+        </Slide>
+        <Slide>
+          <PhoneImage src={Landing7Img3} alt='세 번째 화면' />
+        </Slide>
       </PhoneWrapper>
 
-      {/* 페이지 인디케이터 (작은 점 2개 + 주황색 바 1개) */}
+      {/* 하단 인디케이터 (3개의 점) */}
       <DotGroup>
-        <Rect />
-        <Dot />
-        <Dot />
+        <Dot isActive={currentIndex === 0} />
+        <Dot isActive={currentIndex === 1} />
+        <Dot isActive={currentIndex === 2} />
       </DotGroup>
     </Container>
   );
@@ -35,7 +72,7 @@ export default LandingPage7;
 /* ====================== Styled Components ====================== */
 
 /**
- * 1) 전체 컨테이너 (400×700 박스, 흰 배경, 테두리 둥글게)
+ * 전체 컨테이너 (400×700 박스, 흰 배경, 테두리 둥글게)
  */
 const Container = styled.div`
   width: 400px;
@@ -46,17 +83,17 @@ const Container = styled.div`
   border-radius: 20px;
   box-sizing: border-box;
 
-  /* 세로로 요소들을 순서대로 배치하고, 가운데 정렬 */
+  /* 세로로 요소들을 순서대로 배치하고, 위쪽부터 정렬 */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
 
-  /* 위쪽 여백이 너무 붙지 않도록 패딩을 줄 수 있음 */
+  /* 위쪽 여백을 주어 텍스트가 너무 붙지 않도록 조절 */
   padding: 30px 0;
 `;
 
-/** 2) 상단 큰 제목 (20px) */
+/** 상단 큰 제목 (20px) */
 const Title = styled.h1`
   font-family: 'NanumSquare Neo OTF', sans-serif;
   font-style: normal;
@@ -66,11 +103,11 @@ const Title = styled.h1`
   text-align: center;
 
   color: #000000;
-  margin: 0; /* h 태그 기본 여백 제거 */
-  margin-bottom: 12px; /* 제목과 부제목 간격 */
+  margin: 0;
+  margin-bottom: 12px;
 `;
 
-/** 3) 부제목 (17px) */
+/** 부제목 (17px) */
 const Subtitle = styled.div`
   font-family: 'NanumSquare Neo OTF', sans-serif;
   font-style: normal;
@@ -80,61 +117,83 @@ const Subtitle = styled.div`
   text-align: center;
   color: #000000;
 
-  margin-bottom: 20px; /* 부제목과 이미지 간격 */
+  margin-bottom: 20px;
 `;
 
 /**
- * 4) 핸드폰 이미지를 감싸는 박스
- *  - 가로폭 자동(또는 고정값) 조정 가능
- *  - 회색/테두리를 줄 수도 있음
+ * 가로 스크롤 래퍼
+ * - 3장의 슬라이드를 가로로 배치
+ * - scroll-snap-type: x mandatory; → 스크롤 스냅
+ * - scroll-snap-stop: always; → 한 번 스크롤하면 정확히 한 슬라이드씩 넘어감
  */
 const PhoneWrapper = styled.div`
   width: 228px;
-  /* 높이는 내용물(이미지)에 맞춰 자동 */
+  height: 470px;
   background: #ececec;
   border: 5px solid #d9d9d9;
   border-radius: 20px 20px 0 0;
-  overflow: hidden;
+  overflow-x: scroll;
+  overflow-y: hidden;
+
+  /* 스크롤 스냅 설정 */
+  scroll-snap-type: x mandatory;
+  scroll-snap-stop: always;
+  scroll-behavior: smooth;
+
+  /* 스크롤바 숨기기 (옵션) */
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: row;
+  margin-bottom: 20px;
+`;
 
-  margin-bottom: 20px; /* 이미지와 아래 인디케이터 간격 */
+/**
+ * 각 슬라이드(이미지 1장씩)
+ * - scroll-snap-align: center → 스냅 시 중앙 정렬
+ * - flex: 0 0 100% → 부모 PhoneWrapper 폭만큼 한 슬라이드가 차지
+ */
+const Slide = styled.div`
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+
+  /* 내부 이미지 중앙 정렬 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 /** 실제 핸드폰 화면 이미지 */
 const PhoneImage = styled.img`
   width: 100%;
-  /* 높이 비율 유지: auto, 필요하면 object-fit: cover */
   height: auto;
-  border-radius: 20px 20px 0 0;
 `;
 
 /**
- * 5) 페이지 인디케이터 (점2 + 주황색 막대1)
- *  - flex 로 가로 배치
+ * 하단 인디케이터 그룹
+ * - 3개의 점을 배치
+ * - 전체를 180도 회전 (원한다면 제거 가능)
  */
 const DotGroup = styled.div`
   display: flex;
   gap: 5px;
-  /* 가운데 정렬 */
   justify-content: center;
   align-items: center;
 `;
 
-/** 주황색 막대 (20×10) */
-const Rect = styled.div`
-  width: 20px;
+/**
+ * 각 점(Dot)
+ * - isActive = true → 주황색(#F5AB35), 크기 20×10 (캡슐 모양)
+ * - isActive = false → 회색(#D9D9D9), 크기 10×10 (원)
+ */
+const Dot = styled.div<{ isActive: boolean }>`
+  width: ${({ isActive }) => (isActive ? '20px' : '10px')};
   height: 10px;
-  background: #f5ab35;
   border-radius: 100px;
-`;
+  background: ${({ isActive }) => (isActive ? '#F5AB35' : '#D9D9D9')};
 
-/** 회색 점 (10×10) */
-const Dot = styled.div`
-  width: 10px;
-  height: 10px;
-  background: #d9d9d9;
-  border-radius: 50%;
+  /* 부드러운 전환 효과 */
+  transition: all 0.2s ease;
 `;
