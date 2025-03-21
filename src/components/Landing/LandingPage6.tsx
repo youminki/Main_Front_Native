@@ -11,33 +11,47 @@ const LandingPage6: React.FC = () => {
 
   return (
     <Container>
-      <Text>
-        현재 <BoldText>N명</BoldText>의 인플루언서들이
-        <br /> melpik을 신청했어요!
-      </Text>
-
-      <StartButton onClick={handleStartClick}>melpik 시작하기</StartButton>
-
-      <Text>
-        사전예약 마감까지 <BoldText>N일 00:00시간</BoldText> 남았어요!
-      </Text>
+      <MainContent>
+        <Text>
+          현재 <BoldText>N명</BoldText>의 인플루언서들이
+          <br /> melpik을 신청했어요!
+        </Text>
+        <StartButton onClick={handleStartClick}>melpik 시작하기</StartButton>
+        <Text>
+          사전예약 마감까지 <BoldText>N일 00:00시간</BoldText> 남았어요!
+        </Text>
+      </MainContent>
     </Container>
   );
 };
 
 export default LandingPage6;
 
+/* ====================== Styled Components ====================== */
+
 const Container = styled.div`
+  width: 100%;
+  height: 100%; /* FadeInWrapper가 600px인 경우 100% 채움 */
   position: relative;
-  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 20px;
+
+  /* 배경색 */
   background-color: #f5ab35;
-  border-radius: 20px 20px 0 0;
+
+  /* flex 레이아웃으로 중앙 정렬 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const MainContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 10px;
-  padding: 30px 0;
+  padding: 30px;
 `;
 
 const Text = styled.div`
@@ -72,7 +86,6 @@ const StartButton = styled.button`
     background-color: #f0f0f0;
     transform: scale(1.05);
   }
-
   &:active {
     transform: scale(0.95);
   }

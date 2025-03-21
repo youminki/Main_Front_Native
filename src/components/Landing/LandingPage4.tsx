@@ -42,15 +42,22 @@ const LandingPage4: React.FC = () => {
 
 export default LandingPage4;
 
+/* ====================== Styled Components ====================== */
+
 const Container = styled.div`
+  width: 100%;
+  height: 100%;
   position: relative;
-  min-height: 1100px;
-  margin: 0 auto;
-  background: #fcf6e6;
+  overflow: hidden;
   border-radius: 20px;
+
+  /* 배경색 + 배경이미지 */
+  background: #fcf6e6;
+
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* 수직 중앙정렬 (필요 시 조절) */
   padding: 40px 20px;
 `;
 
@@ -68,10 +75,12 @@ const BackgroundImage = styled.img`
 const ContentWrapper = styled.div`
   position: relative;
   z-index: 1;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 30px;
+  max-width: 600px;
+  margin: 0 auto;
 `;
 
 const Title = styled.h1`
@@ -81,6 +90,25 @@ const Title = styled.h1`
   line-height: 34px;
   color: #000000;
   margin: 0 0 14px;
+`;
+
+const Text = styled.div`
+  font-family: 'NanumSquare Neo OTF';
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 30px;
+  text-align: center;
+  margin-top: 10px;
+  color: #000000;
+`;
+
+const BoldText = styled.span`
+  font-family: 'NanumSquare Neo OTF';
+  font-weight: 800;
+  font-size: 17px;
+  line-height: 30px;
+  text-align: center;
+  color: #000000;
 `;
 
 const BulletList = styled.ul`
@@ -106,24 +134,5 @@ const ItemText = styled.span`
   font-weight: 400;
   font-size: 15px;
   line-height: 24px;
-  color: #000000;
-`;
-
-const Text = styled.div`
-  font-family: 'NanumSquare Neo OTF';
-  font-weight: 400;
-  font-size: 17px;
-  line-height: 30px;
-  text-align: center;
-  margin-top: 10px;
-  color: #000000;
-`;
-
-const BoldText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
-  font-weight: 800;
-  font-size: 17px;
-  line-height: 30px;
-  text-align: center;
   color: #000000;
 `;

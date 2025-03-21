@@ -9,14 +9,11 @@ import LandingPage5 from '../components/Landing/LandingPage5';
 import LandingPage6 from '../components/Landing/LandingPage6';
 import Footer from '../components/Landing/Footer';
 
-type WrapperVariant = 'odd' | 'even';
-
 interface ScrollFadeInProps {
-  variant: WrapperVariant;
   children: React.ReactNode;
 }
 
-// 전역 스크롤 방향을 감지하는 커스텀 훅
+// 스크롤 방향 감지 훅
 const useScrollDirection = () => {
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down');
   const lastScrollY = useRef(window.scrollY);
@@ -31,7 +28,6 @@ const useScrollDirection = () => {
       }
       lastScrollY.current = currentScrollY;
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -39,7 +35,7 @@ const useScrollDirection = () => {
   return scrollDirection;
 };
 
-const ScrollFadeIn: React.FC<ScrollFadeInProps> = ({ variant, children }) => {
+const ScrollFadeIn: React.FC<ScrollFadeInProps> = ({ children }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const scrollDirection = useScrollDirection();
@@ -66,7 +62,6 @@ const ScrollFadeIn: React.FC<ScrollFadeInProps> = ({ variant, children }) => {
   return (
     <FadeInWrapper
       ref={ref}
-      variant={variant}
       scrollDirection={scrollDirection}
       className={visible ? 'visible' : ''}
     >
@@ -87,22 +82,22 @@ const Landing: React.FC = () => {
     <LandingContainer>
       <Header />
       <ContentWrapper>
-        <ScrollFadeIn variant='odd'>
+        <ScrollFadeIn>
           <LandingPage1 />
         </ScrollFadeIn>
-        <ScrollFadeIn variant='even'>
+        <ScrollFadeIn>
           <LandingPage2 />
         </ScrollFadeIn>
-        <ScrollFadeIn variant='odd'>
+        <ScrollFadeIn>
           <LandingPage3 />
         </ScrollFadeIn>
-        <ScrollFadeIn variant='even'>
+        <ScrollFadeIn>
           <LandingPage4 />
         </ScrollFadeIn>
-        <ScrollFadeIn variant='odd'>
+        <ScrollFadeIn>
           <LandingPage5 />
         </ScrollFadeIn>
-        <ScrollFadeIn variant='even'>
+        <ScrollFadeIn>
           <LandingPage6 />
         </ScrollFadeIn>
       </ContentWrapper>
@@ -113,34 +108,45 @@ const Landing: React.FC = () => {
 
 export default Landing;
 
+/* ====================== Styled Components ====================== */
+
 const LandingContainer = styled.div`
+  background-color: aquamarine;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+
   max-width: 600px;
-  margin: 50px auto 0;
+  margin: 0 auto;
   overflow-x: hidden;
 `;
 
 const ContentWrapper = styled.div`
+  margin-top: 100px;
+  margin-bottom: 20px;
   width: 100%;
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
-// FadeInWrapper는 스크롤 방향(scrollDirection) prop에 따라 초기 translateY값을 다르게 적용합니다.
-// 스크롤 다운이면 아래에서 위로 (translateY(20px)), 스크롤 업이면 위에서 아래로 (translateY(-20px))
-const FadeInWrapper = styled.div<{
-  variant: WrapperVariant;
-  scrollDirection: 'up' | 'down';
-}>`
-  width: 100%;
+/**
+ * 1) height: 600px로 고정
+ * 2) position: relative, overflow: hidden
+ * 3) 자식(Container)에서 height: 100% 사용
+ */
+const FadeInWrapper = styled.div<{ scrollDirection: 'up' | 'down' }>`
+  /* width: 90%;
+  height: 700px;
   position: relative;
-  margin-bottom: -40px;
-  z-index: ${({ variant }) => (variant === 'even' ? 3 : 1)};
+  overflow: hidden;
+
+  border-radius: 20px;
+  margin-bottom: 40px;
+  background-color: #ffffff; */
+
+  /* 페이드 인 애니메이션 */
   opacity: 0;
   transform: ${({ scrollDirection }) =>
     scrollDirection === 'down' ? 'translateY(20px)' : 'translateY(-20px)'};

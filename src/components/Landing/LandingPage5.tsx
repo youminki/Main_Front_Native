@@ -93,59 +93,78 @@ const LandingPage5: React.FC = () => {
 
   return (
     <Container>
-      <LandingTitle>
-        <BoldText>
-          멜픽앱으로 편하게 관리하세요! <br />
-        </BoldText>
-        <Text>
-          판매에 관련된 모든 진행사항을
-          <br /> 앱에서 편리하게 관리할 수 있어요
-        </Text>
-      </LandingTitle>
-      <LandingSubtitle>{screens[currentScreenIndex].subtitle}</LandingSubtitle>
-      <ScreenContainer>
-        <ArrowButton onClick={handlePrevClick}>
-          <ArrowIcon src={LeftArrowIcon} alt='Previous' />
-        </ArrowButton>
-        <ScreenImageContainer>
-          {imagesLoaded ? (
-            <ScreenImage
-              key={currentScreenIndex}
-              src={screens[currentScreenIndex].img}
-              alt='Screen'
-              loading='lazy'
-              animationDirection={animationDirection}
-            />
-          ) : (
-            <LoadingSpinner />
-          )}
-        </ScreenImageContainer>
-        <ArrowButton onClick={handleNextClick}>
-          <ArrowIcon src={RightArrowIcon} alt='Next' />
-        </ArrowButton>
-      </ScreenContainer>
-      <PaginationDots>
-        {screens.map((_, idx) => (
-          <Dot key={idx} isActive={currentScreenIndex === idx} />
-        ))}
-      </PaginationDots>
+      <MainContent>
+        <LandingTitle>
+          <BoldText>
+            멜픽앱으로 편하게 관리하세요! <br />
+          </BoldText>
+          <Text>
+            판매에 관련된 모든 진행사항을
+            <br /> 앱에서 편리하게 관리할 수 있어요
+          </Text>
+        </LandingTitle>
+        <LandingSubtitle>
+          {screens[currentScreenIndex].subtitle}
+        </LandingSubtitle>
+        <ScreenContainer>
+          <ArrowButton onClick={handlePrevClick}>
+            <ArrowIcon src={LeftArrowIcon} alt='Previous' />
+          </ArrowButton>
+          <ScreenImageContainer>
+            {imagesLoaded ? (
+              <ScreenImage
+                key={currentScreenIndex}
+                src={screens[currentScreenIndex].img}
+                alt='Screen'
+                loading='lazy'
+                animationDirection={animationDirection}
+              />
+            ) : (
+              <LoadingSpinner />
+            )}
+          </ScreenImageContainer>
+          <ArrowButton onClick={handleNextClick}>
+            <ArrowIcon src={RightArrowIcon} alt='Next' />
+          </ArrowButton>
+        </ScreenContainer>
+        <PaginationDots>
+          {screens.map((_, idx) => (
+            <Dot key={idx} isActive={currentScreenIndex === idx} />
+          ))}
+        </PaginationDots>
+      </MainContent>
     </Container>
   );
 };
 
-export default React.memo(LandingPage5);
+export default LandingPage5;
+
+/* ====================== Styled Components ====================== */
 
 const Container = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+
+  background-color: #f5f5f5;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const MainContent = styled.div`
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 60px 20px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  background-color: #f5f5f5;
-  min-height: 932px;
-  max-width: 600px;
-  margin: 0 auto;
-  border-radius: 20px;
 `;
 
 const LandingTitle = styled.h1`
@@ -209,7 +228,6 @@ const ArrowButton = styled.button`
   &:hover {
     transform: translateY(-50%) scale(1.1);
   }
-
   &:active {
     transform: translateY(-50%) scale(0.95);
   }
@@ -217,7 +235,6 @@ const ArrowButton = styled.button`
   &:first-of-type {
     left: 0;
   }
-
   &:last-of-type {
     right: 0;
   }
