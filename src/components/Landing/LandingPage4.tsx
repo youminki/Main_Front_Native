@@ -25,6 +25,7 @@ const LandingPage3: React.FC = () => {
     { img: MOJO_S_PHINE, name: 'MOJO.S.PHINE' },
   ];
 
+  // 드래그 스크롤 관련 상태
   const listRef = useRef<HTMLDivElement>(null);
   const isDown = useRef(false);
   const startX = useRef(0);
@@ -66,17 +67,13 @@ const LandingPage3: React.FC = () => {
     <Container>
       <MainContent>
         <Hanger src={HangerIcon} alt='Hanger Icon' />
-        <IntroText>
-          매일매일 새로운 옷장
-          <br />옷 잘입는 언니들의 PICK!
-        </IntroText>
+        <SmallTitle>당신의 취향에 꼭 맞는</SmallTitle>
+        <LargeTitle>
+          컨템포러리 브랜드들이
+          <br />
+          melpik과 함께 합니다
+        </LargeTitle>
 
-        <MainTitle>
-          매일매일 새로운 옷장
-          <br />옷 잘입는 언니들의 PICK!
-        </MainTitle>
-
-        {/* 가로 스크롤 영역 */}
         <BrandList
           ref={listRef}
           onMouseDown={handleMouseDown}
@@ -105,7 +102,7 @@ export default LandingPage3;
 
 /* ====================== Styled Components ====================== */
 
-/** 전체 컨테이너 (400×700) */
+/** 400×700 박스, 상단 정렬 */
 const Container = styled.div`
   width: 400px;
   height: 700px;
@@ -113,66 +110,63 @@ const Container = styled.div`
   background: #ffffff;
   border-radius: 20px;
 
+  /* 세로 방향으로 쌓고, 위쪽 정렬 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* 상단 정렬 */
 `;
 
 const MainContent = styled.div`
+  /* 내부 콘텐츠 래퍼 */
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 30px; /* 상단 여백 */
 `;
 
 const Hanger = styled.img`
   width: 45px;
   height: auto;
   margin-bottom: 20px;
+  margin-top: 30px;
 `;
 
-const IntroText = styled.div`
+const SmallTitle = styled.div`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 400;
   font-size: 17px;
   line-height: 40px;
   text-align: center;
   color: #000000;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
-const MainTitle = styled.h1`
+const LargeTitle = styled.h1`
   font-family: 'NanumSquare Neo OTF';
-  font-style: normal;
   font-weight: 700;
   font-size: 23px;
   line-height: 30px;
   text-align: center;
   color: #000000;
-  margin: 0 0 20px;
+  margin: 0 0 30px;
 `;
 
 /** 가로 스크롤 리스트 */
 const BrandList = styled.div`
-  width: 360px; /* 컨테이너 폭보다 살짝 작게 해서 양옆 여백 확보 */
-  height: 230px; /* 이미지 높이에 맞게 조정 (200px + 여백 등) */
-  overflow-x: auto; /* 가로 스크롤 가능 */
-  overflow-y: hidden; /* 세로 스크롤 숨김 */
+  width: 100%; /* 컨테이너보다 약간 작게 */
+  height: 300px;
+  overflow-x: auto;
+  overflow-y: hidden;
   cursor: grab;
   margin-bottom: 20px;
+  margin-top: 49px;
 
-  /* 스크롤바 숨기기 */
   &::-webkit-scrollbar {
-    display: none;
+    display: none; /* 스크롤바 숨김 */
   }
 
-  /* 드래그 중 스타일 (선택사항) */
-  &.active {
-    cursor: grabbing;
-  }
-
-  /* 내부 요소를 가로로 나열 */
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -185,13 +179,13 @@ const Brand = styled.div`
   align-items: center;
   position: relative;
   transition: transform 0.3s;
-  margin-right: 20px; /* 이미지들 간 간격 */
+  margin-right: 20px;
 `;
 
 /** 브랜드 이미지 */
 const BrandImage = styled.img`
-  width: 150px; /* 컨테이너 밖으로 넘치지 않도록 고정 크기 */
-  height: 200px; /* 필요에 맞게 조절 */
+  width: 240px;
+  height: 300px;
   object-fit: cover;
   border-radius: 20px;
   opacity: 0.6;
