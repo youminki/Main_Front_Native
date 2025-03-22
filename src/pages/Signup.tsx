@@ -20,6 +20,7 @@ import {
   checkNickname,
 } from '../api/user/userApi';
 import { regionDistrictData } from '../components/Signup/regionDistrictData';
+import Modal from '../components/Melpik/CreateMelpik/Settings/Modal';
 
 type SignupFormData = {
   email: string;
@@ -32,12 +33,26 @@ type SignupFormData = {
   region: string;
   district: string;
   melpickAddress: string;
+
+  height: string;
+  size: string;
+  dress: string;
+  top: string;
+  bottom: string;
+  brand: string;
+  shoulder?: string;
+  chest?: string;
+  waist?: string;
+  sleeve?: string;
+  productCount: string;
+  exposureFrequency: string;
 };
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
   const methods = useForm<SignupFormData>({
     resolver: yupResolver(schemaSignup),
+
     mode: 'all',
     defaultValues: {
       email: '',
@@ -50,11 +65,24 @@ const Signup: React.FC = () => {
       region: '',
       district: '',
       melpickAddress: '',
+      height: '',
+      size: '',
+      dress: '',
+      top: '',
+      bottom: '',
+      brand: '',
+      shoulder: '',
+      chest: '',
+      waist: '',
+      sleeve: '',
+      productCount: '',
+      exposureFrequency: '',
     },
   });
 
   const {
     register,
+    setValue,
     handleSubmit,
     trigger,
     formState: { errors, isSubmitting },
@@ -63,6 +91,15 @@ const Signup: React.FC = () => {
   } = methods;
 
   const selectedRegion = watch('region');
+
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const handleBrandSelect = (brands: string[]) => {
+    setSelectedBrands(brands);
+    setValue('brand', brands.join(', '));
+  };
+  const openModal = () => setModalOpen(true);
+  const closeModal = () => setModalOpen(false);
 
   // 각 검증 성공 여부 상태
   const [isEmailChecked, setIsEmailChecked] = useState<boolean>(false);
@@ -628,6 +665,7 @@ const Signup: React.FC = () => {
                 )}
               </InputField>
             </RowLabel>
+            <Divider />
             <InputField
               label='멜픽 주소설정(영문, 숫자 12글자 이내)'
               id='melpickAddress'
@@ -651,6 +689,7 @@ const Signup: React.FC = () => {
               }}
               prefix='https://www.melpick.com/'
             />
+            <Divider />
             <InputField
               label='인스타 아이디'
               id='instar'
@@ -664,14 +703,151 @@ const Signup: React.FC = () => {
               }}
               prefix='https://www.instagram.com/'
             />
-            <BlackContainer />
-            <BottomBar
-              imageSrc={ResetButtonIcon}
-              buttonText={isSubmitting ? '가입 중...' : '회원가입'}
-              type='submit'
-              disabled={isSubmitting}
-            />
+            <Divider />
+            <RowLabel>
+              <InputField
+                label='기본정보'
+                id='height'
+                as={CustomSelect}
+                error={errors.height}
+                {...register('height', { required: true })}
+              >
+                <option value='' disabled selected hidden>
+                  키 선택
+                </option>
+                <option value='160'>160 cm</option>
+                <option value='165'>165 cm</option>
+                <option value='170'>170 cm</option>
+                <option value='175'>175 cm</option>
+              </InputField>
+              <InputField
+                label=''
+                id='size'
+                as={CustomSelect}
+                error={errors.size}
+                {...register('size', { required: true })}
+              >
+                <option value='' disabled selected hidden>
+                  몸무게 선택
+                </option>
+                {Array.from({ length: 100 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}kg
+                  </option>
+                ))}
+              </InputField>
+            </RowLabel>
+
+            <RowLabel>
+              <InputField
+                label='착용 제품사이즈'
+                id='dress'
+                as={CustomSelect}
+                error={errors.dress}
+                {...register('dress', { required: true })}
+              >
+                <option value='' disabled selected hidden>
+                  상의 사이즈 선택
+                </option>
+                <option value='44'>44 (S)</option>
+                <option value='55'>55 (M)</option>
+                <option value='66'>66 (L)</option>
+                <option value='77'>77 (XL)</option>
+              </InputField>
+              <InputField
+                label=''
+                id='top'
+                as={CustomSelect}
+                error={errors.top}
+                {...register('top', { required: true })}
+              >
+                <option value='' disabled selected hidden>
+                  원피스 사이즈 선택
+                </option>
+                <option value='44'>44 (S)</option>
+                <option value='55'>55 (M)</option>
+                <option value='66'>66 (L)</option>
+                <option value='77'>77 (XL)</option>
+              </InputField>
+              <InputField
+                label=''
+                id='bottom'
+                as={CustomSelect}
+                error={errors.bottom}
+                {...register('bottom', { required: true })}
+              >
+                <option value='' disabled selected hidden>
+                  하의 사이즈 선택
+                </option>
+                <option value='44'>44 (S)</option>
+                <option value='55'>55 (M)</option>
+                <option value='66'>66 (L)</option>
+                <option value='77'>77 (XL)</option>
+              </InputField>
+            </RowLabel>
+
+            <RowLabel>
+              <InputField
+                label='선호 브랜드 선택(최대 3가지)'
+                id='brand'
+                type='text'
+                placeholder='브랜드 3가지를 선택하세요'
+                error={errors.brand}
+                {...register('brand')}
+                value={selectedBrands.join(', ') || '브랜드 3가지를 선택하세요'}
+                buttonLabel='선택하기'
+                onButtonClick={openModal}
+              />
+            </RowLabel>
+
+            {/* 추가: 어깨너비, 가슴둘레 */}
+            <RowLabel>
+              <InputField
+                label='어깨너비 cm (선택)'
+                id='shoulder'
+                type='text'
+                placeholder='어깨너비를 입력하세요'
+                error={errors.shoulder}
+                {...register('shoulder')}
+              />
+              <InputField
+                label='가슴둘레 cm (선택)'
+                id='chest'
+                type='text'
+                placeholder='가슴둘레를 입력하세요'
+                error={errors.chest}
+                {...register('chest')}
+              />
+            </RowLabel>
+
+            {/* 추가: 허리둘레, 소매길이 */}
+            <RowLabel>
+              <InputField
+                label='허리둘레 cm (선택)'
+                id='waist'
+                type='text'
+                placeholder='허리둘레를 입력하세요'
+                error={errors.waist}
+                {...register('waist')}
+              />
+              <InputField
+                label='소매길이 cm (선택)'
+                id='sleeve'
+                type='text'
+                placeholder='소매길이를 입력하세요'
+                error={errors.sleeve}
+                {...register('sleeve')}
+              />
+            </RowLabel>
           </Form>
+
+          <BlackContainer />
+          <BottomBar
+            imageSrc={ResetButtonIcon}
+            buttonText={isSubmitting ? '가입 중...' : '회원가입'}
+            type='submit'
+            disabled={isSubmitting}
+          />
         </Container>
       </FormProvider>
 
@@ -682,6 +858,13 @@ const Signup: React.FC = () => {
       >
         {signupResult}
       </ReusableModal>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onSelect={handleBrandSelect}
+        selectedBrands={selectedBrands}
+      />
     </ThemeProvider>
   );
 };
@@ -788,4 +971,10 @@ const TimerDisplay = styled.div`
   border-radius: 4px;
 
   margin-top: 20px;
+`;
+
+const Divider = styled.hr`
+  border: none;
+  width: 100%;
+  border: 1px solid #eeeeee;
 `;
