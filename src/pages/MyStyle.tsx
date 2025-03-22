@@ -63,6 +63,9 @@ const ContemporarySettings: React.FC = () => {
               error={errors.height}
               {...register('height', { required: true })}
             >
+              <option value='' disabled selected hidden>
+                키 선택
+              </option>
               <option value='160'>160 cm</option>
               <option value='165'>165 cm</option>
               <option value='170'>170 cm</option>
@@ -75,6 +78,9 @@ const ContemporarySettings: React.FC = () => {
               error={errors.size}
               {...register('size', { required: true })}
             >
+              <option value='' disabled selected hidden>
+                몸무게 선택
+              </option>
               {Array.from({ length: 100 }, (_, i) => (
                 <option key={i + 1} value={i + 1}>
                   {i + 1}kg
@@ -92,6 +98,9 @@ const ContemporarySettings: React.FC = () => {
               error={errors.dress}
               {...register('dress', { required: true })}
             >
+              <option value='' disabled selected hidden>
+                상의 사이즈 선택
+              </option>
               <option value='44'>44 (S)</option>
               <option value='55'>55 (M)</option>
               <option value='66'>66 (L)</option>
@@ -104,6 +113,9 @@ const ContemporarySettings: React.FC = () => {
               error={errors.top}
               {...register('top', { required: true })}
             >
+              <option value='' disabled selected hidden>
+                원피스 사이즈 선택
+              </option>
               <option value='44'>44 (S)</option>
               <option value='55'>55 (M)</option>
               <option value='66'>66 (L)</option>
@@ -116,6 +128,9 @@ const ContemporarySettings: React.FC = () => {
               error={errors.bottom}
               {...register('bottom', { required: true })}
             >
+              <option value='' disabled selected hidden>
+                하의 사이즈 선택
+              </option>
               <option value='44'>44 (S)</option>
               <option value='55'>55 (M)</option>
               <option value='66'>66 (L)</option>
