@@ -649,7 +649,20 @@ const Signup: React.FC = () => {
                 e.preventDefault();
                 handleMelpickAddressCheck();
               }}
-              prefix='melpick.com/'
+              prefix='https://www.melpick.com/'
+            />
+            <InputField
+              label='인스타 아이디'
+              id='instar'
+              type='text'
+              placeholder='인스타 아이디를 입력하세요'
+              required
+              maxLength={50}
+              onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.preventDefault();
+                handleMelpickAddressCheck();
+              }}
+              prefix='https://www.instagram.com/'
             />
             <BlackContainer />
             <BottomBar
