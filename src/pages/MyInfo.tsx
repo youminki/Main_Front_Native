@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { schemaSignup } from '../hooks/ValidationYup';
+import { schemaInfo } from '../hooks/ValidationYup';
 import InputField from '../components/InputField';
 import Theme from '../styles/Theme';
 import BottomBar from '../components/BottomNav2';
@@ -24,7 +24,7 @@ type MyInfoFormData = {
 
 const MyInfo: React.FC = () => {
   const methods = useForm<MyInfoFormData>({
-    resolver: yupResolver(schemaSignup),
+    resolver: yupResolver(schemaInfo),
     mode: 'all',
     defaultValues: {
       email: '',
