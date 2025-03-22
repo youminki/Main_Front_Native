@@ -92,7 +92,10 @@ const ContemporarySettings: React.FC = () => {
               error={errors.dress}
               {...register('dress', { required: true })}
             >
-              <option value='원피스'>원피스</option>
+              <option value='44'>44 (S)</option>
+              <option value='55'>55 (M)</option>
+              <option value='66'>66 (L)</option>
+              <option value='77'>77 (XL)</option>
             </InputField>
             <InputField
               label=''
@@ -101,7 +104,10 @@ const ContemporarySettings: React.FC = () => {
               error={errors.top}
               {...register('top', { required: true })}
             >
-              <option value='상의'>상의</option>
+              <option value='44'>44 (S)</option>
+              <option value='55'>55 (M)</option>
+              <option value='66'>66 (L)</option>
+              <option value='77'>77 (XL)</option>
             </InputField>
             <InputField
               label=''
@@ -110,7 +116,10 @@ const ContemporarySettings: React.FC = () => {
               error={errors.bottom}
               {...register('bottom', { required: true })}
             >
-              <option value='하의'>하의</option>
+              <option value='44'>44 (S)</option>
+              <option value='55'>55 (M)</option>
+              <option value='66'>66 (L)</option>
+              <option value='77'>77 (XL)</option>
             </InputField>
           </Row>
           <Divider />
