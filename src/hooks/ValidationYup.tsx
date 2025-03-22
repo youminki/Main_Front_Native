@@ -66,6 +66,14 @@ export const schemaSignup = yup
         /^[a-zA-Z0-9]{1,12}$/,
         '멜픽 주소는 영문과 숫자로 이루어진 1~12자 이내로 입력해주세요.'
       ),
+    height: yup.string().required('키를 선택해주세요.'),
+    size: yup.string().required('사이즈를 선택해주세요.'),
+    dress: yup.string().required('착용 스펙을 선택해주세요.'),
+    top: yup.string().required('상의 사이즈를 선택해주세요.'),
+    bottom: yup.string().required('하의 사이즈를 선택해주세요.'),
+    brand: yup.string().required('선호 브랜드를 선택해주세요.'),
+    productCount: yup.string().required('상품 노출 수를 선택해주세요.'),
+    exposureFrequency: yup.string().required('노출 빈도를 선택해주세요.'),
   })
   .required();
 

@@ -63,52 +63,78 @@ const ContemporarySettings: React.FC = () => {
               error={errors.height}
               {...register('height', { required: true })}
             >
+              <option value='' disabled selected hidden>
+                키 선택
+              </option>
               <option value='160'>160 cm</option>
               <option value='165'>165 cm</option>
               <option value='170'>170 cm</option>
               <option value='175'>175 cm</option>
             </InputField>
             <InputField
-              label='사이즈'
+              label=''
               id='size'
               as={CustomSelect}
               error={errors.size}
               {...register('size', { required: true })}
             >
-              <option value='S'>S</option>
-              <option value='M'>M</option>
-              <option value='L'>L</option>
+              <option value='' disabled selected hidden>
+                몸무게 선택
+              </option>
+              {Array.from({ length: 100 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}kg
+                </option>
+              ))}
             </InputField>
           </Row>
           <Divider />
 
           <Row>
             <InputField
-              label='착용스펙 상세입력'
+              label='착용 제품사이즈'
               id='dress'
               as={CustomSelect}
               error={errors.dress}
               {...register('dress', { required: true })}
             >
-              <option value='원피스'>원피스</option>
+              <option value='' disabled selected hidden>
+                상의 사이즈 선택
+              </option>
+              <option value='44'>44 (S)</option>
+              <option value='55'>55 (M)</option>
+              <option value='66'>66 (L)</option>
+              <option value='77'>77 (XL)</option>
             </InputField>
             <InputField
-              label='상의'
+              label=''
               id='top'
               as={CustomSelect}
               error={errors.top}
               {...register('top', { required: true })}
             >
-              <option value='상의'>상의</option>
+              <option value='' disabled selected hidden>
+                원피스 사이즈 선택
+              </option>
+              <option value='44'>44 (S)</option>
+              <option value='55'>55 (M)</option>
+              <option value='66'>66 (L)</option>
+              <option value='77'>77 (XL)</option>
             </InputField>
             <InputField
-              label='하의'
+              label=''
               id='bottom'
               as={CustomSelect}
               error={errors.bottom}
               {...register('bottom', { required: true })}
             >
-              <option value='하의'>하의</option>
+              <option value='' disabled selected hidden>
+                하의 사이즈 선택
+              </option>
+              <option value='44'>44 (S)</option>
+              <option value='55'>55 (M)</option>
+              <option value='66'>66 (L)</option>
+              <option value='77'>77 (XL)</option>
             </InputField>
           </Row>
           <Divider />

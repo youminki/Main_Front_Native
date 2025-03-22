@@ -1,290 +1,207 @@
-import React, { useState, useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
-import LeftArrowIcon from '../../assets/Landing/left-arrow.svg';
-import RightArrowIcon from '../../assets/Landing/right-arrow.svg';
-import ScreenImg1 from '../../assets/Landing/ScreenImg1.svg';
-import ScreenImg2 from '../../assets/Landing/ScreenImg2.svg';
-import ScreenImg3 from '../../assets/Landing/ScreenImg3.svg';
+import React from 'react';
+import styled from 'styled-components';
 
-interface Screen {
-  img: string;
-  subtitle: React.ReactNode;
-}
-
-const screens: Screen[] = [
-  {
-    img: ScreenImg1,
-    subtitle: (
-      <>
-        인스타그램으로 <br />
-        나의 스타일 파악 후 <br />
-        브랜드 매칭하기
-      </>
-    ),
-  },
-  { img: ScreenImg2, subtitle: '노출 & 포스팅할 제품 선택하기' },
-  {
-    img: ScreenImg3,
-    subtitle: (
-      <>
-        콘텐츠 제작, 팔로워들과 소통하며 <br />
-        판매 수익 창출
-      </>
-    ),
-  },
-];
-
-const slideInLeft = keyframes`
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-`;
-
-const slideInRight = keyframes`
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-`;
+// 아이콘/이미지 (실제 경로/파일명에 맞게 import)
+import CheckButtonIcon from '../../assets/Landing/CheckButton.svg';
+import HeaderButtonIcon from '../../assets/Landing/HeaderButton.svg';
+import SampleImage from '../../assets/Landing/SampleImage.svg';
+import ShareButtonIcon from '../../assets/Landing/ShareButton.svg';
 
 const LandingPage5: React.FC = () => {
-  const [currentScreenIndex, setCurrentScreenIndex] = useState<number>(0);
-  const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
-  const [animationDirection, setAnimationDirection] = useState<
-    'left' | 'right'
-  >('right');
-
-  useEffect(() => {
-    let loadedImages = 0;
-    screens.forEach((screen) => {
-      const img = new Image();
-      img.src = screen.img;
-      img.onload = () => {
-        loadedImages += 1;
-        if (loadedImages === screens.length) {
-          setImagesLoaded(true);
-        }
-      };
-    });
-  }, []);
-
-  const handlePrevClick = () => {
-    setAnimationDirection('left');
-    setCurrentScreenIndex((prevIndex) =>
-      prevIndex === 0 ? screens.length - 1 : prevIndex - 1
-    );
-  };
-
-  const handleNextClick = () => {
-    setAnimationDirection('right');
-    setCurrentScreenIndex((prevIndex) =>
-      prevIndex === screens.length - 1 ? 0 : prevIndex + 1
-    );
-  };
-
   return (
     <Container>
-      <LandingTitle>
-        <BoldText>
-          멜픽앱으로 편하게 관리하세요! <br />
-        </BoldText>
-        <Text>
-          판매에 관련된 모든 진행사항을
-          <br /> 앱에서 편리하게 관리할 수 있어요
-        </Text>
-      </LandingTitle>
-      <LandingSubtitle>{screens[currentScreenIndex].subtitle}</LandingSubtitle>
-      <ScreenContainer>
-        <ArrowButton onClick={handlePrevClick}>
-          <ArrowIcon src={LeftArrowIcon} alt='Previous' />
-        </ArrowButton>
-        <ScreenImageContainer>
-          {imagesLoaded ? (
-            <ScreenImage
-              key={currentScreenIndex}
-              src={screens[currentScreenIndex].img}
-              alt='Screen'
-              loading='lazy'
-              animationDirection={animationDirection}
-            />
-          ) : (
-            <LoadingSpinner />
-          )}
-        </ScreenImageContainer>
-        <ArrowButton onClick={handleNextClick}>
-          <ArrowIcon src={RightArrowIcon} alt='Next' />
-        </ArrowButton>
-      </ScreenContainer>
-      <PaginationDots>
-        {screens.map((_, idx) => (
-          <Dot key={idx} isActive={currentScreenIndex === idx} />
-        ))}
-      </PaginationDots>
+      <TopTexts>
+        <SmallTitle>오직 나만의, 나를 위한 상품</SmallTitle>
+        <BigTitle>
+          나만의 스타일을
+          <br />
+          손쉽게 브랜딩 해보세요
+        </BigTitle>
+      </TopTexts>
+
+      <CardWrapper>
+        <CardBox>
+          {/* 이미지 영역 */}
+          <CardImage src={SampleImage} alt='Sample' />
+
+          {/* 하단 아이콘 영역 */}
+          <IconBar>
+            <IconGroup>
+              <ShareButton src={ShareButtonIcon} alt='Share Button' />
+              <HeaderButton src={HeaderButtonIcon} alt='Header Button' />
+            </IconGroup>
+          </IconBar>
+        </CardBox>
+      </CardWrapper>
+
+      <BulletList>
+        <BulletItem>
+          <CheckIcon src={CheckButtonIcon} alt='Check' />
+          <BulletText>누구라도 판매를 시작할 수 있어요</BulletText>
+        </BulletItem>
+        <BulletItem>
+          <CheckIcon src={CheckButtonIcon} alt='Check' />
+          <BulletText>프리미엄 브랜드의 셀러가 되어보세요</BulletText>
+        </BulletItem>
+        <BulletItem>
+          <CheckIcon src={CheckButtonIcon} alt='Check' />
+          <BulletText>나만의 스타일로 판매 채널을 꾸며보세요</BulletText>
+        </BulletItem>
+        <BulletItem>
+          <CheckIcon src={CheckButtonIcon} alt='Check' />
+          <BulletText>판매 스케줄을 간편하게 관리해 보세요</BulletText>
+        </BulletItem>
+        <BulletItem>
+          <CheckIcon src={CheckButtonIcon} alt='Check' />
+          <BulletText>매출과 수익을 언제든 확인하세요</BulletText>
+        </BulletItem>
+      </BulletList>
     </Container>
   );
 };
 
-export default React.memo(LandingPage5);
+export default LandingPage5;
+
+/* ====================== Styled Components ====================== */
 
 const Container = styled.div`
+  width: 400px;
+  height: 700px;
+  margin: 0 auto;
+  background: #fffbf5;
+  border-radius: 20px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  background-color: #f5f5f5;
-  min-height: 932px;
-  max-width: 600px;
-  margin: 0 auto;
-  border-radius: 20px;
 `;
 
-const LandingTitle = styled.h1`
+const TopTexts = styled.div`
+  width: 100%;
   text-align: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
 `;
 
-const LandingSubtitle = styled.p`
+const SmallTitle = styled.div`
   font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
-  font-size: 18px;
+  font-size: 17px;
+  line-height: 40px;
+  color: #000;
+  margin-bottom: 8px;
+`;
+
+const BigTitle = styled.h1`
+  font-family: 'NanumSquare Neo OTF', sans-serif;
+  font-weight: 700;
+  font-size: 23px;
   line-height: 30px;
-  text-align: center;
-  color: #000000;
-  min-height: 100px;
-  width: 100%;
+  color: #000;
+  margin: 0;
 `;
 
-const ScreenContainer = styled.div`
+/**
+ * CardWrapper:
+ * - 가운데 정렬, 카드 하나를 세로로 배치
+ */
+const CardWrapper = styled.div`
+  width: 50%;
   display: flex;
-  align-items: center;
   justify-content: center;
-  width: 100%;
-  position: relative;
-  max-width: 800px;
+  margin-bottom: 42px;
 `;
 
-const ScreenImageContainer = styled.div`
-  width: 260px;
-  height: 550px;
-  background: #f0f0f0;
-  filter: drop-shadow(3px 5px 15px rgba(18, 18, 18, 0.15));
-  border-radius: 10px;
+/**
+ * CardBox:
+ *  - 인스타그램 카드처럼 상단에는 이미지, 하단에는 아이콘이 오는 형태
+ */
+const CardBox = styled.div`
+  width: 320px;
+  /* 세로 길이는 컨텐츠에 따라 유동적으로 결정 */
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 2px 3px 7px rgba(0, 0, 0, 0.17);
   overflow: hidden;
-`;
 
-interface ScreenImageProps {
-  animationDirection: 'left' | 'right';
-}
-
-const ScreenImage = styled.img<ScreenImageProps>`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  animation: ${({ animationDirection }) =>
-      animationDirection === 'left' ? slideInLeft : slideInRight}
-    0.5s ease-in-out;
-  transition: opacity 0.5s ease-in-out;
-`;
-
-const ArrowButton = styled.button`
-  cursor: pointer;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  padding: 10px;
-  z-index: 1;
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: translateY(-50%) scale(1.1);
-  }
-
-  &:active {
-    transform: translateY(-50%) scale(0.95);
-  }
-
-  &:first-of-type {
-    left: 0;
-  }
-
-  &:last-of-type {
-    right: 0;
-  }
-`;
-
-const ArrowIcon = styled.img`
-  width: 24px;
-  height: 24px;
-`;
-
-const PaginationDots = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  position: relative;
+`;
+
+/**
+ * CardImage:
+ *  - 카드 폭 전체를 사용해 이미지 표시
+ *  - 세로 비율은 이미지 자체 비율에 맞게 표시
+ */
+const CardImage = styled.img`
+  width: 100%;
+  height: auto;
+  object-fit: cover;
   margin-top: 30px;
 `;
 
-interface DotProps {
-  isActive: boolean;
-}
+/**
+ * IconBar:
+ *  - 이미지 아래쪽(카드 하단)에 아이콘들이 놓일 영역
+ *  - 인스타그램 하단의 좋아요/공유 아이콘 부분과 유사
+ */
+const IconBar = styled.div`
+  width: 100%;
+  padding: 10px 16px;
+  box-sizing: border-box;
 
-const Dot = styled.div<DotProps>`
-  width: ${(props) => (props.isActive ? '20px' : '10px')};
-  height: 10px;
-  background-color: ${(props) => (props.isActive ? '#f5ab35' : '#d9d9d9')};
-  border-radius: 100px;
-  transition:
-    width 0.3s,
-    background-color 0.3s;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 `;
 
-const LoadingSpinner = styled.div`
-  width: 50px;
-  height: 50px;
-  border: 5px solid #f0f0f0;
-  border-top: 5px solid #f5ab35;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
+/**
+ * IconGroup:
+ *  - 아이콘들이 가로로 나란히 배치되는 컨테이너
+ */
+const IconGroup = styled.div`
+  display: flex;
+  gap: 10px;
 `;
 
-const Text = styled.div`
-  font-family: 'NanumSquare Neo OTF';
+/** 공유 버튼 아이콘 */
+const ShareButton = styled.img`
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+`;
+
+/** 하트(좋아요) 버튼 아이콘 */
+const HeaderButton = styled.img`
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+`;
+
+const BulletList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 80%;
+`;
+
+const BulletItem = styled.li`
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+`;
+
+const CheckIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+`;
+
+const BulletText = styled.span`
+  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
-  font-size: 17px;
-  line-height: 30px;
-  text-align: center;
-  color: #000000;
-  margin-top: 20px;
-  margin-bottom: 30px;
-`;
-
-const BoldText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 30px;
-  text-align: center;
-  color: #000000;
+  font-size: 14px;
+  line-height: 20px;
+  color: #000;
 `;

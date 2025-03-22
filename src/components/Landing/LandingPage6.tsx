@@ -1,79 +1,91 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+// 실제 경로와 파일명에 맞춰 import 경로를 수정하세요
+import backgroundImage from '../../assets/Landing/7X5A9526.svg';
 
 const LandingPage6: React.FC = () => {
-  const navigate = useNavigate();
-
-  const handleStartClick = () => {
-    navigate('/login');
-  };
-
   return (
     <Container>
-      <Text>
-        현재 <BoldText>N명</BoldText>의 인플루언서들이
-        <br /> melpik을 신청했어요!
-      </Text>
-
-      <StartButton onClick={handleStartClick}>melpik 시작하기</StartButton>
-
-      <Text>
-        사전예약 마감까지 <BoldText>N일 00:00시간</BoldText> 남았어요!
-      </Text>
+      <TextWrapper>
+        <SmallTitle>이제는 일일이 찾지 마세요</SmallTitle>
+        <BigTitle>
+          브랜드는 melpik이 <br />
+          <PickText>PICK!</PickText> 해줄게요
+        </BigTitle>
+      </TextWrapper>
     </Container>
   );
 };
 
 export default LandingPage6;
 
+/* ====================== Styled Components ====================== */
+
+/**
+ * 1) 전체 컨테이너
+ *  - 400×700 크기
+ *  - 배경 이미지를 cover로 깔기
+ *  - 모서리를 둥글게 처리
+ *  - 텍스트를 상단에 정렬
+ */
 const Container = styled.div`
-  position: relative;
+  width: 400px;
+  height: 700px;
   margin: 0 auto;
-  background-color: #f5ab35;
-  border-radius: 20px 20px 0 0;
+
+  /* 배경 이미지 설정 */
+  background: url(${backgroundImage}) no-repeat center center;
+  background-size: cover;
+
+  border-radius: 20px;
+  box-sizing: border-box;
+
+  /* display 기반 레이아웃: 세로 배치 후 상단 정렬 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 30px 0;
+  justify-content: flex-start;
+
+  /* 텍스트가 너무 위에 붙지 않도록 적당한 padding을 줄 수도 있습니다. */
+  padding-top: 30px;
 `;
 
-const Text = styled.div`
-  font-family: 'NanumSquare Neo OTF';
+/** 2) 텍스트 묶음 영역 */
+const TextWrapper = styled.div`
+  width: 100%;
+  text-align: center;
+`;
+
+/** 3) 작은 제목 (17px) */
+const SmallTitle = styled.div`
+  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 17px;
-  line-height: 25px;
-  text-align: center;
-  color: #ffffff;
+  line-height: 40px;
+  color: #000;
+  margin-bottom: 8px;
 `;
 
-const BoldText = styled.span`
-  font-weight: 800;
-`;
-
-const StartButton = styled.button`
-  width: 250px;
-  padding: 10px 0;
-  background: #ffffff;
-  color: #000000;
-  border: none;
-  border-radius: 100px;
+/** 4) 큰 제목 (23px) */
+const BigTitle = styled.h1`
   font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 800;
-  font-size: 15px;
-  cursor: pointer;
-  transition:
-    background-color 0.3s,
-    transform 0.1s;
+  font-weight: 700;
+  font-size: 23px;
+  line-height: 30px;
+  color: #000;
+  margin: 0; /* 기본 h1 마진 제거 */
+`;
 
-  &:hover {
-    background-color: #f0f0f0;
-    transform: scale(1.05);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
+/**
+ * 5) PICK! 텍스트만 따로 스타일 지정
+ *  - 굵기(900)와 색상(#FD8A2F)을 적용
+ */
+const PickText = styled.span`
+  font-family: 'NanumSquare Neo OTF', sans-serif;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 23px;
+  line-height: 30px;
+  text-align: center;
+  color: #fd8a2f;
 `;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import ReusableModal from '../../ReusableModal';
 
-type AgreementSectionProps = {};
+type AgreementSectionProps = Record<string, never>;
 
 type IndividualChecks = {
   agree1: boolean;
