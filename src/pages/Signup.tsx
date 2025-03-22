@@ -687,7 +687,7 @@ const Signup: React.FC = () => {
                 e.preventDefault();
                 handleMelpickAddressCheck();
               }}
-              prefix='https://www.melpick.com/'
+              prefix='melpick.com/'
             />
             <Divider />
             <InputField
@@ -701,7 +701,7 @@ const Signup: React.FC = () => {
                 e.preventDefault();
                 handleMelpickAddressCheck();
               }}
-              prefix='https://www.instagram.com/'
+              prefix='instagram.com/'
             />
             <Divider />
             <RowLabel>
