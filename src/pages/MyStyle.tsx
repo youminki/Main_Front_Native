@@ -69,22 +69,24 @@ const ContemporarySettings: React.FC = () => {
               <option value='175'>175 cm</option>
             </InputField>
             <InputField
-              label='사이즈'
+              label=''
               id='size'
               as={CustomSelect}
               error={errors.size}
               {...register('size', { required: true })}
             >
-              <option value='S'>S</option>
-              <option value='M'>M</option>
-              <option value='L'>L</option>
+              {Array.from({ length: 100 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}kg
+                </option>
+              ))}
             </InputField>
           </Row>
           <Divider />
 
           <Row>
             <InputField
-              label='착용스펙 상세입력'
+              label='착용 제품사이즈'
               id='dress'
               as={CustomSelect}
               error={errors.dress}
@@ -93,7 +95,7 @@ const ContemporarySettings: React.FC = () => {
               <option value='원피스'>원피스</option>
             </InputField>
             <InputField
-              label='상의'
+              label=''
               id='top'
               as={CustomSelect}
               error={errors.top}
@@ -102,7 +104,7 @@ const ContemporarySettings: React.FC = () => {
               <option value='상의'>상의</option>
             </InputField>
             <InputField
-              label='하의'
+              label=''
               id='bottom'
               as={CustomSelect}
               error={errors.bottom}
