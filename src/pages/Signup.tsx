@@ -747,7 +747,7 @@ const Signup: React.FC = () => {
                 {...register('dress', { required: true })}
               >
                 <option value='' disabled selected hidden>
-                  상의 사이즈 선택
+                  상의
                 </option>
                 <option value='44'>44 (S)</option>
                 <option value='55'>55 (M)</option>
@@ -762,7 +762,7 @@ const Signup: React.FC = () => {
                 {...register('top', { required: true })}
               >
                 <option value='' disabled selected hidden>
-                  원피스 사이즈 선택
+                  원피스
                 </option>
                 <option value='44'>44 (S)</option>
                 <option value='55'>55 (M)</option>
@@ -777,7 +777,7 @@ const Signup: React.FC = () => {
                 {...register('bottom', { required: true })}
               >
                 <option value='' disabled selected hidden>
-                  하의 사이즈 선택
+                  하의
                 </option>
                 <option value='44'>44 (S)</option>
                 <option value='55'>55 (M)</option>
