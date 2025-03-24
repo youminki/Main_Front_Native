@@ -1,3 +1,4 @@
+// src/components/Landing/Landing.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Header from '../components/Landing/Header';
@@ -13,6 +14,7 @@ import Footer from '../components/Landing/Footer';
 
 interface ScrollFadeInProps {
   children: React.ReactNode;
+  pageHeight?: number; // 기본값 700px (페이지 높이)
 }
 
 // 스크롤 방향 감지 훅
@@ -23,11 +25,7 @@ const useScrollDirection = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY.current) {
-        setScrollDirection('down');
-      } else {
-        setScrollDirection('up');
-      }
+      setScrollDirection(currentScrollY > lastScrollY.current ? 'down' : 'up');
       lastScrollY.current = currentScrollY;
     };
     window.addEventListener('scroll', handleScroll);
@@ -37,7 +35,10 @@ const useScrollDirection = () => {
   return scrollDirection;
 };
 
-const ScrollFadeIn: React.FC<ScrollFadeInProps> = ({ children }) => {
+const ScrollFadeIn: React.FC<ScrollFadeInProps> = ({
+  children,
+  pageHeight = 700,
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const scrollDirection = useScrollDirection();
@@ -65,6 +66,7 @@ const ScrollFadeIn: React.FC<ScrollFadeInProps> = ({ children }) => {
     <FadeInWrapper
       ref={ref}
       scrollDirection={scrollDirection}
+      pageHeight={pageHeight}
       className={visible ? 'visible' : ''}
     >
       {children}
@@ -82,11 +84,20 @@ const Landing: React.FC = () => {
 
   return (
     <LandingContainer>
+      {/* 전체 배경을 그리는 래퍼 */}
+      <BackgroundWrapper>
+        {/* 배경띠2 */}
+        <BackgroundStripe2 />
+        {/* 배경띠1 */}
+        <BackgroundStripe1 />
+      </BackgroundWrapper>
+
       <Header />
       <ContentWrapper>
-        <ScrollFadeIn>
-          <LandingPage1 />
-        </ScrollFadeIn>
+        {/* 페이지1 */}
+        <LandingPage1 />
+
+        {/* 페이지2 ~ 페이지7 */}
         <ScrollFadeIn>
           <LandingPage2 />
         </ScrollFadeIn>
@@ -116,16 +127,54 @@ export default Landing;
 
 /* ====================== Styled Components ====================== */
 
+/**
+ * LandingContainer에 position: relative를 주어,
+ * 내부에서 절대 배치되는 배경 띠들이 뒤에 깔리도록 함
+ */
 const LandingContainer = styled.div`
-  background-color: aquamarine;
+  position: relative;
+  background-color: #f5f5f5; /* 혹은 aquamarine 대신 원하는 색상 */
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  max-width: 600px;
+  max-width: 440px;
   margin: 0 auto;
   overflow-x: hidden;
+`;
+
+/**
+ * 전체 배경을 그리는 래퍼
+ * - z-index: -1로 설정해 콘텐츠보다 뒤로 보이게 함
+ */
+const BackgroundWrapper = styled.div`
+  position: absolute;
+  width: 930.88px;
+  height: 1299.04px;
+  left: -296px;
+  top: 34.09px;
+`;
+
+/** 배경띠2 */
+const BackgroundStripe2 = styled.div`
+  position: absolute;
+  width: 1086px;
+  height: 170px;
+  left: -133.03px;
+  top: 737px;
+  background: #f6ac36;
+  transform: rotate(45deg);
+`;
+
+/** 배경띠1 */
+const BackgroundStripe1 = styled.div`
+  position: absolute;
+  width: 1086px;
+  height: 230px;
+  left: -126px;
+  top: 424px;
+  background: #f1bb02;
+  transform: rotate(-45deg);
 `;
 
 const ContentWrapper = styled.div`
@@ -138,21 +187,21 @@ const ContentWrapper = styled.div`
 `;
 
 /**
- * 1) height: 600px로 고정
- * 2) position: relative, overflow: hidden
- * 3) 자식(Container)에서 height: 100% 사용
+ * FadeInWrapper는 각 페이지의 컨테이너
+ * - 반응형 너비(최대 700px)
+ * - pageHeight prop을 통해 페이지 높이 지정 (기본: 700px)
+ * - 아래 간격 40px (마지막 제외)
  */
-const FadeInWrapper = styled.div<{ scrollDirection: 'up' | 'down' }>`
-  /* width: 90%;
-  height: 700px;
-  position: relative;
-  overflow: hidden;
-
-  border-radius: 20px;
+const FadeInWrapper = styled.div<{
+  scrollDirection: 'up' | 'down';
+  pageHeight: number;
+}>`
+  width: 100%;
+  max-width: 700px;
+  height: ${({ pageHeight }) => pageHeight}px;
   margin-bottom: 40px;
-  background-color: #ffffff; */
-
-  /* 페이드 인 애니메이션 */
+  border-radius: 10px;
+  overflow: hidden;
   opacity: 0;
   transform: ${({ scrollDirection }) =>
     scrollDirection === 'down' ? 'translateY(20px)' : 'translateY(-20px)'};

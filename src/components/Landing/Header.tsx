@@ -18,8 +18,10 @@ export default Header;
 const HeaderContainer = styled.header`
   position: fixed;
   top: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
+  max-width: 440px;
   height: 120px;
   display: flex;
   align-items: center;
