@@ -9,7 +9,7 @@ import LandingPage4 from '../components/Landing/LandingPage4';
 import LandingPage5 from '../components/Landing/LandingPage5';
 import LandingPage6 from '../components/Landing/LandingPage6';
 import LandingPage7 from '../components/Landing/LandingPage7';
-import BottomNav from '../components/Landing/BottomNav';
+// import BottomNav from '../components/Landing/BottomNav';
 import Footer from '../components/Landing/Footer';
 
 interface ScrollFadeInProps {
@@ -112,7 +112,7 @@ const Landing: React.FC = () => {
           <LandingPage7 />
         </ScrollFadeIn>
       </ContentWrapper>
-      <BottomNav />
+      {/* <BottomNav /> */}
       <Footer />
     </LandingContainer>
   );
