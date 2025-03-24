@@ -4,35 +4,81 @@ import styled from 'styled-components';
 const LandingPage2: React.FC = () => {
   return (
     <Container>
-      {/* 상단 텍스트 */}
-      <TopText>
-        <Intro>멜픽 서비스를 소개합니다</Intro>
+      {/* 상단 텍스트 영역 */}
+      <TopTextWrapper>
+        {/* 아이콘 이미지 (Bullet) */}
+        <BulletIcon>/</BulletIcon>
+
+        <IntroLabel>멜픽 서비스를 소개합니다</IntroLabel>
         <MainTitle>
-          구매와 판매, 대여<BlackSpan>까지</BlackSpan> <br />
-          <BlackSpan>모두 멜픽에서 한 번에!</BlackSpan>
+          대여와 구매, 판매
+          <span className='blackText'>
+            까지 <br /> 모두 멜픽에서 한 번에!
+          </span>
         </MainTitle>
-      </TopText>
+        <SubTitle>원하는 브랜드로 다양한 경험을 즐겨보세요</SubTitle>
+      </TopTextWrapper>
 
-      {/* 기능 박스들 */}
-      <FeatureBox>
-        <FeatureHeading>대여</FeatureHeading>
-        <FeatureSubText>AI를 활용한 분석/추천</FeatureSubText>
-      </FeatureBox>
-      <FeatureBox>
-        <FeatureHeading>구매</FeatureHeading>
-        <FeatureSubText>브랜드를 다양하게 즐긴다</FeatureSubText>
-      </FeatureBox>
-      <FeatureBox>
-        <FeatureHeading>판매</FeatureHeading>
-        <FeatureSubText>SNS의 개인 브랜딩화</FeatureSubText>
-      </FeatureBox>
+      {/* 기능(대여/구매/판매) 영역 */}
+      <FeaturesWrapper>
+        {/* 첫 번째 박스 (대여) */}
+        <FeatureBox
+          bgColor='#FF8738'
+          textColor='#FFFFFF'
+          borderRadius='20px 0 0 0'
+          style={{ marginLeft: 0 }} // 기본 위치
+        >
+          <Circle borderColor='#E66008'>
+            <CircleText>대여</CircleText>
+          </Circle>
+          <BoxText>
+            당신의 <span className='highlight'>스타일을 AI가 분석</span>하여
+            <br />
+            취향저격 스타일을 추천해드려요
+          </BoxText>
+        </FeatureBox>
 
-      {/* 하단 안내 문구 */}
-      <BottomComment>
-        다양한 브랜드를 빌리고, 구매하고,
-        <br />
-        나의 소셜미디어에서 판매까지 해보세요
-      </BottomComment>
+        {/* 첫 번째 '+' 기호 (절대 위치) */}
+        <PlusSign1 style={{ top: '100px' }}>+</PlusSign1>
+
+        {/* 두 번째 박스 (구매) - margin-left: 10px */}
+        <FeatureBox
+          bgColor='#FFFFFF'
+          textColor='#000000'
+          borderRadius='0'
+          border='1px solid #DDDDDD'
+          style={{ marginLeft: '15px' }}
+        >
+          <Circle borderColor='#EEEEEE'>
+            <CircleText>구매</CircleText>
+          </Circle>
+          <BoxText>
+            브랜드를 다양하게 즐긴 후
+            <br />
+            맘에 드는 제품을 <span className='get-highlight'>Get</span> 해보세요
+          </BoxText>
+        </FeatureBox>
+
+        {/* 두 번째 '+' 기호 (절대 위치) */}
+        <PlusSign2 style={{ top: '220px' }}>+</PlusSign2>
+
+        {/* 세 번째 박스 (판매) */}
+        <FeatureBox
+          bgColor='#FFD238'
+          textColor='#000000'
+          borderRadius='0 0 20px 0'
+          style={{ marginLeft: 0 }} // 다시 기본 위치
+        >
+          <Circle borderColor='#F1BB02'>
+            <CircleText>판매</CircleText>
+          </Circle>
+          <BoxText>
+            나만의 스타일을 <span className='sns-highlight'>내 SNS 채널</span>에
+            <br />
+            브랜딩 하고 판매 해보세요
+          </BoxText>
+        </FeatureBox>
+      </FeaturesWrapper>
     </Container>
   );
 };
@@ -41,103 +87,184 @@ export default LandingPage2;
 
 /* ====================== Styled Components ====================== */
 
-/** 400×700 박스 (absolute 대신 display로 배치) */
+/** 전체 컨테이너 */
 const Container = styled.div`
-  box-sizing: border-box;
   width: 400px;
-  height: 700px;
-  margin: 0 auto;
+  min-height: 700px; /* 내용이 늘어나면 자동 확장 */
   background: #ffffff;
-  border-radius: 20px;
+  border-radius: 10px;
+  margin: 0 auto; /* 수평 중앙 정렬 */
+  box-sizing: border-box;
+  font-family: 'NanumSquare Neo OTF', sans-serif;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 50px 20px;
+  padding: 20px 20px 40px;
 `;
 
 /** 상단 텍스트 래퍼 */
-const TopText = styled.div`
+const TopTextWrapper = styled.div`
+  /* 중앙 정렬을 위해 flex 사용 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   text-align: center;
-  margin-bottom: 52px;
+  margin-bottom: 30px;
+`;
+
+const BulletIcon = styled.div`
+  font-size: 35px;
+  margin: 22px;
+  transform: rotate(10deg); /* 왼쪽으로 10도 정도 회전 */
 `;
 
 /** "멜픽 서비스를 소개합니다" */
-const Intro = styled.h2`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+const IntroLabel = styled.div`
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 17px;
-  line-height: 40px;
+  font-size: 14px;
+  line-height: 15px;
   color: #000000;
-  margin: 0 0 10px;
+  margin-bottom: 10px;
 `;
 
-/** "구매와 판매, 대여까지" + "모두 멜픽에서 한 번에!(검정색)" */
+/** "대여와 구매, 판매까지 모두 멜픽에서 한 번에!" */
 const MainTitle = styled.h1`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
-  font-size: 23px;
-  line-height: 30px;
+  font-size: 24px;
+  line-height: 30px; /* 또는 125% */
   text-align: center;
-  color: #fc7f61; /* "구매와 판매, 대여까지"는 주황색 */
+  color: #ff8738;
   margin: 0;
+  margin-bottom: 10px;
+
+  .blackText {
+    color: #000;
+  }
 `;
 
-/** "모두 멜픽에서 한 번에!"만 검정색 */
-const BlackSpan = styled.span`
-  color: #000000;
+/** "원하는 브랜드로 다양한 경험을 즐겨보세요" */
+const SubTitle = styled.div`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 30px; /* 또는 214% */
+  color: #cccccc;
 `;
 
-/** 각 기능 박스 (대여/구매/판매) */
-const FeatureBox = styled.div`
-  box-sizing: border-box;
-  width: 320px;
-  height: 100px;
-  background: #fffbf5;
-  border: 0.5px solid #dddddd;
-  border-radius: 20px;
+/** 기능(대여/구매/판매)들을 묶는 래퍼 */
+const FeaturesWrapper = styled.div`
+  position: relative; /* PlusSign들이 절대 위치로 배치될 부모 */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 박스들이 왼쪽 정렬되도록 */
+`;
 
-  /* 가로(row) 정렬 */
+/** 각 기능 박스 */
+const FeatureBox = styled.div<{
+  bgColor: string;
+  textColor: string;
+  borderRadius: string;
+  border?: string;
+}>`
+  width: 338px;
+  height: 120px; /* 고정 높이 */
+  background: ${({ bgColor }) => bgColor};
+  border-radius: ${({ borderRadius }) => borderRadius};
+  border: ${({ border }) => border || 'none'};
+
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
-
-  padding: 0 44px;
-  margin-bottom: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  color: ${({ textColor }) => textColor};
 `;
 
-/** "대여/구매/판매" */
-const FeatureHeading = styled.div`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+/** 대여/구매/판매 동그라미 아이콘 */
+const Circle = styled.div<{ borderColor: string }>`
+  width: 59px;
+  height: 59px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid ${({ borderColor }) => borderColor};
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+`;
+
+/** 동그라미 안의 "대여/구매/판매" 텍스트 */
+const CircleText = styled.div`
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
-  font-size: 20px;
-  line-height: 23px;
+  font-size: 16px;
+  line-height: 18px;
   color: #000000;
-  margin-right: 20px; /* 옆으로 간격 */
 `;
 
-/** 서브텍스트 ("AI를 활용한 분석/추천" 등) */
-const FeatureSubText = styled.div`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+/** 박스 안의 상세 텍스트 */
+const BoxText = styled.div`
+  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 20px;
-  color: #000000;
+
+  /* 강조 텍스트들 */
+  .highlight {
+    font-weight: 800; /* "스타일을 AI가 분석" 부분 */
+  }
+  .get-highlight {
+    font-weight: 900; /* "Get" 부분 */
+    color: #ff8738;
+  }
+  .sns-highlight {
+    font-weight: 800; /* "내 SNS 채널" 부분 */
+  }
 `;
 
-/** 하단 안내 문구 */
-const BottomComment = styled.div`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 17px;
-  line-height: 23px;
-  text-align: center;
-  color: #000000;
-  margin-top: auto; /* 남는 공간을 위로 밀어 -> 하단 배치 */
+/** 절대 위치로 중앙 정렬된 '+' 기호 (대여 박스용) */
+const PlusSign1 = styled.div`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-100%);
+  width: 30px;
+  height: 30px;
+  background: #ff8738;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  z-index: 10;
+`;
+
+/** 절대 위치로 중앙 정렬된 '+' 기호 (구매 박스용) */
+const PlusSign2 = styled.div`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: #ff8738;
+  z-index: 10;
 `;
