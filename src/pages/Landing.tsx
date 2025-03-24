@@ -14,7 +14,6 @@ import Footer from '../components/Landing/Footer';
 
 interface ScrollFadeInProps {
   children: React.ReactNode;
-  pageHeight?: number; // 기본값 700px (페이지 높이)
 }
 
 // 스크롤 방향 감지 훅
@@ -35,10 +34,7 @@ const useScrollDirection = () => {
   return scrollDirection;
 };
 
-const ScrollFadeIn: React.FC<ScrollFadeInProps> = ({
-  children,
-  pageHeight = 700,
-}) => {
+const ScrollFadeIn: React.FC<ScrollFadeInProps> = ({ children }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const scrollDirection = useScrollDirection();
@@ -66,7 +62,6 @@ const ScrollFadeIn: React.FC<ScrollFadeInProps> = ({
     <FadeInWrapper
       ref={ref}
       scrollDirection={scrollDirection}
-      pageHeight={pageHeight}
       className={visible ? 'visible' : ''}
     >
       {children}
@@ -194,11 +189,9 @@ const ContentWrapper = styled.div`
  */
 const FadeInWrapper = styled.div<{
   scrollDirection: 'up' | 'down';
-  pageHeight: number;
 }>`
   width: 100%;
   max-width: 700px;
-  height: ${({ pageHeight }) => pageHeight}px;
   margin-bottom: 40px;
   border-radius: 10px;
   overflow: hidden;

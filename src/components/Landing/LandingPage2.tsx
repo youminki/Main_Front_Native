@@ -116,7 +116,8 @@ const TopTextWrapper = styled.div`
 
 const BulletIcon = styled.div`
   font-size: 35px;
-  margin: 22px;
+  margin-top: 22px;
+  margin-bottom: 22px;
   transform: rotate(10deg); /* 왼쪽으로 10도 정도 회전 */
 `;
 
