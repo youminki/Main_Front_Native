@@ -230,7 +230,7 @@ const FadeInWrapper = styled.div<{ scrollDirection: 'up' | 'down' }>`
   width: 100%;
   max-width: 700px;
   margin-bottom: 40px;
-  border-radius: 10px;
+
   overflow: hidden;
 
   /* 초기 상태 */
