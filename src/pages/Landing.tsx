@@ -1,3 +1,4 @@
+// src/components/Landing/Landing.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Header from '../components/Landing/Header';
@@ -8,7 +9,7 @@ import LandingPage4 from '../components/Landing/LandingPage4';
 import LandingPage5 from '../components/Landing/LandingPage5';
 import LandingPage6 from '../components/Landing/LandingPage6';
 import LandingPage7 from '../components/Landing/LandingPage7';
-import BottomNav from '../components/Landing/BottomNav';
+// import BottomNav from '../components/Landing/BottomNav';
 import Footer from '../components/Landing/Footer';
 
 interface ScrollFadeInProps {
@@ -23,11 +24,7 @@ const useScrollDirection = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY.current) {
-        setScrollDirection('down');
-      } else {
-        setScrollDirection('up');
-      }
+      setScrollDirection(currentScrollY > lastScrollY.current ? 'down' : 'up');
       lastScrollY.current = currentScrollY;
     };
     window.addEventListener('scroll', handleScroll);
@@ -82,11 +79,23 @@ const Landing: React.FC = () => {
 
   return (
     <LandingContainer>
+      {/* 전체 배경을 그리는 래퍼 */}
+      <BackgroundWrapper>
+        {/* 배경띠2 */}
+        <BackgroundStripe2 />
+        {/* 배경띠1 */}
+        <BackgroundStripe1 />
+      </BackgroundWrapper>
+
       <Header />
+
       <ContentWrapper>
+        {/* 페이지1 */}
         <ScrollFadeIn>
           <LandingPage1 />
         </ScrollFadeIn>
+
+        {/* 페이지2 ~ 페이지7 */}
         <ScrollFadeIn>
           <LandingPage2 />
         </ScrollFadeIn>
@@ -106,8 +115,13 @@ const Landing: React.FC = () => {
           <LandingPage7 />
         </ScrollFadeIn>
       </ContentWrapper>
-      <BottomNav />
-      <Footer />
+
+      {/* Footer에도 애니메이션 효과 적용 */}
+      <ScrollFadeIn>
+        <Footer />
+      </ScrollFadeIn>
+
+      {/* <BottomNav /> */}
     </LandingContainer>
   );
 };
@@ -117,20 +131,47 @@ export default Landing;
 /* ====================== Styled Components ====================== */
 
 const LandingContainer = styled.div`
-  background-color: aquamarine;
+  position: relative;
+  background-color: #f5f5f5; /* 혹은 원하는 색상 */
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  max-width: 600px;
+  max-width: 440px;
   margin: 0 auto;
-  overflow-x: hidden;
+  overflow: hidden;
+`;
+
+const BackgroundWrapper = styled.div`
+  position: absolute;
+  width: 930.88px;
+  height: 1299.04px;
+  left: -296px;
+  top: 34.09px;
+`;
+
+const BackgroundStripe2 = styled.div`
+  position: absolute;
+  width: 1086px;
+  height: 170px;
+  left: -133.03px;
+  top: 737px;
+  background: #f6ac36;
+  transform: rotate(45deg);
+`;
+
+const BackgroundStripe1 = styled.div`
+  position: absolute;
+  width: 1086px;
+  height: 230px;
+  left: -126px;
+  top: 424px;
+  background: #f1bb02;
+  transform: rotate(-45deg);
 `;
 
 const ContentWrapper = styled.div`
   margin-top: 100px;
-  margin-bottom: 20px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -138,31 +179,29 @@ const ContentWrapper = styled.div`
 `;
 
 /**
- * 1) height: 600px로 고정
- * 2) position: relative, overflow: hidden
- * 3) 자식(Container)에서 height: 100% 사용
+ * FadeInWrapper는 스크롤 시 애니메이션 효과를 주는 컨테이너
  */
 const FadeInWrapper = styled.div<{ scrollDirection: 'up' | 'down' }>`
-  /* width: 90%;
-  height: 700px;
-  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 40px;
+  border-radius: 10px;
   overflow: hidden;
 
-  border-radius: 20px;
-  margin-bottom: 40px;
-  background-color: #ffffff; */
-
-  /* 페이드 인 애니메이션 */
+  /* 초기 상태 */
   opacity: 0;
   transform: ${({ scrollDirection }) =>
-    scrollDirection === 'down' ? 'translateY(20px)' : 'translateY(-20px)'};
+    scrollDirection === 'down'
+      ? 'translateY(20px) scale(0.95)'
+      : 'translateY(-20px) scale(0.95)'};
+
   transition:
-    opacity 0.6s ease-out,
-    transform 0.6s ease-out;
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 
   &.visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 
   &:last-child {

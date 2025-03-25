@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import styled from 'styled-components';
+import React from 'react';
+import styled, { keyframes } from 'styled-components';
 
 import ZOOCImage from '../../assets/Landing/Zooc.jpg';
 import SANDROImage from '../../assets/Landing/Sandro.jpg';
@@ -25,44 +25,6 @@ const LandingPage3: React.FC = () => {
     { img: MOJO_S_PHINE, name: 'MOJO.S.PHINE' },
   ];
 
-  // 드래그 스크롤 관련 상태
-  const listRef = useRef<HTMLDivElement>(null);
-  const isDown = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!listRef.current) return;
-    isDown.current = true;
-    startX.current = e.pageX - listRef.current.offsetLeft;
-    scrollLeft.current = listRef.current.scrollLeft;
-  };
-
-  const handleMouseLeave = () => {
-    isDown.current = false;
-  };
-
-  const handleMouseUp = () => {
-    isDown.current = false;
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDown.current || !listRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - listRef.current.offsetLeft;
-    const walk = x - startX.current;
-    listRef.current.scrollLeft = scrollLeft.current - walk;
-  };
-
-  const handleImageClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDragStart = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
   return (
     <Container>
       <MainContent>
@@ -71,28 +33,46 @@ const LandingPage3: React.FC = () => {
         <LargeTitle>
           컨템포러리 브랜드들이
           <br />
-          melpik과 함께 합니다
+          <Highlight>멜픽</Highlight>과 함께 합니다
         </LargeTitle>
 
-        <BrandList
-          ref={listRef}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeave}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-        >
-          {brands.map((brand, idx) => (
-            <Brand key={idx}>
-              <BrandImage
-                src={brand.img}
-                alt={`brand-${idx}`}
-                onClick={handleImageClick}
-                onDragStart={handleDragStart}
-              />
-              <BrandName>{brand.name}</BrandName>
-            </Brand>
-          ))}
+        {/* 브랜드 리스트는 자동 스크롤 애니메이션 적용 */}
+        <BrandList>
+          <ScrollingContainer>
+            {brands.map((brand, idx) => (
+              <Brand key={idx}>
+                <BrandImage
+                  src={brand.img}
+                  alt={`brand-${idx}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onDragStart={(e) => e.preventDefault()}
+                />
+                <BrandName>{brand.name}</BrandName>
+              </Brand>
+            ))}
+            {/* 원활한 무한 스크롤을 위해 복제 */}
+            {brands.map((brand, idx) => (
+              <Brand key={`clone-${idx}`}>
+                <BrandImage
+                  src={brand.img}
+                  alt={`brand-clone-${idx}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onDragStart={(e) => e.preventDefault()}
+                />
+                <BrandName>{brand.name}</BrandName>
+              </Brand>
+            ))}
+          </ScrollingContainer>
         </BrandList>
+
+        {/* 프리미엄 브랜드 리스트 텍스트 */}
+        <PremiumBrandText>Premium Brand List</PremiumBrandText>
       </MainContent>
     </Container>
   );
@@ -105,32 +85,28 @@ export default LandingPage3;
 /** 400×700 박스, 상단 정렬 */
 const Container = styled.div`
   width: 400px;
-  height: 700px;
+  height: 660px;
   margin: 0 auto;
   background: #ffffff;
   border-radius: 20px;
-
-  /* 세로 방향으로 쌓고, 위쪽 정렬 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* 상단 정렬 */
+  justify-content: flex-start;
 `;
 
 const MainContent = styled.div`
-  /* 내부 콘텐츠 래퍼 */
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 30px; /* 상단 여백 */
+  padding-top: 30px;
 `;
 
 const Hanger = styled.img`
   width: 45px;
   height: auto;
-  margin-bottom: 20px;
-  margin-top: 30px;
+  margin-bottom: 22px;
 `;
 
 const SmallTitle = styled.div`
@@ -150,26 +126,35 @@ const LargeTitle = styled.h1`
   line-height: 30px;
   text-align: center;
   color: #000000;
-  margin: 0 0 30px;
+  margin: 0 0 40px;
 `;
 
-/** 가로 스크롤 리스트 */
+/* 멜픽에 색상 적용 */
+const Highlight = styled.span`
+  color: #f6ac36;
+`;
+
+/** 브랜드 리스트 컨테이너 (자동 스크롤용) */
 const BrandList = styled.div`
-  width: 100%; /* 컨테이너보다 약간 작게 */
+  width: 100%;
   height: 300px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  cursor: grab;
-  margin-bottom: 20px;
-  margin-top: 49px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 32px;
+`;
 
-  &::-webkit-scrollbar {
-    display: none; /* 스크롤바 숨김 */
-  }
+/** 브랜드 아이템들을 감싸고 오른쪽으로 자동 스크롤하는 컨테이너 */
+const scroll = keyframes`
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+`;
 
+const ScrollingContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  width: calc(200%); /* 복제된 콘텐츠를 고려하여 200%로 확장 */
+  animation: ${scroll} 10s linear infinite;
 `;
 
 /** 브랜드 아이템 컨테이너 */
@@ -188,15 +173,10 @@ const BrandImage = styled.img`
   height: 300px;
   object-fit: cover;
   border-radius: 20px;
-  opacity: 0.6;
   transition: opacity 0.3s;
-
-  &:hover {
-    opacity: 1;
-  }
 `;
 
-/** 이미지 중앙에 브랜드명 표시 */
+/** 이미지 중앙의 브랜드명 */
 const BrandName = styled.span`
   position: absolute;
   top: 50%;
@@ -205,6 +185,17 @@ const BrandName = styled.span`
   font-weight: 900;
   font-size: 20px;
   width: 100%;
+  text-align: center;
+  color: #000000;
+`;
+
+/** 프리미엄 브랜드 리스트 텍스트 */
+const PremiumBrandText = styled.div`
+  font-family: 'NanumSquare Neo OTF';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 30px;
   text-align: center;
   color: #000000;
 `;
