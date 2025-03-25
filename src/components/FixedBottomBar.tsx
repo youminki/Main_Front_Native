@@ -1,20 +1,21 @@
+// FixedBottomBar.tsx
 import React from 'react';
 import styled from 'styled-components';
 
-interface FixedBottomBarProps {
+interface FixedBottomBarProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
   color?: 'yellow' | 'black';
-  onClick?: () => void;
 }
 
 const FixedBottomBar: React.FC<FixedBottomBarProps> = ({
   text,
   color = 'black',
-  onClick,
+  ...buttonProps
 }) => {
   return (
     <BottomBar>
-      <SettleButton color={color} onClick={onClick}>
+      <SettleButton color={color} {...buttonProps}>
         {text}
       </SettleButton>
     </BottomBar>
@@ -32,9 +33,6 @@ const BottomBar = styled.div`
   z-index: 1000;
   max-width: 600px;
   margin: 0 auto;
-  padding: 1rem;
-  text-align: center;
-  max-width: 600px;
   background: #eeeeee;
   padding: 15px 0 34px 0;
   text-align: center;
@@ -48,14 +46,9 @@ const SettleButton = styled.button<{ color: 'yellow' | 'black' }>`
   cursor: pointer;
   background-color: ${({ color }) =>
     color === 'yellow' ? '#F6AE24' : 'black'};
-  color: ${({ color }) => (color === 'yellow' ? 'white' : 'white')};
+  color: white;
   border: none;
-
   font-weight: 800;
-  font-size: 16px;
   line-height: 18px;
-  /* identical to box height */
   text-align: center;
-
-  color: #ffffff;
 `;

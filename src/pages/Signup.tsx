@@ -7,8 +7,8 @@ import { schemaSignup } from '../hooks/ValidationYup';
 import InputField from '../components/InputField';
 import AgreementSection from '../components/Signup/AgreementSection';
 import Theme from '../styles/Theme';
-import BottomBar from '../components/BottomNav2';
-import ResetButtonIcon from '../assets/ResetButton.png';
+import FixedBottomBar from '../components/FixedBottomBar';
+// import ResetButtonIcon from '../assets/ResetButton.png';
 import { useNavigate } from 'react-router-dom';
 import { CustomSelect } from '../components/CustomSelect';
 import ReusableModal from '../components/ReusableModal';
@@ -92,6 +92,7 @@ const Signup: React.FC = () => {
   } = methods;
 
   const selectedRegion = watch('region');
+  const [isPhoneVerificationSent] = useState<boolean>(false);
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -102,11 +103,9 @@ const Signup: React.FC = () => {
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
-  // 각 검증 성공 여부 상태
+  // 각 인증 완료 여부 상태
   const [isEmailChecked, setIsEmailChecked] = useState<boolean>(false);
   const [isNicknameChecked, setIsNicknameChecked] = useState<boolean>(false);
-  const [isPhoneVerificationSent, setIsPhoneVerificationSent] =
-    useState<boolean>(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState<boolean>(false);
   const [isMelpickAddressChecked, setIsMelpickAddressChecked] =
     useState<boolean>(false);
@@ -205,7 +204,7 @@ const Signup: React.FC = () => {
     }
   };
 
-  // 검증 함수 - 이메일 중복 체크
+  // 각 인증 검증 함수
   const handleEmailCheck = async (): Promise<void> => {
     const valid = await trigger('email');
     if (!valid) return;
@@ -261,7 +260,6 @@ const Signup: React.FC = () => {
   const handleSendVerification = async (): Promise<void> => {
     const valid = await trigger('phoneNumber');
     if (!valid) return;
-    setIsPhoneVerificationSent(true);
     const phoneNumber = getValues('phoneNumber');
     try {
       const result = await verifyPhone({ phoneNumber });
@@ -335,8 +333,8 @@ const Signup: React.FC = () => {
     }
   };
 
+  // 회원가입 제출 시 모든 인증 완료 여부를 확인하여 미완료 항목이 있다면 모달에 안내 메시지를 표시
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
-    // 우선 각 인증 버튼 상태를 한 번에 확인하여 미완료 항목을 모읍니다.
     const missing: string[] = [];
     if (!isEmailChecked) missing.push('이메일 인증을 완료하세요.');
     if (!isNicknameChecked) missing.push('닉네임 인증을 완료하세요.');
@@ -446,7 +444,6 @@ const Signup: React.FC = () => {
     <ThemeProvider theme={Theme}>
       <FormProvider {...methods}>
         <Container>
-          {/* 폼 내부에 제출 버튼 포함 */}
           <Form onSubmit={handleSubmit(onSubmit)}>
             <AgreementSection />
             <InputField
@@ -811,50 +808,48 @@ const Signup: React.FC = () => {
                 {...register('sleeve')}
               />
             </RowLabel>
-            {/* 폼 제출 버튼(애니메이션 효과 적용) */}
-            <AnimatedBottomBar
-              imageSrc={ResetButtonIcon}
-              buttonText={isSubmitting ? '가입 중...' : '회원가입'}
+            {/* 제출 버튼 (애니메이션 효과 적용) */}
+            <FixedBottomBar
+              text={isSubmitting ? '가입 중...' : '회원가입'}
+              color='black'
               type='submit'
               disabled={isSubmitting}
             />
           </Form>
           <BlackContainer />
-          {/* 회원가입 결과 모달 */}
-          <ReusableModal
-            isOpen={showSignupResultModal}
-            onClose={handleSignupResultModalClose}
-            title='회원가입 결과'
-          >
-            {signupResult}
-          </ReusableModal>
-          <Modal
-            isOpen={isModalOpen}
-            onClose={closeModal}
-            onSelect={handleBrandSelect}
-            selectedBrands={selectedBrands}
-          />
         </Container>
       </FormProvider>
+
+      {/* 회원가입 결과 모달 (최상단에 렌더링) */}
+      {showSignupResultModal && (
+        <ReusableModal
+          isOpen={showSignupResultModal}
+          onClose={handleSignupResultModalClose}
+          title='회원가입 결과'
+        >
+          {signupResult}
+        </ReusableModal>
+      )}
+
+      {/* 브랜드 선택 모달 */}
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onSelect={handleBrandSelect}
+          selectedBrands={selectedBrands}
+        />
+      )}
     </ThemeProvider>
   );
 };
 
 export default Signup;
 
-/* --- 애니메이션 효과가 적용된 BottomBar --- */
-const AnimatedBottomBar = styled(BottomBar)`
-  transition: transform 0.2s ease-in-out;
-  &:active {
-    transform: scale(0.95);
-  }
-`;
-
-/* --- styled-components --- */
+/* styled-components */
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   width: 100%;
   margin: 0 auto;
