@@ -178,11 +178,12 @@ export default Landing;
 const LandingContainer = styled.div`
   position: relative;
   background-color: #f5f5f5; /* 혹은 원하는 색상 */
-  width: 100%;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   max-width: 440px;
+  padding: 0 20px;
   margin: 0 auto;
   overflow: hidden;
 `;

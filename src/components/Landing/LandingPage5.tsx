@@ -58,7 +58,6 @@ export default LandingPage5;
 /* ====================== Styled Components ====================== */
 
 const Container = styled.div`
-  width: 400px;
   height: 750px;
   margin: 0 auto;
   background: #fffbf5;

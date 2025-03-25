@@ -89,7 +89,6 @@ export default LandingPage2;
 
 /** 전체 컨테이너 */
 const Container = styled.div`
-  width: 400px;
   min-height: 700px; /* 내용이 늘어나면 자동 확장 */
   background: #ffffff;
   border-radius: 10px;
@@ -100,7 +99,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 20px 40px;
+  padding: 0 20px;
 `;
 
 /** 상단 텍스트 래퍼 */
@@ -165,7 +164,7 @@ const FeaturesWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* 박스들이 왼쪽 정렬되도록 */
+  align-items: center; /* 중앙 정렬 */
 `;
 
 /** 각 기능 박스 */
@@ -175,11 +174,13 @@ const FeatureBox = styled.div<{
   borderRadius: string;
   border?: string;
 }>`
-  width: 338px;
+  width: 100%;
+  max-width: 338px;
   height: 120px; /* 고정 높이 */
   background: ${({ bgColor }) => bgColor};
   border-radius: ${({ borderRadius }) => borderRadius};
   border: ${({ border }) => border || 'none'};
+  margin: 0 auto; /* 중앙 정렬 */
 
   display: flex;
   flex-direction: row;

@@ -68,7 +68,6 @@ const flickerRight = keyframes`
  *  - 텍스트를 상단에 정렬
  */
 const Container = styled.div`
-  width: 400px;
   height: 700px;
   margin: 0 auto;
 

@@ -65,7 +65,6 @@ export default LandingPage7;
 /* ====================== Styled Components ====================== */
 
 const Container = styled.div`
-  width: 400px;
   height: 640px;
   margin: 0 auto;
   background: #ffffff;

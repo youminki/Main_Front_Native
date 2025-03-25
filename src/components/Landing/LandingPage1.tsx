@@ -40,8 +40,7 @@ export default LandingPage1;
 
 const Wrapper = styled.div`
   position: relative;
-  width: 100%;
-  max-width: 400px;
+
   height: 500px;
   margin: 40px auto;
   overflow: visible;

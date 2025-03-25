@@ -59,7 +59,6 @@ export default LandingPage3;
 
 /** 전체 컨테이너 (400×700), 배경색 #FBE5E1 */
 const Container = styled.div`
-  width: 400px;
   height: 760px;
   margin: 0 auto;
   background: #fbe5e1;

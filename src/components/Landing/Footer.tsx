@@ -136,7 +136,6 @@ export default Footer;
 // styled-components
 // --------------------------- */
 const FooterContainer = styled.footer`
-  width: 440px;
   height: 309px;
   margin: 0 auto;
   /* 아래 여백 제거 */

@@ -84,7 +84,6 @@ export default LandingPage3;
 
 /** 400×700 박스, 상단 정렬 */
 const Container = styled.div`
-  width: 400px;
   height: 660px;
   margin: 0 auto;
   background: #ffffff;
