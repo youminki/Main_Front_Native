@@ -178,7 +178,6 @@ export default Landing;
 const LandingContainer = styled.div`
   position: relative;
   background-color: #f5f5f5; /* 혹은 원하는 색상 */
-  /* padding: 2rem; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -200,10 +199,10 @@ const BackgroundStripe2 = styled.div`
   position: absolute;
   width: 1086px;
   height: 170px;
-  left: -133.03px;
-  top: 737px;
+  left: -13.03px;
+  top: 777px;
   background: #f6ac36;
-  transform: rotate(45deg);
+  transform: rotate(30deg);
 `;
 
 const BackgroundStripe1 = styled.div`
