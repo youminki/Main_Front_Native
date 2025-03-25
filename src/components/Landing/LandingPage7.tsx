@@ -82,7 +82,6 @@ const Container = styled.div`
 
 /** 상단 큰 제목 (20px) */
 const Title = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 24px;
   line-height: 30px;
@@ -94,7 +93,6 @@ const Title = styled.h1`
 
 /** 부제목 (17px) */
 const Subtitle = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 14px;
   line-height: 24px;

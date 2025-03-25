@@ -119,7 +119,6 @@ const TextWrapper = styled.div`
 
 /** 3) 작은 제목 (14px) */
 const SmallTitle = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -132,7 +131,6 @@ const SmallTitle = styled.div`
 
 /** 4) 큰 제목 (24px) */
 const BigTitle = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 24px;
@@ -148,7 +146,6 @@ const BigTitle = styled.h1`
  *  - 굵기(900)와 색상(#FD8A2F)을 적용
  */
 const PickText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 900;
   font-size: 24px;

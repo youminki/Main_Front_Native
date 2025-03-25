@@ -83,7 +83,6 @@ const TopSection = styled.div`
 `;
 
 const MatchingTitle = styled.div`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 700;
   font-size: 15px;
   line-height: 40px;
@@ -93,7 +92,6 @@ const MatchingTitle = styled.div`
 `;
 
 const MainTitle = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 23px;
   line-height: 30px;
@@ -168,7 +166,6 @@ const SmallBox3 = styled(SmallBox)`
 
 /** 하단 코멘트 */
 const BottomComment = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 17px;
   line-height: 23px;
@@ -249,7 +246,6 @@ const text3Anim = keyframes`
 
 /* ---------- 각 텍스트 styled component (타이핑 효과에 steps 함수 적용) ---------- */
 const SmallBoxText1 = styled.span`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 13px;
   line-height: 23px;
@@ -264,7 +260,6 @@ const SmallBoxText1 = styled.span`
 `;
 
 const SmallBoxText2 = styled.span`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 13px;
   line-height: 23px;
@@ -279,7 +274,6 @@ const SmallBoxText2 = styled.span`
 `;
 
 const SmallBoxText3 = styled.span`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 13px;
   line-height: 23px;

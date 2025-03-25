@@ -84,7 +84,6 @@ const TopSection = styled.div`
 `;
 
 const SmallTitle = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -95,7 +94,6 @@ const SmallTitle = styled.div`
 `;
 
 const BigTitle = styled.h1`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 700;
   font-size: 23px;
   line-height: 30px;
@@ -157,7 +155,6 @@ const BoldSpan = styled.span`
 `;
 
 const BulletText = styled.span`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 15px;

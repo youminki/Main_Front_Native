@@ -109,7 +109,6 @@ const Hanger = styled.img`
 `;
 
 const SmallTitle = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 400;
   font-size: 17px;
   line-height: 40px;
@@ -119,7 +118,6 @@ const SmallTitle = styled.div`
 `;
 
 const LargeTitle = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
   font-weight: 700;
   font-size: 23px;
   line-height: 30px;
@@ -190,7 +188,6 @@ const BrandName = styled.span`
 
 /** 프리미엄 브랜드 리스트 텍스트 */
 const PremiumBrandText = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;

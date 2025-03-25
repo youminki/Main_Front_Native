@@ -149,7 +149,6 @@ const FooterContainer = styled.footer`
 `;
 
 const InfoText = styled.div`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 17px;
   line-height: 23px;
@@ -168,7 +167,7 @@ const RegisterButton = styled.button`
   background: #ffffff;
   border-radius: 20px;
   border: none;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   font-weight: 800;
   font-size: 16px;
   line-height: 18px;
@@ -191,7 +190,7 @@ const RegisterButton = styled.button`
 const CompanyInfo = styled.div`
   align-self: flex-start;
   margin-left: 42px;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   font-weight: 400;
   font-size: 12px;
   line-height: 20px;

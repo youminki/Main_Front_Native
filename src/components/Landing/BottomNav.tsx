@@ -43,7 +43,6 @@ const Container = styled.div`
  * 2) 상단 텍스트 (17px, 흰색, 투명도 0.9)
  */
 const TopText = styled.div`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 17px;
@@ -70,7 +69,6 @@ const StartButton = styled.button`
   border: none;
   cursor: pointer;
 
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-style: normal;
   font-weight: 800;
   font-size: 15px;
@@ -86,7 +84,6 @@ const StartButton = styled.button`
  * 4) 하단 텍스트 (17px, 흰색, 투명도 0.9)
  */
 const BottomText = styled.div`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 17px;

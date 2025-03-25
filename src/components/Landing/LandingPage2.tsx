@@ -94,7 +94,6 @@ const Container = styled.div`
   border-radius: 10px;
   margin: 0 auto; /* 수평 중앙 정렬 */
   box-sizing: border-box;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
 
   display: flex;
   flex-direction: column;
@@ -122,7 +121,6 @@ const BulletIcon = styled.div`
 
 /** "멜픽 서비스를 소개합니다" */
 const IntroLabel = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -133,7 +131,6 @@ const IntroLabel = styled.div`
 
 /** "대여와 구매, 판매까지 모두 멜픽에서 한 번에!" */
 const MainTitle = styled.h1`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 24px;
@@ -150,7 +147,6 @@ const MainTitle = styled.h1`
 
 /** "원하는 브랜드로 다양한 경험을 즐겨보세요" */
 const SubTitle = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -205,7 +201,6 @@ const Circle = styled.div<{ borderColor: string }>`
 
 /** 동그라미 안의 "대여/구매/판매" 텍스트 */
 const CircleText = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 700;
   font-size: 16px;
@@ -215,7 +210,6 @@ const CircleText = styled.div`
 
 /** 박스 안의 상세 텍스트 */
 const BoxText = styled.div`
-  font-family: 'NanumSquare Neo OTF';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;

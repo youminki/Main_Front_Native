@@ -90,7 +90,6 @@ const ContentBox = styled.div`
 `;
 
 const BigTitle = styled.h1`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 800;
   font-size: 2rem; /* rem 단위 사용으로 반응형 적용 */
   line-height: 1.1;
@@ -104,7 +103,6 @@ const BrandSpan = styled.span`
 `;
 
 const SubTitle = styled.h2`
-  font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 700;
   font-size: 1rem;
   line-height: 1.1;
@@ -121,7 +119,7 @@ const RegisterButton = styled.button`
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
+
   font-weight: 800;
   font-size: 1rem;
   line-height: 1.1;
