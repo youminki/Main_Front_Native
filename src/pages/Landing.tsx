@@ -1,6 +1,6 @@
 // src/components/Landing/Landing.tsx
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import Header from '../components/Landing/Header';
 import LandingPage1 from '../components/Landing/LandingPage1';
 import LandingPage2 from '../components/Landing/LandingPage2';
@@ -70,12 +70,35 @@ const ScrollFadeIn: React.FC<ScrollFadeInProps> = ({ children }) => {
 };
 
 const Landing: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     document.body.classList.add('landing');
+
+    const handleLoad = () => {
+      setLoading(false);
+    };
+
+    // 문서가 이미 완전히 로드된 경우 바로 처리
+    if (document.readyState === 'complete') {
+      setLoading(false);
+    } else {
+      window.addEventListener('load', handleLoad);
+    }
+
     return () => {
       document.body.classList.remove('landing');
+      window.removeEventListener('load', handleLoad);
     };
   }, []);
+
+  if (loading) {
+    return (
+      <LoadingOverlay>
+        <LoadingSpinner />
+      </LoadingOverlay>
+    );
+  }
 
   return (
     <LandingContainer>
@@ -91,9 +114,8 @@ const Landing: React.FC = () => {
 
       <ContentWrapper>
         {/* 페이지1 */}
-        <ScrollFadeIn>
-          <LandingPage1 />
-        </ScrollFadeIn>
+
+        <LandingPage1 />
 
         {/* 페이지2 ~ 페이지7 */}
         <ScrollFadeIn>
@@ -207,4 +229,34 @@ const FadeInWrapper = styled.div<{ scrollDirection: 'up' | 'down' }>`
   &:last-child {
     margin-bottom: 0;
   }
+`;
+
+/* 로딩 스피너 애니메이션 */
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+/* 로딩 스피너 스타일 (노란색) */
+const LoadingSpinner = styled.div`
+  border: 8px solid rgba(246, 172, 54, 0.3); /* 반투명 노란색 */
+  border-top: 8px solid #f6ac36; /* 노란색 */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: ${spin} 1s linear infinite;
+`;
+
+/* 로딩 오버레이 스타일 */
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
 `;

@@ -110,6 +110,7 @@ const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [exit, setExit] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // personalLink 경로일 때 body에 클래스 추가
   useEffect(() => {
@@ -119,6 +120,21 @@ const App: React.FC = () => {
       document.body.classList.remove('personalLink');
     }
   }, [location.pathname]);
+
+  // 페이지 로딩 상태 처리: 리소스가 모두 준비되면 로딩 해제
+  useEffect(() => {
+    const handleLoad = () => {
+      setLoading(false);
+    };
+
+    if (document.readyState === 'complete') {
+      setLoading(false);
+    } else {
+      window.addEventListener('load', handleLoad);
+    }
+
+    return () => window.removeEventListener('load', handleLoad);
+  }, []);
 
   // BottomNav가 포함될 경로 패턴
   const bottomNavPaths = [
@@ -297,6 +313,14 @@ const App: React.FC = () => {
     }, 300); // 0.3초 애니메이션 시간과 동일
   };
 
+  if (loading) {
+    return (
+      <LoadingOverlay>
+        <LoadingSpinner />
+      </LoadingOverlay>
+    );
+  }
+
   return (
     <AppContainer>
       {includeHeader1 && <UnifiedHeader variant='default' />}
@@ -443,6 +467,36 @@ const App: React.FC = () => {
 const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+// 로딩 스피너 애니메이션
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+// 로딩 스피너 스타일 (노란색)
+const LoadingSpinner = styled.div`
+  border: 8px solid rgba(246, 172, 54, 0.3);
+  border-top: 8px solid #f6ac36;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: ${spin} 1s linear infinite;
+`;
+
+// 로딩 오버레이 스타일
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
 `;
 
 const AppWrapper: React.FC = () => (
