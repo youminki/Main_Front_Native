@@ -216,7 +216,7 @@ const BackgroundStripe1 = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  margin-top: 100px;
+  margin-top: 30px;
   width: 100%;
   display: flex;
   flex-direction: column;

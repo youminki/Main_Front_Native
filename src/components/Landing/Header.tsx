@@ -5,10 +5,27 @@ import LandingLogoIcon from '../../assets/Landing/LandingLogoIcon.svg';
 import ShareIcon from '../../assets/Landing/ShareIcon.svg';
 
 const Header: React.FC = () => {
+  const handleShare = async () => {
+    const shareUrl = 'https://me1pik.com';
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          url: shareUrl,
+        });
+      } catch (error) {
+        console.error('공유 중 에러 발생:', error);
+      }
+    } else {
+      alert('이 브라우저는 공유 기능을 지원하지 않습니다.');
+    }
+  };
+
   return (
     <HeaderContainer>
       <Logo src={LandingLogoIcon} alt='Landing Logo' />
-      <Icons src={ShareIcon} alt='Share Icon' />
+      <ShareButton onClick={handleShare}>
+        <Icons src={ShareIcon} alt='Share Icon' />
+      </ShareButton>
     </HeaderContainer>
   );
 };
@@ -21,8 +38,8 @@ const HeaderContainer = styled.header`
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 440px;
-  height: 120px;
+  max-width: 450px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -33,13 +50,18 @@ const HeaderContainer = styled.header`
 const Logo = styled.img`
   height: 24px;
   width: auto;
-  margin-top: 60px;
+`;
+
+const ShareButton = styled.button`
+  position: absolute;
+  right: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 `;
 
 const Icons = styled.img`
-  position: absolute;
-  right: 20px;
   height: 20px;
   width: auto;
-  margin-top: 60px;
 `;
