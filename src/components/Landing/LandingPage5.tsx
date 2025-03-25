@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 // 아이콘/이미지
 import CheckButtonIcon from '../../assets/Landing/CheckButton.svg';
-import SampleImage from '../../assets/Landing/SampleImage5.png';
+import SampleImage from '../../assets/Landing/SampleImage5.svg';
 
 const LandingPage5: React.FC = () => {
   return (
