@@ -87,10 +87,7 @@ const Landing: React.FC = () => {
         <BackgroundStripe1 />
       </BackgroundWrapper>
 
-      {/* Header도 애니메이션 효과 적용 */}
-      <ScrollFadeIn>
-        <Header />
-      </ScrollFadeIn>
+      <Header />
 
       <ContentWrapper>
         {/* 페이지1 */}

@@ -2,9 +2,9 @@ import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 // 이미지 3장 (실제 경로에 맞춰 import 경로 수정)
-import Landing7Img1 from '../../assets/Landing/Landing7Img1.jpg';
-import Landing7Img2 from '../../assets/Landing/Landing7Img2.jpg';
-import Landing7Img3 from '../../assets/Landing/Landing7Img3.jpg';
+import Landing7Img1 from '../../assets/Landing/Landing7Img1.svg';
+import Landing7Img2 from '../../assets/Landing/Landing7Img2.svg';
+import Landing7Img3 from '../../assets/Landing/Landing7Img3.svg';
 
 const LandingPage7: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -134,6 +134,7 @@ const PhoneWrapper = styled.div`
 
   background: #ececec;
   border: 5px solid #d9d9d9;
+  border-bottom: none;
   border-radius: 20px 20px 0 0;
   overflow-x: scroll;
   overflow-y: hidden;
