@@ -39,7 +39,7 @@ const HeaderContainer = styled.header`
   transform: translateX(-50%);
   width: 100%;
   max-width: 450px;
-  height: 70px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
