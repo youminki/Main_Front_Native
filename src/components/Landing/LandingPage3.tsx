@@ -7,6 +7,8 @@ import Ion1Src from '../../assets/Landing/LandingPage3_ion1.svg';
 import Ion2Src from '../../assets/Landing/LandingPage3_ion2.svg';
 import SampleJacket from '../../assets/Landing/SampleJacket.jpg';
 
+const cycleDuration = '8s';
+
 const LandingPage3: React.FC = () => {
   return (
     <Container>
@@ -32,12 +34,12 @@ const LandingPage3: React.FC = () => {
             <SmallBox style={{ top: '200px', right: '110px' }}>
               <SmallBoxText1>당신은 스포티한 스타일입니다</SmallBoxText1>
             </SmallBox>
-            <SmallBox style={{ top: '245px', right: '135px' }}>
+            <SmallBox2 style={{ top: '245px', right: '135px' }}>
               <SmallBoxText2>활동적인 옷을 좋아하네요</SmallBoxText2>
-            </SmallBox>
-            <SmallBox style={{ bottom: '50px', left: '120px' }}>
+            </SmallBox2>
+            <SmallBox3 style={{ bottom: '50px', left: '120px' }}>
               <SmallBoxText3>블랙&화이트 컬러가 많아요</SmallBoxText3>
-            </SmallBox>
+            </SmallBox3>
           </SmallBoxesContainer>
         </ImageWrapper>
       </MiddleSection>
@@ -143,6 +145,28 @@ const SmallBox = styled.div`
   padding: 5px 10px;
 `;
 
+/** 2번 박스: 텍스트2 애니메이션 실행 전(0~25%) 숨김 */
+const box2Anim = keyframes`
+  0%, 25% { opacity: 0; }
+  25.1%, 100% { opacity: 1; }
+`;
+
+const SmallBox2 = styled(SmallBox)`
+  opacity: 0;
+  animation: ${box2Anim} ${cycleDuration} steps(1, end) infinite;
+`;
+
+/** 3번 박스: 텍스트3 애니메이션 실행 전(0~50%) 숨김 */
+const box3Anim = keyframes`
+  0%, 50% { opacity: 0; }
+  50.1%, 100% { opacity: 1; }
+`;
+
+const SmallBox3 = styled(SmallBox)`
+  opacity: 0;
+  animation: ${box3Anim} ${cycleDuration} steps(1, end) infinite;
+`;
+
 /** 하단 코멘트 */
 const BottomComment = styled.div`
   font-family: 'NanumSquare Neo OTF';
@@ -196,9 +220,6 @@ const Ion2 = styled.img`
   z-index: 1;
   animation: ${fadeInRight} 0.8s ease-out 0.2s forwards;
 `;
-
-/* 전체 애니메이션 주기: 8초 */
-const cycleDuration = '8s';
 
 /* ---------- 커서 깜빡임 애니메이션 ---------- */
 const blinkCaret = keyframes`
