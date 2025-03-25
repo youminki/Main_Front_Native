@@ -100,7 +100,6 @@ const ContentContainer = styled.div<{
 }>`
   flex: 1;
   padding: ${({ disablePadding }) => (disablePadding ? '0' : '70px 0')};
-  /* margin-bottom: 30px; */
   animation: ${({ exit, animate }) =>
       exit ? slideOut : animate ? slideIn : 'none'}
     0.3s ease-out;
@@ -121,20 +120,45 @@ const App: React.FC = () => {
     }
   }, [location.pathname]);
 
-  // 페이지 로딩 상태 처리: 리소스가 모두 준비되면 로딩 해제
+  // ========= 이미지 로드 완료 시 로딩 해제 =========
   useEffect(() => {
-    const handleLoad = () => {
-      setLoading(false);
-    };
+    // 모든 img 태그 수집
+    const images = document.querySelectorAll('img');
+    let loadedCount = 0;
+    const totalImages = images.length;
 
-    if (document.readyState === 'complete') {
+    // 이미지가 하나도 없다면 즉시 로딩 해제
+    if (totalImages === 0) {
       setLoading(false);
-    } else {
-      window.addEventListener('load', handleLoad);
+      return;
     }
 
-    return () => window.removeEventListener('load', handleLoad);
+    // load/error 시마다 카운트 증가 → 모두 끝나면 로딩 해제
+    const handleLoadOrError = () => {
+      loadedCount += 1;
+      if (loadedCount === totalImages) {
+        setLoading(false);
+      }
+    };
+
+    images.forEach((img) => {
+      if (img.complete) {
+        // 캐시 등으로 이미 로드된 상태
+        handleLoadOrError();
+      } else {
+        img.addEventListener('load', handleLoadOrError);
+        img.addEventListener('error', handleLoadOrError);
+      }
+    });
+
+    return () => {
+      images.forEach((img) => {
+        img.removeEventListener('load', handleLoadOrError);
+        img.removeEventListener('error', handleLoadOrError);
+      });
+    };
   }, []);
+  // ==============================================
 
   // BottomNav가 포함될 경로 패턴
   const bottomNavPaths = [
@@ -313,6 +337,7 @@ const App: React.FC = () => {
     }, 300); // 0.3초 애니메이션 시간과 동일
   };
 
+  // 로딩 중이면 스피너 표시
   if (loading) {
     return (
       <LoadingOverlay>
@@ -321,6 +346,7 @@ const App: React.FC = () => {
     );
   }
 
+  // 로딩 완료 후 실제 페이지 렌더링
   return (
     <AppContainer>
       {includeHeader1 && <UnifiedHeader variant='default' />}
