@@ -1,4 +1,3 @@
-// src/components/AgreementSection.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
@@ -18,6 +17,7 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState('');
+  const [modalTitle, setModalTitle] = useState(''); // 모달 타이틀 상태 추가
 
   const handleAllChecked = () => {
     const newValue = !allChecked;
@@ -28,17 +28,19 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
     });
   };
 
+  // handleViewDetails 함수 수정: title과 content를 함께 전달
+  const handleViewDetails = (title: string, content: string) => {
+    setModalTitle(title);
+    setModalContent(content);
+    setModalVisible(true);
+  };
+
   const handleIndividualCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, checked } = e.target;
     setIndividualChecks((prev) => ({
       ...prev,
       [id]: checked,
     }));
-  };
-
-  const handleViewDetails = (content: string) => {
-    setModalContent(content);
-    setModalVisible(true);
   };
 
   const closeModal = () => {
@@ -76,8 +78,9 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
           </DescriptionWrapper>
           <ViewDetailsButton
             onClick={() =>
-              handleViewDetails(`
-[ 이용약관 ]
+              handleViewDetails(
+                '이용약관',
+                `[ 이용약관 ]
 제1장 총칙
 제1조 (목적)
 본 약관은 주식회사 리프트콤마(이하 “회사”라 합니다.)가 제공하는 의류 및 잡화(이하 “제품”이라
@@ -477,8 +480,8 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
 바에 따르며, 관계 법규, 관련 약관 또는 약정서에서 정하는 바가 없으면 일반적인 상관례에 따르거나
 회사와 회원이 합의하여 정할 수 있습니다.
 부칙
-본 약관은 2025년 03월 21일부터 시행합니다.
-              `)
+본 약관은 2025년 03월 21일부터 시행합니다.`
+              )
             }
           >
             전체보기
@@ -502,7 +505,9 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
           </DescriptionWrapper>
           <ViewDetailsButton
             onClick={() =>
-              handleViewDetails(`[ 개인정보 처리방침 ]
+              handleViewDetails(
+                '개인정보 처리방침',
+                `[ 개인정보 처리방침 ]
 주식회사 리프트콤마 (이하 “회사”)는 정보통신망 이용촉진 및 정보보호 등에 관한 법률, 개인정보보호법,
 통신비밀보호법, 전기통신사업법 등 정보통신서비스제공자가 준수하여야 할 관련 법령상의
 개인정보보호 규정을 준수하며, 관련 법령에 의거한 개인정보취급방침을 정하여 이용자 권익 보호에
@@ -680,7 +685,8 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
 현 개인정보취급방침 내용 추가, 삭제 및 수정이 있을 시에는 개정 최소 7일전부터 홈페이지의 첫 화면의
 ‘공지사항’을 통해 고지할 것입니다. 다만, 개인정보의 수집 및 활용, 제3자 제공 등과 같이 이용자 권리의
 중요한 변경이 있을 경우에는 최소 30일 전에 고지합니다.
-시행일자: 2025년 03월 21일 `)
+시행일자: 2025년 03월 21일`
+              )
             }
           >
             전체보기
@@ -692,7 +698,7 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
         <Modal>
           <ModalContent>
             <FixedHeader>
-              <ModalTitle>이용약관</ModalTitle>
+              <ModalTitle>{modalTitle}</ModalTitle>
               <GrayLine />
             </FixedHeader>
             <ScrollableContent>
@@ -710,6 +716,8 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
 };
 
 export default AgreementSection;
+
+/* ====================== Styled Components ====================== */
 
 const AgreementWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
@@ -830,7 +838,6 @@ const ModalContent = styled.div`
   flex-direction: column;
 `;
 
-/* 타이틀(header)와 바텀(footer)은 고정 */
 const FixedHeader = styled.div`
   flex-shrink: 0;
 `;
@@ -840,12 +847,10 @@ const FixedFooter = styled.div`
   margin-top: 10px;
 `;
 
-/* 가운데 내용만 스크롤하며 스크롤바는 감춤 */
 const ScrollableContent = styled.div`
   flex-grow: 1;
   overflow-y: auto;
   padding: 10px 0;
-  /* 스크롤바 숨기기 */
   &::-webkit-scrollbar {
     display: none;
   }
@@ -883,6 +888,7 @@ const CloseButton = styled.button`
   cursor: pointer;
   font-size: 16px;
 `;
+
 const DescriptionWrapper = styled.div`
   display: flex;
   justify-content: left;
