@@ -98,8 +98,9 @@ export default ScheduleConfirmation;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+
   background-color: #fff;
+  padding: 2rem;
 `;
 
 const Content = styled.div`

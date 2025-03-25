@@ -126,6 +126,7 @@ const Container = styled.div`
   flex-direction: column;
   min-height: 100vh;
   background: #fff;
+  padding: 2rem;
 `;
 
 const SectionRow = styled.div`

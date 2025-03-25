@@ -551,9 +551,10 @@ export default PaymentPage;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+
   margin: 0 auto;
   background: #ffffff;
+  padding: 2rem;
 `;
 
 const Section = styled.div`

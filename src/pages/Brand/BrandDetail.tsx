@@ -167,9 +167,10 @@ export default BrandDetail;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+
   background-color: #fff;
   position: relative;
+  padding: 2rem;
 `;
 
 const Header = styled.div`

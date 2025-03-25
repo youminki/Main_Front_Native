@@ -1,6 +1,6 @@
-import styled from "styled-components";
-import Content from "../components/Analysis/AnalysisContent";
-import Theme from "../styles/Theme";
+import styled from 'styled-components';
+import Content from '../components/Analysis/AnalysisContent';
+import Theme from '../styles/Theme';
 
 const Analysis = () => {
   return (
@@ -23,6 +23,7 @@ const AnalysisContainer = styled.div`
   background-color: #f5f5f5;
   margin: 0 auto;
   border: 1px solid ${Theme.colors.gray1};
+  padding: 2rem;
 `;
 
 const ContentWrapper = styled.div`

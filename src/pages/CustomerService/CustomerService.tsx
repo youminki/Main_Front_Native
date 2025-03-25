@@ -86,6 +86,7 @@ const Header = styled.div`
   align-items: flex-start;
   width: 100%;
   margin-bottom: 6px;
+  padding: 2rem;
 `;
 
 const Title = styled.h1`

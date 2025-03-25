@@ -295,15 +295,13 @@ export default CardDetail;
 
 /* ------------------ 스타일 정의 ------------------ */
 
-const FormContainer = styled.form`
-  width: 100%;
-`;
+const FormContainer = styled.form``;
 
 const Container = styled.div`
-  width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
   background-color: #ffffff;
+  padding: 2rem;
 `;
 
 const FieldSection = styled.div``;

@@ -175,8 +175,9 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+
   background-color: #fff;
+  padding: 2rem;
 `;
 
 const Form = styled.form`

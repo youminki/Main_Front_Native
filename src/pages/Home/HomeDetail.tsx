@@ -136,6 +136,7 @@ const DetailContainer = styled.div`
   justify-content: space-between;
   padding-bottom: 80px;
   overflow-x: hidden;
+  padding: 2rem;
 `;
 
 const ContentContainer = styled.div``;

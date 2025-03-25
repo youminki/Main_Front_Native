@@ -254,6 +254,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   margin: 0 auto;
+  padding: 2rem;
 `;
 
 const Header = styled.div`

@@ -97,6 +97,7 @@ const Container = styled.div`
   margin: 0 auto;
   display: flex;
   justify-content: center;
+  padding: 2rem;
 `;
 
 const ContentArea = styled.div`

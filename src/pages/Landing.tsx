@@ -178,7 +178,7 @@ export default Landing;
 const LandingContainer = styled.div`
   position: relative;
   background-color: #f5f5f5; /* 혹은 원하는 색상 */
-
+  /* padding: 2rem; */
   display: flex;
   flex-direction: column;
   align-items: center;

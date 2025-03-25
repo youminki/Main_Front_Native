@@ -154,7 +154,7 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
+  padding: 2rem;
   margin: 0 auto;
 `;
 

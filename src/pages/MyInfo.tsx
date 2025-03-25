@@ -340,8 +340,9 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100%;
+
   margin: 0 auto;
+  padding: 2rem;
 `;
 const Form = styled.form`
   display: flex;

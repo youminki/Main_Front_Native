@@ -142,6 +142,7 @@ const Container = styled.div`
 
   display: flex;
   justify-content: center;
+  padding: 2rem;
 `;
 
 const ContentWrapper = styled.div`

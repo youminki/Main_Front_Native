@@ -106,6 +106,7 @@ const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  padding: 2rem;
 `;
 
 const ContentWrapper = styled.div`

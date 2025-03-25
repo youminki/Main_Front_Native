@@ -73,6 +73,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: #fff;
+  padding: 2rem;
 `;
 
 const Header = styled.div`

@@ -48,7 +48,6 @@ export default TermsAndConditionsOfUseDetail;
 /* ----- 스타일 정의 ----- */
 
 const DetailContainer = styled.div`
-  width: 100%;
   margin: 0 auto;
 
   display: flex;
@@ -57,6 +56,7 @@ const DetailContainer = styled.div`
 
   background: #ffffff;
   box-sizing: border-box;
+  padding: 2rem;
 `;
 
 const Section = styled.div`
