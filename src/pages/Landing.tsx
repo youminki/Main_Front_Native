@@ -182,7 +182,7 @@ const LandingContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 440px;
+  max-width: 600px;
   padding: 0 20px;
   margin: 0 auto;
   overflow: hidden;
@@ -210,14 +210,14 @@ const BackgroundStripe1 = styled.div`
   position: absolute;
   width: 1086px;
   height: 230px;
-  left: -126px;
-  top: 424px;
+  left: -6px;
+  top: 304px;
   background: #f1bb02;
   transform: rotate(-45deg);
 `;
 
 const ContentWrapper = styled.div`
-  margin-top: 30px;
+  margin-top: 50px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -230,7 +230,7 @@ const ContentWrapper = styled.div`
 const FadeInWrapper = styled.div<{ scrollDirection: 'up' | 'down' }>`
   width: 100%;
   max-width: 700px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 
   overflow: hidden;
 

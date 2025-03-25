@@ -161,7 +161,7 @@ const SubTitle = styled.div`
 /** 기능(대여/구매/판매)들을 묶는 래퍼 */
 const FeaturesWrapper = styled.div`
   position: relative; /* PlusSign들이 절대 위치로 배치될 부모 */
-  width: 100%;
+
   display: flex;
   flex-direction: column;
   align-items: center; /* 중앙 정렬 */
@@ -174,9 +174,8 @@ const FeatureBox = styled.div<{
   borderRadius: string;
   border?: string;
 }>`
-  width: 100%;
-  max-width: 338px;
   height: 120px; /* 고정 높이 */
+
   background: ${({ bgColor }) => bgColor};
   border-radius: ${({ borderRadius }) => borderRadius};
   border: ${({ border }) => border || 'none'};

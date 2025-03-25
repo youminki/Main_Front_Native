@@ -170,9 +170,9 @@ const BottomBackground = styled.div`
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 400px;
+  width: 100%;
   height: 500.5px;
   background: #fff6d4;
   z-index: -1;
-  clip-path: path('M0,160 Q360,40 400,110 L400,500.5 L0,500.5 Z');
+  clip-path: path('M0,160 Q360,40 600,110 L600,500.5 L0,500.5 Z');
 `;

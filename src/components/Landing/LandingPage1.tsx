@@ -40,9 +40,9 @@ export default LandingPage1;
 
 const Wrapper = styled.div`
   position: relative;
-
-  height: 500px;
-  margin: 40px auto;
+  width: 100%;
+  /* 고정 높이를 제거하고 여백만 설정 */
+  margin: 20px 10px;
   overflow: visible;
 `;
 
@@ -58,33 +58,42 @@ const LeftLabelImage = styled.img`
 const Container = styled.div`
   position: relative;
   width: 100%;
-  height: 100%;
+  max-width: 600px;
+  min-height: 440px;
+  /* 기본: 16:9 비율 유지 */
+  aspect-ratio: 16 / 9;
   border-radius: 10px;
   box-sizing: border-box;
   overflow: hidden;
   background: url(${LandingBackground}) no-repeat center/cover;
-
-  /* 변경된 flex 설정: 내부 콘텐츠를 하단 정렬 */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
+  margin: 0 auto;
+
+  @media (min-width: 600px) {
+    /* 너비가 600px 이상이면 높이를 700px로 고정 */
+    height: 700px;
+    aspect-ratio: unset;
+  }
 `;
 
 const ContentBox = styled.div`
   position: relative;
   z-index: 1;
+  width: 100%;
+  padding: 0 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 20px;
 `;
 
 const BigTitle = styled.h1`
   font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 800;
-  font-size: 30px;
-  line-height: 33px;
+  font-size: 2rem; /* rem 단위 사용으로 반응형 적용 */
+  line-height: 1.1;
   text-align: center;
   color: #ffffff;
   margin: 0 0 20px 0;
@@ -97,15 +106,16 @@ const BrandSpan = styled.span`
 const SubTitle = styled.h2`
   font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 700;
-  font-size: 16px;
-  line-height: 18px;
+  font-size: 1rem;
+  line-height: 1.1;
   text-align: center;
   color: #ffffff;
   margin: 0 0 47px 0;
 `;
 
 const RegisterButton = styled.button`
-  width: 320px;
+  width: 100%;
+  max-width: 320px;
   height: 56px;
   background: rgba(34, 34, 34, 0.9);
   border: none;
@@ -113,11 +123,10 @@ const RegisterButton = styled.button`
   cursor: pointer;
   font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 800;
-  font-size: 16px;
-  line-height: 18px;
+  font-size: 1rem;
+  line-height: 1.1;
   color: #ffffff;
   transition: transform 0.1s;
-
   margin-bottom: 60px;
 
   &:hover {
