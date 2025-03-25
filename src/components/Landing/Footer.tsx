@@ -1,3 +1,4 @@
+// 기존 Footer 컴포넌트 파일 (Footer.tsx)
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -131,17 +132,17 @@ const Footer: React.FC = () => {
 
 export default Footer;
 
-// ---------------------------
+/* ---------------------------
 // styled-components
-// ---------------------------
+// --------------------------- */
 const FooterContainer = styled.footer`
   width: 440px;
   height: 309px;
   margin: 0 auto;
+  /* 아래 여백 제거 */
+  margin-bottom: 0;
   background: #f5ab35;
   border-radius: 20px 20px 0 0;
-
-  /* 수직/수평 중앙 정렬 */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -180,19 +181,17 @@ const RegisterButton = styled.button`
     background 0.2s ease-in-out;
 
   &:hover {
-    background: #e0e0e0; /* 호버 시 배경색 변경 */
+    background: #e0e0e0;
   }
 
   &:active {
-    transform: scale(0.97); /* 버튼 클릭 시 살짝 작아지는 효과 */
+    transform: scale(0.97);
   }
 `;
 
-/** 왼쪽 정렬을 위해 align-self: flex-start 적용 */
 const CompanyInfo = styled.div`
   align-self: flex-start;
   margin-left: 42px;
-
   font-family: 'NanumSquare Neo OTF', sans-serif;
   font-weight: 400;
   font-size: 12px;

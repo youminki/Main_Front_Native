@@ -100,7 +100,6 @@ const ContentContainer = styled.div<{
 }>`
   flex: 1;
   padding: ${({ disablePadding }) => (disablePadding ? '0' : '70px 0')};
-  margin-bottom: 30px;
   animation: ${({ exit, animate }) =>
       exit ? slideOut : animate ? slideIn : 'none'}
     0.3s ease-out;
@@ -110,6 +109,7 @@ const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [exit, setExit] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // personalLink 경로일 때 body에 클래스 추가
   useEffect(() => {
@@ -119,6 +119,46 @@ const App: React.FC = () => {
       document.body.classList.remove('personalLink');
     }
   }, [location.pathname]);
+
+  // ========= 이미지 로드 완료 시 로딩 해제 =========
+  useEffect(() => {
+    // 모든 img 태그 수집
+    const images = document.querySelectorAll('img');
+    let loadedCount = 0;
+    const totalImages = images.length;
+
+    // 이미지가 하나도 없다면 즉시 로딩 해제
+    if (totalImages === 0) {
+      setLoading(false);
+      return;
+    }
+
+    // load/error 시마다 카운트 증가 → 모두 끝나면 로딩 해제
+    const handleLoadOrError = () => {
+      loadedCount += 1;
+      if (loadedCount === totalImages) {
+        setLoading(false);
+      }
+    };
+
+    images.forEach((img) => {
+      if (img.complete) {
+        // 캐시 등으로 이미 로드된 상태
+        handleLoadOrError();
+      } else {
+        img.addEventListener('load', handleLoadOrError);
+        img.addEventListener('error', handleLoadOrError);
+      }
+    });
+
+    return () => {
+      images.forEach((img) => {
+        img.removeEventListener('load', handleLoadOrError);
+        img.removeEventListener('error', handleLoadOrError);
+      });
+    };
+  }, []);
+  // ==============================================
 
   // BottomNav가 포함될 경로 패턴
   const bottomNavPaths = [
@@ -297,6 +337,16 @@ const App: React.FC = () => {
     }, 300); // 0.3초 애니메이션 시간과 동일
   };
 
+  // 로딩 중이면 스피너 표시
+  if (loading) {
+    return (
+      <LoadingOverlay>
+        <LoadingSpinner />
+      </LoadingOverlay>
+    );
+  }
+
+  // 로딩 완료 후 실제 페이지 렌더링
   return (
     <AppContainer>
       {includeHeader1 && <UnifiedHeader variant='default' />}
@@ -443,6 +493,36 @@ const App: React.FC = () => {
 const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+// 로딩 스피너 애니메이션
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+// 로딩 스피너 스타일 (노란색)
+const LoadingSpinner = styled.div`
+  border: 8px solid rgba(246, 172, 54, 0.3);
+  border-top: 8px solid #f6ac36;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: ${spin} 1s linear infinite;
+`;
+
+// 로딩 오버레이 스타일
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
 `;
 
 const AppWrapper: React.FC = () => (
