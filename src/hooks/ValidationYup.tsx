@@ -77,7 +77,7 @@ export const schemaSignup = yup
       .matches(
         /^(?=.*@)(?=.*\.com).+$/,
         '이메일은 "@"와 ".com"을 포함해야 합니다.'
-      ), // 추가된 검증
+      ),
     password: yup
       .string()
       .required('비밀번호를 입력해주세요.')
@@ -130,6 +130,36 @@ export const schemaSignup = yup
     brand: yup.string().required('선호 브랜드를 선택해주세요.'),
     productCount: yup.string().required('상품 노출 수를 선택해주세요.'),
     exposureFrequency: yup.string().required('노출 빈도를 선택해주세요.'),
+    // 추가 필드
+    instar: yup
+      .string()
+      .required('인스타 아이디를 입력해주세요.')
+      .max(50, '인스타 아이디는 최대 50자까지 입력 가능합니다.'),
+    shoulder: yup
+      .string()
+      .notRequired()
+      .transform((value, originalValue) =>
+        originalValue === null ? undefined : value
+      ),
+
+    chest: yup
+      .string()
+      .notRequired()
+      .transform((value, originalValue) =>
+        originalValue === null ? undefined : value
+      ),
+    waist: yup
+      .string()
+      .notRequired()
+      .transform((value, originalValue) =>
+        originalValue === null ? undefined : value
+      ),
+    sleeve: yup
+      .string()
+      .notRequired()
+      .transform((value, originalValue) =>
+        originalValue === null ? undefined : value
+      ),
   })
   .required();
 

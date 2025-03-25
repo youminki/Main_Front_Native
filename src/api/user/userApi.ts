@@ -9,15 +9,25 @@ export interface SignupRequest {
   password: string;
   name: string;
   nickname: string;
-  birthdate: string; // YYYY-MM-DD 형식
+  birthdate: string; // "YYYY-MM-DD" 형식
   address: string;
   phoneNumber: string;
   gender: string;
   instagramId: string;
   agreeToTerms: boolean;
   agreeToPrivacyPolicy: boolean;
+  personalWebpage: string;
+  height: number;
+  weight: number;
+  topSize: string;
+  dressSize: string;
+  bottomSize: string;
+  preferredBrands: string[];
+  shoulderWidth?: number;
+  chestCircumference?: number;
+  waistCircumference?: number;
+  sleeveLength?: number;
 }
-
 export interface SignupResponse {
   email: string;
   name: string;
@@ -96,14 +106,13 @@ export const signUpUser = async (
     const response = await Axios.post('/user', data);
     return response.data;
   } catch (error: any) {
-    // 서버에서 휴대폰 인증 미완료 시 400 응답을 반환하는 경우
+    // 휴대폰 인증 미완료 등 에러 처리
     if (error.response && error.response.status === 400) {
       throw new Error('휴대폰 인증을 먼저 진행해주세요.');
     }
     throw error;
   }
 };
-
 // 모든 사용자 조회 API 호출 (GET /user)
 export const getUsers = async (
   limit?: number,

@@ -1,3 +1,4 @@
+// Signup.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
@@ -22,7 +23,7 @@ import {
 import { regionDistrictData } from '../components/Signup/regionDistrictData';
 import Modal from '../components/Melpik/CreateMelpik/Settings/Modal';
 
-type SignupFormData = {
+export type SignupFormData = {
   email: string;
   password: string;
   passwordConfirm: string;
@@ -33,17 +34,17 @@ type SignupFormData = {
   region: string;
   district: string;
   melpickAddress: string;
-
   height: string;
   size: string;
   dress: string;
   top: string;
   bottom: string;
   brand: string;
-  shoulder?: string;
-  chest?: string;
-  waist?: string;
-  sleeve?: string;
+  instar: string; // 인스타 아이디
+  shoulder?: string | null;
+  chest?: string | null;
+  waist?: string | null;
+  sleeve?: string | null;
   productCount: string;
   exposureFrequency: string;
 };
@@ -52,7 +53,6 @@ const Signup: React.FC = () => {
   const navigate = useNavigate();
   const methods = useForm<SignupFormData>({
     resolver: yupResolver(schemaSignup),
-
     mode: 'all',
     defaultValues: {
       email: '',
@@ -71,6 +71,7 @@ const Signup: React.FC = () => {
       top: '',
       bottom: '',
       brand: '',
+      instar: '',
       shoulder: '',
       chest: '',
       waist: '',
@@ -110,7 +111,7 @@ const Signup: React.FC = () => {
   const [isMelpickAddressChecked, setIsMelpickAddressChecked] =
     useState<boolean>(false);
 
-  // 버튼 텍스트 상태
+  // 버튼 텍스트 및 색상 상태
   const [emailButtonText, setEmailButtonText] = useState<string>('중복확인');
   const [nicknameButtonText, setNicknameButtonText] =
     useState<string>('중복확인');
@@ -119,7 +120,6 @@ const Signup: React.FC = () => {
   const [phoneVerificationButtonText, setPhoneVerificationButtonText] =
     useState<string>('인증');
 
-  // 버튼 색상 상태 (기본: 노란색, 성공: 파란색, 실패: 빨간색)
   const [emailButtonColor, setEmailButtonColor] = useState<
     'yellow' | 'blue' | 'red'
   >('yellow');
@@ -132,28 +132,26 @@ const Signup: React.FC = () => {
     'yellow' | 'blue' | 'red'
   >('yellow');
 
-  // API 에러 메시지 상태 (실패 사유를 인풋 아래에 표시)
+  // API 에러 메시지 상태
   const [emailApiError, setEmailApiError] = useState<string>('');
   const [nicknameApiError, setNicknameApiError] = useState<string>('');
   const [phoneApiError, setPhoneApiError] = useState<string>('');
   const [melpickApiError, setMelpickApiError] = useState<string>('');
 
-  // 성별 및 멜픽 주소 관련 상태
+  // 성별 및 주소 관련 상태
   const [gender, setGender] = useState<string>('여성');
   const [selectedGenderButton, setSelectedGenderButton] =
     useState<string>('여성');
   const [melpickAddress, setMelpickAddress] = useState<string>('');
 
-  // 회원가입 결과 메시지 및 모달 상태
+  // 회원가입 결과 및 모달 상태
   const [signupResult, setSignupResult] = useState<string>('');
   const [isSignupSuccess, setIsSignupSuccess] = useState<boolean>(false);
   const [showSignupResultModal, setShowSignupResultModal] =
     useState<boolean>(false);
 
-  // 본인 인증 관련 (인증번호 입력)
+  // 본인 인증 관련
   const [verificationCode, setVerificationCode] = useState<string>('');
-
-  // 타이머 (3분 = 180초)
   const [timer, setTimer] = useState<number>(0);
   const timerRef = useRef<number | null>(null);
 
@@ -167,13 +165,7 @@ const Signup: React.FC = () => {
     setTimer(180);
     if (timerRef.current !== null) clearInterval(timerRef.current);
     timerRef.current = window.setInterval(() => {
-      setTimer((prev) => {
-        if (prev <= 1) {
-          if (timerRef.current !== null) clearInterval(timerRef.current);
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimer((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
   };
 
@@ -183,7 +175,7 @@ const Signup: React.FC = () => {
     };
   }, []);
 
-  // 필드별 인증 상태 초기화 함수 (입력값 변경 시 다시 검증하도록)
+  // 입력값 변경 시 인증 상태 초기화
   const resetVerificationState = (
     field: 'email' | 'nickname' | 'phoneNumber' | 'melpickAddress'
   ) => {
@@ -213,7 +205,7 @@ const Signup: React.FC = () => {
     }
   };
 
-  // 검증 함수 예시 - 이메일 인증
+  // 검증 함수 - 이메일 중복 체크
   const handleEmailCheck = async (): Promise<void> => {
     const valid = await trigger('email');
     if (!valid) return;
@@ -343,9 +335,21 @@ const Signup: React.FC = () => {
     }
   };
 
-  // --- 최종 전체 검증 및 회원가입 제출 ---
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
-    // 비밀번호 확인
+    // 우선 각 인증 버튼 상태를 한 번에 확인하여 미완료 항목을 모읍니다.
+    const missing: string[] = [];
+    if (!isEmailChecked) missing.push('이메일 인증을 완료하세요.');
+    if (!isNicknameChecked) missing.push('닉네임 인증을 완료하세요.');
+    if (!isPhoneVerified) missing.push('전화번호 인증을 완료하세요.');
+    if (!isMelpickAddressChecked) missing.push('멜픽 주소 인증을 완료하세요.');
+    if (missing.length > 0) {
+      setSignupResult(missing.join('\n'));
+      setIsSignupSuccess(false);
+      setShowSignupResultModal(true);
+      return;
+    }
+
+    // 비밀번호 일치 검사
     if (data.password !== data.passwordConfirm) {
       setSignupResult('비밀번호가 일치하지 않습니다.');
       setIsSignupSuccess(false);
@@ -353,79 +357,53 @@ const Signup: React.FC = () => {
       return;
     }
 
-    // 필수 검증 체크
-    if (!isEmailChecked) {
-      setSignupResult('이메일 중복확인을 완료해주세요.');
-      setIsSignupSuccess(false);
-      setShowSignupResultModal(true);
-      return;
-    }
-    if (!isNicknameChecked) {
-      setSignupResult('닉네임 중복확인을 완료해주세요.');
-      setIsSignupSuccess(false);
-      setShowSignupResultModal(true);
-      return;
-    }
-    if (!isPhoneVerified) {
-      setSignupResult('본인 인증을 완료해주세요.');
-      setIsSignupSuccess(false);
-      setShowSignupResultModal(true);
-      return;
-    }
-    if (!isMelpickAddressChecked) {
-      setSignupResult('멜픽 주소 검증을 완료해주세요.');
-      setIsSignupSuccess(false);
-      setShowSignupResultModal(true);
-      return;
-    }
-
-    // phoneNumber가 undefined/null 방지 (sessionStorage 활용)
+    // 전화번호 포맷 보정
     let verifiedPhoneNumber =
       sessionStorage.getItem('verifiedPhoneNumber') || data.phoneNumber;
-
-    // phoneNumber 형식 검사 및 변환 (010-xxxx-xxxx 형태 유지)
     const formatPhoneNumber = (phone: string) => {
-      const cleaned = phone.replace(/[^0-9]/g, ''); // 숫자만 남기기
-      if (cleaned.length === 11) {
-        return cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-      }
-      return phone;
+      const cleaned = phone.replace(/[^0-9]/g, '');
+      return cleaned.length === 11
+        ? cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
+        : phone;
     };
-
     verifiedPhoneNumber = formatPhoneNumber(verifiedPhoneNumber);
 
-    // 회원가입 데이터 변환 (백엔드 DTO와 일치하도록)
+    // 회원가입 데이터 구성 (DTO)
     const formattedData = {
       email: data.email,
       password: data.password,
       name: data.name,
       nickname: data.nickname,
-      birthdate: `${data.birthYear}-01-01`, // "YYYY-MM-DD" 형식 유지
+      birthdate: `${data.birthYear}-01-01`,
       address: `${data.region} ${data.district}`,
-      phoneNumber: verifiedPhoneNumber, // 인증된 휴대폰 번호 사용
-      gender: gender === '여성' ? 'female' : 'male', // "female" 또는 "male" 변환
-      instagramId: '',
+      phoneNumber: verifiedPhoneNumber,
+      gender: gender === '여성' ? 'female' : 'male',
+      instagramId: data.instar,
       agreeToTerms: true,
       agreeToPrivacyPolicy: true,
+      personalWebpage: data.melpickAddress,
+      height: Number(data.height),
+      weight: Number(data.size),
+      topSize: data.top,
+      dressSize: data.dress,
+      bottomSize: data.bottom,
+      preferredBrands: selectedBrands,
+      shoulderWidth: data.shoulder ? Number(data.shoulder) : undefined,
+      chestCircumference: data.chest ? Number(data.chest) : undefined,
+      waistCircumference: data.waist ? Number(data.waist) : undefined,
+      sleeveLength: data.sleeve ? Number(data.sleeve) : undefined,
     };
 
     try {
       const response = await signUpUser(formattedData);
-
-      setSignupResult(
-        `🎉 ${response.nickname}님, 회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.`
-      );
+      setSignupResult(`🎉 ${response.nickname}님, 회원가입이 완료되었습니다!`);
       setIsSignupSuccess(true);
       setShowSignupResultModal(true);
     } catch (err: any) {
-      if (err.response) {
-        console.error('❌ 서버 응답 상태 코드:', err.response.status);
-        console.error('❌ 서버 응답 데이터:', err.response.data);
-      }
-
+      console.error('회원가입 오류:', err);
       setSignupResult(
         err instanceof Error
-          ? '회원가입 중 오류가 발생했습니다: ' + err.message
+          ? `회원가입 중 오류가 발생했습니다: ${err.message}`
           : '회원가입 중 오류가 발생했습니다.'
       );
       setIsSignupSuccess(false);
@@ -436,7 +414,7 @@ const Signup: React.FC = () => {
   const handleSignupResultModalClose = () => {
     setShowSignupResultModal(false);
     if (isSignupSuccess) {
-      navigate('/login');
+      navigate('/landing');
     }
   };
 
@@ -445,7 +423,7 @@ const Signup: React.FC = () => {
     setSelectedGenderButton(selected);
   };
 
-  // 전화번호 인풋 필드 수정 시 인증 상태 초기화 처리
+  // 전화번호 입력 변경 시 인증 상태 초기화
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
       .replace(/[^0-9]/g, '')
@@ -454,7 +432,7 @@ const Signup: React.FC = () => {
     resetVerificationState('phoneNumber');
   };
 
-  // 이메일, 닉네임, 멜픽주소 필드 변경 시 인증 상태 초기화 처리
+  // 이메일, 닉네임, 멜픽주소 변경 시 인증 상태 초기화 (인스타 아이디는 별도 처리)
   const handleInputChange =
     (field: 'email' | 'nickname' | 'melpickAddress') =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -468,6 +446,7 @@ const Signup: React.FC = () => {
     <ThemeProvider theme={Theme}>
       <FormProvider {...methods}>
         <Container>
+          {/* 폼 내부에 제출 버튼 포함 */}
           <Form onSubmit={handleSubmit(onSubmit)}>
             <AgreementSection />
             <InputField
@@ -487,7 +466,6 @@ const Signup: React.FC = () => {
                 handleEmailCheck();
               }}
             />
-
             <InputField
               label='비밀번호(숫자, 문자를 조합하여 8자리 이상 입력하세요)'
               id='password'
@@ -603,7 +581,6 @@ const Signup: React.FC = () => {
                 }}
               />
             </PhoneField>
-
             {isPhoneVerificationSent && !isPhoneVerified && (
               <VerificationWrapper>
                 <InputField
@@ -690,6 +667,7 @@ const Signup: React.FC = () => {
               prefix='melpick.com/'
             />
             <Divider />
+            {/* 인스타 아이디 필드 - 별도 동작 */}
             <InputField
               label='인스타 아이디'
               id='instar'
@@ -697,10 +675,7 @@ const Signup: React.FC = () => {
               placeholder='인스타 아이디를 입력하세요'
               required
               maxLength={50}
-              onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.preventDefault();
-                handleMelpickAddressCheck();
-              }}
+              {...register('instar')}
               prefix='instagram.com/'
             />
             <Divider />
@@ -737,7 +712,6 @@ const Signup: React.FC = () => {
                 ))}
               </InputField>
             </RowLabel>
-
             <RowLabel>
               <InputField
                 label='착용 제품사이즈'
@@ -785,7 +759,6 @@ const Signup: React.FC = () => {
                 <option value='77'>77 (XL)</option>
               </InputField>
             </RowLabel>
-
             <RowLabel>
               <InputField
                 label='선호 브랜드 선택(최대 3가지)'
@@ -796,11 +769,12 @@ const Signup: React.FC = () => {
                 {...register('brand')}
                 value={selectedBrands.join(', ') || '브랜드 3가지를 선택하세요'}
                 buttonLabel='선택하기'
-                onButtonClick={openModal}
+                onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.preventDefault();
+                  openModal();
+                }}
               />
             </RowLabel>
-
-            {/* 추가: 어깨너비, 가슴둘레 */}
             <RowLabel>
               <InputField
                 label='어깨너비 cm (선택)'
@@ -819,8 +793,6 @@ const Signup: React.FC = () => {
                 {...register('chest')}
               />
             </RowLabel>
-
-            {/* 추가: 허리둘레, 소매길이 */}
             <RowLabel>
               <InputField
                 label='허리둘레 cm (선택)'
@@ -839,37 +811,44 @@ const Signup: React.FC = () => {
                 {...register('sleeve')}
               />
             </RowLabel>
+            {/* 폼 제출 버튼(애니메이션 효과 적용) */}
+            <AnimatedBottomBar
+              imageSrc={ResetButtonIcon}
+              buttonText={isSubmitting ? '가입 중...' : '회원가입'}
+              type='submit'
+              disabled={isSubmitting}
+            />
           </Form>
-
           <BlackContainer />
-          <BottomBar
-            imageSrc={ResetButtonIcon}
-            buttonText={isSubmitting ? '가입 중...' : '회원가입'}
-            type='submit'
-            disabled={isSubmitting}
+          {/* 회원가입 결과 모달 */}
+          <ReusableModal
+            isOpen={showSignupResultModal}
+            onClose={handleSignupResultModalClose}
+            title='회원가입 결과'
+          >
+            {signupResult}
+          </ReusableModal>
+          <Modal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            onSelect={handleBrandSelect}
+            selectedBrands={selectedBrands}
           />
         </Container>
       </FormProvider>
-
-      <ReusableModal
-        isOpen={showSignupResultModal}
-        onClose={handleSignupResultModalClose}
-        title='회원가입 결과'
-      >
-        {signupResult}
-      </ReusableModal>
-
-      <Modal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onSelect={handleBrandSelect}
-        selectedBrands={selectedBrands}
-      />
     </ThemeProvider>
   );
 };
 
 export default Signup;
+
+/* --- 애니메이션 효과가 적용된 BottomBar --- */
+const AnimatedBottomBar = styled(BottomBar)`
+  transition: transform 0.2s ease-in-out;
+  &:active {
+    transform: scale(0.95);
+  }
+`;
 
 /* --- styled-components --- */
 const Container = styled.div`
@@ -969,7 +948,6 @@ const TimerDisplay = styled.div`
   padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
-
   margin-top: 20px;
 `;
 
