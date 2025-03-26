@@ -773,7 +773,7 @@ const Signup: React.FC = () => {
             </RowLabel>
             <RowLabel>
               <InputField
-                label='사이즈*(상의,원피스,하의)'
+                label='사이즈*(원피스,상의,하의)'
                 id='top'
                 as={CustomSelect}
                 error={errors.top}

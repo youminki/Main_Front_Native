@@ -36,6 +36,7 @@ const Modal: React.FC<ModalProps> = ({
     '지고트 (JIGOTT)',
     '케네스 레이디 (KENNETH LADY)',
     '라인 (LINE)',
+    '지컷 (G-cut)',
   ];
 
   const [selectedBrands, setSelectedBrands] = useState<string[]>(
