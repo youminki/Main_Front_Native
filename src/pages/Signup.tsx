@@ -44,8 +44,6 @@ export type SignupFormData = {
   chest?: string | null;
   waist?: string | null;
   sleeve?: string | null;
-  productCount: string;
-  exposureFrequency: string;
 };
 
 const Signup: React.FC = () => {
@@ -75,8 +73,6 @@ const Signup: React.FC = () => {
       chest: '',
       waist: '',
       sleeve: '',
-      productCount: '',
-      exposureFrequency: '',
     },
   });
 

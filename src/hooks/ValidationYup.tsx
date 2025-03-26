@@ -128,8 +128,7 @@ export const schemaSignup = yup
     top: yup.string().required('사이즈 선택.'),
     bottom: yup.string().required('사이즈 선택.'),
     brand: yup.string().required('선호 브랜드를 선택해주세요.'),
-    productCount: yup.string().required('상품 노출 수를 선택해주세요.'),
-    exposureFrequency: yup.string().required('노출 빈도를 선택해주세요.'),
+
     // 추가 필드
     instar: yup
       .string()
