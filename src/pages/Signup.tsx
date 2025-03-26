@@ -699,7 +699,7 @@ const Signup: React.FC = () => {
               prefix='instagram.com/'
             />
             <InputField
-              label='멜픽 주소설정'
+              label='멜픽 주소설정*'
               id='melpickAddress'
               type='text'
               placeholder='멜픽 주소를 입력하세요'
