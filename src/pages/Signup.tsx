@@ -417,14 +417,18 @@ const Signup: React.FC = () => {
     }
   };
 
-  // onSignupButtonClick: FixedBottomBar 클릭 시 전체 검증 후 onSubmit 또는 에러 메시지 모달 호출
   const onSignupButtonClick = async () => {
+    // 전체 폼 검증을 실행합니다.
     const valid = await trigger();
-    if (!valid) {
-      const errorMessages = Object.values(errors)
-        .map((err) => err?.message)
-        .filter(Boolean)
-        .join('\n');
+    // 잠시 다음 렌더링 사이클까지 기다립니다.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const errorMessages = Object.values(methods.formState.errors)
+      .map((err) => err?.message)
+      .filter(Boolean)
+      .join('\n');
+
+    if (!valid || errorMessages) {
       setSignupResult(
         errorMessages.split('\n').map((line, idx) => (
           <React.Fragment key={idx}>
@@ -437,6 +441,7 @@ const Signup: React.FC = () => {
       setShowSignupResultModal(true);
       return;
     }
+    // 검증 통과 시 회원가입 onSubmit 함수 실행
     handleSubmit(onSubmit)();
   };
 
