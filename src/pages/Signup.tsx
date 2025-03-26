@@ -774,10 +774,10 @@ const Signup: React.FC = () => {
             <RowLabel>
               <InputField
                 label='사이즈*(원피스,상의,하의)'
-                id='top'
+                id='dress'
                 as={CustomSelect}
-                error={errors.top}
-                {...register('top', { required: true })}
+                error={errors.dress}
+                {...register('dress', { required: true })}
               >
                 <option value='' disabled hidden>
                   원피스
@@ -789,10 +789,10 @@ const Signup: React.FC = () => {
               </InputField>
               <InputField
                 label=''
-                id='dress'
+                id='top'
                 as={CustomSelect}
-                error={errors.dress}
-                {...register('dress', { required: true })}
+                error={errors.top}
+                {...register('top', { required: true })}
               >
                 <option value='' disabled hidden>
                   상의
