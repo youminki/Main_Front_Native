@@ -557,7 +557,7 @@ const Signup: React.FC = () => {
             </GenderField>
             <PhoneField>
               <InputField
-                label='전화번호(11자를 입력하세요)'
+                label='핸드폰 인증(11자를 입력하세요)'
                 id='phoneNumber'
                 type='text'
                 placeholder='전화번호를 입력하세요'
@@ -663,7 +663,7 @@ const Signup: React.FC = () => {
               }}
               prefix='melpick.com/'
             />
-            <Divider />
+
             {/* 인스타 아이디 필드 - 별도 동작 */}
             <InputField
               label='인스타 아이디'
@@ -875,7 +875,7 @@ const GenderField = styled.div`
   height: 67px;
   display: flex;
   flex-direction: column;
-  margin-top: 20px;
+  margin-bottom: 30px;
 `;
 
 const InputFieldLabel = styled.label`
