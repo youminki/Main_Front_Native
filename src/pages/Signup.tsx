@@ -8,7 +8,6 @@ import InputField from '../components/InputField';
 import AgreementSection from '../components/Signup/AgreementSection';
 import Theme from '../styles/Theme';
 import FixedBottomBar from '../components/FixedBottomBar';
-// import ResetButtonIcon from '../assets/ResetButton.png';
 import { useNavigate } from 'react-router-dom';
 import { CustomSelect } from '../components/CustomSelect';
 import ReusableModal from '../components/ReusableModal';
@@ -40,7 +39,7 @@ export type SignupFormData = {
   top: string;
   bottom: string;
   brand: string;
-  instar: string; // 인스타 아이디
+  instar: string;
   shoulder?: string | null;
   chest?: string | null;
   waist?: string | null;
@@ -91,65 +90,10 @@ const Signup: React.FC = () => {
     watch,
   } = methods;
 
-  const selectedRegion = watch('region');
-  const [isPhoneVerificationSent] = useState<boolean>(false);
-
-  const [isModalOpen, setModalOpen] = useState<boolean>(false);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const handleBrandSelect = (brands: string[]) => {
-    setSelectedBrands(brands);
-    setValue('brand', brands.join(', '));
-  };
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
-
-  // 각 인증 완료 여부 상태
-  const [isEmailChecked, setIsEmailChecked] = useState<boolean>(false);
-  const [isNicknameChecked, setIsNicknameChecked] = useState<boolean>(false);
+  // 핸드폰 인증 관련 상태
+  const [isPhoneVerificationSent, setIsPhoneVerificationSent] =
+    useState<boolean>(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState<boolean>(false);
-  const [isMelpickAddressChecked, setIsMelpickAddressChecked] =
-    useState<boolean>(false);
-
-  // 버튼 텍스트 및 색상 상태
-  const [emailButtonText, setEmailButtonText] = useState<string>('중복확인');
-  const [nicknameButtonText, setNicknameButtonText] =
-    useState<string>('중복확인');
-  const [melpickAddressButtonText, setMelpickAddressButtonText] =
-    useState<string>('체크');
-  const [phoneVerificationButtonText, setPhoneVerificationButtonText] =
-    useState<string>('인증');
-
-  const [emailButtonColor, setEmailButtonColor] = useState<
-    'yellow' | 'blue' | 'red'
-  >('yellow');
-  const [nicknameButtonColor, setNicknameButtonColor] = useState<
-    'yellow' | 'blue' | 'red'
-  >('yellow');
-  const [phoneVerificationButtonColor, setPhoneVerificationButtonColor] =
-    useState<'yellow' | 'blue' | 'red'>('yellow');
-  const [melpickAddressButtonColor, setMelpickAddressButtonColor] = useState<
-    'yellow' | 'blue' | 'red'
-  >('yellow');
-
-  // API 에러 메시지 상태
-  const [emailApiError, setEmailApiError] = useState<string>('');
-  const [nicknameApiError, setNicknameApiError] = useState<string>('');
-  const [phoneApiError, setPhoneApiError] = useState<string>('');
-  const [melpickApiError, setMelpickApiError] = useState<string>('');
-
-  // 성별 및 주소 관련 상태
-  const [gender, setGender] = useState<string>('여성');
-  const [selectedGenderButton, setSelectedGenderButton] =
-    useState<string>('여성');
-  const [melpickAddress, setMelpickAddress] = useState<string>('');
-
-  // 회원가입 결과 및 모달 상태
-  const [signupResult, setSignupResult] = useState<string>('');
-  const [isSignupSuccess, setIsSignupSuccess] = useState<boolean>(false);
-  const [showSignupResultModal, setShowSignupResultModal] =
-    useState<boolean>(false);
-
-  // 본인 인증 관련
   const [verificationCode, setVerificationCode] = useState<string>('');
   const [timer, setTimer] = useState<number>(0);
   const timerRef = useRef<number | null>(null);
@@ -174,7 +118,60 @@ const Signup: React.FC = () => {
     };
   }, []);
 
-  // 입력값 변경 시 인증 상태 초기화
+  // 이메일, 닉네임, 전화번호, 멜픽주소 인증 상태 및 버튼 관련 상태
+  const [isEmailChecked, setIsEmailChecked] = useState<boolean>(false);
+  const [isNicknameChecked, setIsNicknameChecked] = useState<boolean>(false);
+  const [isMelpickAddressChecked, setIsMelpickAddressChecked] =
+    useState<boolean>(false);
+
+  const [emailButtonText, setEmailButtonText] = useState<string>('중복확인');
+  const [nicknameButtonText, setNicknameButtonText] =
+    useState<string>('중복확인');
+  const [phoneVerificationButtonText, setPhoneVerificationButtonText] =
+    useState<string>('인증');
+  const [melpickAddressButtonText, setMelpickAddressButtonText] =
+    useState<string>('체크');
+
+  const [emailButtonColor, setEmailButtonColor] = useState<
+    'yellow' | 'blue' | 'red'
+  >('yellow');
+  const [nicknameButtonColor, setNicknameButtonColor] = useState<
+    'yellow' | 'blue' | 'red'
+  >('yellow');
+  const [phoneVerificationButtonColor, setPhoneVerificationButtonColor] =
+    useState<'yellow' | 'blue' | 'red'>('yellow');
+  const [melpickAddressButtonColor, setMelpickAddressButtonColor] = useState<
+    'yellow' | 'blue' | 'red'
+  >('yellow');
+
+  const [emailApiError, setEmailApiError] = useState<string>('');
+  const [nicknameApiError, setNicknameApiError] = useState<string>('');
+  const [phoneApiError, setPhoneApiError] = useState<string>('');
+  const [melpickApiError, setMelpickApiError] = useState<string>('');
+
+  // 성별 및 주소 관련 상태
+  const [gender, setGender] = useState<string>('여성');
+  const [selectedGenderButton, setSelectedGenderButton] =
+    useState<string>('여성');
+  const [melpickAddress, setMelpickAddress] = useState<string>('');
+
+  // 브랜드 선택 관련 상태
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const handleBrandSelect = (brands: string[]) => {
+    setSelectedBrands(brands);
+    setValue('brand', brands.join(', '));
+  };
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const openModal = () => setModalOpen(true);
+  const closeModal = () => setModalOpen(false);
+
+  // 회원가입 결과 및 모달 상태
+  // signupResult 타입을 React.ReactNode로 변경하여 <br/> 태그 등을 포함할 수 있도록 함
+  const [signupResult, setSignupResult] = useState<React.ReactNode>('');
+  const [isSignupSuccess, setIsSignupSuccess] = useState<boolean>(false);
+  const [showSignupResultModal, setShowSignupResultModal] =
+    useState<boolean>(false);
+
   const resetVerificationState = (
     field: 'email' | 'nickname' | 'phoneNumber' | 'melpickAddress'
   ) => {
@@ -195,6 +192,7 @@ const Signup: React.FC = () => {
       setPhoneVerificationButtonText('인증');
       setPhoneApiError('');
       setPhoneVerificationButtonColor('yellow');
+      setIsPhoneVerificationSent(false);
     }
     if (field === 'melpickAddress') {
       setIsMelpickAddressChecked(false);
@@ -204,7 +202,6 @@ const Signup: React.FC = () => {
     }
   };
 
-  // 각 인증 검증 함수
   const handleEmailCheck = async (): Promise<void> => {
     const valid = await trigger('email');
     if (!valid) return;
@@ -266,6 +263,7 @@ const Signup: React.FC = () => {
       if (result.message && result.message.includes('성공')) {
         startTimer();
         setPhoneApiError('');
+        setIsPhoneVerificationSent(true);
       } else {
         setPhoneVerificationButtonText('인증 실패');
         setPhoneApiError(result.message || '전화번호 인증 실패');
@@ -333,7 +331,7 @@ const Signup: React.FC = () => {
     }
   };
 
-  // 회원가입 제출 시 모든 인증 완료 여부를 확인하여 미완료 항목이 있다면 모달에 안내 메시지를 표시
+  // onSubmit: 모든 필드가 정상일 때 실행됩니다.
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
     const missing: string[] = [];
     if (!isEmailChecked) missing.push('이메일 인증을 완료하세요.');
@@ -341,21 +339,32 @@ const Signup: React.FC = () => {
     if (!isPhoneVerified) missing.push('전화번호 인증을 완료하세요.');
     if (!isMelpickAddressChecked) missing.push('멜픽 주소 인증을 완료하세요.');
     if (missing.length > 0) {
-      setSignupResult(missing.join('\n'));
+      setSignupResult(
+        missing.map((msg, idx) => (
+          <React.Fragment key={idx}>
+            {msg}
+            <br />
+          </React.Fragment>
+        ))
+      );
       setIsSignupSuccess(false);
       setShowSignupResultModal(true);
       return;
     }
 
-    // 비밀번호 일치 검사
     if (data.password !== data.passwordConfirm) {
-      setSignupResult('비밀번호가 일치하지 않습니다.');
+      setSignupResult(
+        <>
+          비밀번호가 일치하지 않습니다.
+          <br />
+          다시 확인해주세요.
+        </>
+      );
       setIsSignupSuccess(false);
       setShowSignupResultModal(true);
       return;
     }
 
-    // 전화번호 포맷 보정
     let verifiedPhoneNumber =
       sessionStorage.getItem('verifiedPhoneNumber') || data.phoneNumber;
     const formatPhoneNumber = (phone: string) => {
@@ -366,7 +375,6 @@ const Signup: React.FC = () => {
     };
     verifiedPhoneNumber = formatPhoneNumber(verifiedPhoneNumber);
 
-    // 회원가입 데이터 구성 (DTO)
     const formattedData = {
       email: data.email,
       password: data.password,
@@ -409,6 +417,29 @@ const Signup: React.FC = () => {
     }
   };
 
+  // onSignupButtonClick: FixedBottomBar 클릭 시 전체 검증 후 onSubmit 또는 에러 메시지 모달 호출
+  const onSignupButtonClick = async () => {
+    const valid = await trigger();
+    if (!valid) {
+      const errorMessages = Object.values(errors)
+        .map((err) => err?.message)
+        .filter(Boolean)
+        .join('\n');
+      setSignupResult(
+        errorMessages.split('\n').map((line, idx) => (
+          <React.Fragment key={idx}>
+            {line}
+            <br />
+          </React.Fragment>
+        ))
+      );
+      setIsSignupSuccess(false);
+      setShowSignupResultModal(true);
+      return;
+    }
+    handleSubmit(onSubmit)();
+  };
+
   const handleSignupResultModalClose = () => {
     setShowSignupResultModal(false);
     if (isSignupSuccess) {
@@ -421,7 +452,6 @@ const Signup: React.FC = () => {
     setSelectedGenderButton(selected);
   };
 
-  // 전화번호 입력 변경 시 인증 상태 초기화
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
       .replace(/[^0-9]/g, '')
@@ -430,7 +460,6 @@ const Signup: React.FC = () => {
     resetVerificationState('phoneNumber');
   };
 
-  // 이메일, 닉네임, 멜픽주소 변경 시 인증 상태 초기화 (인스타 아이디는 별도 처리)
   const handleInputChange =
     (field: 'email' | 'nickname' | 'melpickAddress') =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -601,7 +630,7 @@ const Signup: React.FC = () => {
             )}
             <RowLabel>
               <InputField
-                label='지역'
+                label='서비스 지역'
                 id='region'
                 as={CustomSelect}
                 error={errors.region}
@@ -618,7 +647,7 @@ const Signup: React.FC = () => {
                 ))}
               </InputField>
               <InputField
-                label='구'
+                label=''
                 id='district'
                 as={CustomSelect}
                 error={errors.district}
@@ -628,12 +657,14 @@ const Signup: React.FC = () => {
                 <option value='' disabled>
                   구를 선택하세요
                 </option>
-                {selectedRegion && regionDistrictData[selectedRegion] ? (
-                  regionDistrictData[selectedRegion].map((district: string) => (
-                    <option key={district} value={district}>
-                      {district}
-                    </option>
-                  ))
+                {watch('region') && regionDistrictData[watch('region')] ? (
+                  regionDistrictData[watch('region')].map(
+                    (district: string) => (
+                      <option key={district} value={district}>
+                        {district}
+                      </option>
+                    )
+                  )
                 ) : (
                   <option value=''>지역을 먼저 선택하세요</option>
                 )}
@@ -663,8 +694,6 @@ const Signup: React.FC = () => {
               }}
               prefix='melpick.com/'
             />
-
-            {/* 인스타 아이디 필드 - 별도 동작 */}
             <InputField
               label='인스타 아이디'
               id='instar'
@@ -684,7 +713,7 @@ const Signup: React.FC = () => {
                 error={errors.height}
                 {...register('height', { required: true })}
               >
-                <option value='' disabled selected hidden>
+                <option value='' disabled hidden>
                   키 선택
                 </option>
                 {[...Array(200 - 130 + 1)].map((_, i) => (
@@ -701,12 +730,12 @@ const Signup: React.FC = () => {
                 error={errors.size}
                 {...register('size', { required: true })}
               >
-                <option value='' disabled selected hidden>
+                <option value='' disabled hidden>
                   몸무게 선택
                 </option>
                 {Array.from({ length: 100 }, (_, i) => (
                   <option key={i + 1} value={i + 1}>
-                    {i + 1}kg
+                    {i + 1} kg
                   </option>
                 ))}
               </InputField>
@@ -719,7 +748,7 @@ const Signup: React.FC = () => {
                 error={errors.dress}
                 {...register('dress', { required: true })}
               >
-                <option value='' disabled selected hidden>
+                <option value='' disabled hidden>
                   상의
                 </option>
                 <option value='44'>44 (S)</option>
@@ -734,7 +763,7 @@ const Signup: React.FC = () => {
                 error={errors.top}
                 {...register('top', { required: true })}
               >
-                <option value='' disabled selected hidden>
+                <option value='' disabled hidden>
                   원피스
                 </option>
                 <option value='44'>44 (S)</option>
@@ -749,7 +778,7 @@ const Signup: React.FC = () => {
                 error={errors.bottom}
                 {...register('bottom', { required: true })}
               >
-                <option value='' disabled selected hidden>
+                <option value='' disabled hidden>
                   하의
                 </option>
                 <option value='44'>44 (S)</option>
@@ -810,11 +839,10 @@ const Signup: React.FC = () => {
                 {...register('sleeve')}
               />
             </RowLabel>
-            {/* 제출 버튼 (애니메이션 효과 적용) */}
             <FixedBottomBar
               text={isSubmitting ? '가입 중...' : '회원가입'}
               color='black'
-              type='submit'
+              onClick={onSignupButtonClick}
               disabled={isSubmitting}
             />
           </Form>
@@ -822,7 +850,6 @@ const Signup: React.FC = () => {
         </Container>
       </FormProvider>
 
-      {/* 회원가입 결과 모달 (최상단에 렌더링) */}
       {showSignupResultModal && (
         <ReusableModal
           isOpen={showSignupResultModal}
@@ -833,7 +860,6 @@ const Signup: React.FC = () => {
         </ReusableModal>
       )}
 
-      {/* 브랜드 선택 모달 */}
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
@@ -848,12 +874,11 @@ const Signup: React.FC = () => {
 
 export default Signup;
 
-/* styled-components */
+/* --- styled-components --- */
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
   margin: 0 auto;
   padding: 2rem;
 `;

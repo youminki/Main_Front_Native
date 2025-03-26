@@ -57,7 +57,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       prefix,
       prefixcontent,
       as,
-      isEmailField,
+      // isEmailField,
       useToggle = false,
       options,
       onSelectChange,
@@ -157,6 +157,7 @@ const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-top: 30px;
 `;
 
 const Label = styled.label<{ $isEmpty: boolean }>`

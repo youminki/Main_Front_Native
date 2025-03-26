@@ -83,10 +83,9 @@ const ModalBody = styled.div`
   font-weight: 400;
   text-align: center;
   max-height: 70%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
   border-top: 2px solid #e0e0e0;
   border-bottom: 2px solid #e0e0e0;
 `;
