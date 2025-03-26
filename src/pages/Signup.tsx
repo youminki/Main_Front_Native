@@ -90,20 +90,38 @@ const Signup: React.FC = () => {
     watch,
   } = methods;
 
-  // 키보드 감지를 위한 초기 높이와 키보드 상태 관리
-  const [initialHeight] = useState<number>(window.innerHeight);
+  // visualViewport가 지원되면 해당 높이를, 없으면 window.innerHeight를 초기 높이로 사용
+  const initialHeight = window.visualViewport
+    ? window.visualViewport.height
+    : window.innerHeight;
   const [isKeyboardOpen, setIsKeyboardOpen] = useState<boolean>(false);
+
   useEffect(() => {
     const handleResize = () => {
-      // 초기 높이보다 100px 이상 줄어들면 키보드가 열린 것으로 판단
-      if (window.innerHeight < initialHeight - 100) {
+      const viewportHeight = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+      // 기준 높이보다 100px 이상 줄어들면 키보드가 열린 것으로 판단
+      if (viewportHeight < initialHeight - 100) {
         setIsKeyboardOpen(true);
       } else {
         setIsKeyboardOpen(false);
       }
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize);
+    } else {
+      window.addEventListener('resize', handleResize);
+    }
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize);
+      } else {
+        window.removeEventListener('resize', handleResize);
+      }
+    };
   }, [initialHeight]);
 
   // 핸드폰 인증 관련 상태
@@ -853,7 +871,7 @@ const Signup: React.FC = () => {
                 {...register('sleeve')}
               />
             </RowLabel>
-            {/* 키보드가 열려있지 않을 때만 FixedBottomBar 렌더링 */}
+            {/* 키보드가 열려있을 때 FixedBottomBar를 숨김 */}
             {!isKeyboardOpen && (
               <FixedBottomBar
                 text={isSubmitting ? '가입 중...' : '회원가입'}
