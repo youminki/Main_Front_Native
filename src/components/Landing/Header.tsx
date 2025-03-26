@@ -45,7 +45,7 @@ const HeaderContainer = styled.header`
   justify-content: center;
   background-color: #ffffff;
   z-index: 1000;
-  border: 1px solid #eee;
+  border-bottom: 1px solid #eee;
 `;
 
 const Logo = styled.img`
