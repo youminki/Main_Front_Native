@@ -956,6 +956,9 @@ const GenderRow = styled.div`
 
 const GenderButton = styled.button<{ selected: boolean; isSelected: boolean }>`
   flex: 1;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 11.05px;
   border: ${({ isSelected }) => (isSelected ? '2px solid #f6ae24' : 'none')};
   border-radius: 10px;
   background-color: ${({ selected }) => (selected ? '#FFFFFF' : '#EEEEEE')};
