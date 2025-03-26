@@ -157,7 +157,6 @@ const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-top: 30px;
 `;
 
 const Label = styled.label<{ $isEmpty: boolean }>`
@@ -167,6 +166,9 @@ const Label = styled.label<{ $isEmpty: boolean }>`
   line-height: 11.05px;
   text-align: left;
   visibility: ${({ $isEmpty }) => ($isEmpty ? 'hidden' : 'visible')};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const GrayText = styled.span`

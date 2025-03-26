@@ -90,6 +90,22 @@ const Signup: React.FC = () => {
     watch,
   } = methods;
 
+  // 키보드 감지를 위한 초기 높이와 키보드 상태 관리
+  const [initialHeight] = useState<number>(window.innerHeight);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState<boolean>(false);
+  useEffect(() => {
+    const handleResize = () => {
+      // 초기 높이보다 100px 이상 줄어들면 키보드가 열린 것으로 판단
+      if (window.innerHeight < initialHeight - 100) {
+        setIsKeyboardOpen(true);
+      } else {
+        setIsKeyboardOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [initialHeight]);
+
   // 핸드폰 인증 관련 상태
   const [isPhoneVerificationSent, setIsPhoneVerificationSent] =
     useState<boolean>(false);
@@ -166,7 +182,6 @@ const Signup: React.FC = () => {
   const closeModal = () => setModalOpen(false);
 
   // 회원가입 결과 및 모달 상태
-  // signupResult 타입을 React.ReactNode로 변경하여 <br/> 태그 등을 포함할 수 있도록 함
   const [signupResult, setSignupResult] = useState<React.ReactNode>('');
   const [isSignupSuccess, setIsSignupSuccess] = useState<boolean>(false);
   const [showSignupResultModal, setShowSignupResultModal] =
@@ -418,9 +433,7 @@ const Signup: React.FC = () => {
   };
 
   const onSignupButtonClick = async () => {
-    // 전체 폼 검증을 실행합니다.
     const valid = await trigger();
-    // 잠시 다음 렌더링 사이클까지 기다립니다.
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     const errorMessages = Object.values(methods.formState.errors)
@@ -441,7 +454,6 @@ const Signup: React.FC = () => {
       setShowSignupResultModal(true);
       return;
     }
-    // 검증 통과 시 회원가입 onSubmit 함수 실행
     handleSubmit(onSubmit)();
   };
 
@@ -478,10 +490,11 @@ const Signup: React.FC = () => {
     <ThemeProvider theme={Theme}>
       <FormProvider {...methods}>
         <Container>
+          {/* 키보드가 열려 있으면 FixedBottomBar를 숨김 */}
           <Form onSubmit={handleSubmit(onSubmit)}>
             <AgreementSection />
             <InputField
-              label='계정(이메일)'
+              label='계정*(이메일)'
               id='email'
               type='text'
               error={emailApiError ? { message: emailApiError } : errors.email}
@@ -498,7 +511,7 @@ const Signup: React.FC = () => {
               }}
             />
             <InputField
-              label='비밀번호(숫자, 문자를 조합하여 8자리 이상 입력하세요)'
+              label='비밀번호*(숫자, 문자를 조합하여 8자리 이상 입력하세요)'
               id='password'
               type='password'
               placeholder='비밀번호를 입력하세요'
@@ -509,7 +522,7 @@ const Signup: React.FC = () => {
               autoComplete='current-password'
             />
             <InputField
-              label='비밀번호 확인'
+              label='비밀번호 확인*'
               id='passwordConfirm'
               type='password'
               placeholder='비밀번호를 한번 더 입력하세요'
@@ -519,7 +532,7 @@ const Signup: React.FC = () => {
               maxLength={20}
             />
             <InputField
-              label='닉네임(8글자 이내)'
+              label='닉네임*(8글자 이내)'
               id='nickname'
               type='text'
               placeholder='닉네임을 입력하세요'
@@ -541,7 +554,7 @@ const Signup: React.FC = () => {
             />
             <RowLabel>
               <InputField
-                label='이름'
+                label='이름*'
                 id='name'
                 type='text'
                 placeholder='이름을 입력하세요'
@@ -551,7 +564,7 @@ const Signup: React.FC = () => {
                 maxLength={5}
               />
               <InputField
-                label='태어난 해'
+                label='태어난 해*'
                 id='birthYear'
                 as={CustomSelect}
                 error={errors.birthYear}
@@ -569,7 +582,7 @@ const Signup: React.FC = () => {
               </InputField>
             </RowLabel>
             <GenderField>
-              <InputFieldLabel>성별</InputFieldLabel>
+              <InputFieldLabel>성별*</InputFieldLabel>
               <GenderRow>
                 <GenderButton
                   type='button'
@@ -591,7 +604,7 @@ const Signup: React.FC = () => {
             </GenderField>
             <PhoneField>
               <InputField
-                label='핸드폰 인증(11자를 입력하세요)'
+                label='본인인증*(11자를 입력하세요)'
                 id='phoneNumber'
                 type='text'
                 placeholder='전화번호를 입력하세요'
@@ -635,7 +648,7 @@ const Signup: React.FC = () => {
             )}
             <RowLabel>
               <InputField
-                label='서비스 지역'
+                label='서비스 지역*'
                 id='region'
                 as={CustomSelect}
                 error={errors.region}
@@ -675,9 +688,18 @@ const Signup: React.FC = () => {
                 )}
               </InputField>
             </RowLabel>
-            <Divider />
             <InputField
-              label='멜픽 주소설정(영문, 숫자 12글자 이내)'
+              label='인스타 아이디*'
+              id='instar'
+              type='text'
+              placeholder='인스타 아이디를 입력하세요'
+              required
+              maxLength={50}
+              {...register('instar')}
+              prefix='instagram.com/'
+            />
+            <InputField
+              label='멜픽 주소설정'
               id='melpickAddress'
               type='text'
               placeholder='멜픽 주소를 입력하세요'
@@ -699,20 +721,9 @@ const Signup: React.FC = () => {
               }}
               prefix='melpick.com/'
             />
-            <InputField
-              label='인스타 아이디'
-              id='instar'
-              type='text'
-              placeholder='인스타 아이디를 입력하세요'
-              required
-              maxLength={50}
-              {...register('instar')}
-              prefix='instagram.com/'
-            />
-            <Divider />
             <RowLabel>
               <InputField
-                label='기본정보'
+                label='기본정보*'
                 id='height'
                 as={CustomSelect}
                 error={errors.height}
@@ -738,16 +749,16 @@ const Signup: React.FC = () => {
                 <option value='' disabled hidden>
                   몸무게 선택
                 </option>
-                {Array.from({ length: 100 }, (_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1} kg
+                {Array.from({ length: 90 - 30 + 1 }, (_, i) => (
+                  <option key={i + 30} value={i + 30}>
+                    {i + 30} kg
                   </option>
                 ))}
               </InputField>
             </RowLabel>
             <RowLabel>
               <InputField
-                label='착용 제품사이즈'
+                label='착용 제품사이즈*(상의, 원피스, 하의)'
                 id='dress'
                 as={CustomSelect}
                 error={errors.dress}
@@ -756,10 +767,10 @@ const Signup: React.FC = () => {
                 <option value='' disabled hidden>
                   상의
                 </option>
-                <option value='44'>44 (S)</option>
-                <option value='55'>55 (M)</option>
-                <option value='66'>66 (L)</option>
-                <option value='77'>77 (XL)</option>
+                <option value='44'>44 (XS)</option>
+                <option value='55'>55 (S)</option>
+                <option value='66'>66 (M)</option>
+                <option value='77'>77 (L)</option>
               </InputField>
               <InputField
                 label=''
@@ -771,10 +782,10 @@ const Signup: React.FC = () => {
                 <option value='' disabled hidden>
                   원피스
                 </option>
-                <option value='44'>44 (S)</option>
-                <option value='55'>55 (M)</option>
-                <option value='66'>66 (L)</option>
-                <option value='77'>77 (XL)</option>
+                <option value='44'>44 (XS)</option>
+                <option value='55'>55 (S)</option>
+                <option value='66'>66 (M)</option>
+                <option value='77'>77 (L)</option>
               </InputField>
               <InputField
                 label=''
@@ -786,10 +797,10 @@ const Signup: React.FC = () => {
                 <option value='' disabled hidden>
                   하의
                 </option>
-                <option value='44'>44 (S)</option>
-                <option value='55'>55 (M)</option>
-                <option value='66'>66 (L)</option>
-                <option value='77'>77 (XL)</option>
+                <option value='44'>44 (XS)</option>
+                <option value='55'>55 (S)</option>
+                <option value='66'>66 (M)</option>
+                <option value='77'>77 (L)</option>
               </InputField>
             </RowLabel>
             <RowLabel>
@@ -808,6 +819,8 @@ const Signup: React.FC = () => {
                 }}
               />
             </RowLabel>
+
+            <Divider />
             <RowLabel>
               <InputField
                 label='어깨너비 cm (선택)'
@@ -844,12 +857,15 @@ const Signup: React.FC = () => {
                 {...register('sleeve')}
               />
             </RowLabel>
-            <FixedBottomBar
-              text={isSubmitting ? '가입 중...' : '회원가입'}
-              color='black'
-              onClick={onSignupButtonClick}
-              disabled={isSubmitting}
-            />
+            {/* 키보드가 열려있지 않을 때만 FixedBottomBar 렌더링 */}
+            {!isKeyboardOpen && (
+              <FixedBottomBar
+                text={isSubmitting ? '가입 중...' : '회원가입'}
+                color='black'
+                onClick={onSignupButtonClick}
+                disabled={isSubmitting}
+              />
+            )}
           </Form>
           <BlackContainer />
         </Container>
