@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 type AgreementSectionProps = object;
 
@@ -7,6 +7,15 @@ type IndividualChecks = {
   agree1: boolean;
   agree2: boolean;
 };
+
+const pressAnimation = keyframes`
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1);
+  }
+`;
 
 const AgreementSection: React.FC<AgreementSectionProps> = () => {
   const [allChecked, setAllChecked] = useState(false);
@@ -17,7 +26,7 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState('');
-  const [modalTitle, setModalTitle] = useState(''); // 모달 타이틀 상태 추가
+  const [modalTitle, setModalTitle] = useState('');
 
   const handleAllChecked = () => {
     const newValue = !allChecked;
@@ -717,7 +726,18 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
 
 export default AgreementSection;
 
-/* ====================== Styled Components ====================== */
+const DescriptionWrapper = styled.div`
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  flex-grow: 1;
+`;
+const Description = styled.p`
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  color: ${({ theme }) => theme.colors.gray};
+`;
 
 const AgreementWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
@@ -811,6 +831,18 @@ const ViewDetailsButton = styled.button`
   font-weight: 800;
   text-align: center;
   border-radius: 5px;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background-color: #1a1a1a;
+  }
+
+  &:active {
+    background-color: #000000;
+    animation: ${pressAnimation} 0.2s ease;
+  }
 `;
 
 /* Modal 관련 스타일 */
@@ -887,17 +919,16 @@ const CloseButton = styled.button`
   border-radius: 6px;
   cursor: pointer;
   font-size: 16px;
-`;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
 
-const DescriptionWrapper = styled.div`
-  display: flex;
-  justify-content: left;
-  align-items: center;
-  flex-grow: 1;
-`;
-const Description = styled.p`
-  font-size: 12px;
-  line-height: 1.5;
-  margin-bottom: 10px;
-  color: ${({ theme }) => theme.colors.gray};
+  &:hover {
+    background-color: #1a1a1a;
+  }
+
+  &:active {
+    background-color: #000000;
+    animation: ${pressAnimation} 0.2s ease;
+  }
 `;

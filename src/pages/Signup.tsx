@@ -282,6 +282,8 @@ const Signup: React.FC = () => {
       setNicknameButtonColor('red');
     }
   };
+  const brandButtonLabel = selectedBrands.length > 0 ? '선택완료' : '선택하기';
+  const brandButtonColor = selectedBrands.length > 0 ? 'blue' : 'yellow';
 
   const handleSendVerification = async (): Promise<void> => {
     const valid = await trigger('phoneNumber');
@@ -823,7 +825,8 @@ const Signup: React.FC = () => {
                 error={errors.brand}
                 {...register('brand')}
                 value={selectedBrands.join(', ') || '브랜드 3가지를 선택하세요'}
-                buttonLabel='선택하기'
+                buttonLabel={brandButtonLabel}
+                buttonColor={brandButtonColor}
                 onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.preventDefault();
                   openModal();
