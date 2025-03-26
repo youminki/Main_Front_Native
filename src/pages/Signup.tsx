@@ -687,11 +687,13 @@ const Signup: React.FC = () => {
                 <option value='' disabled selected hidden>
                   키 선택
                 </option>
-                <option value='160'>160 cm</option>
-                <option value='165'>165 cm</option>
-                <option value='170'>170 cm</option>
-                <option value='175'>175 cm</option>
+                {[...Array(200 - 130 + 1)].map((_, i) => (
+                  <option key={i + 130} value={i + 130}>
+                    {i + 130} cm
+                  </option>
+                ))}
               </InputField>
+
               <InputField
                 label=''
                 id='size'
