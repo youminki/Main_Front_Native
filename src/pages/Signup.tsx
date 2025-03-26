@@ -102,7 +102,7 @@ const Signup: React.FC = () => {
         ? window.visualViewport.height
         : window.innerHeight;
       // 기준 높이보다 100px 이상 줄어들면 키보드가 열린 것으로 판단
-      if (viewportHeight < initialHeight - 100) {
+      if (viewportHeight < initialHeight - 50) {
         setIsKeyboardOpen(true);
       } else {
         setIsKeyboardOpen(false);

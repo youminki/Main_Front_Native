@@ -17,17 +17,19 @@ const Modal: React.FC<ModalProps> = ({
   selectedBrands: initialSelectedBrands,
 }) => {
   const brands = [
-    'CC Collect',
-    'CLUB Monaco',
-    'DECO',
-    'DEW L',
-    'EGOIST',
-    'it MICHAA',
-    'JIGOTT',
-    'JJ JIGOTT',
-    'KENNETH LADY',
-    'LÄTT BY T',
-    'LINE',
+    '모조 (MOJO)',
+    '듀엘 (DEW L)',
+    '쥬크 (ZOOC)',
+    '씨씨콜렉트 (CC Collect)',
+    '미샤 (MICHAA)',
+    '잇미샤 (it MICHAA)',
+    '마쥬 (MAJE)',
+    '산드로 (SANDRO)',
+    '이로 (IRO)',
+    '시슬리 (SISLEY)',
+    '사틴 (SATIN)',
+    '에스블랑 (S Blanc)',
+    '올리브 데 올리브 (OLIVE DES OLIVE)',
   ];
 
   const [selectedBrands, setSelectedBrands] = useState<string[]>(
