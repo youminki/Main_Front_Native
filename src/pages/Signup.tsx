@@ -346,7 +346,6 @@ const Signup: React.FC = () => {
     }
   };
 
-  // onSubmit: 모든 필드가 정상일 때 실행됩니다.
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
     const missing: string[] = [];
     if (!isEmailChecked) missing.push('이메일 인증을 완료하세요.');
@@ -490,7 +489,6 @@ const Signup: React.FC = () => {
     <ThemeProvider theme={Theme}>
       <FormProvider {...methods}>
         <Container>
-          {/* 키보드가 열려 있으면 FixedBottomBar를 숨김 */}
           <Form onSubmit={handleSubmit(onSubmit)}>
             <AgreementSection />
             <InputField
@@ -738,7 +736,6 @@ const Signup: React.FC = () => {
                   </option>
                 ))}
               </InputField>
-
               <InputField
                 label=''
                 id='size'
@@ -758,7 +755,7 @@ const Signup: React.FC = () => {
             </RowLabel>
             <RowLabel>
               <InputField
-                label='착용 제품사이즈*(상의, 원피스, 하의)'
+                label='사이즈*(상의,원피스,하의)'
                 id='dress'
                 as={CustomSelect}
                 error={errors.dress}
@@ -819,7 +816,6 @@ const Signup: React.FC = () => {
                 }}
               />
             </RowLabel>
-
             <Divider />
             <RowLabel>
               <InputField
