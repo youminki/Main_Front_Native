@@ -820,7 +820,7 @@ const Signup: React.FC = () => {
             </RowLabel>
             <RowLabel>
               <InputField
-                label='선호 브랜드 선택(최대 3가지)'
+                label='선호 브랜드 선택*(최대 3가지)'
                 id='brand'
                 type='text'
                 placeholder='브랜드 3가지를 선택하세요'
