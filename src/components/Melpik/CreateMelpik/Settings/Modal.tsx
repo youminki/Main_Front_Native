@@ -30,6 +30,12 @@ const Modal: React.FC<ModalProps> = ({
     '사틴 (SATIN)',
     '에스블랑 (S Blanc)',
     '올리브 데 올리브 (OLIVE DES OLIVE)',
+    '클럽 모나코 (CLUB Monaco)',
+    '데코 (DECO)',
+    '에고이스트 (EGOIST)',
+    '지고트 (JIGOTT)',
+    '케네스 레이디 (KENNETH LADY)',
+    '라인 (LINE)',
   ];
 
   const [selectedBrands, setSelectedBrands] = useState<string[]>(
