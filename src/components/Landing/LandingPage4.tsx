@@ -12,6 +12,23 @@ import MICHAA from '../../assets/Landing/MICHAA.jpg';
 import MOJO_S_PHINE from '../../assets/Landing/MOJO_S_PHINE.jpg';
 import HangerIcon from '../../assets/Landing/hangerIcon.svg';
 
+// 각 브랜드 아이템의 폭과 아이템 사이의 간격
+const BRAND_ITEM_WIDTH = 240; // 이미지 폭
+const BRAND_ITEM_GAP = 20; // 아이템 사이 간격
+const BRAND_COUNT = 9; // 아이템 개수
+
+// 원본 세트의 총 너비 (마지막 아이템 뒤의 간격은 제외)
+const totalWidth =
+  BRAND_COUNT * BRAND_ITEM_WIDTH + (BRAND_COUNT - 1) * BRAND_ITEM_GAP; // 예: 9*240 + 8*20 = 2320px
+
+// 애니메이션 이동 거리는 원본 세트의 너비와 동일
+const totalAnimationDistance = totalWidth;
+
+const scroll = keyframes`
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-${totalAnimationDistance}px); }
+`;
+
 const LandingPage3: React.FC = () => {
   const brands = [
     { img: ZOOCImage, name: 'ZOOC' },
@@ -36,9 +53,9 @@ const LandingPage3: React.FC = () => {
           <Highlight>멜픽</Highlight>과 함께 합니다
         </LargeTitle>
 
-        {/* 브랜드 리스트는 자동 스크롤 애니메이션 적용 */}
         <BrandList>
-          <ScrollingContainer>
+          <ScrollingWrapper>
+            {/* 원본 세트 */}
             {brands.map((brand, idx) => (
               <Brand key={idx}>
                 <BrandImage
@@ -53,7 +70,7 @@ const LandingPage3: React.FC = () => {
                 <BrandName>{brand.name}</BrandName>
               </Brand>
             ))}
-            {/* 원활한 무한 스크롤을 위해 복제 */}
+            {/* 복제 세트 */}
             {brands.map((brand, idx) => (
               <Brand key={`clone-${idx}`}>
                 <BrandImage
@@ -68,10 +85,9 @@ const LandingPage3: React.FC = () => {
                 <BrandName>{brand.name}</BrandName>
               </Brand>
             ))}
-          </ScrollingContainer>
+          </ScrollingWrapper>
         </BrandList>
 
-        {/* 프리미엄 브랜드 리스트 텍스트 */}
         <PremiumBrandText>Premium Brand List</PremiumBrandText>
       </MainContent>
     </Container>
@@ -82,7 +98,6 @@ export default LandingPage3;
 
 /* ====================== Styled Components ====================== */
 
-/** 400×700 박스, 상단 정렬 */
 const Container = styled.div`
   height: 660px;
   margin: 0 auto;
@@ -126,12 +141,10 @@ const LargeTitle = styled.h1`
   margin: 0 0 40px;
 `;
 
-/* 멜픽에 색상 적용 */
 const Highlight = styled.span`
   color: #f6ac36;
 `;
 
-/** 브랜드 리스트 컨테이너 (자동 스크롤용) */
 const BrandList = styled.div`
   width: 100%;
   height: 300px;
@@ -140,40 +153,28 @@ const BrandList = styled.div`
   margin-bottom: 32px;
 `;
 
-/** 브랜드 아이템들을 감싸고 오른쪽으로 자동 스크롤하는 컨테이너 */
-const scroll = keyframes`
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-`;
-
-const ScrollingContainer = styled.div`
+// ScrollingWrapper의 너비는 원본과 복제본을 합쳐야 하므로 totalWidth의 두 배로 고정
+const ScrollingWrapper = styled.div`
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: calc(200%); /* 복제된 콘텐츠를 고려하여 200%로 확장 */
-  animation: ${scroll} 10s linear infinite;
+  gap: ${BRAND_ITEM_GAP}px;
+  width: ${totalWidth * 2}px;
+  animation: ${scroll} 30s linear infinite;
 `;
 
-/** 브랜드 아이템 컨테이너 */
 const Brand = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-shrink: 0;
   position: relative;
-  transition: transform 0.3s;
-  margin-right: 20px;
+  width: ${BRAND_ITEM_WIDTH}px;
+  height: 300px;
 `;
 
-/** 브랜드 이미지 */
 const BrandImage = styled.img`
-  width: 240px;
-  height: 300px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   border-radius: 20px;
-  transition: opacity 0.3s;
 `;
 
-/** 이미지 중앙의 브랜드명 */
 const BrandName = styled.span`
   position: absolute;
   top: 50%;
@@ -186,7 +187,6 @@ const BrandName = styled.span`
   color: #000000;
 `;
 
-/** 프리미엄 브랜드 리스트 텍스트 */
 const PremiumBrandText = styled.div`
   font-style: normal;
   font-weight: 400;
