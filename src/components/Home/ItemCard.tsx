@@ -88,7 +88,7 @@ const DetailButtonIcon = styled.img`
 
 const Brand = styled.h3`
   font-weight: 900;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 11px;
   color: #000000;
   margin-bottom: 2px;
@@ -97,7 +97,7 @@ const Brand = styled.h3`
 const Description = styled.p`
   margin-top: 6px;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 13px;
   color: #999999;
 `;
