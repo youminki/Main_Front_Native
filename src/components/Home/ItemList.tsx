@@ -1,19 +1,11 @@
-// ItemList.tsx
-import React from "react";
-import styled from "styled-components";
-import ItemCard from "./ItemCard";
-
-type Item = {
-  id: number;
-  image: string;
-  brand: string;
-  description: string;
-  price: number;
-  discount: number;
-};
+// src/components/Home/ItemList.tsx
+import React from 'react';
+import styled from 'styled-components';
+import ItemCard from './ItemCard';
+import { ProductListItem } from '../../api/upload/productApi';
 
 type ItemListProps = {
-  items: Item[];
+  items: ProductListItem[];
 };
 
 const ItemList: React.FC<ItemListProps> = ({ items }) => {
@@ -38,7 +30,6 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
 
 export default ItemList;
 
-// 스타일 정의
 const ListContainer = styled.div`
   background-color: #fff;
   overflow: hidden;

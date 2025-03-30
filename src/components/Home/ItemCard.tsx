@@ -1,22 +1,8 @@
-// ItemCard.tsx
+// src/components/Home/ItemCard.tsx
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-
-// sample 이미지 import
-import SampleMyCloset1 from '../../assets/LockerRoom/SampleMyCloset1.svg';
-import SampleMyCloset2 from '../../assets/LockerRoom/SampleMyCloset2.svg';
-import SampleMyCloset3 from '../../assets/LockerRoom/SampleMyCloset3.svg';
-import SampleMyCloset4 from '../../assets/LockerRoom/SampleMyCloset4.svg';
-// DetailButton 이미지 import
 import DetailButton from '../../assets/Home/DetailButton.svg';
-
-const sampleImages = [
-  SampleMyCloset1,
-  SampleMyCloset2,
-  SampleMyCloset3,
-  SampleMyCloset4,
-];
 
 type ItemCardProps = {
   id: string;
@@ -41,16 +27,14 @@ const ItemCard: React.FC<ItemCardProps> = ({
     navigate(`/item/${id}`);
   };
 
-  // image prop이 제공되지 않으면 sample 이미지 사용
-  const imageToShow =
-    image && image.trim() !== ''
-      ? image
-      : sampleImages[(parseInt(id) - 1) % sampleImages.length];
+  // 이미지가 존재하면 해시(#) 뒤의 부분 제거, 없으면 기본 이미지 사용
+  const sanitizedImage =
+    image && image.trim() !== '' ? image.split('#')[0] : '/default-image.jpg';
 
   return (
     <CardContainer onClick={handleClick}>
       <ImageWrapper>
-        <Image src={imageToShow} alt={brand} />
+        <Image src={sanitizedImage} alt={brand} />
         <DetailButtonIcon src={DetailButton} alt='상세 버튼' />
       </ImageWrapper>
       <Brand>{brand}</Brand>
@@ -66,7 +50,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
 export default ItemCard;
 
-// 스타일 정의
 const CardContainer = styled.div`
   position: relative;
   display: flex;
@@ -94,23 +77,28 @@ const Image = styled.img`
   object-fit: cover;
 `;
 
+const DetailButtonIcon = styled.img`
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 36px;
+  height: 36px;
+  cursor: default;
+`;
+
 const Brand = styled.h3`
   font-weight: 900;
   font-size: 12px;
   line-height: 11px;
-  /* identical to box height */
-
   color: #000000;
   margin-bottom: 2px;
 `;
 
 const Description = styled.p`
   margin-top: 6px;
-
   font-weight: 400;
   font-size: 14px;
   line-height: 13px;
-
   color: #999999;
 `;
 
@@ -119,7 +107,6 @@ const PriceWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
-
   border-left: 1px solid #e0e0e0;
 `;
 
@@ -143,13 +130,4 @@ const DiscountLabel = styled.span`
   font-size: 12px;
   line-height: 11px;
   color: #f6ae24;
-`;
-
-const DetailButtonIcon = styled.img`
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
-  width: 36px;
-  height: 36px;
-  cursor: default;
 `;

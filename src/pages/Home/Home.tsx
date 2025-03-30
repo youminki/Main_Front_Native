@@ -6,66 +6,38 @@ import ItemList from '../../components/Home/ItemList';
 import Footer from '../../components/Home/Footer';
 import FilterContainer from '../../components/Home/FilterContainer';
 import SubHeader from '../../components/Home/SubHeader';
-
-const items = [
-  {
-    id: 1,
-    image: '',
-    brand: 'SANDRO',
-    description: 'SNS21N9 / 원피스',
-    category: 'onepiece',
-    price: 460000,
-    discount: 10,
-  },
-  {
-    id: 2,
-    image: '',
-    brand: 'ZOOC',
-    description: 'ZSC14B1 / 블라우스',
-    category: 'blouse',
-    price: 380000,
-    discount: 15,
-  },
-  {
-    id: 3,
-    image: '',
-    brand: 'MICHA',
-    description: 'MCH88T7 / 투피스',
-    category: 'twopiece',
-    price: 540000,
-    discount: 20,
-  },
-  {
-    id: 4,
-    image: '',
-    brand: 'MICHA',
-    description: 'MCH88T7 / 투피스',
-    category: 'twopiece',
-    price: 540000,
-    discount: 20,
-  },
-];
+import { getProducts } from '../../api/upload/productApi';
+import { ProductListItem } from '../../api/upload/productApi';
 
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [seasonToggle, setSeasonToggle] = useState<boolean>(false);
   const [barPosition, setBarPosition] = useState<number>(0);
+  const [products, setProducts] = useState<ProductListItem[]>([]);
 
+  // 선택된 카테고리 아이콘 위치 계산 (barPosition 업데이트)
   useEffect(() => {
     const selectedElement = document.querySelector(
       `[data-category="${selectedCategory}"]`
     ) as HTMLElement;
-
     if (selectedElement) {
       const { offsetLeft, offsetWidth } = selectedElement;
       setBarPosition(offsetLeft + offsetWidth / 2 - 25);
     }
   }, [selectedCategory]);
 
-  const filteredItems =
-    selectedCategory === 'all'
-      ? items
-      : items.filter((item) => item.category === selectedCategory);
+  // 선택된 카테고리에 따른 제품 데이터 불러오기
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const products = await getProducts(selectedCategory);
+        setProducts(products);
+      } catch (error) {
+        console.error('제품 데이터를 불러오는데 실패했습니다:', error);
+      }
+    }
+    fetchProducts();
+  }, [selectedCategory]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -87,7 +59,7 @@ const Home: React.FC = () => {
           setSeasonToggle={setSeasonToggle}
         />
         <Content>
-          <ItemList items={filteredItems} />
+          <ItemList items={products} />
         </Content>
       </ContentWrapper>
       <Footer />
@@ -123,7 +95,6 @@ const SubHeaderContainer = styled.div`
   margin: 20px 0;
 `;
 
-// 개선된 스크롤 최상단 이동 버튼
 const ScrollToTopButton = styled.button`
   position: fixed;
   bottom: 120px;
@@ -132,7 +103,6 @@ const ScrollToTopButton = styled.button`
   height: 60px;
   border: none;
   border-radius: 50%;
-  /* 배경에 투명도를 적용한 그라데이션 */
   background: linear-gradient(
     135deg,
     rgba(255, 204, 0, 0.9),
@@ -157,13 +127,11 @@ const ScrollToTopButton = styled.button`
     opacity: 1;
   }
 
-  /* 화면 최대 너비 600px 내로 위치 조정 */
   @media (min-width: 600px) {
     right: calc((100vw - 600px) / 2 + 20px);
   }
 `;
 
-// SVG 아이콘 스타일
 const ArrowIcon = styled.svg`
   width: 28px;
   height: 28px;

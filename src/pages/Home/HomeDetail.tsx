@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from 'react';
+// src/components/Home/HomeDetail.tsx
+import React, { useState, useCallback, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import ExIMG1 from '../../assets/Home/ExIMG1.svg';
-import ExIMG2 from '../../assets/Home/ExIMG2.svg';
-import ExIMG3 from '../../assets/Home/ExIMG3.svg';
+import { getProductInfo } from '../../api/upload/productApi';
 import ImageSlider from '../../components/Home/HomeDetail/ImageSlider';
 import ProductInfo from '../../components/Home/HomeDetail/ProductInfo';
 import ProductOptions from '../../components/Home/HomeDetail/ProductOptions';
@@ -14,16 +14,67 @@ import BottomBar from '../../components/Home/HomeDetail/BottomBar';
 import ServiceSelection from '../../components/Home/HomeDetail/ServiceSelection';
 import RentalOptions from '../../components/Home/HomeDetail/RentalOptions';
 
+// Swagger 명세 기반 제품 상세 인터페이스
+interface ProductDetail {
+  id: number;
+  name: string;
+  product_num: string;
+  brand: string;
+  mainImage: string;
+  price: {
+    originalPrice: number;
+    discountRate: number;
+    finalPrice: number;
+  };
+  product_img: string[];
+  sizes: { size: string; measurements: Record<string, any> }[];
+  size_picture: string;
+  category: string;
+  season: string;
+  manufacturer: string;
+  description: string;
+  fabricComposition: string[];
+  elasticity: string;
+  transparency: string;
+  thickness: string;
+  lining: string;
+  fit: string;
+  color: string;
+}
+
 const HomeDetail: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  // API 관련 상태
+  const [product, setProduct] = useState<ProductDetail | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // 슬라이더 및 옵션 상태 (모든 Hook은 최상위에서 호출)
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
-  const [selectedService, setSelectedService] = useState<string>(''); // 서비스 선택 상태
-  // const [selectedPeriod, setSelectedPeriod] = useState<string>(""); // 대여 기간 선택 상태
+  const [selectedService, setSelectedService] = useState<string>('');
 
-  const images = [ExIMG1, ExIMG2, ExIMG3];
+  // 제품 상세정보 API 호출
+  useEffect(() => {
+    if (id) {
+      getProductInfo(Number(id))
+        .then((res) => {
+          setProduct(res.product);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('제품 상세정보를 불러오는데 실패했습니다:', error);
+          setLoading(false);
+        });
+    }
+  }, [id]);
 
-  // 슬라이드 관련 로직
+  // 슬라이더 로직
+  const images =
+    product && product.product_img && product.product_img.length > 0
+      ? product.product_img
+      : [product?.mainImage || '/default-image.jpg'];
+
   const handleSwipeLeft = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
@@ -34,44 +85,53 @@ const HomeDetail: React.FC = () => {
     );
   };
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    const startX = e.clientX;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const moveX = e.clientX - startX;
-      if (Math.abs(moveX) > 50) {
-        if (moveX > 0) {
-          handleSwipeRight();
-        } else {
-          handleSwipeLeft();
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      const startX = e.clientX;
+      const handleMouseMove = (e: MouseEvent) => {
+        const moveX = e.clientX - startX;
+        if (Math.abs(moveX) > 50) {
+          if (moveX > 0) {
+            handleSwipeRight();
+          } else {
+            handleSwipeLeft();
+          }
+          window.removeEventListener('mousemove', handleMouseMove);
+          window.removeEventListener('mouseup', handleMouseUp);
         }
+      };
+
+      const handleMouseUp = () => {
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
-      }
-    };
+      };
 
-    const handleMouseUp = () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    },
+    [handleSwipeLeft, handleSwipeRight]
+  );
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-  }, []);
+  // 로딩 상태 처리 (모든 Hook은 이미 호출되었으므로 early return은 문제 없음)
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (!product) {
+    return <div>제품을 찾을 수 없습니다.</div>;
+  }
 
-  const item = {
-    image: images[currentImageIndex],
-    brand: '산드로(SANDRO)',
-    description: 'SNS21N9 / 원피스',
-    originalPrice: 760000,
-    discountPrice: 608000,
-    discountPercent: 20,
+  // ProductInfo에 전달할 데이터 변환
+  const productInfoItem = {
+    brand: product.brand,
+    description: product.description,
+    originalPrice: product.price.originalPrice,
+    discountPercent: product.price.discountRate,
+    discountPrice: product.price.finalPrice,
   };
 
   return (
     <DetailContainer>
-      {/* 이미지 슬라이더 */}
       <ImageSlider
         images={images}
         currentImageIndex={currentImageIndex}
@@ -79,43 +139,27 @@ const HomeDetail: React.FC = () => {
         handleSwipeRight={handleSwipeRight}
         handleMouseDown={handleMouseDown}
       />
-
-      {/* 본문 콘텐츠 */}
       <ContentContainer>
-        <ProductInfo item={item} />
-
-        {/* 서비스 선택 */}
+        <ProductInfo item={productInfoItem} />
         <ServiceSelectionWrapper>
           <ServiceSelection
             selectedService={selectedService}
             setSelectedService={setSelectedService}
           />
         </ServiceSelectionWrapper>
-
-        {/* 조건부 렌더링 */}
         <ConditionalContainer>
-          {selectedService === 'rental' && (
-            <RentalOptions
-            // selectedPeriod={selectedPeriod}
-            // setSelectedPeriod={setSelectedPeriod}
-            />
-          )}
+          {selectedService === 'rental' && <RentalOptions />}
           {selectedService === 'purchase' && <PaymentMethod />}
           {selectedService === '' && <Message>서비스를 선택하세요</Message>}
         </ConditionalContainer>
-
         <LinContainer />
-
-        {/* 구매 옵션 */}
         <ProductOptions
           selectedSize={selectedSize}
           setSelectedSize={setSelectedSize}
           selectedColor={selectedColor}
           setSelectedColor={setSelectedColor}
         />
-
         <LinContainer />
-
         <SizeInfo />
         <LinContainer />
         <MaterialInfo />
@@ -129,14 +173,13 @@ const HomeDetail: React.FC = () => {
 
 export default HomeDetail;
 
-// 스타일 컴포넌트
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 2rem;
   padding-bottom: 80px;
   overflow-x: hidden;
-  padding: 2rem;
 `;
 
 const ContentContainer = styled.div``;
