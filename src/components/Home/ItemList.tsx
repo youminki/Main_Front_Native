@@ -5,7 +5,8 @@ import { ProductListItem } from '../../api/upload/productApi';
 
 type ItemListProps = {
   items: ProductListItem[];
-  onItemClick: (id: string) => void;
+
+  onItemClick?: (id: string) => void;
 };
 
 const ItemList: React.FC<ItemListProps> = ({ items, onItemClick }) => {
@@ -21,7 +22,7 @@ const ItemList: React.FC<ItemListProps> = ({ items, onItemClick }) => {
             description={item.description}
             price={item.price}
             discount={item.discount}
-            onOpenModal={onItemClick}
+            onOpenModal={onItemClick ?? (() => {})}
           />
         ))}
       </ItemsWrapper>
@@ -33,12 +34,10 @@ export default ItemList;
 
 const ListContainer = styled.div`
   background-color: #fff;
-  /* overflow: hidden 제거 */
 `;
 
 const ItemsWrapper = styled.div`
   display: grid;
-  /* 항상 2열, 칼럼 간격 유지 */
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 
