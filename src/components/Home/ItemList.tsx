@@ -6,9 +6,10 @@ import { ProductListItem } from '../../api/upload/productApi';
 
 type ItemListProps = {
   items: ProductListItem[];
+  onItemClick: (id: string) => void;
 };
 
-const ItemList: React.FC<ItemListProps> = ({ items }) => {
+const ItemList: React.FC<ItemListProps> = ({ items, onItemClick }) => {
   return (
     <ListContainer>
       <ItemsWrapper>
@@ -21,6 +22,7 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
             description={item.description}
             price={item.price}
             discount={item.discount}
+            onOpenModal={onItemClick}
           />
         ))}
       </ItemsWrapper>

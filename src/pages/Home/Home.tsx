@@ -1,4 +1,6 @@
+// src/pages/Home/Home.tsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Spinner from '../../components/Spinner';
 import Notice from '../../components/Home/Notice';
@@ -8,53 +10,62 @@ import FilterContainer from '../../components/Home/FilterContainer';
 import SubHeader from '../../components/Home/SubHeader';
 import { getProducts } from '../../api/upload/productApi';
 import { ProductListItem } from '../../api/upload/productApi';
+import HomeDetail from './HomeDetail';
+
+// twoDepth header assets
+import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
+import ShareIcon from '../../assets/Header/ShareIcon.svg';
+import HomeIcon from '../../assets/Header/HomeIcon.svg';
 
 const ITEMS_PER_LOAD = 10;
 
 const Home: React.FC = () => {
+  const navigate = useNavigate();
+
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [seasonToggle, setSeasonToggle] = useState<boolean>(false);
   const [barPosition, setBarPosition] = useState<number>(0);
   const [products, setProducts] = useState<ProductListItem[]>([]);
-
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // 화면에 뿌릴 아이템 (페이지 * ITEMS_PER_LOAD 만큼)
+  // modal state
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
   const displayedProducts = products.slice(0, page * ITEMS_PER_LOAD);
 
-  // 카테고리 바 위치 계산
+  // category bar position
   useEffect(() => {
-    const selectedElement = document.querySelector(
+    const el = document.querySelector(
       `[data-category="${selectedCategory}"]`
     ) as HTMLElement;
-    if (selectedElement) {
-      const { offsetLeft, offsetWidth } = selectedElement;
+    if (el) {
+      const { offsetLeft, offsetWidth } = el;
       setBarPosition(offsetLeft + offsetWidth / 2 - 25);
     }
   }, [selectedCategory]);
 
-  // 카테고리 변경 시 제품 데이터 fetch
+  // fetch products
   useEffect(() => {
-    +setIsLoading(true);
-    async function fetchProducts() {
+    setIsLoading(true);
+    (async () => {
       try {
         const prods = await getProducts(selectedCategory);
         setProducts(prods);
-      } catch (error) {
-        console.error('제품 데이터를 불러오는데 실패했습니다:', error);
+      } catch (e) {
+        console.error('제품 데이터를 불러오는데 실패했습니다:', e);
       } finally {
-        +setIsLoading(false);
+        setIsLoading(false);
       }
-    }
-    fetchProducts();
+    })();
     setPage(1);
     window.scrollTo({ top: 0 });
   }, [selectedCategory]);
 
-  // 스크롤 감지해서 페이지 증가
+  // infinite scroll
   useEffect(() => {
-    const handleScroll = () => {
+    const onScroll = () => {
       if (isLoading) return;
       if (
         window.innerHeight + window.scrollY >=
@@ -62,20 +73,26 @@ const Home: React.FC = () => {
       ) {
         if (page * ITEMS_PER_LOAD < products.length) {
           setIsLoading(true);
-
           setTimeout(() => {
-            setPage((prev) => prev + 1);
+            setPage((p) => p + 1);
             setIsLoading(false);
           }, 500);
         }
       }
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, [products, page, isLoading]);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  const handleOpenModal = (id: string) => {
+    setSelectedItemId(id);
+    setIsModalOpen(true);
+  };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedItemId(null);
   };
 
   return (
@@ -94,15 +111,48 @@ const Home: React.FC = () => {
           setSeasonToggle={setSeasonToggle}
         />
         <Content>
-          <ItemList items={displayedProducts} /> {isLoading && <Spinner />}
+          <ItemList items={displayedProducts} onItemClick={handleOpenModal} />
+          {isLoading && <Spinner />}
         </Content>
       </ContentWrapper>
       <Footer />
       <ScrollToTopButton onClick={scrollToTop}>
-        <ArrowIcon xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+        <ArrowIcon viewBox='0 0 24 24'>
           <path d='M12 4l-8 8h6v8h4v-8h6z' />
         </ArrowIcon>
       </ScrollToTopButton>
+
+      {isModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            {/* twoDepth header 구현 */}
+            <ModalHeaderWrapper>
+              <ModalHeaderContainer>
+                <LeftSection>
+                  <CancelIcon
+                    src={CancleIconIcon}
+                    alt='취소'
+                    onClick={handleCloseModal}
+                  />
+                </LeftSection>
+                <CenterSection>{/* <Title>상품 상세</Title> */}</CenterSection>
+                <RightSection>
+                  <Icon
+                    src={ShareIcon}
+                    alt='공유'
+                    onClick={() => {
+                      /* 공유 로직 */
+                    }}
+                  />
+                  <Icon src={HomeIcon} alt='홈' onClick={() => navigate('/')} />
+                </RightSection>
+              </ModalHeaderContainer>
+            </ModalHeaderWrapper>
+
+            {selectedItemId && <HomeDetail id={selectedItemId} />}
+          </ModalContent>
+        </ModalOverlay>
+      )}
     </MainContainer>
   );
 };
@@ -143,18 +193,18 @@ const ScrollToTopButton = styled.button`
     rgba(255, 204, 0, 0.9),
     rgba(255, 153, 0, 0.9)
   );
-  color: #ffffff;
+  color: #fff;
   cursor: pointer;
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease,
-    opacity 0.3s ease;
   opacity: 0.9;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s,
+    opacity 0.3s;
 
   &:hover {
     transform: scale(1.1);
@@ -170,5 +220,73 @@ const ScrollToTopButton = styled.button`
 const ArrowIcon = styled.svg`
   width: 28px;
   height: 28px;
-  fill: #ffffff;
+  fill: #fff;
 `;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ModalContent = styled.div`
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  position: relative;
+  overflow-y: auto;
+`;
+
+/* twoDepth header styles */
+const ModalHeaderWrapper = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 27px;
+  background: #fff;
+  z-index: 2100;
+`;
+const ModalHeaderContainer = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0 27px;
+`;
+const LeftSection = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+`;
+const CenterSection = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const RightSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 19px;
+`;
+const CancelIcon = styled.img`
+  cursor: pointer;
+`;
+const Icon = styled.img`
+  cursor: pointer;
+`;
+// const Title = styled.h1`
+//   font-weight: 700;
+//   font-size: 20px;
+//   line-height: 22px;
+//   margin: 0;
+// `;

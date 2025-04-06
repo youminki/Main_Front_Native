@@ -1,7 +1,6 @@
 // src/components/Home/ItemCard.tsx
 import React from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import DetailButton from '../../assets/Home/DetailButton.svg';
 
 type ItemCardProps = {
@@ -11,6 +10,7 @@ type ItemCardProps = {
   description: string;
   price: number;
   discount: number;
+  onOpenModal: (id: string) => void;
 };
 
 const ItemCard: React.FC<ItemCardProps> = ({
@@ -20,11 +20,10 @@ const ItemCard: React.FC<ItemCardProps> = ({
   description,
   price,
   discount,
+  onOpenModal,
 }) => {
-  const navigate = useNavigate();
-
   const handleClick = () => {
-    navigate(`/item/${id}`);
+    onOpenModal(id);
   };
 
   // 이미지가 존재하면 해시(#) 뒤의 부분 제거, 없으면 기본 이미지 사용

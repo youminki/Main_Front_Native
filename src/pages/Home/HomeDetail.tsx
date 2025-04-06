@@ -1,4 +1,4 @@
-// src/components/Home/HomeDetail.tsx
+// src/pages/Home/HomeDetail.tsx
 import React, { useState, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -42,13 +42,17 @@ interface ProductDetail {
   color: string;
 }
 
-const HomeDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  // API 관련 상태
+type HomeDetailProps = {
+  id?: string;
+};
+
+const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
+  const params = useParams<{ id: string }>();
+  const id = propId || params.id;
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // 슬라이더 및 옵션 상태 (모든 Hook은 최상위에서 호출)
+  // 슬라이더 및 옵션 상태
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
@@ -113,7 +117,6 @@ const HomeDetail: React.FC = () => {
     [handleSwipeLeft, handleSwipeRight]
   );
 
-  // 로딩 상태 처리 (모든 Hook은 이미 호출되었으므로 early return은 문제 없음)
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -180,6 +183,10 @@ const DetailContainer = styled.div`
   padding: 2rem;
   padding-bottom: 80px;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  box-sizing: border-box;
 `;
 
 const ContentContainer = styled.div``;
