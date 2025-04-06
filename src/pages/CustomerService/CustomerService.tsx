@@ -76,8 +76,8 @@ export default CustomerService;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background-color: #fff;
+  position: relative;
+  padding: 2rem;
 `;
 
 const Header = styled.div`
