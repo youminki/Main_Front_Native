@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 // 시작일: 3월 25일 00:00
 const START_DATE = new Date('2025-03-25T00:00:00');
 // 마감일: 3월 31일 00:00
-const TARGET_DATE = new Date('2025-03-31T00:00:00');
+const TARGET_DATE = new Date('2025-04-19T00:00:00');
 
 // 20분당 1명 증가 → 1시간당 3명 증가
 // 총 6일(144시간) → 최대 인원 = 144 * 3 = 432명
