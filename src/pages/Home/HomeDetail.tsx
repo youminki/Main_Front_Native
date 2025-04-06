@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import Spinner from '../../components/Spinner'; // import spinner
 import { getProductInfo } from '../../api/upload/productApi';
 import ImageSlider from '../../components/Home/HomeDetail/ImageSlider';
 import ProductInfo from '../../components/Home/HomeDetail/ProductInfo';
@@ -118,7 +119,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   );
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
   if (!product) {
     return <div>제품을 찾을 수 없습니다.</div>;
