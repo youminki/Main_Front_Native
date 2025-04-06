@@ -9,13 +9,21 @@ import SubHeader from '../../components/Home/SubHeader';
 import { getProducts } from '../../api/upload/productApi';
 import { ProductListItem } from '../../api/upload/productApi';
 
+const ITEMS_PER_LOAD = 10;
+
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [seasonToggle, setSeasonToggle] = useState<boolean>(false);
   const [barPosition, setBarPosition] = useState<number>(0);
   const [products, setProducts] = useState<ProductListItem[]>([]);
 
-  // 선택된 카테고리 아이콘 위치 계산 (barPosition 업데이트)
+  // 무한스크롤용 페이지
+  const [page, setPage] = useState<number>(1);
+
+  // 실제 화면에 뿌릴 아이템 (페이지 * ITEMS_PER_LOAD 만큼)
+  const displayedProducts = products.slice(0, page * ITEMS_PER_LOAD);
+
+  // 카테고리 바 위치 계산
   useEffect(() => {
     const selectedElement = document.querySelector(
       `[data-category="${selectedCategory}"]`
@@ -26,18 +34,39 @@ const Home: React.FC = () => {
     }
   }, [selectedCategory]);
 
-  // 선택된 카테고리에 따른 제품 데이터 불러오기
+  // 카테고리 변경 시 제품 데이터 fetch
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const products = await getProducts(selectedCategory);
-        setProducts(products);
+        const prods = await getProducts(selectedCategory);
+        setProducts(prods);
       } catch (error) {
         console.error('제품 데이터를 불러오는데 실패했습니다:', error);
       }
     }
     fetchProducts();
+    // 새 카테고리면 페이지도 1로 리셋
+    setPage(1);
+    // 스크롤을 위로 올려서 새 데이터 시작 위치로
+    window.scrollTo({ top: 0 });
   }, [selectedCategory]);
+
+  // 스크롤 감지해서 페이지 증가
+  useEffect(() => {
+    const handleScroll = () => {
+      // 바닥 근처에 닿으면
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 100
+      ) {
+        setPage((prev) =>
+          prev * ITEMS_PER_LOAD < products.length ? prev + 1 : prev
+        );
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [products]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -59,7 +88,8 @@ const Home: React.FC = () => {
           setSeasonToggle={setSeasonToggle}
         />
         <Content>
-          <ItemList items={products} />
+          {/* 전체 제품이 아니라 displayedProducts만 렌더 */}
+          <ItemList items={displayedProducts} />
         </Content>
       </ContentWrapper>
       <Footer />
