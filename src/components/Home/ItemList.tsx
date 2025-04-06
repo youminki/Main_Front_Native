@@ -1,4 +1,3 @@
-// src/components/Home/ItemList.tsx
 import React from 'react';
 import styled from 'styled-components';
 import ItemCard from './ItemCard';
@@ -34,14 +33,15 @@ export default ItemList;
 
 const ListContainer = styled.div`
   background-color: #fff;
-  overflow: hidden;
+  /* overflow: hidden 제거 */
 `;
 
 const ItemsWrapper = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  grid-template-columns: repeat(2, 1fr);
+  /* 항상 2열, 칼럼 간격 유지 */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
-  padding: 0 16px;
-  justify-items: center;
+
+  width: 100%;
+  box-sizing: border-box;
 `;
