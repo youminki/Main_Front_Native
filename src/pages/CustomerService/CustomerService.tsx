@@ -106,7 +106,6 @@ const StatsRow = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0 20px;
 `;
 
 const ImageWrapper = styled.div`
