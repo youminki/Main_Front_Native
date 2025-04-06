@@ -13,26 +13,26 @@ const BottomNav: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [showYellowGlow, setShowYellowGlow] = useState<boolean>(false);
   const [barPosition, setBarPosition] = useState<number>(0);
-  const [isVisible, setIsVisible] = useState<boolean>(true);
+  const [isVisible] = useState<boolean>(true);
   const navRef = useRef<HTMLDivElement | null>(null);
 
   // 스크롤 방향 감지하여 바텀바 보임 여부 제어
-  useEffect(() => {
-    let lastScrollY = window.pageYOffset;
-    const handleScroll = () => {
-      const currentScrollY = window.pageYOffset;
-      if (currentScrollY > lastScrollY) {
-        // 아래로 스크롤 시
-        setIsVisible(false);
-      } else {
-        // 위로 스크롤 시
-        setIsVisible(true);
-      }
-      lastScrollY = currentScrollY;
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // useEffect(() => {
+  //   let lastScrollY = window.pageYOffset;
+  //   const handleScroll = () => {
+  //     const currentScrollY = window.pageYOffset;
+  //     if (currentScrollY > lastScrollY) {
+  //       // 아래로 스크롤 시
+  //       setIsVisible(false);
+  //     } else {
+  //       // 위로 스크롤 시
+  //       setIsVisible(true);
+  //     }
+  //     lastScrollY = currentScrollY;
+  //   };
+  //   window.addEventListener('scroll', handleScroll);
+  //   return () => window.removeEventListener('scroll', handleScroll);
+  // }, []);
 
   useEffect(() => {
     const updateTab = (tabName: string) => {
