@@ -1,6 +1,6 @@
-// src/components/Home/Home.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import Spinner from '../../components/Spinner';
 import Notice from '../../components/Home/Notice';
 import ItemList from '../../components/Home/ItemList';
 import Footer from '../../components/Home/Footer';
@@ -17,10 +17,10 @@ const Home: React.FC = () => {
   const [barPosition, setBarPosition] = useState<number>(0);
   const [products, setProducts] = useState<ProductListItem[]>([]);
 
-  // 무한스크롤용 페이지
   const [page, setPage] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // 실제 화면에 뿌릴 아이템 (페이지 * ITEMS_PER_LOAD 만큼)
+  // 화면에 뿌릴 아이템 (페이지 * ITEMS_PER_LOAD 만큼)
   const displayedProducts = products.slice(0, page * ITEMS_PER_LOAD);
 
   // 카테고리 바 위치 계산
@@ -36,37 +36,43 @@ const Home: React.FC = () => {
 
   // 카테고리 변경 시 제품 데이터 fetch
   useEffect(() => {
+    +setIsLoading(true);
     async function fetchProducts() {
       try {
         const prods = await getProducts(selectedCategory);
         setProducts(prods);
       } catch (error) {
         console.error('제품 데이터를 불러오는데 실패했습니다:', error);
+      } finally {
+        +setIsLoading(false);
       }
     }
     fetchProducts();
-    // 새 카테고리면 페이지도 1로 리셋
     setPage(1);
-    // 스크롤을 위로 올려서 새 데이터 시작 위치로
     window.scrollTo({ top: 0 });
   }, [selectedCategory]);
 
   // 스크롤 감지해서 페이지 증가
   useEffect(() => {
     const handleScroll = () => {
-      // 바닥 근처에 닿으면
+      if (isLoading) return;
       if (
         window.innerHeight + window.scrollY >=
         document.documentElement.scrollHeight - 100
       ) {
-        setPage((prev) =>
-          prev * ITEMS_PER_LOAD < products.length ? prev + 1 : prev
-        );
+        if (page * ITEMS_PER_LOAD < products.length) {
+          setIsLoading(true);
+
+          setTimeout(() => {
+            setPage((prev) => prev + 1);
+            setIsLoading(false);
+          }, 500);
+        }
       }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [products]);
+  }, [products, page, isLoading]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -88,8 +94,7 @@ const Home: React.FC = () => {
           setSeasonToggle={setSeasonToggle}
         />
         <Content>
-          {/* 전체 제품이 아니라 displayedProducts만 렌더 */}
-          <ItemList items={displayedProducts} />
+          <ItemList items={displayedProducts} /> {isLoading && <Spinner />}
         </Content>
       </ContentWrapper>
       <Footer />
