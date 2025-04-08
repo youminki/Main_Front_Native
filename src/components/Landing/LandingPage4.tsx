@@ -6,10 +6,10 @@ import SANDROImage from '../../assets/Landing/Sandro.jpg';
 import ITMICHAImage from '../../assets/Landing/ItMichaa.jpg';
 import CC_Collect from '../../assets/Landing/CC_Collect.jpg';
 import DEW_L from '../../assets/Landing/DEW_L.jpg';
-import LIME from '../../assets/Landing/LIME.jpg';
+import LINE from '../../assets/Landing/LINE.jpg';
 import MAJE from '../../assets/Landing/MAJE.jpg';
 import MICHAA from '../../assets/Landing/MICHAA.jpg';
-import MOJO_S_PHINE from '../../assets/Landing/MOJO_S_PHINE.jpg';
+import MOJO from '../../assets/Landing/MOJO.jpg';
 import HangerIcon from '../../assets/Landing/hangerIcon.svg';
 
 // 각 브랜드 아이템의 폭과 아이템 사이의 간격
@@ -36,10 +36,10 @@ const LandingPage3: React.FC = () => {
     { img: ITMICHAImage, name: 'it MICHA' },
     { img: CC_Collect, name: 'CC Collect' },
     { img: DEW_L, name: 'DEW L' },
-    { img: LIME, name: 'LIME' },
+    { img: LINE, name: 'LINE' },
     { img: MAJE, name: 'MAJE' },
     { img: MICHAA, name: 'MICHAA' },
-    { img: MOJO_S_PHINE, name: 'MOJO.S.PHINE' },
+    { img: MOJO, name: 'MOJO' },
   ];
 
   return (
