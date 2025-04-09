@@ -117,7 +117,7 @@ const Icon = styled.img`
 `;
 
 const IconText = styled.span`
-  font-size: 12px;
+  font-size: 11px;
   color: #333;
 `;
 
