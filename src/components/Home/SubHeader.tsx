@@ -1,4 +1,4 @@
-// SubHeader.tsx
+// src/components/Home/SubHeader.tsx
 import React from 'react';
 import styled from 'styled-components';
 
@@ -73,7 +73,6 @@ const SubHeader: React.FC<SubHeaderProps> = ({
             <IconText>{icon.alt}</IconText>
           </IconContainer>
         ))}
-
         <Indicator position={indicatorPosition} />
       </IconsWrapper>
       <Divider />
@@ -93,7 +92,6 @@ const IconsWrapper = styled.div`
   display: flex;
   overflow-x: auto;
   scroll-behavior: smooth;
-
   &::-webkit-scrollbar {
     display: none;
   }

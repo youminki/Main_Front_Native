@@ -22,7 +22,8 @@ const ITEMS_PER_LOAD = 10;
 const Home: React.FC = () => {
   const navigate = useNavigate();
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  // 초기 카테고리를 SubHeader의 전체 아이콘과 맞추기 위해 'Entire'로 설정합니다.
+  const [selectedCategory, setSelectedCategory] = useState<string>('Entire');
   const [seasonToggle, setSeasonToggle] = useState<boolean>(false);
   const [barPosition, setBarPosition] = useState<number>(0);
   const [products, setProducts] = useState<ProductListItem[]>([]);
@@ -35,7 +36,7 @@ const Home: React.FC = () => {
 
   const displayedProducts = products.slice(0, page * ITEMS_PER_LOAD);
 
-  // category bar position
+  // 카테고리 아이콘 아래 표시되는 인디케이터 위치 계산
   useEffect(() => {
     const el = document.querySelector(
       `[data-category="${selectedCategory}"]`
@@ -46,13 +47,42 @@ const Home: React.FC = () => {
     }
   }, [selectedCategory]);
 
+  // SubHeader에서 선택된 카테고리 값을 API에서 사용하는 값으로 매핑합니다.
+  // 예를 들어, 전체 조회는 'all'로, 나머지는 그대로 전달합니다.
+  const categoryMapping: { [key: string]: string } = {
+    Entire: 'all',
+    MiniDress: 'MiniDress',
+    MidiDress: 'MidiDress',
+    LongDress: 'LongDress',
+    TowDress: 'TowDress',
+    JumpSuit: 'JumpSuit',
+    Blouse: 'Blouse',
+    KnitTop: 'KnitTop',
+    ShirtTop: 'ShirtTop',
+    MiniSkirt: 'MiniSkirt',
+    MidiSkirt: 'MidiSkirt',
+    Pants: 'Pants',
+    Jacket: 'Jacket',
+    Coat: 'Coat',
+  };
+
   // fetch products
   useEffect(() => {
     setIsLoading(true);
     (async () => {
       try {
-        const prods = await getProducts(selectedCategory);
-        setProducts(prods);
+        // 매핑된 값이 'all'이면 전체 조회, 그 외에는 해당 카테고리별로 조회합니다.
+        const categoryForAPI = categoryMapping[selectedCategory];
+        const prods = await getProducts(categoryForAPI);
+        // 만약 선택된 값이 'all'이 아니라면, 클라이언트 측에서 카테고리 필터링 진행
+        if (categoryForAPI !== 'all') {
+          const filteredProds = prods.filter(
+            (product) => product.category === categoryForAPI
+          );
+          setProducts(filteredProds);
+        } else {
+          setProducts(prods);
+        }
       } catch (e) {
         console.error('제품 데이터를 불러오는데 실패했습니다:', e);
       } finally {
@@ -284,9 +314,3 @@ const CancelIcon = styled.img`
 const Icon = styled.img`
   cursor: pointer;
 `;
-// const Title = styled.h1`
-//   font-weight: 700;
-//   font-size: 20px;
-//   line-height: 22px;
-//   margin: 0;
-// `;
