@@ -1,19 +1,22 @@
+// src/components/Home/HomeDetail/ProductOptions.tsx
 import React from 'react';
 import styled from 'styled-components';
 import Theme from '../../../styles/Theme';
 
-type ProductOptionsProps = {
+export interface ProductOptionsProps {
   selectedSize: string;
   setSelectedSize: (size: string) => void;
   selectedColor: string;
   setSelectedColor: (color: string) => void;
-};
+  sizeOptions: string[]; // API에서 받은 사이즈 옵션 배열
+}
 
 const ProductOptions: React.FC<ProductOptionsProps> = ({
   selectedSize,
   setSelectedSize,
   selectedColor,
   setSelectedColor,
+  sizeOptions,
 }) => {
   return (
     <OptionsContainer>
@@ -24,10 +27,11 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({
           onChange={(e) => setSelectedSize(e.target.value)}
         >
           <option value=''>사이즈 선택</option>
-          <option value='S'>S(44)</option>
-          <option value='M'>M(55)</option>
-          <option value='L'>L(66)</option>
-          <option value='XL'>XL(77)</option>
+          {sizeOptions.map((size) => (
+            <option key={size} value={size}>
+              {size}
+            </option>
+          ))}
         </select>
         <select
           value={selectedColor}
@@ -53,24 +57,21 @@ const OptionsContainer = styled.div`
   label {
     font-weight: 700;
     font-size: 12px;
-    line-height: 11px;
-    /* identical to box height */
-
-    color: #000000;
     margin-bottom: 10px;
+    display: block;
   }
 `;
 
 const OptionsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+
   select {
     flex: 1;
     padding: 8px;
     box-sizing: border-box;
     width: 100%;
     height: 57px;
-
     border-radius: 4px;
     border: 1px solid ${Theme.colors.black};
     background-color: ${Theme.colors.white};

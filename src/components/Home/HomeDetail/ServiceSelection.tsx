@@ -1,11 +1,12 @@
+// src/components/Home/HomeDetail/ServiceSelection.tsx
 import React from 'react';
 import styled from 'styled-components';
 import Theme from '../../../styles/Theme';
 
-type ServiceSelectionProps = {
+export interface ServiceSelectionProps {
   selectedService: string;
   setSelectedService: (service: string) => void;
-};
+}
 
 const ServiceSelection: React.FC<ServiceSelectionProps> = ({
   selectedService,
@@ -54,6 +55,6 @@ const Select = styled.select`
 
   &:focus {
     outline: none;
-    border-color: ${Theme.colors.black || '#007bff'};
+    border-color: ${Theme.colors.black};
   }
 `;

@@ -43,6 +43,7 @@ export interface ProductDetail {
   lining: string;
   fit: string;
   color: string;
+  product_url: string; // 명세에 추가된 필드
 }
 
 export interface GetProductInfoResponse {
@@ -82,7 +83,7 @@ export const getProducts = async (
 };
 
 /**
- * 특정 제품의 상세 정보를 불러오는 API 함수
+ * 제품 상세 정보를 불러오는 API 함수
  * @param id 제품의 id
  * @returns 제품 상세정보 (GetProductInfoResponse)
  */
@@ -91,7 +92,8 @@ export const getProductInfo = async (
 ): Promise<GetProductInfoResponse> => {
   const response = await Axios.get(`/admin/product/product/info/${id}`);
   const product: ProductDetail = response.data;
-  // 필요시 상대 경로의 이미지 필드들을 절대 경로로 변환합니다.
+
+  // mainImage, product_img, size_picture, product_url의 상대경로 보정
   product.mainImage =
     product.mainImage && !product.mainImage.startsWith('http')
       ? `${API_BASE_URL}${product.mainImage}`
@@ -103,5 +105,10 @@ export const getProductInfo = async (
     product.size_picture && !product.size_picture.startsWith('http')
       ? `${API_BASE_URL}${product.size_picture}`
       : product.size_picture;
+  product.product_url =
+    product.product_url && !product.product_url.startsWith('http')
+      ? `${API_BASE_URL}${product.product_url}`
+      : product.product_url;
+
   return { product };
 };

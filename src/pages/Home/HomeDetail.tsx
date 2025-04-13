@@ -125,13 +125,34 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     return <div>제품을 찾을 수 없습니다.</div>;
   }
 
-  // ProductInfo에 전달할 데이터 변환
+  // ProductInfo에 전달할 데이터 변환 (제품번호와 이름 추가)
   const productInfoItem = {
     brand: product.brand,
-    description: product.description,
+    product_num: product.product_num, // 제품 번호 추가
+    name: product.name, // 제품 이름 추가
     originalPrice: product.price.originalPrice,
     discountPercent: product.price.discountRate,
     discountPrice: product.price.finalPrice,
+  };
+
+  // ProductOptions에 전달할 사이즈 옵션 배열 (API의 sizes 배열에서 사이즈 문자열만 추출)
+  const sizeOptions = product.sizes.map((item) => item.size);
+
+  // MaterialInfo에 전달할 소재 정보 (예시로 몇 가지 제품 속성을 사용)
+  const materialData = {
+    두께감: product.thickness,
+    신축성: product.elasticity,
+    안감: product.lining,
+    촉감: product.fit,
+    비침: product.transparency,
+  };
+
+  // ProductDetails에 전달할 상세 제공 정보 (예시)
+  const detailsData = {
+    품번: product.product_num,
+    계절감: product.season,
+    제조사: product.manufacturer,
+    // 상품URL: product.product_url,
   };
 
   return (
@@ -162,13 +183,17 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           setSelectedSize={setSelectedSize}
           selectedColor={selectedColor}
           setSelectedColor={setSelectedColor}
+          sizeOptions={sizeOptions}
         />
         <LinContainer />
-        <SizeInfo />
+        <SizeInfo
+          productSizes={product.sizes}
+          size_picture={product.size_picture}
+        />
         <LinContainer />
-        <MaterialInfo />
+        <MaterialInfo materialData={materialData} />
         <LinContainer />
-        <ProductDetails />
+        <ProductDetails detailsData={detailsData} />
       </ContentContainer>
       <BottomBar />
     </DetailContainer>

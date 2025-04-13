@@ -1,9 +1,10 @@
+// src/components/Home/HomeDetail/ImageSlider.tsx
 import React from 'react';
 import styled from 'styled-components';
 import Theme from '../../../styles/Theme';
 import { useSwipeable } from 'react-swipeable';
 
-type ImageSliderProps = {
+export interface ImageSliderProps {
   images: string[];
   currentImageIndex: number;
   handleSwipeLeft: () => void;
@@ -11,7 +12,7 @@ type ImageSliderProps = {
   handleMouseDown: (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => void;
-};
+}
 
 const ImageSlider: React.FC<ImageSliderProps> = ({
   images,
@@ -69,8 +70,8 @@ const SliderItem = styled.div`
 const Image = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: contain; /* 전체 이미지가 보이도록 조정 */
-  object-position: center; /* 중앙 정렬 */
+  object-fit: contain;
+  object-position: center;
 `;
 
 const IndicatorContainer = styled.div`
@@ -81,11 +82,7 @@ const IndicatorContainer = styled.div`
   z-index: 10;
 `;
 
-type IndicatorProps = {
-  active: boolean;
-};
-
-const Indicator = styled.div<IndicatorProps>`
+const Indicator = styled.div<{ active: boolean }>`
   width: 14px;
   height: 14px;
   margin: 0 4px;

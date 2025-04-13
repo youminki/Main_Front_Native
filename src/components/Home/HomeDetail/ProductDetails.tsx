@@ -1,106 +1,62 @@
+// src/components/Home/HomeDetail/ProductDetails.tsx
 import React from 'react';
 import styled from 'styled-components';
 import Theme from '../../../styles/Theme';
 
-type MaterialValue = {
-  text: string;
-  bgColor: string;
-};
+export interface ProductDetailData {
+  // 예시: 품번, 계절감, 제조사, 상품URL 등
+  [key: string]: string;
+}
 
-type MaterialInfo = {
-  label: string;
-  values: MaterialValue[];
-};
+export interface ProductDetailsProps {
+  detailsData: ProductDetailData;
+}
 
-type ProductDetail = {
-  label: string;
-  value?: string;
-  type?: string;
-  values?: MaterialValue[];
-};
-
-const ProductDetails: React.FC = () => {
-  const materialInfo: MaterialInfo[] = [
-    {
-      label: '겉감',
-      values: [
-        { text: '폴리에스터 48%', bgColor: '#AAAAAA' },
-        { text: '면 38%', bgColor: '#AAAAAA' },
-        { text: '마 14%', bgColor: '#AAAAAA' },
-      ],
-    },
-    {
-      label: '안감',
-      values: [{ text: '폴리에스터 100%', bgColor: '#AAAAAA' }],
-    },
-    {
-      label: '배색',
-      values: [{ text: '폴리에스터 100%', bgColor: '#AAAAAA' }],
-    },
-    {
-      label: '부속',
-      values: [
-        { text: '레이온 41%', bgColor: '#AAAAAA' },
-        { text: '면 39%', bgColor: '#AAAAAA' },
-        { text: '나일론 20%', bgColor: '#AAAAAA' },
-      ],
-    },
-  ];
-
-  const productDetails: ProductDetail[] = [
-    { label: '품번', value: 'MIO7WOP080' },
-    {
-      label: '계절감',
-      type: 'season',
-      values: [
-        { text: '봄', bgColor: '#AAAAAA' },
-        { text: '여름', bgColor: '#AAAAAA' },
-      ],
-    },
-    { label: '제조사', value: '(주)시선인터내셔널 - (대한민국)' },
-    {
-      label: '제조연월',
-      value: '2024.06 - (품질보증기간은 구입일로부터 1년 이내)',
-    },
-  ];
-
+const ProductDetails: React.FC<ProductDetailsProps> = ({ detailsData }) => {
   return (
     <Container>
       <Section>
         <Title>제품원단 정보</Title>
         <MaterialInfo>
-          {materialInfo.map((item, index) => (
-            <MaterialRow key={index}>
-              <MaterialLabel>{item.label}</MaterialLabel>
-              <MaterialValues>
-                {item.values.map((value, idx) => (
-                  <MaterialValue key={idx} bgColor={value.bgColor}>
-                    {value.text}
-                  </MaterialValue>
-                ))}
-              </MaterialValues>
-            </MaterialRow>
-          ))}
+          {/* 원단 정보는 고정 혹은 별도 API 연동이 가능 */}
+          <MaterialRow>
+            <MaterialLabel>겉감</MaterialLabel>
+            <MaterialValues>
+              <MaterialValue bgColor='#AAAAAA'>폴리에스터 48%</MaterialValue>
+              <MaterialValue bgColor='#AAAAAA'>면 38%</MaterialValue>
+              <MaterialValue bgColor='#AAAAAA'>마 14%</MaterialValue>
+            </MaterialValues>
+          </MaterialRow>
+          <MaterialRow>
+            <MaterialLabel>안감</MaterialLabel>
+            <MaterialValues>
+              <MaterialValue bgColor='#AAAAAA'>폴리에스터 100%</MaterialValue>
+            </MaterialValues>
+          </MaterialRow>
+          <MaterialRow>
+            <MaterialLabel>배색</MaterialLabel>
+            <MaterialValues>
+              <MaterialValue bgColor='#AAAAAA'>폴리에스터 100%</MaterialValue>
+            </MaterialValues>
+          </MaterialRow>
+          <MaterialRow>
+            <MaterialLabel>부속</MaterialLabel>
+            <MaterialValues>
+              <MaterialValue bgColor='#AAAAAA'>레이온 41%</MaterialValue>
+              <MaterialValue bgColor='#AAAAAA'>면 39%</MaterialValue>
+              <MaterialValue bgColor='#AAAAAA'>나일론 20%</MaterialValue>
+            </MaterialValues>
+          </MaterialRow>
         </MaterialInfo>
       </Section>
-      <LinContainer></LinContainer>
+      <LinContainer />
       <DetailSection>
         <Title>제품상세 제공고시</Title>
         <DetailInfo>
-          {productDetails.map((item, index) => (
-            <InfoRow key={index}>
-              <Label>{item.label}</Label>
-              {item.type === 'season' ? (
-                <SeasonValues>
-                  {item.values?.map((value, idx) => (
-                    <SeasonValue key={idx} bgColor={value.bgColor}>
-                      {value.text}
-                    </SeasonValue>
-                  ))}
-                </SeasonValues>
-              ) : (
-                <Value>{item.value}</Value>
-              )}
+          {Object.entries(detailsData).map(([label, value]) => (
+            <InfoRow key={label}>
+              <Label>{label}</Label>
+              <Value>{value}</Value>
             </InfoRow>
           ))}
         </DetailInfo>
@@ -109,6 +65,8 @@ const ProductDetails: React.FC = () => {
   );
 };
 
+export default ProductDetails;
+
 const Container = styled.div`
   position: relative;
 `;
@@ -116,6 +74,7 @@ const Container = styled.div`
 const Section = styled.div`
   margin-bottom: 40px;
 `;
+
 const DetailSection = styled.div`
   margin-bottom: 140px;
 `;
@@ -123,7 +82,6 @@ const DetailSection = styled.div`
 const Title = styled.div`
   font-weight: 700;
   font-size: 12px;
-  line-height: 11px;
   margin-bottom: 10px;
 `;
 
@@ -141,7 +99,6 @@ const MaterialLabel = styled.div`
   width: 50px;
   font-weight: 800;
   font-size: 13px;
-  color: #000000;
   text-align: center;
   margin-right: 20px;
 `;
@@ -155,16 +112,14 @@ const MaterialValues = styled.div`
 const MaterialValue = styled.div<{ bgColor: string }>`
   background: ${(props) => props.bgColor || '#AAAAAA'};
   border-radius: 2px;
-  padding: 4px 4px;
+  padding: 4px;
   font-weight: 700;
   font-size: 12px;
-  line-height: 11px;
-  color: #ffffff;
+  color: #fff;
 `;
 
 const DetailInfo = styled.div`
-  background: #ffffff;
-  margin-bottom: 40px;
+  background: #fff;
 `;
 
 const InfoRow = styled.div`
@@ -177,10 +132,8 @@ const InfoRow = styled.div`
 
 const Label = styled.div`
   width: 50px;
-
   font-weight: 800;
   font-size: 13px;
-  color: #000000;
   text-align: center;
   margin-right: 20px;
 `;
@@ -188,27 +141,10 @@ const Label = styled.div`
 const Value = styled.div`
   font-weight: 700;
   font-size: 12px;
-  color: #000000;
+  color: #000;
 `;
 
-const SeasonValues = styled.div`
-  display: flex;
-  gap: 10px;
-`;
-
-const SeasonValue = styled.div<{ bgColor: string }>`
-  background: ${(props) => props.bgColor || '#AAAAAA'};
-  border-radius: 2px;
-  padding: 4px 4px;
-
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 11px;
-  color: #ffffff;
-`;
 const LinContainer = styled.div`
   border: 1px solid ${Theme.colors.gray0};
   margin: 30px 0;
 `;
-
-export default ProductDetails;

@@ -1,3 +1,4 @@
+// src/components/Home/HomeDetail/RentalOptions.tsx
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaChevronLeft, FaChevronRight, FaPlus, FaMinus } from 'react-icons/fa';
@@ -6,24 +7,9 @@ import ReusableModal from '../../../components/ReusableModal';
 import RentalSelectDateIcon from '../../../assets/Home/HomeDetail/RentalSelectDateIcon.svg';
 import Theme from '../../../styles/Theme';
 
-/* ============ 인터페이스 ============ */
-interface DayBoxProps {
-  selected: boolean;
-  isBoundary: boolean; // 선택 범위의 시작/끝(스타일 강조)
-  reserved: boolean; // 시작일로 선택 불가능한 요일(일요일/공휴일)
-  isWeekend: boolean;
-  isSunday?: boolean;
-}
-interface DayNameProps {
-  isWeekend: boolean;
-}
-
-/* ============ 메인 컴포넌트 ============ */
 const RentalOptions: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  // 선택된 날짜 범위 (start, end)
   const [selectedRange, setSelectedRange] = useState<{
     start: Date | null;
     end: Date | null;
@@ -31,20 +17,14 @@ const RentalOptions: React.FC = () => {
     start: null,
     end: null,
   });
-
-  // 달력에 표시되는 연월 (예: "2025-03")
   const [yearMonth, setYearMonth] = useState<string>('');
-
-  // 에러 모달 관련
   const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  // 최소/최대 일정 (3박4일:4일, 5박6일:6일 / 최대 10일)
   const minDays =
     selectedPeriod === '3박4일' ? 4 : selectedPeriod === '5박6일' ? 6 : 0;
   const maxDays = 10;
 
-  /* ============ 모달 열릴 때 초기 세팅 ============ */
   useEffect(() => {
     if (isModalOpen) {
       const seasonMonths = getSeasonMonths();
@@ -60,7 +40,6 @@ const RentalOptions: React.FC = () => {
     }
   }, [isModalOpen]);
 
-  /* ============ 시즌별 연월 구하기 ============ */
   const getSeasonMonths = (): string[] => {
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -84,7 +63,6 @@ const RentalOptions: React.FC = () => {
     });
   };
 
-  /* ============ 모달 토글 ============ */
   const toggleModal = () => {
     if (selectedPeriod) {
       setIsModalOpen(true);
@@ -94,12 +72,10 @@ const RentalOptions: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  /* ============ 에러 모달 ============ */
   const closeErrorModal = () => {
     setErrorModalOpen(false);
   };
 
-  /* ============ 날짜 유틸 ============ */
   const addDays = (date: Date, days: number): Date => {
     const result = new Date(date);
     result.setDate(result.getDate() + days);
@@ -113,10 +89,8 @@ const RentalOptions: React.FC = () => {
     return `${y}.${m}.${d}`;
   };
 
-  /* ============ 공휴일 자동 계산 함수 ============ */
   const getHolidaysForMonth = (year: number, month: number): Date[] => {
     const holidays: Date[] = [];
-    // 예시: 1월 1일, 3월 1일, 10월 3일, 10월 9일, 12월 25일 등
     if (month === 1) {
       holidays.push(new Date(year, 0, 1));
     }
@@ -146,7 +120,6 @@ const RentalOptions: React.FC = () => {
     );
   };
 
-  // 전체 일정(일 수) 계산
   const getTotalDays = (): number => {
     if (selectedRange.start && selectedRange.end) {
       const diff = selectedRange.end.getTime() - selectedRange.start.getTime();
@@ -155,11 +128,9 @@ const RentalOptions: React.FC = () => {
     return 0;
   };
 
-  /* ============ 날짜 클릭 (시작일 선택) ============ */
   const handleDateClick = (day: number) => {
     const [year, month] = yearMonth.split('-').map(Number);
     const clickedDate = new Date(year, month - 1, day);
-    // 시작일로 일요일이나 공휴일은 선택 불가
     if (clickedDate.getDay() === 0 || isHoliday(clickedDate)) {
       setErrorMessage('일요일 및 공휴일은 시작일로 선택할 수 없습니다!');
       setErrorModalOpen(true);
@@ -170,7 +141,6 @@ const RentalOptions: React.FC = () => {
     setSelectedRange({ start: clickedDate, end: endDate });
   };
 
-  /* ============ 일정 -/+ 아이콘 동작 ============ */
   const handleMinus = () => {
     if (!selectedRange.start || !selectedRange.end) return;
     const total = getTotalDays();
@@ -199,7 +169,6 @@ const RentalOptions: React.FC = () => {
     setSelectedRange({ ...selectedRange, end: newEnd });
   };
 
-  /* ============ 페이지네이션 (아이콘) ============ */
   const handlePrevMonth = () => {
     const seasonMonths = getSeasonMonths();
     const currentIndex = seasonMonths.indexOf(yearMonth);
@@ -216,7 +185,6 @@ const RentalOptions: React.FC = () => {
     }
   };
 
-  /* ============ 달력 렌더링 ============ */
   const renderCalendar = () => {
     const [year, month] = yearMonth.split('-').map(Number);
     const daysInMonth = new Date(year, month, 0).getDate();
@@ -272,7 +240,6 @@ const RentalOptions: React.FC = () => {
     ];
   };
 
-  /* ============ 선택된 날짜 문자열 ============ */
   const displaySelectedDates = () => {
     if (selectedRange.start && selectedRange.end) {
       return `${formatDate(selectedRange.start)} ~ ${formatDate(selectedRange.end)}`;
@@ -280,7 +247,6 @@ const RentalOptions: React.FC = () => {
     return '날짜를 선택해주세요';
   };
 
-  /* ============ 렌더링 ============ */
   return (
     <Container>
       <Label>대여옵션 (선택)</Label>
@@ -381,7 +347,6 @@ const RentalOptions: React.FC = () => {
 
 export default RentalOptions;
 
-/* ============ 스타일 정의 ============ */
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -392,16 +357,19 @@ const Container = styled.div`
   flex-direction: column;
   margin-top: 20px;
 `;
+
 const Label = styled.label`
   font-weight: 700;
   font-size: 12px;
   margin-bottom: 10px;
   display: block;
 `;
+
 const Wrapper = styled.div`
   display: flex;
   gap: 10px;
 `;
+
 const Select = styled.select`
   flex: 1;
   padding: 20px 10px;
@@ -409,8 +377,8 @@ const Select = styled.select`
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-  transition: all 0.3s ease;
 `;
+
 const Button = styled.button<{ disabled?: boolean }>`
   flex: 1;
   display: flex;
@@ -419,7 +387,7 @@ const Button = styled.button<{ disabled?: boolean }>`
   padding: 0 15px;
   font-size: 16px;
   background-color: ${({ disabled }) =>
-    disabled ? Theme.colors.gray3 : '#ffffff'};
+    disabled ? Theme.colors.gray3 : '#fff'};
   border: 1px solid ${Theme.colors.black};
   border-radius: 4px;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
@@ -433,31 +401,35 @@ const Button = styled.button<{ disabled?: boolean }>`
     transform: scale(0.98);
   }
 `;
+
 const Icon = styled.img`
   width: 24px;
   height: 24px;
 `;
+
 const ModalHeader = styled.div`
   padding: 20px;
   border-bottom: 2px solid #e0e0e0;
   animation: ${fadeIn} 0.3s ease;
 `;
+
 const ModalTitle = styled.h2`
   font-weight: 800;
   font-size: 16px;
-  line-height: 18px;
   margin: 0;
 `;
+
 const SelectedBlock = styled.div`
   margin: 20px;
   animation: ${fadeIn} 0.3s ease;
 `;
+
 const LabelBox = styled.div`
   font-weight: 700;
-  margin-bottom: 10px;
   font-size: 12px;
-  line-height: 11px;
+  margin-bottom: 10px;
 `;
+
 const DateBox = styled.div`
   border: 1px solid ${Theme.colors.black};
   padding: 16px;
@@ -467,7 +439,6 @@ const DateBox = styled.div`
   border-radius: 6px;
   font-weight: 900;
   font-size: 14px;
-  line-height: 15px;
   transition: transform 0.2s ease;
   &:hover {
     transform: scale(1.02);
@@ -476,10 +447,12 @@ const DateBox = styled.div`
     transform: scale(0.98);
   }
 `;
+
 const IconWrapper = styled.div`
   display: flex;
   gap: 8px;
 `;
+
 const MinusIconStyled = styled(FaMinus)`
   width: 20px;
   height: 20px;
@@ -494,6 +467,7 @@ const MinusIconStyled = styled(FaMinus)`
     transform: scale(0.9);
   }
 `;
+
 const PlusIconStyled = styled(FaPlus)`
   width: 20px;
   height: 20px;
@@ -508,6 +482,7 @@ const PlusIconStyled = styled(FaPlus)`
     transform: scale(0.9);
   }
 `;
+
 const Pagination = styled.div`
   margin-top: 10px;
   display: flex;
@@ -516,6 +491,7 @@ const Pagination = styled.div`
   gap: 10px;
   animation: ${fadeIn} 0.3s ease;
 `;
+
 const IconButton = styled.button`
   border: none;
   background: none;
@@ -529,29 +505,34 @@ const IconButton = styled.button`
     transform: scale(0.9);
   }
 `;
+
 const CurrentMonth = styled.span`
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 5px;
 `;
+
 const CalendarContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 5px;
   padding: 20px;
-  font-weight: 800;
-  font-size: 13px;
-  line-height: 13px;
   text-align: center;
   animation: ${fadeIn} 0.3s ease;
 `;
-const DayName = styled.div<DayNameProps>`
-  text-align: center;
+
+const DayName = styled.div<{ isWeekend: boolean }>`
   font-weight: bold;
   color: ${(props) => (props.isWeekend ? Theme.colors.gray1 : '#000')};
-  transition: color 0.3s ease;
 `;
-const DayBox = styled.div<DayBoxProps>`
+
+const DayBox = styled.div<{
+  selected: boolean;
+  isBoundary: boolean;
+  reserved: boolean;
+  isWeekend: boolean;
+  isSunday?: boolean;
+}>`
   height: 40px;
   display: flex;
   align-items: center;
@@ -592,21 +573,24 @@ const DayBox = styled.div<DayBoxProps>`
     transform: scale(0.97);
   }
 `;
+
 const EmptyDay = styled.div``;
+
 const Notice = styled.p`
   margin: 0 20px;
   font-weight: 400;
   font-size: 14px;
-  line-height: 20px;
-  color: #999999;
+  color: #999;
   animation: ${fadeIn} 0.3s ease;
 `;
+
 const ButtonRow = styled.div`
   display: flex;
   gap: 10px;
   padding: 20px;
   animation: ${fadeIn} 0.3s ease;
 `;
+
 const CancelButton = styled.button`
   flex: 1;
   height: 45px;
@@ -626,6 +610,7 @@ const CancelButton = styled.button`
     transform: scale(0.97);
   }
 `;
+
 const ConfirmButton = styled.button`
   flex: 1;
   height: 45px;
@@ -645,6 +630,7 @@ const ConfirmButton = styled.button`
     transform: scale(0.97);
   }
 `;
+
 const ErrorMessage = styled.div`
   font-size: 14px;
   font-weight: 700;
