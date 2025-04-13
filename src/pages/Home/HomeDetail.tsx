@@ -40,7 +40,7 @@ interface ProductDetail {
   thickness: string;
   lining: string;
   fit: string;
-  color: string;
+  color: string; // 예: "Red,Blue,Black" 형태로 제공된다고 가정
 }
 
 type HomeDetailProps = {
@@ -137,6 +137,10 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
 
   // ProductOptions에 전달할 사이즈 옵션 배열 (API의 sizes 배열에서 사이즈 문자열만 추출)
   const sizeOptions = product.sizes.map((item) => item.size);
+  // 제품 API에서 받은 색상 문자열("Red,Blue,Black" 등)을 배열로 변환 (없으면 기본값 사용)
+  const colorOptions = product.color
+    ? product.color.split(',').map((c) => c.trim())
+    : ['Red', 'Blue', 'Black'];
 
   // MaterialInfo에 전달할 소재 정보 (예시로 몇 가지 제품 속성을 사용)
   const materialData = {
@@ -184,6 +188,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           selectedColor={selectedColor}
           setSelectedColor={setSelectedColor}
           sizeOptions={sizeOptions}
+          colorOptions={colorOptions}
         />
         <LinContainer />
         <SizeInfo

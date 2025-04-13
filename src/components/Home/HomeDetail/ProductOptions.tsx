@@ -9,6 +9,7 @@ export interface ProductOptionsProps {
   selectedColor: string;
   setSelectedColor: (color: string) => void;
   sizeOptions: string[]; // API에서 받은 사이즈 옵션 배열
+  colorOptions: string[]; // API에서 받은 색상 옵션 배열 추가
 }
 
 const ProductOptions: React.FC<ProductOptionsProps> = ({
@@ -17,6 +18,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({
   selectedColor,
   setSelectedColor,
   sizeOptions,
+  colorOptions,
 }) => {
   return (
     <OptionsContainer>
@@ -38,9 +40,11 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({
           onChange={(e) => setSelectedColor(e.target.value)}
         >
           <option value=''>색상 선택</option>
-          <option value='Red'>Red</option>
-          <option value='Blue'>Blue</option>
-          <option value='Black'>Black</option>
+          {colorOptions.map((color) => (
+            <option key={color} value={color}>
+              {color}
+            </option>
+          ))}
         </select>
       </OptionsWrapper>
     </OptionsContainer>
