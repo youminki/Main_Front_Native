@@ -1,3 +1,4 @@
+// src/components/FilterModal.tsx
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 
@@ -53,21 +54,15 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedStyle, setSelectedStyle] = useState<string[]>([]);
   const [selectedMaterial, setSelectedMaterial] = useState<string[]>([]);
-
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
+    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
     return () => {
       document.body.style.overflow = 'auto';
     };
   }, [isOpen]);
 
-  // 모달 닫기 (오버레이 또는 닫기 버튼 클릭)
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
@@ -76,17 +71,14 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
     }, 400);
   };
 
-  // 선택/해제 토글 로직
   const toggleSelected = (
-    selectedList: string[],
+    list: string[],
     value: string,
-    setFn: (list: string[]) => void
+    setFn: (l: string[]) => void
   ) => {
-    if (selectedList.includes(value)) {
-      setFn(selectedList.filter((item) => item !== value));
-    } else {
-      setFn([...selectedList, value]);
-    }
+    setFn(
+      list.includes(value) ? list.filter((i) => i !== value) : [...list, value]
+    );
   };
 
   if (!isOpen) return null;
@@ -94,7 +86,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
   return (
     <Overlay onClick={handleClose}>
       <Container onClick={(e) => e.stopPropagation()} isClosing={isClosing}>
-        {/* 상단 고정 영역 */}
         <FixedHeader>
           <ModalHandle>
             <HandleBar />
@@ -105,7 +96,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
           <Divider />
         </FixedHeader>
 
-        {/* 스크롤 영역 */}
         <ScrollContent>
           {/* 계절 */}
           <Section>
@@ -114,6 +104,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
               {seasonData.map((season) => (
                 <FilterButton
                   key={season}
+                  value={season}
                   selected={selectedSeason.includes(season)}
                   onClick={() =>
                     toggleSelected(selectedSeason, season, setSelectedSeason)
@@ -125,6 +116,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
             </ButtonRow>
           </Section>
           <DashedDivider />
+
           {/* 사이즈 */}
           <Section>
             <SectionTitleWithParen text='사이즈 (셋팅 : 없음)' />
@@ -132,6 +124,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
               {sizeData.map((size) => (
                 <FilterButton
                   key={size}
+                  value={size}
                   selected={selectedSize.includes(size)}
                   onClick={() =>
                     toggleSelected(selectedSize, size, setSelectedSize)
@@ -143,6 +136,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
             </ButtonRow>
           </Section>
           <DashedDivider />
+
           {/* 색상 */}
           <Section>
             <SectionTitleWithParen text='색상 (셋팅 : 없음)' />
@@ -150,6 +144,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
               {Object.keys(colorMap).map((color) => (
                 <ColorButton
                   key={color}
+                  value={color}
                   selected={selectedColors.includes(color)}
                   onClick={() =>
                     toggleSelected(selectedColors, color, setSelectedColors)
@@ -161,6 +156,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
             </ColorButtonGrid>
           </Section>
           <DashedDivider />
+
           {/* 스타일 */}
           <Section>
             <SectionTitleWithParen text='스타일 (셋팅 : 없음)' />
@@ -168,6 +164,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
               {styleData.map((style) => (
                 <FilterButton
                   key={style}
+                  value={style}
                   selected={selectedStyle.includes(style)}
                   onClick={() =>
                     toggleSelected(selectedStyle, style, setSelectedStyle)
@@ -179,6 +176,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
             </ButtonRow>
           </Section>
           <DashedDivider />
+
           {/* 소재 */}
           <Section>
             <SectionTitleWithParen text='소재 (셋팅 : 없음)' />
@@ -186,6 +184,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
               {materialData.map((mat) => (
                 <FilterButton
                   key={mat}
+                  value={mat}
                   selected={selectedMaterial.includes(mat)}
                   onClick={() =>
                     toggleSelected(selectedMaterial, mat, setSelectedMaterial)
@@ -199,7 +198,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
           <Divider />
         </ScrollContent>
 
-        {/* 하단 고정 영역 */}
         <FixedFooter>
           <CloseButtonWrapper>
             <NoButton onClick={onClose}>취소</NoButton>
@@ -213,28 +211,21 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
 
 export default FilterModal;
 
-// Section 제목 내 괄호 스타일
+// Section 제목 괄호 스타일
 const ParenText = styled.span`
   font-weight: 400;
   font-size: 12px;
-  line-height: 13px;
-  color: #999999;
+  color: #999;
 `;
-
-interface SectionTitleWithParenProps {
-  text: string;
-}
-const SectionTitleWithParen: React.FC<SectionTitleWithParenProps> = ({
-  text,
-}) => {
+const SectionTitleWithParen: React.FC<{ text: string }> = ({ text }) => {
   const parts = text.split(/(\(.*?\))/g);
   return (
     <SectionTitle>
-      {parts.map((part, index) =>
-        part.startsWith('(') && part.endsWith(')') ? (
-          <ParenText key={index}>{part}</ParenText>
+      {parts.map((p, i) =>
+        p.startsWith('(') && p.endsWith(')') ? (
+          <ParenText key={i}>{p}</ParenText>
         ) : (
-          <span key={index}>{part}</span>
+          <span key={i}>{p}</span>
         )
       )}
     </SectionTitle>
@@ -242,38 +233,24 @@ const SectionTitleWithParen: React.FC<SectionTitleWithParenProps> = ({
 };
 
 const slideUp = keyframes`
-  0% {
-    transform: translateY(100%);
-  }
-  60% {
-    transform: translateY(-2%);
-  }
-  80% {
-    transform: translateY(1%);
-  }
-  100% {
-    transform: translateY(0);
-  }
+  0% { transform: translateY(100%); }
+  60% { transform: translateY(-2%); }
+  80% { transform: translateY(1%); }
+  100% { transform: translateY(0); }
 `;
-
 const slideDown = keyframes`
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(100%);
-  }
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
 `;
 
-// 모달 전체 컨테이너 (상단, 스크롤, 하단 영역으로 구성)
 interface ContainerProps {
   isClosing: boolean;
 }
 const Container = styled.div<ContainerProps>`
-  max-width: 600px;
   width: 100%;
+  max-width: 600px;
   height: 800px;
-  background: #ffffff;
+  background: #fff;
   border-radius: 20px 20px 0 0;
   display: flex;
   flex-direction: column;
@@ -288,23 +265,18 @@ const Container = styled.div<ContainerProps>`
         `};
 `;
 
-// 상단 고정 영역 (모달 핸들, 헤더, 구분선 포함)
 const FixedHeader = styled.div`
   flex-shrink: 0;
   padding: 0 40px;
 `;
-
-// 스크롤 영역 (필터 섹션들)
 const ScrollContent = styled.div`
-  flex-grow: 1;
+  flex: 1;
   overflow-y: auto;
   padding: 0 40px;
 `;
-
-// 하단 고정 영역 (취소/설정 버튼)
 const FixedFooter = styled.div`
   flex-shrink: 0;
-  padding: 0 40px 40px 40px;
+  padding: 0 40px 40px;
 `;
 
 const ModalHandle = styled.div`
@@ -313,45 +285,39 @@ const ModalHandle = styled.div`
   justify-content: center;
   margin-top: 8px;
 `;
-
 const HandleBar = styled.div`
   position: fixed;
   top: 6px;
   width: 40px;
   height: 4px;
-  background: #dddddd;
+  background: #ddd;
   border-radius: 2px;
 `;
-
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 40px;
 `;
-
 const Title = styled.h2`
   font-size: 16px;
   font-weight: 800;
   margin: 0;
 `;
-
 const Divider = styled.hr`
   border: none;
   margin: 16px 0;
-  border: 1px solid #dddddd;
+  border-top: 1px solid #ddd;
 `;
-
 const DashedDivider = styled.hr`
   border: none;
-  border-top: 1px dashed #dddddd;
+  border-top: 1px dashed #ddd;
   margin: 10px 0;
 `;
 
 const Section = styled.div`
   margin: 10px 0;
 `;
-
 const SectionTitle = styled.div`
   font-weight: 700;
   font-size: 14px;
@@ -365,26 +331,21 @@ interface FilterButtonProps {
 const FilterButton = styled.button<FilterButtonProps>`
   min-width: 60px;
   height: 36px;
-  margin-right: 8px;
-  margin-bottom: 8px;
+  margin: 0 8px 8px 0;
   border-radius: 18px;
   border: 1px solid #000;
   background: ${({ selected }) => (selected ? '#000' : '#fff')};
   color: ${({ selected }) => (selected ? '#fff' : '#000')};
-
   font-weight: 700;
   font-size: 12px;
   cursor: pointer;
-  transition: background 0.3s;
 `;
 
 const ColorButton = styled(FilterButton)``;
-
 const ButtonRow = styled.div`
   display: flex;
   flex-wrap: wrap;
 `;
-
 const ColorButtonGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -392,29 +353,25 @@ const ColorButtonGrid = styled.div`
 
 const CloseButtonWrapper = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
   gap: 20px;
   margin-top: 10px;
 `;
-
 const NoButton = styled.button`
   flex: 1;
   height: 50px;
-  background: #cccccc;
-  color: #ffffff;
+  background: #ccc;
+  color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
 `;
-
 const YesButton = styled.button`
   flex: 1;
   height: 50px;
-  background-color: #000000;
-  color: #ffffff;
+  background: #000;
+  color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -425,16 +382,9 @@ const YesButton = styled.button`
 const Overlay = styled.div`
   position: fixed;
   z-index: 10000;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: flex-end;
 `;
-
-interface ContainerProps {
-  isClosing: boolean;
-}
