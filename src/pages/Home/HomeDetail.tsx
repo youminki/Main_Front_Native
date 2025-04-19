@@ -1,8 +1,8 @@
 // src/pages/Home/HomeDetail.tsx
 import React, { useState, useCallback, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import Spinner from '../../components/Spinner'; // import spinner
+import Spinner from '../../components/Spinner';
 import { getProductInfo } from '../../api/upload/productApi';
 import ImageSlider from '../../components/Home/HomeDetail/ImageSlider';
 import ProductInfo from '../../components/Home/HomeDetail/ProductInfo';
@@ -14,8 +14,9 @@ import ProductDetails from '../../components/Home/HomeDetail/ProductDetails';
 import BottomBar from '../../components/Home/HomeDetail/BottomBar';
 import ServiceSelection from '../../components/Home/HomeDetail/ServiceSelection';
 import RentalOptions from '../../components/Home/HomeDetail/RentalOptions';
+import ShoppingBasket from '../../assets/Home/HomeDetail/ShoppingBasket.svg';
+import { addToCloset } from '../../api/closet/closetApi';
 
-// Swagger 명세 기반 제품 상세 인터페이스
 interface ProductDetail {
   id: number;
   name: string;
@@ -40,7 +41,7 @@ interface ProductDetail {
   thickness: string;
   lining: string;
   fit: string;
-  color: string; // 예: "Red,Blue,Black" 형태로 제공된다고 가정
+  color: string;
 }
 
 type HomeDetailProps = {
@@ -50,16 +51,15 @@ type HomeDetailProps = {
 const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   const params = useParams<{ id: string }>();
   const id = propId || params.id;
+  const navigate = useNavigate();
+
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
-  // 슬라이더 및 옵션 상태
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedService, setSelectedService] = useState<string>('');
 
-  // 제품 상세정보 API 호출
   useEffect(() => {
     if (id) {
       getProductInfo(Number(id))
@@ -74,7 +74,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     }
   }, [id]);
 
-  // 슬라이더 로직
   const images =
     product && product.product_img && product.product_img.length > 0
       ? product.product_img
@@ -97,11 +96,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       const handleMouseMove = (e: MouseEvent) => {
         const moveX = e.clientX - startX;
         if (Math.abs(moveX) > 50) {
-          if (moveX > 0) {
-            handleSwipeRight();
-          } else {
-            handleSwipeLeft();
-          }
+          moveX > 0 ? handleSwipeRight() : handleSwipeLeft();
           window.removeEventListener('mousemove', handleMouseMove);
           window.removeEventListener('mouseup', handleMouseUp);
         }
@@ -118,31 +113,49 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     [handleSwipeLeft, handleSwipeRight]
   );
 
-  if (loading) {
-    return <Spinner />;
-  }
-  if (!product) {
-    return <div>제품을 찾을 수 없습니다.</div>;
-  }
+  const handleCartClick = async () => {
+    if (!product) return;
 
-  // ProductInfo에 전달할 데이터 변환 (제품번호와 이름 추가)
+    try {
+      await addToCloset(product.id);
+      alert('찜 목록에 추가되었습니다!');
+      navigate('/my-closet');
+    } catch (error: any) {
+      const status = error?.response?.status;
+      if (status === 409) {
+        alert('이미 찜한 상품입니다.');
+        navigate('/my-closet');
+      } else if (status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('찜 추가 중 오류가 발생했습니다.');
+        console.error('찜 추가 실패:', error);
+      }
+    }
+  };
+
+  const handleOrderClick = () => {
+    console.log('🛍️ 주문하기 진행!');
+    // 결제 또는 주문 화면으로 이동
+  };
+
+  if (loading) return <Spinner />;
+  if (!product) return <div>제품을 찾을 수 없습니다.</div>;
+
   const productInfoItem = {
     brand: product.brand,
-    product_num: product.product_num, // 제품 번호 추가
-    name: product.name, // 제품 이름 추가
+    product_num: product.product_num,
+    name: product.name,
     originalPrice: product.price.originalPrice,
     discountPercent: product.price.discountRate,
     discountPrice: product.price.finalPrice,
   };
 
-  // ProductOptions에 전달할 사이즈 옵션 배열 (API의 sizes 배열에서 사이즈 문자열만 추출)
   const sizeOptions = product.sizes.map((item) => item.size);
-  // 제품 API에서 받은 색상 문자열("Red,Blue,Black" 등)을 배열로 변환 (없으면 기본값 사용)
   const colorOptions = product.color
     ? product.color.split(',').map((c) => c.trim())
     : ['Red', 'Blue', 'Black'];
 
-  // MaterialInfo에 전달할 소재 정보 (예시로 몇 가지 제품 속성을 사용)
   const materialData = {
     두께감: product.thickness,
     신축성: product.elasticity,
@@ -151,12 +164,10 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     비침: product.transparency,
   };
 
-  // ProductDetails에 전달할 상세 제공 정보 (예시)
   const detailsData = {
     품번: product.product_num,
     계절감: product.season,
     제조사: product.manufacturer,
-    // 상품URL: product.product_url,
   };
 
   return (
@@ -200,13 +211,19 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         <LinContainer />
         <ProductDetails detailsData={detailsData} />
       </ContentContainer>
-      <BottomBar />
+      <BottomBar
+        cartIconSrc={ShoppingBasket}
+        orderButtonLabel='제품 주문하기'
+        onCartClick={handleCartClick}
+        onOrderClick={handleOrderClick}
+      />
     </DetailContainer>
   );
 };
 
 export default HomeDetail;
 
+// 스타일 컴포넌트
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;

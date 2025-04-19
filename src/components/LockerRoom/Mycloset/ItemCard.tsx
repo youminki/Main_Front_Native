@@ -1,9 +1,7 @@
-// ItemCard.tsx
+// src/components/LockerRoom/Mycloset/ItemCard.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-
-// 샘플 이미지와 삭제 버튼 아이콘 import
 import SampleMyCloset1 from '../../../assets/LockerRoom/SampleMyCloset1.svg';
 import SampleMyCloset2 from '../../../assets/LockerRoom/SampleMyCloset2.svg';
 import SampleMyCloset3 from '../../../assets/LockerRoom/SampleMyCloset3.svg';
@@ -25,7 +23,7 @@ type ItemCardProps = {
   description: string;
   price: number;
   discount: number;
-  onDelete: (id: string) => void; // 삭제 콜백 함수
+  onDelete: (id: string) => void;
 };
 
 const ItemCard: React.FC<ItemCardProps> = ({
@@ -44,28 +42,22 @@ const ItemCard: React.FC<ItemCardProps> = ({
     navigate(`/item/${id}`);
   };
 
-  // 삭제 버튼 클릭 시 모달 오픈
   const handleDeleteClick = (e: React.MouseEvent<HTMLImageElement>) => {
     e.stopPropagation();
     setIsModalOpen(true);
   };
 
-  // 모달의 "네" 버튼 클릭 시 삭제 처리 후 모달 닫기
   const handleConfirmDelete = () => {
     onDelete(id);
     setIsModalOpen(false);
   };
 
-  // 모달의 "아니요" 버튼 클릭 시 모달 닫기
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  const handleCloseModal = () => setIsModalOpen(false);
 
-  // image prop이 비어있으면 sample 이미지 사용
   const imageToShow =
-    image && image.trim() !== ''
+    image.trim() !== ''
       ? image
-      : sampleImages[(parseInt(id) - 1) % sampleImages.length];
+      : sampleImages[(parseInt(id, 10) - 1) % sampleImages.length];
 
   return (
     <>
@@ -86,6 +78,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
           <DiscountLabel>{discount}%</DiscountLabel>
         </PriceWrapper>
       </CardContainer>
+
       <ReusableModal2
         isOpen={isModalOpen}
         onClose={handleCloseModal}
@@ -103,7 +96,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
 export default ItemCard;
 
-// 기존 스타일 정의
 const CardContainer = styled.div`
   position: relative;
   display: flex;
@@ -111,7 +103,6 @@ const CardContainer = styled.div`
   align-items: flex-start;
   cursor: pointer;
   width: 100%;
-  max-width: 100%;
   margin-bottom: 15px;
 `;
 
@@ -119,9 +110,6 @@ const ImageWrapper = styled.div`
   width: 100%;
   aspect-ratio: 2 / 3;
   background-color: #f5f5f5;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: relative;
 `;
 
@@ -133,8 +121,8 @@ const Image = styled.img`
 
 const DeleteButtonIcon = styled.img`
   position: absolute;
-  bottom: 0px;
-  right: 0px;
+  bottom: 0;
+  right: 0;
   width: 36px;
   height: 36px;
   cursor: pointer;
@@ -143,77 +131,59 @@ const DeleteButtonIcon = styled.img`
 const Brand = styled.h3`
   font-weight: 900;
   font-size: 12px;
-  line-height: 11px;
-  /* identical to box height */
-
-  color: #000000;
+  color: #000;
   margin-bottom: 2px;
 `;
 
 const Description = styled.p`
-  margin-top: 0;
-
   font-weight: 400;
   font-size: 14px;
-  line-height: 13px;
-  margin-top: 5px;
-  color: #999999;
+  color: #999;
+  margin: 5px 0;
 `;
 
 const PriceWrapper = styled.div`
-  position: relative;
   display: flex;
   align-items: center;
   gap: 5px;
-
   border-left: 1px solid #e0e0e0;
 `;
 
 const OriginalPrice = styled.span`
   font-weight: 900;
   font-size: 16px;
-  line-height: 15px;
+  color: #000;
   margin-left: 6px;
-  color: #000000;
 `;
 
 const NowLabel = styled.span`
-  position: relative;
-
-  font-weight: 400;
   font-size: 10px;
-  line-height: 9px;
-  color: #000000;
+  color: #000;
 `;
 
 const DiscountLabel = styled.span`
-  position: relative;
-
   font-weight: 800;
   font-size: 12px;
-  line-height: 11px;
   color: #f6ae24;
 `;
 
-// 모달 내부 컨텐츠 스타일
 const ModalContentWrapper = styled.div`
+  flex: 1; /* 모달 바디 안에서 가로세로 모두 확장 */
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
+  gap: 10px;
 `;
 
 const ModalImage = styled.img`
-  width: 70%;
-  height: auto;
-  object-fit: cover;
+  max-width: 20%;
+  max-height: 100%;
+  object-fit: contain; /* 이미지 비율 유지하며 공간 최대 활용 */
 `;
 
 const ModalMessage = styled.p`
-  font-weight: 400;
   font-size: 14px;
-  line-height: 15px;
-  text-align: center;
-  color: #000000;
-
+  color: #000;
   text-align: center;
 `;

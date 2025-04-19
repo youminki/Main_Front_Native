@@ -1,10 +1,10 @@
-// ItemList.tsx
-import React, { useState } from 'react';
+// src/components/LockerRoom/Mycloset/ItemList.tsx
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import ItemCard from './ItemCard';
 
 type Item = {
-  id: number;
+  id: string;
   image: string;
   brand: string;
   description: string;
@@ -14,14 +14,19 @@ type Item = {
 
 type ItemListProps = {
   items: Item[];
+  onDelete: (id: string) => void;
 };
 
-const ItemList: React.FC<ItemListProps> = ({ items }) => {
-  const [itemList, setItemList] = useState(items);
+const ItemList: React.FC<ItemListProps> = ({ items, onDelete }) => {
+  const [itemList, setItemList] = useState<Item[]>([]);
 
-  // 삭제 콜백: id에 해당하는 아이템을 제거
+  // 부모가 items를 바꾸면 내부 상태 동기화
+  useEffect(() => {
+    setItemList(items);
+  }, [items]);
+
   const handleDelete = (id: string) => {
-    setItemList(itemList.filter((item) => item.id.toString() !== id));
+    onDelete(id);
   };
 
   return (
@@ -30,7 +35,7 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
         {itemList.map((item) => (
           <ItemCard
             key={item.id}
-            id={item.id.toString()}
+            id={item.id}
             image={item.image}
             brand={item.brand}
             description={item.description}
