@@ -89,7 +89,7 @@ const InfoRow = styled.div`
   display: flex;
   align-items: center;
   margin: 10px 0;
-  border: 1px solid #dddddd;
+
   padding: 10px;
 `;
 
@@ -98,7 +98,7 @@ const Label = styled.div`
   font-weight: 800;
   font-size: 14px;
   text-align: center;
-  margin-right: 20px;
+  margin-left: 20px;
 `;
 
 const BarContainer = styled.div`
