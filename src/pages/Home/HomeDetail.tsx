@@ -61,7 +61,53 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedService, setSelectedService] = useState('');
 
-  // 데이터 로드 + fabricComposition 매핑
+  // ─── 2. 이미지 배열 계산 (Hook) ───
+  const images = useMemo<string[]>(() => {
+    if (!product) return [];
+    return product.product_img.length
+      ? product.product_img
+      : [product.mainImage];
+  }, [product]);
+
+  // ─── 3. 슬라이드 핸들러 (Hook) ───
+  const handleSwipeLeft = useCallback(() => {
+    if (images.length > 0) {
+      setCurrentImageIndex((p) => (p + 1) % images.length);
+    }
+  }, [images.length]);
+
+  const handleSwipeRight = useCallback(() => {
+    if (images.length > 0) {
+      setCurrentImageIndex((p) => (p === 0 ? images.length - 1 : p - 1));
+    }
+  }, [images.length]);
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      const startX = e.clientX;
+      const onMove = (ev: MouseEvent) => {
+        if (Math.abs(ev.clientX - startX) > 50) {
+          if (ev.clientX - startX > 0) {
+            handleSwipeRight();
+          } else {
+            handleSwipeLeft();
+          }
+          window.removeEventListener('mousemove', onMove);
+          window.removeEventListener('mouseup', onUp);
+        }
+      };
+      const onUp = () => {
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+      };
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+    },
+    [handleSwipeLeft, handleSwipeRight]
+  );
+
+  // ─── 4. 데이터 로드 + fabricComposition 매핑 (Hook) ───
   useEffect(() => {
     const id = propId || params.id;
     if (!id) return;
@@ -84,55 +130,24 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           };
         }
 
-        const { fabricComposition, product_url, ...rest } = api;
+        // 사용하지 않는 product_url은 _product_url로 무시
+        // fabricComposition 원본도 _로 무시
+        const {
+          fabricComposition: _fabric,
+          product_url: _product_url,
+          ...rest
+        } = api;
         setProduct({ ...rest, fabricComposition: mappedFabric });
       })
       .catch((e) => console.error('제품 상세정보 로드 실패:', e))
       .finally(() => setLoading(false));
   }, [propId, params.id]);
 
-  // 이미지 배열 계산
-  const images = useMemo<string[]>(() => {
-    return product?.product_img.length
-      ? product.product_img
-      : [product?.mainImage || ''];
-  }, [product]);
-
-  // 슬라이드 핸들러
-  const handleSwipeLeft = useCallback(() => {
-    setCurrentImageIndex((p) => (p + 1) % images.length);
-  }, [images.length]);
-
-  const handleSwipeRight = useCallback(() => {
-    setCurrentImageIndex((p) => (p === 0 ? images.length - 1 : p - 1));
-  }, [images.length]);
-
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      const startX = e.clientX;
-      const onMove = (ev: MouseEvent) => {
-        if (Math.abs(ev.clientX - startX) > 50) {
-          ev.clientX - startX > 0 ? handleSwipeRight() : handleSwipeLeft();
-          window.removeEventListener('mousemove', onMove);
-          window.removeEventListener('mouseup', onUp);
-        }
-      };
-      const onUp = () => {
-        window.removeEventListener('mousemove', onMove);
-        window.removeEventListener('mouseup', onUp);
-      };
-      window.addEventListener('mousemove', onMove);
-      window.addEventListener('mouseup', onUp);
-    },
-    [handleSwipeLeft, handleSwipeRight]
-  );
-
-  // ─── 2. Early Returns ───
+  // ─── 5. Early Returns ───
   if (loading) return <Spinner />;
   if (!product) return <div>제품을 찾을 수 없습니다.</div>;
 
-  // ─── 3. 이벤트 핸들러 ───
+  // ─── 6. 이벤트 핸들러 ───
   const handleCartClick = async () => {
     try {
       await addToCloset(product.id);
@@ -153,7 +168,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   };
   const handleOrderClick = () => console.log('🛒 주문하기');
 
-  // ─── 4. 렌더링용 데이터 ───
+  // ─── 7. 렌더링용 데이터 ───
   const productInfoItem = {
     brand: product.brand,
     product_num: product.product_num,
@@ -177,7 +192,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     제조사: product.manufacturer,
   };
 
-  // ─── 5. JSX ───
+  // ─── 8. JSX ───
   return (
     <DetailContainer>
       <ImageSlider
@@ -247,6 +262,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
 export default HomeDetail;
 
 /* Styled Components */
+
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
