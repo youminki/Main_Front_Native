@@ -3,7 +3,10 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Spinner from '../../components/Spinner';
-import { getProductInfo } from '../../api/upload/productApi';
+import {
+  getProductInfo,
+  ProductDetail as APIProductDetail,
+} from '../../api/upload/productApi';
 import ImageSlider from '../../components/Home/HomeDetail/ImageSlider';
 import ProductInfo from '../../components/Home/HomeDetail/ProductInfo';
 import ProductOptions from '../../components/Home/HomeDetail/ProductOptions';
@@ -47,7 +50,7 @@ interface ProductDetail {
 type HomeDetailProps = { id?: string };
 
 const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
-  // ─── Hooks ───
+  // ─── 1. 최상단 Hooks ───
   const params = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -58,30 +61,42 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedService, setSelectedService] = useState('');
 
-  // 데이터를 받아오고
+  // 데이터 로드 + fabricComposition 매핑
   useEffect(() => {
     const id = propId || params.id;
     if (!id) return;
+
     getProductInfo(Number(id))
-      .then((res) => setProduct(res.product))
+      .then((res) => {
+        const api = res.product as APIProductDetail & Record<string, any>;
+        const rawFabric = api.fabricComposition;
+        let mappedFabric: Record<'겉감' | '안감' | '배색' | '부속', string>;
+
+        if (Array.isArray(rawFabric)) {
+          const [겉감 = '', 안감 = '', 배색 = '', 부속 = ''] = rawFabric;
+          mappedFabric = { 겉감, 안감, 배색, 부속 };
+        } else {
+          mappedFabric = {
+            겉감: rawFabric['겉감'] || '',
+            안감: rawFabric['안감'] || '',
+            배색: rawFabric['배색'] || '',
+            부속: rawFabric['부속'] || '',
+          };
+        }
+
+        const { fabricComposition, product_url, ...rest } = api;
+        setProduct({ ...rest, fabricComposition: mappedFabric });
+      })
       .catch((e) => console.error('제품 상세정보 로드 실패:', e))
       .finally(() => setLoading(false));
   }, [propId, params.id]);
 
-  // 이미지를 안전하게 계산
-  const images = useMemo(() => {
-    if (
-      product &&
-      Array.isArray(product.product_img) &&
-      product.product_img.length
-    ) {
-      return product.product_img;
-    }
-    return [product?.mainImage || '/default-image.jpg'];
+  // 이미지 배열 계산
+  const images = useMemo<string[]>(() => {
+    return product?.product_img.length
+      ? product.product_img
+      : [product?.mainImage || ''];
   }, [product]);
-
-  // 원단 정보를 네 카테고리별로 받음 (객체 그대로 전달)
-  // 렌더링은 ProductDetails에서 처리
 
   // 슬라이드 핸들러
   const handleSwipeLeft = useCallback(() => {
@@ -113,11 +128,11 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     [handleSwipeLeft, handleSwipeRight]
   );
 
-  // ─── Early Returns ───
+  // ─── 2. Early Returns ───
   if (loading) return <Spinner />;
   if (!product) return <div>제품을 찾을 수 없습니다.</div>;
 
-  // ─── 이벤트 핸들러 ───
+  // ─── 3. 이벤트 핸들러 ───
   const handleCartClick = async () => {
     try {
       await addToCloset(product.id);
@@ -136,12 +151,9 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       }
     }
   };
+  const handleOrderClick = () => console.log('🛒 주문하기');
 
-  const handleOrderClick = () => {
-    console.log('🛒 주문하기');
-  };
-
-  // ─── 렌더링 데이터 준비 ───
+  // ─── 4. 렌더링용 데이터 ───
   const productInfoItem = {
     brand: product.brand,
     product_num: product.product_num,
@@ -150,10 +162,8 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     discountPercent: product.price.discountRate,
     discountPrice: product.price.finalPrice,
   };
-
   const sizeOptions = product.sizes.map((s) => s.size);
   const colorOptions = product.color.split(',').map((c) => c.trim());
-
   const materialData = {
     두께감: product.thickness,
     신축성: product.elasticity,
@@ -161,14 +171,13 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     촉감: product.fit,
     비침: product.transparency,
   };
-
   const detailsData = {
     품번: product.product_num,
     계절감: product.season,
     제조사: product.manufacturer,
   };
 
-  // ─── JSX ───
+  // ─── 5. JSX ───
   return (
     <DetailContainer>
       <ImageSlider
@@ -238,7 +247,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
 export default HomeDetail;
 
 /* Styled Components */
-
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -250,25 +258,20 @@ const DetailContainer = styled.div`
   margin: 0 auto;
   box-sizing: border-box;
 `;
-
 const ContentContainer = styled.div``;
-
 const ServiceSelectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
   margin-bottom: 20px;
 `;
-
 const ConditionalContainer = styled.div`
   margin-top: 20px;
 `;
-
 const Separator = styled.div`
   border: 1px solid #e0e0e0;
   margin: 30px 0;
 `;
-
 const Message = styled.p`
   text-align: center;
   font-size: 16px;
