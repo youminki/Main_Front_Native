@@ -1,5 +1,5 @@
 // src/pages/Home/HomeDetail.tsx
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Spinner from '../../components/Spinner';
@@ -35,7 +35,7 @@ interface ProductDetail {
   season: string;
   manufacturer: string;
   description: string;
-  fabricComposition: string[];
+  fabricComposition: Record<'겉감' | '안감' | '배색' | '부속', string>;
   elasticity: string;
   transparency: string;
   thickness: string;
@@ -44,84 +44,87 @@ interface ProductDetail {
   color: string;
 }
 
-type HomeDetailProps = {
-  id?: string;
-};
+type HomeDetailProps = { id?: string };
 
 const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
+  // ─── Hooks ───
   const params = useParams<{ id: string }>();
-  const id = propId || params.id;
   const navigate = useNavigate();
 
   const [product, setProduct] = useState<ProductDetail | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
-  const [selectedSize, setSelectedSize] = useState<string>('');
-  const [selectedColor, setSelectedColor] = useState<string>('');
-  const [selectedService, setSelectedService] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedService, setSelectedService] = useState('');
 
+  // 데이터를 받아오고
   useEffect(() => {
-    if (id) {
-      getProductInfo(Number(id))
-        .then((res) => {
-          setProduct(res.product);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error('제품 상세정보를 불러오는데 실패했습니다:', error);
-          setLoading(false);
-        });
+    const id = propId || params.id;
+    if (!id) return;
+    getProductInfo(Number(id))
+      .then((res) => setProduct(res.product))
+      .catch((e) => console.error('제품 상세정보 로드 실패:', e))
+      .finally(() => setLoading(false));
+  }, [propId, params.id]);
+
+  // 이미지를 안전하게 계산
+  const images = useMemo(() => {
+    if (
+      product &&
+      Array.isArray(product.product_img) &&
+      product.product_img.length
+    ) {
+      return product.product_img;
     }
-  }, [id]);
+    return [product?.mainImage || '/default-image.jpg'];
+  }, [product]);
 
-  const images =
-    product && product.product_img && product.product_img.length > 0
-      ? product.product_img
-      : [product?.mainImage || '/default-image.jpg'];
+  // 원단 정보를 네 카테고리별로 받음 (객체 그대로 전달)
+  // 렌더링은 ProductDetails에서 처리
 
-  const handleSwipeLeft = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-  };
+  // 슬라이드 핸들러
+  const handleSwipeLeft = useCallback(() => {
+    setCurrentImageIndex((p) => (p + 1) % images.length);
+  }, [images.length]);
 
-  const handleSwipeRight = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
-  };
+  const handleSwipeRight = useCallback(() => {
+    setCurrentImageIndex((p) => (p === 0 ? images.length - 1 : p - 1));
+  }, [images.length]);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
       const startX = e.clientX;
-      const handleMouseMove = (e: MouseEvent) => {
-        const moveX = e.clientX - startX;
-        if (Math.abs(moveX) > 50) {
-          moveX > 0 ? handleSwipeRight() : handleSwipeLeft();
-          window.removeEventListener('mousemove', handleMouseMove);
-          window.removeEventListener('mouseup', handleMouseUp);
+      const onMove = (ev: MouseEvent) => {
+        if (Math.abs(ev.clientX - startX) > 50) {
+          ev.clientX - startX > 0 ? handleSwipeRight() : handleSwipeLeft();
+          window.removeEventListener('mousemove', onMove);
+          window.removeEventListener('mouseup', onUp);
         }
       };
-
-      const handleMouseUp = () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
+      const onUp = () => {
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
       };
-
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
     },
     [handleSwipeLeft, handleSwipeRight]
   );
 
-  const handleCartClick = async () => {
-    if (!product) return;
+  // ─── Early Returns ───
+  if (loading) return <Spinner />;
+  if (!product) return <div>제품을 찾을 수 없습니다.</div>;
 
+  // ─── 이벤트 핸들러 ───
+  const handleCartClick = async () => {
     try {
       await addToCloset(product.id);
       alert('찜 목록에 추가되었습니다!');
       navigate('/my-closet');
-    } catch (error: any) {
-      const status = error?.response?.status;
+    } catch (err: any) {
+      const status = err?.response?.status;
       if (status === 409) {
         alert('이미 찜한 상품입니다.');
         navigate('/my-closet');
@@ -129,19 +132,16 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         alert('로그인이 필요합니다.');
       } else {
         alert('찜 추가 중 오류가 발생했습니다.');
-        console.error('찜 추가 실패:', error);
+        console.error(err);
       }
     }
   };
 
   const handleOrderClick = () => {
-    console.log('🛍️ 주문하기 진행!');
-    // 결제 또는 주문 화면으로 이동
+    console.log('🛒 주문하기');
   };
 
-  if (loading) return <Spinner />;
-  if (!product) return <div>제품을 찾을 수 없습니다.</div>;
-
+  // ─── 렌더링 데이터 준비 ───
   const productInfoItem = {
     brand: product.brand,
     product_num: product.product_num,
@@ -151,10 +151,8 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     discountPrice: product.price.finalPrice,
   };
 
-  const sizeOptions = product.sizes.map((item) => item.size);
-  const colorOptions = product.color
-    ? product.color.split(',').map((c) => c.trim())
-    : ['Red', 'Blue', 'Black'];
+  const sizeOptions = product.sizes.map((s) => s.size);
+  const colorOptions = product.color.split(',').map((c) => c.trim());
 
   const materialData = {
     두께감: product.thickness,
@@ -170,6 +168,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     제조사: product.manufacturer,
   };
 
+  // ─── JSX ───
   return (
     <DetailContainer>
       <ImageSlider
@@ -179,20 +178,25 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         handleSwipeRight={handleSwipeRight}
         handleMouseDown={handleMouseDown}
       />
+
       <ContentContainer>
         <ProductInfo item={productInfoItem} />
+
         <ServiceSelectionWrapper>
           <ServiceSelection
             selectedService={selectedService}
             setSelectedService={setSelectedService}
           />
         </ServiceSelectionWrapper>
+
         <ConditionalContainer>
           {selectedService === 'rental' && <RentalOptions />}
           {selectedService === 'purchase' && <PaymentMethod />}
           {selectedService === '' && <Message>서비스를 선택하세요</Message>}
         </ConditionalContainer>
-        <LinContainer />
+
+        <Separator />
+
         <ProductOptions
           selectedSize={selectedSize}
           setSelectedSize={setSelectedSize}
@@ -201,16 +205,26 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           sizeOptions={sizeOptions}
           colorOptions={colorOptions}
         />
-        <LinContainer />
+
+        <Separator />
+
         <SizeInfo
           productSizes={product.sizes}
           size_picture={product.size_picture}
         />
-        <LinContainer />
+
+        <Separator />
+
         <MaterialInfo materialData={materialData} />
-        <LinContainer />
-        <ProductDetails detailsData={detailsData} />
+
+        <Separator />
+
+        <ProductDetails
+          fabricComposition={product.fabricComposition}
+          detailsData={detailsData}
+        />
       </ContentContainer>
+
       <BottomBar
         cartIconSrc={ShoppingBasket}
         orderButtonLabel='제품 주문하기'
@@ -223,14 +237,14 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
 
 export default HomeDetail;
 
-// 스타일 컴포넌트
+/* Styled Components */
+
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 2rem;
   padding-bottom: 80px;
-  overflow-x: hidden;
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
@@ -250,7 +264,7 @@ const ConditionalContainer = styled.div`
   margin-top: 20px;
 `;
 
-const LinContainer = styled.div`
+const Separator = styled.div`
   border: 1px solid #e0e0e0;
   margin: 30px 0;
 `;
