@@ -1,95 +1,127 @@
-// src/components/Home/HomeDetail/SizeInfo.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import Theme from '../../../styles/Theme';
 
 export interface SizeInfoProps {
   productSizes: { size: string; measurements: Record<string, any> }[];
-  size_picture: string; // API에서 전달받은 사이즈 안내 이미지 URL
+  size_picture: string;
 }
 
-const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
-  if (!productSizes || productSizes.length === 0) {
-    return <div>사이즈 정보가 없습니다.</div>;
-  }
+const SIZE_PLACEHOLDER = '/images/size-placeholder.png';
+const IMAGE_HEIGHT = '180px';
 
-  // 첫번째 제품의 측정 항목을 헤더로 활용 (키 목록)
-  const measurementKeys = Object.keys(productSizes[0].measurements || {});
+const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
+  if (!productSizes?.length) return <Message>사이즈 정보가 없습니다.</Message>;
+
+  const [imgSrc, setImgSrc] = useState(size_picture);
+  const handleImageError = () => setImgSrc(SIZE_PLACEHOLDER);
 
   return (
-    <SizeInfoContainer>
-      <Label>사이즈 정보</Label>
-      {size_picture && (
-        <SizePicture src={size_picture} alt='사이즈 안내 이미지' />
-      )}
-      <Table>
-        <thead>
-          <TableRow>
-            <TableHeader>사이즈</TableHeader>
-            {measurementKeys.map((key) => (
-              <TableHeader key={key}>{key}</TableHeader>
+    <Container>
+      <Title>사이즈 정보</Title>
+
+      <ImageWrapper>
+        <StyledImg
+          src={imgSrc}
+          alt='사이즈 안내 이미지'
+          onError={handleImageError}
+        />
+      </ImageWrapper>
+
+      <TableWrapper>
+        <Table>
+          <thead>
+            <tr>
+              {/* 헤더명은 measurements의 키들로 자동 생성 */}
+              {productSizes[0] &&
+                Object.keys(productSizes[0].measurements).map((key) => (
+                  <Header key={key}>{key}</Header>
+                ))}
+            </tr>
+          </thead>
+          <tbody>
+            {productSizes.map(({ size, measurements }) => (
+              <tr key={size}>
+                {Object.values(measurements).map((value, idx) => (
+                  <Cell key={idx}>{value ?? '-'}</Cell>
+                ))}
+              </tr>
             ))}
-          </TableRow>
-        </thead>
-        <tbody>
-          {productSizes.map((item) => (
-            <TableRow key={item.size}>
-              <TableCell>{item.size}</TableCell>
-              {measurementKeys.map((key) => (
-                <TableCell key={key}>{item.measurements[key] ?? '-'}</TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </tbody>
-      </Table>
-    </SizeInfoContainer>
+          </tbody>
+        </Table>
+      </TableWrapper>
+    </Container>
   );
 };
 
 export default SizeInfo;
 
-const SizeInfoContainer = styled.div`
+// Styled Components
+const Container = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  margin: 20px 0;
 `;
 
-const Label = styled.label`
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-  color: ${Theme.colors.black};
-  margin-bottom: 10px;
+const Title = styled.h3`
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  text-align: center;
 `;
 
-const SizePicture = styled.img`
+const ImageWrapper = styled.div`
   width: 100%;
-  max-width: 400px;
-  margin-bottom: 20px;
+  max-width: 600px;
+
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+`;
+
+const StyledImg = styled.img`
+  width: auto;
+  object-fit: contain;
+  image-rendering: crisp-edges;
+`;
+
+const TableWrapper = styled.div`
+  width: 100%;
+  max-width: 600px;
 `;
 
 const Table = styled.table`
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
 `;
 
-const TableRow = styled.tr`
-  border: 1px solid ${Theme.colors.gray1};
-`;
-
-const TableHeader = styled.th`
-  font-weight: 900;
-  font-size: 12px;
-  background-color: ${Theme.colors.gray1};
-  padding: 10px;
-  text-align: center;
-`;
-
-const TableCell = styled.td`
-  font-weight: 700;
-  font-size: 12px;
+const Header = styled.th`
   padding: 8px;
+  font-size: 12px;
+  font-weight: 700;
   text-align: center;
-  border: 1px solid ${Theme.colors.gray1};
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+`;
+
+const Cell = styled.td`
+  padding: 8px;
+  font-size: 12px;
+  text-align: center;
+  border: 1px solid #ccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const Message = styled.p`
+  font-size: 14px;
+  color: #666;
+  text-align: center;
 `;

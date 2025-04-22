@@ -267,7 +267,7 @@ const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 5rem 2rem;
+  padding: 5rem 1rem;
   padding-bottom: 80px;
   width: 100%;
   max-width: 600px;
