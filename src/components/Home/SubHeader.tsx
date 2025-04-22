@@ -84,7 +84,6 @@ export default SubHeader;
 
 const SubHeaderWrapper = styled.div`
   width: 100%;
-  margin-bottom: 30px;
 `;
 
 const IconsWrapper = styled.div`

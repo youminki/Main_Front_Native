@@ -53,7 +53,7 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin: 20px 0;
 `;
 
 // const StyledSeasonToggle = styled.div<{ $isActive: boolean }>`

@@ -207,7 +207,7 @@ const Content = styled.div`
 `;
 
 const SubHeaderContainer = styled.div`
-  margin: 20px 0;
+  /* margin: 20px 0; */
 `;
 
 const ScrollToTopButton = styled.button`
@@ -274,7 +274,6 @@ const ModalContent = styled.div`
   overflow-y: auto;
 `;
 
-/* twoDepth header styles */
 const ModalHeaderWrapper = styled.div`
   position: fixed;
   top: 0;
