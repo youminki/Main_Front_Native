@@ -1,12 +1,14 @@
+// ImageSlider.tsx
 import React, { memo } from 'react';
 import { useSwipeable, SwipeableHandlers } from 'react-swipeable';
 import styled from 'styled-components';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 export interface ImageSliderProps {
   images: string[];
   currentImageIndex: number;
-  handleSwipeLeft: () => void;
-  handleSwipeRight: () => void;
+  handleSwipeLeft: () => void; // 다음
+  handleSwipeRight: () => void; // 이전
   handleMouseDown: (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => void;
@@ -29,6 +31,10 @@ const ImageSlider: React.FC<ImageSliderProps> = memo(
 
     return (
       <Container {...handlers} onMouseDown={handleMouseDown}>
+        <ArrowLeft onClick={handleSwipeRight}>
+          <FiChevronLeft />
+        </ArrowLeft>
+
         <SlidesWrapper currentIndex={currentImageIndex}>
           {images.map((src, idx) => (
             <Slide key={idx}>
@@ -36,6 +42,10 @@ const ImageSlider: React.FC<ImageSliderProps> = memo(
             </Slide>
           ))}
         </SlidesWrapper>
+
+        <ArrowRight onClick={handleSwipeLeft}>
+          <FiChevronRight />
+        </ArrowRight>
 
         <Indicators>
           {images.map((_, idx) => (
@@ -53,9 +63,34 @@ const Container = styled.div`
   position: relative;
   width: 100%;
   overflow: hidden;
-
   background-color: #f5f5f5;
   border: 2px solid #ccc;
+`;
+
+/** 데스크탑에서는 보이고 모바일에서는 숨김 */
+const arrowStyles = `
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  cursor: pointer;
+  opacity: 0.7;
+  font-size: 48px;      /* 아이콘 크기를 48px로 확대 */
+  &:hover { opacity: 1; }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const ArrowLeft = styled.div`
+  ${arrowStyles}
+  left: 8px;
+`;
+
+const ArrowRight = styled.div`
+  ${arrowStyles}
+  right: 8px;
 `;
 
 const SlidesWrapper = styled.div<{ currentIndex: number }>`
