@@ -63,7 +63,7 @@ const Container = styled.div`
   position: relative;
   overflow: hidden;
   background-color: #f5f5f5;
-  border: 2px solid #ccc;
+  /* border: 1px solid #ccc; */
 `;
 
 /** 데스크탑에서는 보이고 모바일에서는 숨김 */
