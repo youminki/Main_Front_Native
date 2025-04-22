@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
-import styled from 'styled-components';
 import { useSwipeable, SwipeableHandlers } from 'react-swipeable';
+import styled from 'styled-components';
 
 export interface ImageSliderProps {
   images: string[];
@@ -12,63 +12,49 @@ export interface ImageSliderProps {
   ) => void;
 }
 
-/**
- * 이미지 슬라이더 컴포넌트
- */
-const ImageSlider: React.FC<ImageSliderProps> = ({
-  images,
-  currentImageIndex,
-  handleSwipeLeft,
-  handleSwipeRight,
-  handleMouseDown,
-}) => {
-  // 스와이프 핸들러 설정
-  const swipeHandlers: SwipeableHandlers = useSwipeable({
-    onSwipedLeft: handleSwipeLeft,
-    onSwipedRight: handleSwipeRight,
-    preventScrollOnSwipe: true,
-    trackMouse: true,
-  });
+const ImageSlider: React.FC<ImageSliderProps> = memo(
+  ({
+    images,
+    currentImageIndex,
+    handleSwipeLeft,
+    handleSwipeRight,
+    handleMouseDown,
+  }) => {
+    const handlers: SwipeableHandlers = useSwipeable({
+      onSwipedLeft: handleSwipeLeft,
+      onSwipedRight: handleSwipeRight,
+      preventScrollOnSwipe: true,
+      trackMouse: true,
+    });
 
-  return (
-    <SliderContainer {...swipeHandlers} onMouseDown={handleMouseDown}>
-      <SlidesWrapper currentIndex={currentImageIndex}>
-        {images.map((src, idx) => (
-          <SlideItem key={idx} src={src} index={idx} />
-        ))}
-      </SlidesWrapper>
+    return (
+      <Container {...handlers} onMouseDown={handleMouseDown}>
+        <SlidesWrapper currentIndex={currentImageIndex}>
+          {images.map((src, idx) => (
+            <Slide key={idx}>
+              <Image src={src} alt={`Slide ${idx + 1}`} loading='lazy' />
+            </Slide>
+          ))}
+        </SlidesWrapper>
 
-      <DotsWrapper>
-        {images.map((_, idx) => (
-          <Dot key={idx} active={idx === currentImageIndex} />
-        ))}
-      </DotsWrapper>
-    </SliderContainer>
-  );
-};
-
-/**
- * 개별 슬라이드 아이템
- */
-interface SlideItemProps {
-  src: string;
-  index: number;
-}
-const SlideItem: React.FC<SlideItemProps> = ({ src, index }) => (
-  <Slide>
-    <Image src={src} alt={`Slide ${index + 1}`} loading='lazy' />
-  </Slide>
+        <Indicators>
+          {images.map((_, idx) => (
+            <Dot key={idx} active={idx === currentImageIndex} />
+          ))}
+        </Indicators>
+      </Container>
+    );
+  }
 );
 
-export default memo(ImageSlider);
+export default ImageSlider;
 
-// Styled Components
-const SliderContainer = styled.div`
+const Container = styled.div`
   position: relative;
   width: 100%;
   overflow: hidden;
-  background: #f5f5f5;
-  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  border: 2px solid #ccc;
   border-radius: 8px;
 `;
 
@@ -91,7 +77,7 @@ const Image = styled.img`
   object-fit: contain;
 `;
 
-const DotsWrapper = styled.div`
+const Indicators = styled.div`
   position: absolute;
   bottom: 12px;
   right: 12px;
@@ -103,6 +89,6 @@ const Dot = styled.div<{ active: boolean }>`
   height: 12px;
   margin: 0 4px;
   border-radius: 50%;
-  background: ${(p) => (p.active ? '#FFD700' : '#FFFFFF')};
+  background-color: ${(p) => (p.active ? '#FFD700' : '#FFF')};
   border: 1px solid #ccc;
 `;
