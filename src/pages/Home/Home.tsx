@@ -1,9 +1,8 @@
-// src/pages/Home/Home.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Spinner from '../../components/Spinner';
-import Notice from '../../components/Home/Notice';
+
 import ItemList from '../../components/Home/ItemList';
 import Footer from '../../components/Home/Footer';
 import FilterContainer from '../../components/Home/FilterContainer';
@@ -11,6 +10,7 @@ import SubHeader from '../../components/Home/SubHeader';
 import { getProducts } from '../../api/upload/productApi';
 import { ProductListItem } from '../../api/upload/productApi';
 import HomeDetail from './HomeDetail';
+import SearchBar from '../../components/Home/SearchBar';
 
 // twoDepth header assets
 import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
@@ -24,7 +24,6 @@ const Home: React.FC = () => {
 
   // 초기 카테고리를 SubHeader의 전체 아이콘과 맞추기 위해 'Entire'로 설정합니다.
   const [selectedCategory, setSelectedCategory] = useState<string>('Entire');
-  const [seasonToggle, setSeasonToggle] = useState<boolean>(false);
   const [barPosition, setBarPosition] = useState<number>(0);
   const [products, setProducts] = useState<ProductListItem[]>([]);
   const [page, setPage] = useState<number>(1);
@@ -48,7 +47,6 @@ const Home: React.FC = () => {
   }, [selectedCategory]);
 
   // SubHeader에서 선택된 카테고리 값을 API에서 사용하는 값으로 매핑합니다.
-  // 예를 들어, 전체 조회는 'all'로, 나머지는 그대로 전달합니다.
   const categoryMapping: { [key: string]: string } = {
     Entire: 'all',
     MiniDress: 'MiniDress',
@@ -71,10 +69,8 @@ const Home: React.FC = () => {
     setIsLoading(true);
     (async () => {
       try {
-        // 매핑된 값이 'all'이면 전체 조회, 그 외에는 해당 카테고리별로 조회합니다.
         const categoryForAPI = categoryMapping[selectedCategory];
         const prods = await getProducts(categoryForAPI);
-        // 만약 선택된 값이 'all'이 아니라면, 클라이언트 측에서 카테고리 필터링 진행
         if (categoryForAPI !== 'all') {
           const filteredProds = prods.filter(
             (product) => product.category === categoryForAPI
@@ -128,7 +124,7 @@ const Home: React.FC = () => {
   return (
     <MainContainer>
       <ContentWrapper>
-        <Notice />
+        <SearchBar />
         <SubHeaderContainer>
           <SubHeader
             selectedCategory={selectedCategory}
@@ -136,10 +132,7 @@ const Home: React.FC = () => {
             barPosition={barPosition}
           />
         </SubHeaderContainer>
-        <FilterContainer
-          seasonToggle={seasonToggle}
-          setSeasonToggle={setSeasonToggle}
-        />
+        <FilterContainer />
         <Content>
           <ItemList items={displayedProducts} onItemClick={handleOpenModal} />
           {isLoading && <Spinner />}
@@ -155,7 +148,6 @@ const Home: React.FC = () => {
       {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
-            {/* twoDepth header 구현 */}
             <ModalHeaderWrapper>
               <ModalHeaderContainer>
                 <LeftSection>
@@ -165,20 +157,13 @@ const Home: React.FC = () => {
                     onClick={handleCloseModal}
                   />
                 </LeftSection>
-                <CenterSection>{/* <Title>상품 상세</Title> */}</CenterSection>
+                <CenterSection />
                 <RightSection>
-                  <Icon
-                    src={ShareIcon}
-                    alt='공유'
-                    onClick={() => {
-                      /* 공유 로직 */
-                    }}
-                  />
+                  <Icon src={ShareIcon} alt='공유' onClick={() => {}} />
                   <Icon src={HomeIcon} alt='홈' onClick={() => navigate('/')} />
                 </RightSection>
               </ModalHeaderContainer>
             </ModalHeaderWrapper>
-
             {selectedItemId && <HomeDetail id={selectedItemId} />}
           </ModalContent>
         </ModalOverlay>

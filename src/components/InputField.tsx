@@ -1,7 +1,7 @@
 import React, { useState, forwardRef } from 'react';
 import styled from 'styled-components';
 import Button02 from './Button02';
-import { SeasonToggle } from '../components/Home/FilterContainer';
+// import { SeasonToggle } from '../components/Home/FilterContainer';
 
 type InputFieldProps = {
   label: string;
@@ -65,7 +65,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     },
     ref
   ) => {
-    const [toggle, setToggle] = useState(false);
+    // const [toggle, setToggle] = useState(false);
     const [selectedOption, setSelectedOption] = useState(
       options ? options[0] : ''
     );
@@ -131,10 +131,10 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
 
               {useToggle && (
                 <ToggleWrapper>
-                  <SeasonToggle
+                  {/* <SeasonToggle
                     isActive={toggle}
                     toggle={() => setToggle(!toggle)}
-                  />
+                  /> */}
                 </ToggleWrapper>
               )}
             </InputWrapper>
