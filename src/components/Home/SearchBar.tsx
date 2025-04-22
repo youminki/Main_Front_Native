@@ -91,27 +91,21 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     [history]
   );
 
-  // 검색 실행
   const handleSearch = useCallback(
     (e?: React.FormEvent) => {
       e?.preventDefault();
       const trimmed = query.trim();
       if (!trimmed) return;
 
-      // 히스토리 업데이트
       updateHistory(trimmed);
 
-      // URL에 ?search=검색어 반영
-      setSearchParams({ search: trimmed });
-
-      // 부모 콜백 호출 (필요 시)
-      if (onSearch) {
-        onSearch(trimmed);
-      }
-
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('search', trimmed);
+      setSearchParams(newParams);
       setIsOpen(false);
+      onSearch?.(trimmed);
     },
-    [query, updateHistory, onSearch, setSearchParams]
+    [query, updateHistory, onSearch, setSearchParams, searchParams]
   );
 
   return (

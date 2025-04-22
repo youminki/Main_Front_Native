@@ -1,5 +1,6 @@
+// src/pages/Home/Home.tsx
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Spinner from '../../components/Spinner';
 
@@ -21,21 +22,28 @@ const ITEMS_PER_LOAD = 10;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // 초기 카테고리를 SubHeader의 전체 아이콘과 맞추기 위해 'Entire'로 설정합니다.
-  const [selectedCategory, setSelectedCategory] = useState<string>('Entire');
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    searchParams.get('categori') || 'Entire'
+  );
+  const [searchQuery, setSearchQuery] = useState<string>(
+    searchParams.get('search') || ''
+  );
   const [barPosition, setBarPosition] = useState<number>(0);
   const [products, setProducts] = useState<ProductListItem[]>([]);
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  // 검색어 상태
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  // modal state
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // 카테고리 아이콘 아래 표시되는 인디케이터 위치 계산
+  useEffect(() => {
+    const newCategory = searchParams.get('categori') || 'Entire';
+    const newSearch = searchParams.get('search') || '';
+    setSelectedCategory(newCategory);
+    setSearchQuery(newSearch);
+  }, [searchParams]);
+
   useEffect(() => {
     const el = document.querySelector(
       `[data-category="${selectedCategory}"]`
@@ -46,7 +54,6 @@ const Home: React.FC = () => {
     }
   }, [selectedCategory]);
 
-  // SubHeader에서 선택된 카테고리 값을 API에서 사용하는 값으로 매핑합니다.
   const categoryMapping: { [key: string]: string } = {
     Entire: 'all',
     MiniDress: 'MiniDress',
@@ -64,7 +71,6 @@ const Home: React.FC = () => {
     Coat: 'Coat',
   };
 
-  // fetch products
   useEffect(() => {
     setIsLoading(true);
     (async () => {
@@ -89,7 +95,6 @@ const Home: React.FC = () => {
     window.scrollTo({ top: 0 });
   }, [selectedCategory]);
 
-  // infinite scroll
   useEffect(() => {
     const onScroll = () => {
       if (isLoading) return;
@@ -132,16 +137,13 @@ const Home: React.FC = () => {
   return (
     <MainContainer>
       <ContentWrapper>
-        {/* 4) SearchBar에 검색어 세터 전달 */}
         <SearchBar onSearch={setSearchQuery} />
-
-        <SubHeaderContainer>
-          <SubHeader
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            barPosition={barPosition}
-          />
-        </SubHeaderContainer>
+        <SubHeader
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          barPosition={barPosition}
+          onCategoryClick={() => setSearchQuery('')}
+        />
         <FilterContainer />
         <Content>
           <ItemList items={displayedProducts} onItemClick={handleOpenModal} />
@@ -183,6 +185,8 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
+// 이하 styled-components 생략 (기존 유지)
 
 const MainContainer = styled.div`
   display: flex;

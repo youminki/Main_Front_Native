@@ -26,12 +26,10 @@ const homeIcons = [
   { src: MidiDress, alt: '미디원피스', category: 'MidiDress' },
   { src: LongDress, alt: '롱 원피스', category: 'LongDress' },
   { src: TowDress, alt: '투피스', category: 'TowDress' },
-
   { src: JumpSuit, alt: '점프수트', category: 'JumpSuit' },
   { src: Blouse, alt: '블라우스', category: 'Blouse' },
   { src: KnitTop, alt: '니트 상의', category: 'KnitTop' },
   { src: ShirtTop, alt: '셔츠 상의', category: 'ShirtTop' },
-
   { src: MiniSkirt, alt: '미니 스커트', category: 'MiniSkirt' },
   { src: MidiSkirt, alt: '미디 스커트', category: 'MidiSkirt' },
   { src: Pants, alt: '팬츠', category: 'Pants' },
@@ -42,6 +40,7 @@ const homeIcons = [
 interface SubHeaderProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
+  onCategoryClick: () => void; // ✅ 추가
   barPosition?: number;
 }
 
@@ -52,7 +51,7 @@ const SubHeader: React.FC<SubHeaderProps> = ({
   selectedCategory,
   setSelectedCategory,
 }) => {
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // 현재 선택된 인덱스 계산
   const selectedIndex = homeIcons.findIndex(
@@ -66,8 +65,10 @@ const SubHeader: React.FC<SubHeaderProps> = ({
       : 0;
 
   const handleClick = (category: string) => {
-    setSelectedCategory(category);
-    setSearchParams({ categori: category });
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('categori', category);
+    newParams.delete('search'); // 검색 초기화
+    setSearchParams(newParams); // 상태는 Home.tsx에서 useEffect로 반영됨
   };
 
   return (
