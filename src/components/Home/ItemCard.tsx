@@ -30,6 +30,9 @@ const ItemCard: React.FC<ItemCardProps> = ({
   const sanitizedImage =
     image && image.trim() !== '' ? image.split('#')[0] : '/default-image.jpg';
 
+  // description에서 '/' 이전의 부분을 제거
+  const trimmedDescription = description.split('/')[1] || description;
+
   return (
     <CardContainer onClick={handleClick}>
       <ImageWrapper>
@@ -37,7 +40,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
         <DetailButtonIcon src={DetailButton} alt='상세 버튼' />
       </ImageWrapper>
       <Brand>{brand}</Brand>
-      <Description>{description}</Description>
+      <Description>{trimmedDescription}</Description>
       <PriceWrapper>
         <OriginalPrice>{price.toLocaleString()}</OriginalPrice>
         <NowLabel>NOW</NowLabel>
