@@ -64,7 +64,7 @@ const CardContainer = styled.div`
 `;
 
 const ImageWrapper = styled.div`
-  width: 100%;
+  border: 1px solid #eeeeee;
   aspect-ratio: 2 / 3;
   background-color: #f5f5f5;
   display: flex;
