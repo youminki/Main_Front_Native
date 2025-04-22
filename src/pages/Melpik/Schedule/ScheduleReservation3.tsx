@@ -210,7 +210,7 @@ const FormContainer = styled.div`
   margin-bottom: 30px;
   display: flex;
   gap: 20px; /* 각 Column 간 간격 설정 */
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const ColumnWrapper = styled.div`

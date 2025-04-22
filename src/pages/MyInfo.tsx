@@ -342,7 +342,7 @@ const Container = styled.div`
   align-items: center;
 
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
 `;
 const Form = styled.form`
   display: flex;

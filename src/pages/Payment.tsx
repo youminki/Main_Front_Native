@@ -554,7 +554,7 @@ const Container = styled.div`
 
   margin: 0 auto;
   background: #ffffff;
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const Section = styled.div`

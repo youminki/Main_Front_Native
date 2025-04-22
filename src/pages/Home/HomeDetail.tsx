@@ -275,7 +275,7 @@ const DetailContainer = styled.div`
   box-sizing: border-box;
 `;
 const ContentContainer = styled.div`
-  padding: 2rem;
+  padding: 1rem;
 `;
 const ServiceSelectionWrapper = styled.div`
   display: flex;

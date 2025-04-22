@@ -100,7 +100,7 @@ const Container = styled.div`
   flex-direction: column;
 
   background-color: #fff;
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const Content = styled.div`

@@ -224,7 +224,7 @@ const ProductReviewContainer = styled.div`
   align-items: center;
 
   background-color: #fff;
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const Header = styled.div`

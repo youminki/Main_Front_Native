@@ -71,7 +71,7 @@ export default Alarm;
 const AlarmContainer = styled.div`
   margin: 0 auto;
   background-color: #ffffff;
-  padding: 2rem;
+  padding: 1rem;
   position: relative;
 `;
 

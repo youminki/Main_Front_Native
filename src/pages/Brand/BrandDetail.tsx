@@ -170,7 +170,7 @@ const Container = styled.div`
 
   background-color: #fff;
   position: relative;
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const Header = styled.div`

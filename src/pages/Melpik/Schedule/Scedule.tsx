@@ -115,7 +115,7 @@ const ScheduleContainer = styled.div`
   flex-direction: column;
 
   background-color: #fff;
-  padding: 2rem;
+  padding: 1rem;
 `;
 const Header = styled.div`
   display: flex;

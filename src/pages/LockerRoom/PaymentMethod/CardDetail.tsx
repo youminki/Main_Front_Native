@@ -301,7 +301,7 @@ const Container = styled.div`
   margin: 0 auto;
   box-sizing: border-box;
   background-color: #ffffff;
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const FieldSection = styled.div``;

@@ -135,7 +135,7 @@ const Container = styled.div`
 
   display: flex;
   flex-direction: column;
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 /* 구분선 */

@@ -271,7 +271,7 @@ export default AddCard;
 /* ------------------ 스타일 정의 ------------------ */
 
 const FormContainer = styled.form`
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const Container = styled.div`

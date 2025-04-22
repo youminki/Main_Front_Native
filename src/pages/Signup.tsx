@@ -920,7 +920,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const Form = styled.form`

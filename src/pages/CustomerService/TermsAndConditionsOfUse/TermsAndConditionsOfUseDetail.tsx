@@ -56,7 +56,7 @@ const DetailContainer = styled.div`
 
   background: #ffffff;
   box-sizing: border-box;
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const Section = styled.div`

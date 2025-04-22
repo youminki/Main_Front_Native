@@ -238,7 +238,7 @@ const ModalContainer = styled.div`
   flex-direction: column;
   gap: 20px; /* 각 섹션 간격 */
   z-index: 9999;
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 /* ---------------------

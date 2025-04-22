@@ -195,7 +195,7 @@ const ScheduleReservation2: React.FC = () => {
 export default ScheduleReservation2;
 
 const Container = styled.div`
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const Label = styled.label`

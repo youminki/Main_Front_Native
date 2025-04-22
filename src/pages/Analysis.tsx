@@ -23,7 +23,7 @@ const AnalysisContainer = styled.div`
   background-color: #f5f5f5;
   margin: 0 auto;
   border: 1px solid ${Theme.colors.gray1};
-  padding: 2rem;
+  padding: 1rem;
 `;
 
 const ContentWrapper = styled.div`
