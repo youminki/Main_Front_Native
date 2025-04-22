@@ -108,7 +108,6 @@ const Title = styled.h3`
 
 const List = styled.div`
   border: 1px solid #ccc;
-
   padding: 8px 0;
 `;
 
@@ -167,7 +166,6 @@ const OptionList = styled.div`
   justify-content: center;
   width: 100%;
   margin-top: 5px;
-  margin-left: 70px;
   position: relative;
 `;
 
@@ -180,5 +178,5 @@ const Option = styled.div<{ selected: boolean }>`
   cursor: pointer;
   transition: color 0.3s ease;
   width: 100%;
-  transform: translateX(-50%);
+  transform: translateX(0%);
 `;
