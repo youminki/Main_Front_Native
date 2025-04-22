@@ -42,6 +42,7 @@ const homeIcons = [
 interface SubHeaderProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
+  barPosition?: number;
 }
 
 const ICON_WIDTH = 80;
@@ -51,7 +52,7 @@ const SubHeader: React.FC<SubHeaderProps> = ({
   selectedCategory,
   setSelectedCategory,
 }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   // 현재 선택된 인덱스 계산
   const selectedIndex = homeIcons.findIndex(
@@ -65,9 +66,7 @@ const SubHeader: React.FC<SubHeaderProps> = ({
       : 0;
 
   const handleClick = (category: string) => {
-    // 1) 로컬 상태 업데이트
     setSelectedCategory(category);
-    // 2) URL에 ?categori=category 반영
     setSearchParams({ categori: category });
   };
 
