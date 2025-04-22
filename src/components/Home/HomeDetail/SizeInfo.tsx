@@ -10,6 +10,9 @@ const SIZE_PLACEHOLDER = '/images/size-placeholder.png';
 const IMAGE_HEIGHT = '180px';
 
 const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
+  const [imgSrc, setImgSrc] = useState(size_picture);
+  const handleImageError = () => setImgSrc(SIZE_PLACEHOLDER);
+
   if (!productSizes?.length) {
     return <Message>사이즈 정보가 없습니다.</Message>;
   }
@@ -20,9 +23,6 @@ const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
 
   // 대문자 알파벳 헤더 생성 (A, B, C, …)
   const alphaLabels = sortedKeys.map((_, idx) => String.fromCharCode(65 + idx));
-
-  const [imgSrc, setImgSrc] = useState(size_picture);
-  const handleImageError = () => setImgSrc(SIZE_PLACEHOLDER);
 
   return (
     <Container>
