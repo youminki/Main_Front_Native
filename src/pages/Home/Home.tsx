@@ -29,11 +29,11 @@ const Home: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // 검색어 상태
+  const [searchQuery, setSearchQuery] = useState<string>('');
   // modal state
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  const displayedProducts = products.slice(0, page * ITEMS_PER_LOAD);
 
   // 카테고리 아이콘 아래 표시되는 인디케이터 위치 계산
   useEffect(() => {
@@ -110,6 +110,14 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, [products, page, isLoading]);
 
+  const displayedProducts = products
+    .filter(
+      (item) =>
+        item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .slice(0, page * ITEMS_PER_LOAD);
+
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const handleOpenModal = (id: string) => {
@@ -124,7 +132,9 @@ const Home: React.FC = () => {
   return (
     <MainContainer>
       <ContentWrapper>
-        <SearchBar />
+        {/* 4) SearchBar에 검색어 세터 전달 */}
+        <SearchBar onSearch={setSearchQuery} />
+
         <SubHeaderContainer>
           <SubHeader
             selectedCategory={selectedCategory}

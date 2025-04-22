@@ -1,130 +1,270 @@
-import React, { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
+import styled, { keyframes } from 'styled-components';
+import { FiSearch, FiX } from 'react-icons/fi';
+import { BiTimeFive } from 'react-icons/bi';
 
 const HISTORY_KEY = 'search_history';
 
-const SearchBar: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [history, setHistory] = useState<string[]>([]);
-  const [showHistory, setShowHistory] = useState(false);
-  const navigate = useNavigate();
-  const wrapperRef = useRef<HTMLDivElement>(null);
+// 애니메이션 정의
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+const slideDown = keyframes`
+  from { transform: translateY(-10px); }
+  to { transform: translateY(0); }
+`;
 
-  // 로컬스토리지에서 과거 검색어 불러오기
+// 검색 기록 드롭다운 컴포넌트
+const HistoryDropdown: React.FC<{
+  items: string[];
+  onSelect: (value: string) => void;
+  onRemove: (value: string) => void;
+  onClearAll: () => void;
+}> = ({ items, onSelect, onRemove, onClearAll }) => (
+  <Dropdown role='listbox'>
+    {items.map((item, idx) => (
+      <DropdownItem key={idx}>
+        <ItemButton onClick={() => onSelect(item)}>
+          <BiTimeFive size={16} />
+          <ItemText>{item}</ItemText>
+        </ItemButton>
+        <RemoveButton onClick={() => onRemove(item)}>
+          <FiX size={14} />
+        </RemoveButton>
+      </DropdownItem>
+    ))}
+    <ClearAllWrapper>
+      <Divider />
+      <ClearAllButton onClick={onClearAll}>전체 삭제</ClearAllButton>
+    </ClearAllWrapper>
+  </Dropdown>
+);
+
+interface SearchBarProps {
+  onSearch?: (query: string) => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [query, setQuery] = useState('');
+  const [history, setHistory] = useState<string[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  // 로컬스토리지에서 기록 불러오기
   useEffect(() => {
     const stored = localStorage.getItem(HISTORY_KEY);
-    if (stored) setHistory(JSON.parse(stored));
+    if (stored) {
+      const parsed: string[] = JSON.parse(stored);
+      setHistory(parsed.slice(0, 5));
+    }
   }, []);
 
-  // 외부 클릭 시 히스토리 드롭다운 닫기
+  // 외부 클릭 시 닫기
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
         wrapperRef.current &&
         !wrapperRef.current.contains(e.target as Node)
       ) {
-        setShowHistory(false);
+        setIsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // 검색 제출
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const term = searchTerm.trim();
-    if (!term) return;
-    // 중복 제거 후 최근 5개까지만
-    const newHist = [term, ...history.filter((item) => item !== term)].slice(
-      0,
-      5
-    );
-    setHistory(newHist);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(newHist));
-    // 검색 결과 페이지로 이동
-    navigate(`/search?query=${encodeURIComponent(term)}`);
-    setShowHistory(false);
-  };
+  // 기록 업데이트 (최대 5개)
+  const updateHistory = useCallback(
+    (value: string) => {
+      const updated = [value, ...history.filter((h) => h !== value)].slice(
+        0,
+        5
+      );
+      setHistory(updated);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+    },
+    [history]
+  );
 
-  // 히스토리 아이템 클릭
-  const handleHistoryClick = (term: string) => {
-    setSearchTerm(term);
-    navigate(`/search?query=${encodeURIComponent(term)}`);
-    setShowHistory(false);
-  };
+  // 검색 실행
+  const handleSearch = useCallback(
+    (e?: React.FormEvent) => {
+      e?.preventDefault();
+      const trimmed = query.trim();
+      if (!trimmed) return;
+      updateHistory(trimmed);
+      if (onSearch) {
+        onSearch(trimmed);
+      }
+      setIsOpen(false);
+    },
+    [query, updateHistory, onSearch]
+  );
 
   return (
-    <Wrapper ref={wrapperRef}>
-      <Form onSubmit={handleSubmit}>
+    <Container ref={wrapperRef}>
+      <Form onSubmit={handleSearch} onFocus={() => setIsOpen(true)}>
         <Input
-          type='text'
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
           placeholder='검색어를 입력하세요'
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onFocus={() => setShowHistory(true)}
         />
+        {query && (
+          <ClearButton type='button' onClick={() => setQuery('')}>
+            <FiX size={18} />
+          </ClearButton>
+        )}
+        <SearchButton type='submit' aria-label='검색'>
+          <FiSearch size={20} />
+        </SearchButton>
       </Form>
-      {showHistory && history.length > 0 && (
-        <HistoryDropdown>
-          {history.map((item, idx) => (
-            <HistoryItem key={idx} onClick={() => handleHistoryClick(item)}>
-              {item}
-            </HistoryItem>
-          ))}
-        </HistoryDropdown>
+
+      {isOpen && history.length > 0 && (
+        <HistoryDropdown
+          items={history}
+          onSelect={(val) => {
+            setQuery(val);
+            handleSearch();
+          }}
+          onRemove={(val) => {
+            const filtered = history.filter((h) => h !== val);
+            setHistory(filtered);
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(filtered));
+          }}
+          onClearAll={() => {
+            setHistory([]);
+            localStorage.removeItem(HISTORY_KEY);
+          }}
+        />
       )}
-    </Wrapper>
+    </Container>
   );
 };
 
-export default SearchBar;
+export default memo(SearchBar);
 
-/* Styled Components */
-const Wrapper = styled.div`
+// --- Styled Components ---
+const Container = styled.div`
   position: relative;
   width: 100%;
   max-width: 600px;
   margin: 0 auto 1rem;
 `;
-
 const Form = styled.form`
-  width: 100%;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  height: 48px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 1rem;
-
-  &:focus {
-    outline: none;
-    border-color: #4285f4;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+  &:focus-within {
     box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.3);
   }
 `;
-
-const HistoryDropdown = styled.ul`
+const Input = styled.input`
+  flex: 1;
+  height: 100%;
+  padding: 0 12px;
+  border: none;
+  font-size: 1rem;
+  &:focus {
+    outline: none;
+  }
+`;
+const ClearButton = styled.button`
+  padding: 0 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+`;
+const SearchButton = styled.button`
+  width: 48px;
+  height: 100%;
+  background: #f6ae24;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  transition: background 0.2s;
+  &:hover {
+    background: #f7a000;
+  }
+`;
+const Dropdown = styled.ul`
   position: absolute;
   top: 100%;
   left: 0;
-  width: 100%;
+  right: 0;
+  margin-top: 4px;
   background: #fff;
   border: 1px solid #ddd;
-  border-top: none;
-  max-height: 200px;
-  overflow-y: auto;
+  border-radius: 0 0 4px 4px;
   z-index: 100;
+  list-style: none;
+  padding: 0;
+  animation:
+    ${fadeIn} 0.2s ease-out,
+    ${slideDown} 0.2s ease-out;
 `;
-
-const HistoryItem = styled.li`
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-
+const DropdownItem = styled.li`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 1rem;
+  transition: background 0.15s;
   &:hover {
-    background: #f1f1f1;
+    background: #f9f9f9;
+  }
+`;
+const ItemButton = styled.button`
+  display: flex;
+  align-items: center;
+  flex: 1;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+`;
+const ItemText = styled.span`
+  margin-left: 0.5rem;
+  font-size: 0.95rem;
+  color: #333;
+`;
+const RemoveButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #bbb;
+  &:hover {
+    color: #888;
+  }
+`;
+const Divider = styled.div`
+  height: 1px;
+  background: #eee;
+`;
+const ClearAllWrapper = styled.div`
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+`;
+const ClearAllButton = styled.button`
+  width: 100%;
+  height: 48px;
+  background: none;
+  border: none;
+  text-align: center;
+  font-weight: 600;
+  color: #e74c3c;
+  cursor: pointer;
+  transition: background 0.15s;
+  &:hover {
+    background: #fdecea;
   }
 `;
