@@ -1,8 +1,6 @@
-// src/components/Home/HomeDetail/ImageSlider.tsx
-import React from 'react';
+import React, { memo } from 'react';
 import styled from 'styled-components';
-import Theme from '../../../styles/Theme';
-import { useSwipeable } from 'react-swipeable';
+import { useSwipeable, SwipeableHandlers } from 'react-swipeable';
 
 export interface ImageSliderProps {
   images: string[];
@@ -14,6 +12,9 @@ export interface ImageSliderProps {
   ) => void;
 }
 
+/**
+ * 이미지 슬라이더 컴포넌트
+ */
 const ImageSlider: React.FC<ImageSliderProps> = ({
   images,
   currentImageIndex,
@@ -21,73 +22,87 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
   handleSwipeRight,
   handleMouseDown,
 }) => {
-  const handlers = useSwipeable({
+  // 스와이프 핸들러 설정
+  const swipeHandlers: SwipeableHandlers = useSwipeable({
     onSwipedLeft: handleSwipeLeft,
     onSwipedRight: handleSwipeRight,
+    preventScrollOnSwipe: true,
+    trackMouse: true,
   });
 
   return (
-    <SliderContainer {...handlers} onMouseDown={handleMouseDown}>
-      <SliderWrapper currentIndex={currentImageIndex}>
-        {images.map((src, index) => (
-          <SliderItem key={index}>
-            <Image src={src} alt={`Slide ${index + 1}`} loading='lazy' />
-          </SliderItem>
+    <SliderContainer {...swipeHandlers} onMouseDown={handleMouseDown}>
+      <SlidesWrapper currentIndex={currentImageIndex}>
+        {images.map((src, idx) => (
+          <SlideItem key={idx} src={src} index={idx} />
         ))}
-      </SliderWrapper>
-      <IndicatorContainer>
-        {images.map((_, index) => (
-          <Indicator key={index} active={index === currentImageIndex} />
+      </SlidesWrapper>
+
+      <DotsWrapper>
+        {images.map((_, idx) => (
+          <Dot key={idx} active={idx === currentImageIndex} />
         ))}
-      </IndicatorContainer>
+      </DotsWrapper>
     </SliderContainer>
   );
 };
 
-export default ImageSlider;
+/**
+ * 개별 슬라이드 아이템
+ */
+interface SlideItemProps {
+  src: string;
+  index: number;
+}
+const SlideItem: React.FC<SlideItemProps> = ({ src, index }) => (
+  <Slide>
+    <Image src={src} alt={`Slide ${index + 1}`} loading='lazy' />
+  </Slide>
+);
 
+export default memo(ImageSlider);
+
+// Styled Components
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  height: 500px;
   overflow: hidden;
-  cursor: grab;
-  background-color: ${Theme.colors.gray0};
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 `;
 
-const SliderWrapper = styled.div<{ currentIndex: number }>`
+const SlidesWrapper = styled.div<{ currentIndex: number }>`
   display: flex;
-  height: 100%;
-  transition: transform 0.3s ease-in-out;
-  transform: translateX(-${(props) => props.currentIndex * 100}%);
+  transform: translateX(-${(p) => p.currentIndex * 100}%);
+  transition: transform 0.4s ease;
 `;
 
-const SliderItem = styled.div`
+const Slide = styled.div`
   flex: 0 0 100%;
-  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
 `;
 
 const Image = styled.img`
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
   object-fit: contain;
-  object-position: center;
 `;
 
-const IndicatorContainer = styled.div`
-  display: flex;
+const DotsWrapper = styled.div`
   position: absolute;
-  bottom: 16px;
-  right: 16px;
-  z-index: 10;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
 `;
 
-const Indicator = styled.div<{ active: boolean }>`
-  width: 14px;
-  height: 14px;
+const Dot = styled.div<{ active: boolean }>`
+  width: 12px;
+  height: 12px;
   margin: 0 4px;
-  background-color: ${({ active }) =>
-    active ? Theme.colors.yellow : Theme.colors.white};
   border-radius: 50%;
-  border: 1px solid #999;
+  background: ${(p) => (p.active ? '#FFD700' : '#FFFFFF')};
+  border: 1px solid #ccc;
 `;
