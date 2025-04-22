@@ -1,6 +1,7 @@
 // src/components/Home/SubHeader.tsx
 import React from 'react';
 import styled from 'styled-components';
+import { useSearchParams } from 'react-router-dom';
 
 import Entire from '../../assets/SubHeader/Entire.svg';
 import MiniDress from '../../assets/SubHeader/MiniDress.svg';
@@ -41,7 +42,6 @@ const homeIcons = [
 interface SubHeaderProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
-  barPosition: number;
 }
 
 const ICON_WIDTH = 80;
@@ -51,14 +51,25 @@ const SubHeader: React.FC<SubHeaderProps> = ({
   selectedCategory,
   setSelectedCategory,
 }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // 현재 선택된 인덱스 계산
   const selectedIndex = homeIcons.findIndex(
     (icon) => icon.category.trim() === selectedCategory.trim()
   );
 
+  // 인디케이터 위치 계산
   const indicatorPosition =
     selectedIndex >= 0
       ? selectedIndex * ICON_WIDTH + (ICON_WIDTH - INDICATOR_WIDTH) / 2
       : 0;
+
+  const handleClick = (category: string) => {
+    // 1) 로컬 상태 업데이트
+    setSelectedCategory(category);
+    // 2) URL에 ?categori=category 반영
+    setSearchParams({ categori: category });
+  };
 
   return (
     <SubHeaderWrapper>
@@ -67,7 +78,7 @@ const SubHeader: React.FC<SubHeaderProps> = ({
           <IconContainer
             key={index}
             data-category={icon.category}
-            onClick={() => setSelectedCategory(icon.category)}
+            onClick={() => handleClick(icon.category)}
           >
             <Icon src={icon.src} alt={icon.alt} />
             <IconText>{icon.alt}</IconText>

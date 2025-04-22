@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FiSearch, FiX } from 'react-icons/fi';
 import { BiTimeFive } from 'react-icons/bi';
+import { useSearchParams } from 'react-router-dom';
 
 const HISTORY_KEY = 'search_history';
 
@@ -47,7 +48,10 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [query, setQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // URL의 ?search 를 초기값으로 사용
+  const [query, setQuery] = useState(searchParams.get('search') || '');
   const [history, setHistory] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -60,7 +64,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     }
   }, []);
 
-  // 외부 클릭 시 닫기
+  // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -93,13 +97,21 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       e?.preventDefault();
       const trimmed = query.trim();
       if (!trimmed) return;
+
+      // 히스토리 업데이트
       updateHistory(trimmed);
+
+      // URL에 ?search=검색어 반영
+      setSearchParams({ search: trimmed });
+
+      // 부모 콜백 호출 (필요 시)
       if (onSearch) {
         onSearch(trimmed);
       }
+
       setIsOpen(false);
     },
-    [query, updateHistory, onSearch]
+    [query, updateHistory, onSearch, setSearchParams]
   );
 
   return (
@@ -160,7 +172,7 @@ const Form = styled.form`
   overflow: hidden;
   transition: box-shadow 0.2s;
   &:focus-within {
-    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.3);
+    box-shadow: 0 0 0 2px rgba(253, 180, 10, 0.3);
   }
 `;
 const Input = styled.input`
@@ -200,7 +212,7 @@ const Dropdown = styled.ul`
   top: 100%;
   left: 0;
   right: 0;
-  margin-top: 4px;
+  margin-top: 3px;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 0 0 4px 4px;
