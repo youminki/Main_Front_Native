@@ -53,9 +53,9 @@ const Container = styled.div`
   position: relative;
   width: 100%;
   overflow: hidden;
+
   background-color: #f5f5f5;
   border: 2px solid #ccc;
-  border-radius: 8px;
 `;
 
 const SlidesWrapper = styled.div<{ currentIndex: number }>`

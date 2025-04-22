@@ -267,14 +267,16 @@ const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 5rem 1rem;
+  padding: 5rem 0;
   padding-bottom: 80px;
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
   box-sizing: border-box;
 `;
-const ContentContainer = styled.div``;
+const ContentContainer = styled.div`
+  padding: 2rem;
+`;
 const ServiceSelectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
