@@ -1,4 +1,3 @@
-// src/components/Home/HomeDetail/ProductDetails.tsx
 import React from 'react';
 import styled from 'styled-components';
 
@@ -41,8 +40,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
         </Table>
       </Section>
 
-      <Separator />
-
       <DetailSection>
         <Title>제품상세 제공고시</Title>
         <DetailInfo>
@@ -59,8 +56,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
 };
 
 export default ProductDetails;
-
-/* Styled Components */
 
 const Container = styled.div`
   position: relative;
@@ -124,14 +119,9 @@ const EmptyTag = styled(Tag)`
   font-weight: 400;
 `;
 
-/** 구분선 **/
-const Separator = styled.div`
-  border-top: 1px solid #f0f0f0;
-  margin: 24px 0;
-`;
-
 /** 상세 정보 영역 **/
 const DetailSection = styled.div`
+  margin-top: 40px;
   margin-bottom: 40px;
 `;
 
