@@ -10,20 +10,37 @@ export default function useImageLoader(
   const [exit, setExit] = useState(false);
 
   useEffect(() => {
+    // reset loading on path change
+    setLoading(true);
     const imgs = Array.from(document.querySelectorAll('img'));
-    if (!imgs.length) {
+    if (imgs.length === 0) {
       setLoading(false);
       return;
     }
-    let loaded = 0;
-    const onLoad = () => {
-      loaded += 1;
-      if (loaded === imgs.length) setLoading(false);
+
+    let loadedCount = 0;
+    const onLoadOrError = () => {
+      loadedCount += 1;
+      if (loadedCount >= imgs.length) {
+        setLoading(false);
+      }
     };
-    imgs.forEach((img) =>
-      img.complete ? onLoad() : img.addEventListener('load', onLoad)
-    );
-    return () => imgs.forEach((img) => img.removeEventListener('load', onLoad));
+
+    imgs.forEach((img) => {
+      if (img.complete) {
+        onLoadOrError();
+      } else {
+        img.addEventListener('load', onLoadOrError);
+        img.addEventListener('error', onLoadOrError);
+      }
+    });
+
+    return () => {
+      imgs.forEach((img) => {
+        img.removeEventListener('load', onLoadOrError);
+        img.removeEventListener('error', onLoadOrError);
+      });
+    };
   }, [path]);
 
   const handleBackWithExit = () => {
