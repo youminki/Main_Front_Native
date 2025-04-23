@@ -141,10 +141,10 @@ const GridItem = styled.div`
 
   cursor: pointer;
   transition: all 0.2s;
+  max-height: auto;
 `;
 
 const IconImage = styled.img`
-  width: 100%;
-  height: 100%;
+  width: 90%;
   margin-bottom: 8px;
 `;
