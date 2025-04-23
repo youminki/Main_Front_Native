@@ -3,27 +3,44 @@ import React from 'react';
 import styled from 'styled-components';
 import Theme from '../../../styles/Theme';
 import AddTekImage from '../../../assets/ClosetIcon.svg';
+import { addToCloset } from '../../../api/closet/closetApi';
 
 export interface ProductInfoProps {
   item: {
-    brand: string; // 예: "산드로 (SANDRO)"
-    product_num: string; // 예: "SNS21N9"
-    name: string; // 예: "원피스"
+    brand: string;
+    product_num: string;
+    name: string;
     originalPrice: number;
     discountPercent: number;
     discountPrice: number;
   };
+  productId: number;
 }
 
-const ProductInfo: React.FC<ProductInfoProps> = ({ item }) => {
+const ProductInfo: React.FC<ProductInfoProps> = ({ item, productId }) => {
+  const handleAddTekClick = async () => {
+    try {
+      await addToCloset(productId);
+      alert('찜 목록에 추가되었습니다!');
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 409) {
+        alert('이미 찜한 상품입니다.');
+      } else if (status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('찜 추가 중 오류가 발생했습니다.');
+        console.error(err);
+      }
+    }
+  };
+
   return (
     <InfoContainer>
-      {/* 상단에 "브랜드 > 산드로 (SANDRO)" 형태로 출력 */}
       <CategoryText>
         브랜드 <span className='gt'>&gt;</span> {item.brand}
       </CategoryText>
 
-      {/* 제품 번호와 이름을 합쳐 "SNS21N9 / 원피스"로 출력 */}
       <ProductTitle>
         {item.product_num} / {item.name}
       </ProductTitle>
@@ -36,8 +53,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ item }) => {
             <DiscountPrice>{item.discountPrice.toLocaleString()}</DiscountPrice>
           </DiscountRow>
         </PriceContainer>
-        <TekImageContainer>
-          <TekImage src={AddTekImage} alt='Tek 추가 이미지' />
+
+        <TekImageContainer onClick={handleAddTekClick}>
+          <TekImage src={AddTekImage} alt='찜 추가' />
         </TekImageContainer>
       </ContentContainer>
     </InfoContainer>
@@ -115,6 +133,7 @@ const TekImageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 `;
 
 const TekImage = styled.img`

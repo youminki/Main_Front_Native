@@ -1,6 +1,6 @@
 // src/pages/Home/HomeDetail.tsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Spinner from '../../components/Spinner';
 import {
@@ -18,7 +18,6 @@ import BottomBar from '../../components/Home/HomeDetail/BottomBar';
 import ServiceSelection from '../../components/Home/HomeDetail/ServiceSelection';
 import RentalOptions from '../../components/Home/HomeDetail/RentalOptions';
 import ShoppingBasket from '../../assets/Home/HomeDetail/ShoppingBasket.svg';
-import { addToCloset } from '../../api/closet/closetApi';
 
 interface ProductDetail {
   id: number;
@@ -52,7 +51,6 @@ type HomeDetailProps = { id?: string };
 const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   // ─── 1. 최상단 Hooks ───
   const params = useParams<{ id: string }>();
-  const navigate = useNavigate();
 
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -130,8 +128,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           };
         }
 
-        // 사용하지 않는 product_url은 _product_url로 무시
-        // fabricComposition 원본도 _로 무시
         const {
           fabricComposition: _fabric,
           product_url: _product_url,
@@ -148,24 +144,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   if (!product) return <div>제품을 찾을 수 없습니다.</div>;
 
   // ─── 6. 이벤트 핸들러 ───
-  const handleCartClick = async () => {
-    try {
-      await addToCloset(product.id);
-      alert('찜 목록에 추가되었습니다!');
-      navigate('/my-closet');
-    } catch (err: any) {
-      const status = err?.response?.status;
-      if (status === 409) {
-        alert('이미 찜한 상품입니다.');
-        navigate('/my-closet');
-      } else if (status === 401) {
-        alert('로그인이 필요합니다.');
-      } else {
-        alert('찜 추가 중 오류가 발생했습니다.');
-        console.error(err);
-      }
-    }
-  };
   const handleOrderClick = () => console.log('🛒 주문하기');
 
   // ─── 7. 렌더링용 데이터 ───
@@ -204,7 +182,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       />
 
       <ContentContainer>
-        <ProductInfo item={productInfoItem} />
+        <ProductInfo item={productInfoItem} productId={product.id} />
 
         <ServiceSelectionWrapper>
           <ServiceSelection
@@ -252,7 +230,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       <BottomBar
         cartIconSrc={ShoppingBasket}
         orderButtonLabel='제품 주문하기'
-        onCartClick={handleCartClick}
         onOrderClick={handleOrderClick}
       />
     </DetailContainer>
@@ -269,7 +246,6 @@ const DetailContainer = styled.div`
   justify-content: space-between;
   padding: 5rem 0;
   padding-bottom: 80px;
-
   max-width: 600px;
   margin: 0 auto;
   box-sizing: border-box;
