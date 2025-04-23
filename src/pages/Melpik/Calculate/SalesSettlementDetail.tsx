@@ -192,7 +192,7 @@ const Table = styled.table`
   margin-top: 20px;
   border-collapse: collapse;
   /* 테이블이 너무 좁아지지 않도록 필요한 경우 min-width 설정 가능 */
-  /* min-width: 600px; */
+  /* min-width: 1440px; */
 `;
 
 const ThRight = styled.th`

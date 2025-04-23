@@ -154,7 +154,7 @@ export default memo(SearchBar);
 const Container = styled.div`
   position: relative;
   width: 100%;
-  max-width: 600px;
+  max-width: 1440px;
   margin: 0 auto 1rem;
 `;
 const Form = styled.form`

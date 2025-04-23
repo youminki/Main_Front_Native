@@ -63,6 +63,7 @@ const Container = styled.div`
   position: relative;
   overflow: hidden;
   background-color: #f5f5f5;
+
   /* border: 1px solid #ccc; */
 `;
 
@@ -108,6 +109,7 @@ const Slide = styled.div`
 
 const Image = styled.img`
   max-width: 100%;
+  max-height: 500px;
   object-fit: contain;
 `;
 

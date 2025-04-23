@@ -121,16 +121,23 @@ const Divider = styled.div`
   width: 100%;
   height: 1px;
   background: #dddddd;
-  margin: 30px 0;
+  margin: 20px 0;
+  @media (min-width: 1024px) {
+    margin: 40px 0;
+  }
 `;
 
 const GridMenu = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, 1fr); /* 기본 2열 레이아웃 */
   gap: 16px;
   width: 100%;
-
   margin-bottom: 20px;
+
+  @media (min-width: 1024px) {
+    /* 데스크탑 크기 이상 */
+    grid-template-columns: repeat(3, 1fr); /* 3열로 변경 */
+  }
 `;
 
 const GridItem = styled.div`
@@ -147,4 +154,8 @@ const GridItem = styled.div`
 const IconImage = styled.img`
   width: 90%;
   margin-bottom: 8px;
+  @media (min-width: 1440px) {
+    width: 80%;
+    margin-bottom: 8px;
+  }
 `;

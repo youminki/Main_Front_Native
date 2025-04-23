@@ -76,8 +76,9 @@ export default CustomerService;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  position: relative;
+  align-items: center;
   padding: 1rem;
+  background-color: #fff;
 `;
 
 const Header = styled.div`
@@ -106,6 +107,7 @@ const StatsRow = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  padding: 0 20px;
 `;
 
 const ImageWrapper = styled.div`
@@ -124,7 +126,10 @@ const Divider = styled.div`
   width: 100%;
   height: 1px;
   background: #dddddd;
-  margin: 30px 0;
+  margin: 20px 0;
+  @media (min-width: 1024px) {
+    margin: 50px 0;
+  }
 `;
 
 const GridMenu = styled.div`
@@ -133,7 +138,10 @@ const GridMenu = styled.div`
   gap: 16px;
   width: 100%;
 
-  margin-bottom: 20px;
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr); /* 데스크탑에서 4열로 변경 */
+    margin-top: 50px;
+  }
 `;
 
 const GridItem = styled.div`
@@ -147,7 +155,6 @@ const GridItem = styled.div`
 `;
 
 const IconImage = styled.img`
-  width: 90%;
-
-  margin-bottom: 8px;
+  width: 100%;
+  height: 100%;
 `;

@@ -107,13 +107,14 @@ const InfoWrapper = styled.div`
   justify-content: center;
   gap: 12px;
   width: 100%;
-  max-width: 600px;
+  max-width: 1440px;
   margin-bottom: 16px;
+  flex-wrap: wrap; /* 화면 크기 좁을 때 항목들이 겹치지 않도록 처리 */
 `;
 
 const PictureWrapper = styled.div`
-  flex: 0 0 auto;
-  max-width: 50%;
+  flex: 1;
+  max-width: 50%; /* 이미지의 최대 크기 설정 */
   overflow: hidden;
   border-radius: 4px;
   background-color: #fff;
@@ -123,14 +124,14 @@ const PictureWrapper = styled.div`
 `;
 
 const StyledImg = styled.img`
-  height: 300px;
-  width: auto;
+  width: 100%;
+  height: auto; /* 비율을 유지하며 높이 자동 조정 */
   object-fit: contain;
   image-rendering: crisp-edges;
 `;
 
 const LabelList = styled.ul`
-  flex: 0 0 auto;
+  flex: 1;
   max-width: 50%;
   height: ${IMAGE_HEIGHT};
   list-style: none;
@@ -140,15 +141,28 @@ const LabelList = styled.ul`
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  gap: 20px;
+  gap: 20px; /* 기본 갭을 크게 설정 */
 
-  border-radius: 4px;
+  /* 데스크탑 환경에서는 폰트 크기 및 갭을 더 크게 설정 */
+  @media (min-width: 1024px) {
+    gap: 30px; /* 갭을 더 크게 설정 */
+  }
 `;
 
 const LabelItem = styled.li`
-  font-size: 12px;
+  font-size: 14px; /* 기본 폰트 크기 확대 */
   font-weight: 500;
-  color: #000;
+  color: #333; /* 색상 대비를 높여 가독성 향상 */
+  background-color: #f4f4f4; /* 라벨 배경색을 연한 그레이로 설정 */
+  padding: 6px 10px; /* 패딩을 추가하여 여백 확보 */
+  border-radius: 4px; /* 라벨에 둥근 모서리 추가 */
+  width: 100%; /* 라벨이 길어져도 모두 보이도록 넓게 설정 */
+
+  /* 데스크탑 환경에서는 폰트 크기와 패딩을 더 크게 설정 */
+  @media (min-width: 1024px) {
+    font-size: 16px; /* 폰트 크기 확대 */
+    padding: 10px 14px; /* 패딩을 더 넓게 설정 */
+  }
 `;
 
 const TableWrapper = styled.div`

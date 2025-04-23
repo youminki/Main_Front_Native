@@ -105,7 +105,7 @@ const Theme = {
     Black1: '#1D1D1B',
   },
   breakpoints: {
-    mobile: '600px',
+    mobile: '1440px',
     tablet: '768px',
     desktop: '1024px',
   },
