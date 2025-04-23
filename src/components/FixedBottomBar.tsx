@@ -31,7 +31,7 @@ const BottomBar = styled.div`
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  max-width: 600px;
+  max-width: 1440px;
   margin: 0 auto;
   background: #eeeeee;
   padding: 15px 0 34px 0;

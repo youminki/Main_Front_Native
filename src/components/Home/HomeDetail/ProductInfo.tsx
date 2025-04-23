@@ -1,9 +1,9 @@
-// src/components/Home/HomeDetail/ProductInfo.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Theme from '../../../styles/Theme';
 import AddTekImage from '../../../assets/ClosetIcon.svg';
 import { addToCloset } from '../../../api/closet/closetApi';
+import ReusableModal from '../../ReusableModal'; // ReusableModal import
 
 export interface ProductInfoProps {
   item: {
@@ -18,21 +18,37 @@ export interface ProductInfoProps {
 }
 
 const ProductInfo: React.FC<ProductInfoProps> = ({ item, productId }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
+
   const handleAddTekClick = async () => {
     try {
       await addToCloset(productId);
-      alert('찜 목록에 추가되었습니다!');
+      setModalMessage('찜 목록에 추가되었습니다!');
+      setModalTitle('성공');
+      setIsModalOpen(true);
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 409) {
-        alert('이미 찜한 상품입니다.');
+        setModalMessage('이미 찜한 상품입니다.');
+        setModalTitle('오류');
+        setIsModalOpen(true);
       } else if (status === 401) {
-        alert('로그인이 필요합니다.');
+        setModalMessage('로그인이 필요합니다.');
+        setModalTitle('오류');
+        setIsModalOpen(true);
       } else {
-        alert('찜 추가 중 오류가 발생했습니다.');
+        setModalMessage('찜 추가 중 오류가 발생했습니다.');
+        setModalTitle('오류');
+        setIsModalOpen(true);
         console.error(err);
       }
     }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -58,6 +74,13 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ item, productId }) => {
           <TekImage src={AddTekImage} alt='찜 추가' />
         </TekImageContainer>
       </ContentContainer>
+
+      <ReusableModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title={modalTitle}
+        children={modalMessage}
+      />
     </InfoContainer>
   );
 };

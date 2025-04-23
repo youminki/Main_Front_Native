@@ -69,7 +69,7 @@ const ModalContent = styled.div<{ width: string; height: string }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-width: 600px;
+  max-width: 1440px;
 `;
 
 const ModalHeader = styled.div`

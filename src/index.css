@@ -13,18 +13,18 @@
 }
 
 #root {
-  max-width: 600px;
+  max-width: 1440px;
   margin: 0 auto;
   /* padding: 1rem; */
 }
 
 body.PersonalLink #root {
-  max-width: 600px;
+  max-width: 1440px;
   padding: 0 !important;
 }
 
 body.landing #root {
-  max-width: 600px;
+  max-width: 1440px;
   padding: 0 !important;
 }
 

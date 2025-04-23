@@ -22,7 +22,6 @@ body {
 
 /* 나머지 스타일 */
 #root {
-  max-width: 600px;
   margin: 0 auto;
   padding: 1rem;
 }

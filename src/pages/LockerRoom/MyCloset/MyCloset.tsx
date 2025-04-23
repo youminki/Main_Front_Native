@@ -29,7 +29,6 @@ const MyCloset: React.FC = () => {
     getMyCloset()
       .then((res) => {
         const uiItems = res.items.map((it) => {
-          // productId 혹은 id 중 실제 있는 키를 골라서 string으로 변환
           const pid = (it as any).productId ?? (it as any).id;
           return {
             id: pid != null ? pid.toString() : '',

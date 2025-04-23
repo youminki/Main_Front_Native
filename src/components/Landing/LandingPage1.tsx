@@ -58,7 +58,7 @@ const LeftLabelImage = styled.img`
 const Container = styled.div`
   position: relative;
   width: 100%;
-  max-width: 600px;
+  max-width: 1440px;
   min-height: 440px;
   /* 기본: 16:9 비율 유지 */
   aspect-ratio: 16 / 9;
@@ -72,8 +72,8 @@ const Container = styled.div`
   align-items: center;
   margin: 0 auto;
 
-  @media (min-width: 600px) {
-    /* 너비가 600px 이상이면 높이를 700px로 고정 */
+  @media (min-width: 1440px) {
+    /* 너비가 1440px 이상이면 높이를 700px로 고정 */
     height: 700px;
     aspect-ratio: unset;
   }

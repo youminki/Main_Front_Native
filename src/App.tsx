@@ -378,7 +378,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path='/landing' element={<Landing />} />
 
-          <Route path='/' element={<Navigate to='/landing' replace />} />
+          <Route path='/' element={<Navigate to='/login' replace />} />
           <Route path='/home' element={<Home />} />
           <Route path='/item/:id' element={<HomeDetail />} />
 

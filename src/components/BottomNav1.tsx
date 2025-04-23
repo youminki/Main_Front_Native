@@ -169,7 +169,7 @@ const BottomNavContainer = styled.nav<{ isVisible: boolean }>`
   align-items: center;
   background-color: #1d1d1b;
   width: 100%;
-  max-width: 600px;
+  max-width: 1440px;
   position: fixed;
   bottom: 0;
   left: 50%;

@@ -236,8 +236,8 @@ const ScrollToTopButton = styled.button`
     opacity: 1;
   }
 
-  @media (min-width: 600px) {
-    right: calc((100vw - 600px) / 2 + 20px);
+  @media (min-width: 1440px) {
+    right: calc((100vw - 1440px) / 2 + 20px);
   }
 `;
 
