@@ -22,8 +22,7 @@ const ITEMS_PER_LOAD = 10;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-
+  const [searchParams] = useSearchParams(); // setSearchParams 제거
   const [selectedCategory, setSelectedCategory] = useState<string>(
     searchParams.get('categori') || 'Entire'
   );
@@ -37,6 +36,7 @@ const Home: React.FC = () => {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
+  // URL 쿼리 변경 감지
   useEffect(() => {
     const newCategory = searchParams.get('categori') || 'Entire';
     const newSearch = searchParams.get('search') || '';
@@ -44,6 +44,7 @@ const Home: React.FC = () => {
     setSearchQuery(newSearch);
   }, [searchParams]);
 
+  // indicator 위치 계산 (Home.tsx에서만 사용)
   useEffect(() => {
     const el = document.querySelector(
       `[data-category="${selectedCategory}"]`
@@ -71,6 +72,7 @@ const Home: React.FC = () => {
     Coat: 'Coat',
   };
 
+  // 카테고리 변경 시 데이터 fetch
   useEffect(() => {
     setIsLoading(true);
     (async () => {
@@ -95,6 +97,7 @@ const Home: React.FC = () => {
     window.scrollTo({ top: 0 });
   }, [selectedCategory]);
 
+  // 무한 스크롤
   useEffect(() => {
     const onScroll = () => {
       if (isLoading) return;
@@ -115,6 +118,7 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, [products, page, isLoading]);
 
+  // 필터링 + 페이지네이션 적용
   const displayedProducts = products
     .filter(
       (item) =>
@@ -186,7 +190,7 @@ const Home: React.FC = () => {
 
 export default Home;
 
-// 이하 styled-components 생략 (기존 유지)
+// 이하 styled-components (기존 유지)
 
 const MainContainer = styled.div`
   display: flex;
@@ -203,10 +207,6 @@ const ContentWrapper = styled.div`
 
 const Content = styled.div`
   flex: 1;
-`;
-
-const SubHeaderContainer = styled.div`
-  /* margin: 20px 0; */
 `;
 
 const ScrollToTopButton = styled.button`

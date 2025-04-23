@@ -107,7 +107,6 @@ const BrandDetail: React.FC = () => {
     const selectedElement = document.querySelector(
       `[data-category="${selectedCategory}"]`
     ) as HTMLElement;
-
     if (selectedElement) {
       const { offsetLeft, offsetWidth } = selectedElement;
       setBarPosition(offsetLeft + offsetWidth / 2 - 25);
@@ -119,9 +118,7 @@ const BrandDetail: React.FC = () => {
       ? items
       : items.filter((item) => item.category === selectedCategory);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (!brand) {
     return (
@@ -149,6 +146,7 @@ const BrandDetail: React.FC = () => {
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
         barPosition={barPosition}
+        onCategoryClick={scrollToTop}
       />
       <Content>
         <ItemList items={filteredItems} />
@@ -164,10 +162,11 @@ const BrandDetail: React.FC = () => {
 
 export default BrandDetail;
 
+// 이하 styled-components (기존 유지)
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-
   background-color: #fff;
   position: relative;
   padding: 1rem;
@@ -185,7 +184,7 @@ const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
   color: #000;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 `;
 
 const Subtitle = styled.p`
@@ -205,7 +204,6 @@ const Content = styled.div`
   flex: 1;
 `;
 
-// 스크롤 최상단으로 이동 버튼 (BrandDetail용)
 const ScrollToTopButton = styled.button`
   position: fixed;
   bottom: 120px;
@@ -219,7 +217,7 @@ const ScrollToTopButton = styled.button`
     rgba(255, 204, 0, 0.9),
     rgba(255, 153, 0, 0.9)
   );
-  color: #ffffff;
+  color: #fff;
   cursor: pointer;
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -238,7 +236,6 @@ const ScrollToTopButton = styled.button`
     opacity: 1;
   }
 
-  /* 최대 너비 600px 내 위치 조정 */
   @media (min-width: 600px) {
     right: calc((100vw - 600px) / 2 + 20px);
   }
@@ -247,5 +244,5 @@ const ScrollToTopButton = styled.button`
 const ArrowIcon = styled.svg`
   width: 28px;
   height: 28px;
-  fill: #ffffff;
+  fill: #fff;
 `;

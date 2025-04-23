@@ -8,12 +8,10 @@ import MiniDress from '../../assets/SubHeader/MiniDress.svg';
 import MidiDress from '../../assets/SubHeader/MidiDress.svg';
 import LongDress from '../../assets/SubHeader/LongDress.svg';
 import TowDress from '../../assets/SubHeader/TowDress.svg';
-
 import JumpSuit from '../../assets/SubHeader/JumpSuit.svg';
 import Blouse from '../../assets/SubHeader/Blouse.svg';
 import KnitTop from '../../assets/SubHeader/KnitTop.svg';
 import ShirtTop from '../../assets/SubHeader/ShirtTop.svg';
-
 import MiniSkirt from '../../assets/SubHeader/MiniSkirt.svg';
 import MidiSkirt from '../../assets/SubHeader/MidiSkirt.svg';
 import Pants from '../../assets/SubHeader/Pants.svg';
@@ -40,8 +38,8 @@ const homeIcons = [
 interface SubHeaderProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
-  onCategoryClick: () => void; // ✅ 추가
-  barPosition?: number;
+  onCategoryClick: () => void;
+  barPosition: number;
 }
 
 const ICON_WIDTH = 80;
@@ -50,41 +48,39 @@ const INDICATOR_WIDTH = 50;
 const SubHeader: React.FC<SubHeaderProps> = ({
   selectedCategory,
   setSelectedCategory,
+  onCategoryClick,
+  barPosition,
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // 현재 선택된 인덱스 계산
-  const selectedIndex = homeIcons.findIndex(
-    (icon) => icon.category.trim() === selectedCategory.trim()
-  );
-
-  // 인디케이터 위치 계산
-  const indicatorPosition =
-    selectedIndex >= 0
-      ? selectedIndex * ICON_WIDTH + (ICON_WIDTH - INDICATOR_WIDTH) / 2
-      : 0;
-
   const handleClick = (category: string) => {
-    const newParams = new URLSearchParams(searchParams);
+    const newParams = new URLSearchParams(searchParams.toString());
     newParams.set('categori', category);
     newParams.delete('search'); // 검색 초기화
-    setSearchParams(newParams); // 상태는 Home.tsx에서 useEffect로 반영됨
+    setSearchParams(newParams);
+
+    setSelectedCategory(category);
+    onCategoryClick();
   };
 
   return (
     <SubHeaderWrapper>
       <IconsWrapper>
-        {homeIcons.map((icon, index) => (
-          <IconContainer
-            key={index}
-            data-category={icon.category}
-            onClick={() => handleClick(icon.category)}
-          >
-            <Icon src={icon.src} alt={icon.alt} />
-            <IconText>{icon.alt}</IconText>
-          </IconContainer>
-        ))}
-        <Indicator position={indicatorPosition} />
+        {homeIcons.map((icon, index) => {
+          const isSelected = icon.category === selectedCategory;
+          return (
+            <IconContainer
+              key={index}
+              data-category={icon.category}
+              selected={isSelected}
+              onClick={() => handleClick(icon.category)}
+            >
+              <Icon src={icon.src} alt={icon.alt} />
+              <IconText selected={isSelected}>{icon.alt}</IconText>
+            </IconContainer>
+          );
+        })}
+        <Indicator position={barPosition} />
       </IconsWrapper>
       <Divider />
     </SubHeaderWrapper>
@@ -107,7 +103,7 @@ const IconsWrapper = styled.div`
   }
 `;
 
-const IconContainer = styled.div`
+const IconContainer = styled.div<{ selected: boolean }>`
   flex: 0 0 auto;
   width: ${ICON_WIDTH}px;
   display: flex;
@@ -115,6 +111,7 @@ const IconContainer = styled.div`
   align-items: center;
   cursor: pointer;
   padding: 10px 0;
+  opacity: ${({ selected }) => (selected ? 1 : 0.6)};
 `;
 
 const Icon = styled.img`
@@ -124,9 +121,9 @@ const Icon = styled.img`
   margin-bottom: 5px;
 `;
 
-const IconText = styled.span`
+const IconText = styled.span<{ selected: boolean }>`
   font-size: 11px;
-  color: #333;
+  color: ${({ selected }) => (selected ? '#000' : '#666')};
 `;
 
 const Indicator = styled.div<{ position: number }>`
