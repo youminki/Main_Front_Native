@@ -8,47 +8,47 @@ import ItemList from '../../components/Home/ItemList';
 import Footer from '../../components/Home/Footer';
 import FilterContainer from '../../components/Home/FilterContainer';
 import SubHeader from '../../components/Home/SubHeader';
+import SearchBar from '../../components/Home/SearchBar';
 import { getProducts } from '../../api/upload/productApi';
 import { ProductListItem } from '../../api/upload/productApi';
 import HomeDetail from './HomeDetail';
-import SearchBar from '../../components/Home/SearchBar';
 
-// twoDepth header assets
-import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
-import ShareIcon from '../../assets/Header/ShareIcon.svg';
-import HomeIcon from '../../assets/Header/HomeIcon.svg';
+import CancelIconSrc from '../../assets/Header/CancleIcon.svg';
+import ShareIconSrc from '../../assets/Header/ShareIcon.svg';
+import HomeIconSrc from '../../assets/Header/HomeIcon.svg';
 
 const ITEMS_PER_LOAD = 10;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams(); // setSearchParams 제거
-  const [selectedCategory, setSelectedCategory] = useState<string>(
+  const [searchParams] = useSearchParams();
+
+  const [selectedCategory, setSelectedCategory] = useState(
     searchParams.get('categori') || 'Entire'
   );
-  const [searchQuery, setSearchQuery] = useState<string>(
+  const [searchQuery, setSearchQuery] = useState(
     searchParams.get('search') || ''
   );
   const [barPosition, setBarPosition] = useState<number>(0);
-  const [products, setProducts] = useState<ProductListItem[]>([]);
-  const [page, setPage] = useState<number>(1);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [allProducts, setAllProducts] = useState<ProductListItem[]>([]);
+  const [visibleProducts, setVisibleProducts] = useState<ProductListItem[]>([]);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
+
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // URL 쿼리 변경 감지
+  // URL 쿼리 반영
   useEffect(() => {
-    const newCategory = searchParams.get('categori') || 'Entire';
-    const newSearch = searchParams.get('search') || '';
-    setSelectedCategory(newCategory);
-    setSearchQuery(newSearch);
+    setSelectedCategory(searchParams.get('categori') || 'Entire');
+    setSearchQuery(searchParams.get('search') || '');
   }, [searchParams]);
 
-  // indicator 위치 계산 (Home.tsx에서만 사용)
+  // 카테고리 indicator 위치 계산
   useEffect(() => {
     const el = document.querySelector(
       `[data-category="${selectedCategory}"]`
-    ) as HTMLElement;
+    ) as HTMLElement | null;
     if (el) {
       const { offsetLeft, offsetWidth } = el;
       setBarPosition(offsetLeft + offsetWidth / 2 - 25);
@@ -72,95 +72,87 @@ const Home: React.FC = () => {
     Coat: 'Coat',
   };
 
-  // 카테고리 변경 시 데이터 fetch
+  // 데이터 페치
   useEffect(() => {
-    setIsLoading(true);
+    setIsFetching(true);
     (async () => {
       try {
-        const categoryForAPI = categoryMapping[selectedCategory];
-        const prods = await getProducts(categoryForAPI);
-        if (categoryForAPI !== 'all') {
-          const filteredProds = prods.filter(
-            (product) => product.category === categoryForAPI
-          );
-          setProducts(filteredProds);
-        } else {
-          setProducts(prods);
-        }
+        const key = categoryMapping[selectedCategory];
+        const prods = await getProducts(key);
+        setAllProducts(
+          key === 'all' ? prods : prods.filter((p) => p.category === key)
+        );
       } catch (e) {
-        console.error('제품 데이터를 불러오는데 실패했습니다:', e);
+        console.error('제품 데이터 로드 실패', e);
       } finally {
-        setIsLoading(false);
+        setIsFetching(false);
       }
     })();
-    setPage(1);
     window.scrollTo({ top: 0 });
   }, [selectedCategory]);
+
+  // 초기 노출
+  useEffect(() => {
+    setVisibleProducts(allProducts.slice(0, ITEMS_PER_LOAD));
+  }, [allProducts]);
 
   // 무한 스크롤
   useEffect(() => {
     const onScroll = () => {
-      if (isLoading) return;
+      if (isFetching) return;
       if (
         window.innerHeight + window.scrollY >=
         document.documentElement.scrollHeight - 100
       ) {
-        if (page * ITEMS_PER_LOAD < products.length) {
-          setIsLoading(true);
-          setTimeout(() => {
-            setPage((p) => p + 1);
-            setIsLoading(false);
-          }, 500);
-        }
+        const next = allProducts.slice(
+          visibleProducts.length,
+          visibleProducts.length + ITEMS_PER_LOAD
+        );
+        if (next.length) setVisibleProducts((v) => [...v, ...next]);
       }
     };
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
-  }, [products, page, isLoading]);
+  }, [allProducts, visibleProducts, isFetching]);
 
-  // 필터링 + 페이지네이션 적용
-  const displayedProducts = products
-    .filter(
-      (item) =>
-        item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .slice(0, page * ITEMS_PER_LOAD);
+  // 검색 필터 적용
+  const displayedProducts = visibleProducts.filter(
+    (item) =>
+      item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  const handleOpenModal = (id: string) => {
+  const openModal = (id: string) => {
     setSelectedItemId(id);
     setIsModalOpen(true);
   };
-  const handleCloseModal = () => {
+  const closeModal = () => {
     setIsModalOpen(false);
     setSelectedItemId(null);
   };
 
   return (
     <MainContainer>
-      <ContentWrapper>
-        <SearchBar onSearch={setSearchQuery} />
-        <SubHeader
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          barPosition={barPosition}
-          onCategoryClick={() => setSearchQuery('')}
-        />
-        <FilterContainer />
-        <Content>
-          <ItemList items={displayedProducts} onItemClick={handleOpenModal} />
-          {isLoading && <Spinner />}
-        </Content>
-      </ContentWrapper>
+      <SearchBar onSearch={setSearchQuery} />
+      <SubHeader
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        barPosition={barPosition}
+        onCategoryClick={() => setSearchQuery('')}
+      />
+      <FilterContainer />
+      <Content>
+        <ItemList items={displayedProducts} onItemClick={openModal} />
+        {isFetching && <Spinner />}
+      </Content>
       <Footer />
       <ScrollToTopButton onClick={scrollToTop}>
         <ArrowIcon viewBox='0 0 24 24'>
           <path d='M12 4l-8 8h6v8h4v-8h6z' />
         </ArrowIcon>
       </ScrollToTopButton>
-
       {isModalOpen && (
         <ModalOverlay>
           <ModalContent>
@@ -168,15 +160,19 @@ const Home: React.FC = () => {
               <ModalHeaderContainer>
                 <LeftSection>
                   <CancelIcon
-                    src={CancleIconIcon}
+                    src={CancelIconSrc}
                     alt='취소'
-                    onClick={handleCloseModal}
+                    onClick={closeModal}
                   />
                 </LeftSection>
                 <CenterSection />
                 <RightSection>
-                  <Icon src={ShareIcon} alt='공유' onClick={() => {}} />
-                  <Icon src={HomeIcon} alt='홈' onClick={() => navigate('/')} />
+                  <Icon src={ShareIconSrc} alt='공유' />
+                  <Icon
+                    src={HomeIconSrc}
+                    alt='홈'
+                    onClick={() => navigate('/')}
+                  />
                 </RightSection>
               </ModalHeaderContainer>
             </ModalHeaderWrapper>
@@ -189,8 +185,6 @@ const Home: React.FC = () => {
 };
 
 export default Home;
-
-// 이하 styled-components (기존 유지)
 
 const MainContainer = styled.div`
   display: flex;
