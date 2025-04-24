@@ -8,7 +8,6 @@ export interface SizeInfoProps {
 }
 
 const SIZE_PLACEHOLDER = '/images/size-placeholder.png';
-const IMAGE_HEIGHT = '180px';
 
 const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
   const [imgSrc, setImgSrc] = useState(size_picture);
