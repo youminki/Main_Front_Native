@@ -1,7 +1,11 @@
-// src/App.tsx
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
-import AppLayout from './components/AppLayout';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
+import AppLayout from './pages/AppLayout';
 
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -62,17 +66,18 @@ import ScheduleReservation2 from './pages/Melpik/Schedule/ScheduleReservation2';
 import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
 
 const App: React.FC = () => (
-  <HashRouter>
+  <Router>
     <Routes>
+      {/* Landing & Auth */}
       <Route path='/landing' element={<Landing />} />
+      <Route path='/' element={<Navigate to='/home' replace />} />
+      <Route path='/login' element={<Login />} />
+      <Route path='/PersonalLink' element={<PersonalLink />} />
+
       <Route element={<AppLayout />}>
-        {/* Landing & Auth */}
-        <Route path='/' element={<Navigate to='/landing' replace />} />
-        <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/findid' element={<FindId />} />
         <Route path='/findPassword' element={<FindPassword />} />
-
         {/* User Pages */}
         <Route path='/MyInfo' element={<MyInfo />} />
         <Route path='/MyStyle' element={<MyStyle />} />
@@ -84,7 +89,6 @@ const App: React.FC = () => (
         <Route path='/basket' element={<Basket />} />
         <Route path='/alarm' element={<Alarm />} />
         <Route path='/payment' element={<Payment />} />
-        <Route path='/PersonalLink' element={<PersonalLink />} />
 
         {/* Brand */}
         <Route path='/brand' element={<Brand />} />
@@ -182,7 +186,7 @@ const App: React.FC = () => (
         />
       </Route>
     </Routes>
-  </HashRouter>
+  </Router>
 );
 
 export default App;

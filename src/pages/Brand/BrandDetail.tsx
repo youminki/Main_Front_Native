@@ -202,6 +202,7 @@ const Divider = styled.div`
 
 const Content = styled.div`
   flex: 1;
+  margin-top: 20px;
 `;
 
 const ScrollToTopButton = styled.button`
@@ -236,8 +237,8 @@ const ScrollToTopButton = styled.button`
     opacity: 1;
   }
 
-  @media (min-width: 1440px) {
-    right: calc((100vw - 1440px) / 2 + 20px);
+  @media (min-width: 1000px) {
+    right: calc((100vw - 1000px) / 2 + 20px);
   }
 `;
 

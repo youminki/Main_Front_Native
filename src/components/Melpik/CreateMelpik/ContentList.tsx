@@ -137,6 +137,7 @@ const ContentContainer = styled.div`
   flex-direction: column;
   width: 100%;
   min-width: 300px;
+  max-width: 300px;
   height: 100%;
   margin-right: 20px;
   box-sizing: border-box;

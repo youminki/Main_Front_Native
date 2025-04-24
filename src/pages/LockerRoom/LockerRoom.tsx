@@ -69,11 +69,12 @@ const LockerRoom: React.FC = () => {
 export default LockerRoom;
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #fff;
+  width: 100%;
+
+  margin: 0 auto;
   padding: 1rem;
+  box-sizing: border-box;
+  background-color: #fff;
 `;
 
 const Header = styled.div`
@@ -88,7 +89,7 @@ const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
   color: #000;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 `;
 
 const Subtitle = styled.p`
@@ -102,7 +103,8 @@ const StatsRow = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0 20px;
+  box-sizing: border-box;
+  /* padding 제거 */
 `;
 
 const ImageWrapper = styled.div`
@@ -122,6 +124,7 @@ const Divider = styled.div`
   height: 1px;
   background: #dddddd;
   margin: 20px 0;
+
   @media (min-width: 1024px) {
     margin: 40px 0;
   }
@@ -129,14 +132,16 @@ const Divider = styled.div`
 
 const GridMenu = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 기본 2열 레이아웃 */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   width: 100%;
+  box-sizing: border-box;
   margin-bottom: 20px;
+  max-width: 700px;
+  margin: 0 auto 20px;
 
   @media (min-width: 1024px) {
-    /* 데스크탑 크기 이상 */
-    grid-template-columns: repeat(3, 1fr); /* 3열로 변경 */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 `;
 
@@ -148,14 +153,10 @@ const GridItem = styled.div`
 
   cursor: pointer;
   transition: all 0.2s;
-  max-height: auto;
 `;
 
 const IconImage = styled.img`
-  width: 90%;
+  width: 100%;
+  height: auto;
   margin-bottom: 8px;
-  @media (min-width: 1440px) {
-    width: 80%;
-    margin-bottom: 8px;
-  }
 `;

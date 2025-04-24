@@ -98,6 +98,7 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   padding: 1rem;
+  max-width: 1000px;
 `;
 
 const ContentArea = styled.div`

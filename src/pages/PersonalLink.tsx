@@ -167,7 +167,7 @@ export default PersonalLink;
 
 /* 전체 컨테이너 */
 const Container = styled.div`
-  max-width: 1440px;
+  max-width: 1000px;
   margin: 0 auto;
   background: #ffffff;
   display: flex;

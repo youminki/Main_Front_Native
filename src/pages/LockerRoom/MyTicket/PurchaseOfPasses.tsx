@@ -149,6 +149,7 @@ const ContentWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  max-width: 1000px;
 `;
 
 const RowWrapper = styled.div`

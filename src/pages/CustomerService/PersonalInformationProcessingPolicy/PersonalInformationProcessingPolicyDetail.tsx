@@ -59,6 +59,7 @@ const DetailContainer = styled.div`
   background: #ffffff;
   box-sizing: border-box;
   padding: 1rem;
+  max-width: 1000px;
 `;
 
 const Section = styled.div`

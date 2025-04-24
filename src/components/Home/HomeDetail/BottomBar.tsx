@@ -32,7 +32,7 @@ const BottomBarContainer = styled.div`
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 1440px;
+  max-width: 1000px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -41,6 +41,7 @@ const BottomBarContainer = styled.div`
   padding: 10px 0 34px 0;
   text-align: center;
   gap: 21px;
+  max-width: 1000px;
 `;
 
 const CartButton = styled.button`

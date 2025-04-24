@@ -288,7 +288,7 @@ const BottomBarContainer = styled.div`
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 1440px;
+  max-width: 1000px;
   display: flex;
   justify-content: center;
   align-items: center;

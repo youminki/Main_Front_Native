@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { ThemeProvider } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import Theme from '../../styles/Theme';
-import StatsSection from '../../components/LockerRoom/StatsSection';
+import StatsSection from '../../components/StatsSection';
 
-import LockerRoomIcons from '../../assets/CustomerServiceIcons.svg';
+import CustomerServiceIcon from '../../assets/CustomerServiceIcons.svg';
 import FrequentlyAskedQuestionsBox from '../../assets/CustomerService/FrequentlyAskedQuestionsBox.svg';
 import NoticeBox from '../../assets/CustomerService/NoticeBox.svg';
 import PersonalInformationProcessingPolicyBox from '../../assets/CustomerService/PersonalInformationProcessingPolicyBox.svg';
@@ -53,16 +53,16 @@ const CustomerService: React.FC = () => {
             salesLabel={salesLabel}
           />
           <ImageWrapper>
-            <MenuImage src={LockerRoomIcons} alt='메뉴 이미지' />
+            <Icon src={CustomerServiceIcon} alt='고객센터 아이콘' />
           </ImageWrapper>
         </StatsRow>
 
         <Divider />
 
         <GridMenu>
-          {menuItems.map((item, index) => (
-            <GridItem key={index} onClick={() => navigate(item.path)}>
-              <IconImage src={item.icon} />
+          {menuItems.map((item, idx) => (
+            <GridItem key={idx} onClick={() => navigate(item.path)}>
+              <IconImage src={item.icon} alt='' />
             </GridItem>
           ))}
         </GridMenu>
@@ -73,11 +73,14 @@ const CustomerService: React.FC = () => {
 
 export default CustomerService;
 
+// ───────────────────────────────────────────────────────────
+
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
+
+  margin: 0 auto;
   padding: 1rem;
+  box-sizing: border-box;
   background-color: #fff;
 `;
 
@@ -93,13 +96,13 @@ const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
   color: #000;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 `;
 
 const Subtitle = styled.p`
   font-size: 12px;
   font-weight: 400;
-  color: #ccc;
+  color: #666;
 `;
 
 const StatsRow = styled.div`
@@ -107,7 +110,7 @@ const StatsRow = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0 20px;
+  box-sizing: border-box;
 `;
 
 const ImageWrapper = styled.div`
@@ -117,9 +120,9 @@ const ImageWrapper = styled.div`
   justify-content: center;
 `;
 
-const MenuImage = styled.img`
+const Icon = styled.img`
   width: 64px;
-  height: 58px;
+  height: auto;
 `;
 
 const Divider = styled.div`
@@ -127,6 +130,7 @@ const Divider = styled.div`
   height: 1px;
   background: #dddddd;
   margin: 20px 0;
+
   @media (min-width: 1024px) {
     margin: 50px 0;
   }
@@ -134,27 +138,30 @@ const Divider = styled.div`
 
 const GridMenu = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   width: 100%;
-
+  box-sizing: border-box;
+  max-width: 1000px;
+  margin: 0 auto 20px;
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr); /* 데스크탑에서 4열로 변경 */
-    margin-top: 50px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 `;
 
 const GridItem = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
 `;
 
 const IconImage = styled.img`
   width: 100%;
-  height: 100%;
+  height: auto;
 `;

@@ -71,6 +71,7 @@ const ImageWrapper = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
+  border: 1px solid #ccc;
 `;
 
 const Image = styled.img`

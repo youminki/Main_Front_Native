@@ -107,7 +107,7 @@ const InfoWrapper = styled.div`
   justify-content: center;
   gap: 12px;
   width: 100%;
-  max-width: 1440px;
+  max-width: 1000px;
   margin-bottom: 16px;
   flex-wrap: wrap; /* 화면 크기 좁을 때 항목들이 겹치지 않도록 처리 */
 `;

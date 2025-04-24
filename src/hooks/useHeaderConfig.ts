@@ -43,7 +43,7 @@ const headerRules: {
       '/item/:id',
       '/createMelpik/settings',
       '/schedule/confirmation',
-      '/signup',
+
       '/schedule/reservation1',
       '/schedule/reservation2',
       '/schedule/reservation3',

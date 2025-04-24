@@ -156,6 +156,10 @@ const Container = styled.div`
   align-items: center;
   padding: 1rem;
   margin: 0 auto;
+
+  max-width: 600px;
+
+  height: 75vh;
 `;
 
 const ContentWrapper = styled.div`

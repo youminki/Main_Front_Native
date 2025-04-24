@@ -7,234 +7,216 @@ import CustomerServiceIcon from '../assets/BottomNav/CustomerServiceIcon.svg';
 import LockerRoomIcon from '../assets/BottomNav/LockerRoomIcon.svg';
 import MelpikIcon from '../assets/BottomNav/MelpikIcon.svg';
 
+interface Tab {
+  key: string;
+  route: string;
+  icon: string;
+  label: string;
+}
+
+const TABS: Tab[] = [
+  { key: 'home', route: '/home', icon: HomeIcon, label: '홈' },
+  { key: 'brand', route: '/brand', icon: BrandIcon, label: '브랜드' },
+  { key: 'melpik', route: '/melpik', icon: MelpikIcon, label: '멜픽' },
+  {
+    key: 'lockerRoom',
+    route: '/lockerRoom',
+    icon: LockerRoomIcon,
+    label: '락커룸',
+  },
+  {
+    key: 'customerService',
+    route: '/customerService',
+    icon: CustomerServiceIcon,
+    label: '고객센터',
+  },
+];
+
+const BAR_WIDTH = 30;
+
 const BottomNav: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState<string | null>(null);
-  const [showYellowGlow, setShowYellowGlow] = useState<boolean>(false);
-  const [barPosition, setBarPosition] = useState<number>(0);
-  const [isVisible] = useState<boolean>(true);
-  const navRef = useRef<HTMLDivElement | null>(null);
+  const navRef = useRef<HTMLDivElement>(null);
 
-  // 스크롤 방향 감지하여 바텀바 보임 여부 제어
-  // useEffect(() => {
-  //   let lastScrollY = window.pageYOffset;
-  //   const handleScroll = () => {
-  //     const currentScrollY = window.pageYOffset;
-  //     if (currentScrollY > lastScrollY) {
-  //       // 아래로 스크롤 시
-  //       setIsVisible(false);
-  //     } else {
-  //       // 위로 스크롤 시
-  //       setIsVisible(true);
-  //     }
-  //     lastScrollY = currentScrollY;
-  //   };
-  //   window.addEventListener('scroll', handleScroll);
-  //   return () => window.removeEventListener('scroll', handleScroll);
-  // }, []);
+  const [activeKey, setActiveKey] = useState<string | null>(null);
+  const [glow, setGlow] = useState(false);
+  const [barPos, setBarPos] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = useRef(0);
 
+  // 스크롤 시 nav 숨김/표시
   useEffect(() => {
-    const updateTab = (tabName: string) => {
-      const activeElement = navRef.current?.querySelector<HTMLElement>(
-        `[data-tab="${tabName}"]`
-      );
-      if (activeElement) {
-        const activeElementPosition =
-          activeElement.offsetLeft + activeElement.offsetWidth / 2 - 30;
-        setBarPosition(activeElementPosition);
-        setActiveTab(tabName);
-      }
+    lastScrollY.current = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setVisible(!(y > lastScrollY.current && y > 50));
+      lastScrollY.current = y;
     };
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-    switch (location.pathname) {
-      case '/home':
-        updateTab('home');
-        break;
-      case '/brand':
-        updateTab('brand');
-        break;
-      case '/LockerRoom':
-        updateTab('LockerRoom');
-        break;
-      case '/CustomerService':
-        updateTab('CustomerService');
-        break;
-      case '/Melpik':
-        updateTab('Melpik');
-        break;
-      default:
-        setActiveTab(null);
+  // activeKey, barPos 업데이트
+  useEffect(() => {
+    const current = TABS.find((t) => t.route === location.pathname);
+    if (current && navRef.current) {
+      setActiveKey(current.key);
+      const el = navRef.current.querySelector<HTMLElement>(
+        `[data-key="${current.key}"]`
+      );
+      if (el) {
+        const containerRect = navRef.current.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        // container 안에서의 left
+        const left =
+          elRect.left - containerRect.left + (elRect.width - BAR_WIDTH) / 2;
+        setBarPos(left);
+      }
+    } else {
+      setActiveKey(null);
     }
-
-    setShowYellowGlow(false);
-    setTimeout(() => setShowYellowGlow(true), 300);
+    setGlow(false);
+    const t = setTimeout(() => setGlow(true), 300);
+    return () => clearTimeout(t);
   }, [location.pathname]);
 
-  const handleClick = (tabName: string, route: string) => {
-    if (activeTab !== tabName) {
-      setShowYellowGlow(false);
-      navigate(route);
+  const handleClick = (tab: Tab) => {
+    if (tab.key !== activeKey) {
+      setGlow(false);
+      navigate(tab.route);
     }
   };
 
   return (
-    <BottomNavContainer ref={navRef} isVisible={isVisible}>
-      <NavItem
-        data-tab='home'
-        $isActive={activeTab === 'home'}
-        onClick={() => handleClick('home', '/home')}
-      >
-        <Icon src={HomeIcon} alt='홈' $isActive={activeTab === 'home'} />
-        <NavLabel $isActive={activeTab === 'home'}>홈</NavLabel>
-        {activeTab === 'home' && (
-          <IndicatorContainer>
-            <Light $isActive={showYellowGlow} />
-          </IndicatorContainer>
-        )}
-      </NavItem>
-      <NavItem
-        data-tab='brand'
-        $isActive={activeTab === 'brand'}
-        onClick={() => handleClick('brand', '/brand')}
-      >
-        <Icon src={BrandIcon} alt='브랜드' $isActive={activeTab === 'brand'} />
-        <NavLabel $isActive={activeTab === 'brand'}>브랜드</NavLabel>
-        {activeTab === 'brand' && (
-          <IndicatorContainer>
-            <Light $isActive={showYellowGlow} />
-          </IndicatorContainer>
-        )}
-      </NavItem>
-      <NavItem
-        data-tab='Melpik'
-        $isActive={activeTab === 'Melpik'}
-        onClick={() => handleClick('Melpik', '/Melpik')}
-      >
-        <Icon src={MelpikIcon} alt='전체' $isActive={activeTab === 'Melpik'} />
-        <NavLabel $isActive={activeTab === 'Melpik'}>멜픽</NavLabel>
-        {activeTab === 'Melpik' && (
-          <IndicatorContainer>
-            <Light $isActive={showYellowGlow} />
-          </IndicatorContainer>
-        )}
-      </NavItem>
-      <NavItem
-        data-tab='LockerRoom'
-        $isActive={activeTab === 'LockerRoom'}
-        onClick={() => handleClick('LockerRoom', '/LockerRoom')}
-      >
-        <Icon
-          src={LockerRoomIcon}
-          alt='락커룸'
-          $isActive={activeTab === 'LockerRoom'}
-        />
-        <NavLabel $isActive={activeTab === 'LockerRoom'}>락커룸</NavLabel>
-        {activeTab === 'LockerRoom' && (
-          <IndicatorContainer>
-            <Light $isActive={showYellowGlow} />
-          </IndicatorContainer>
-        )}
-      </NavItem>
-      <NavItem
-        data-tab='CustomerService'
-        $isActive={activeTab === 'CustomerService'}
-        onClick={() => handleClick('CustomerService', '/CustomerService')}
-      >
-        <Icon
-          src={CustomerServiceIcon}
-          alt='고객센터'
-          $isActive={activeTab === 'CustomerService'}
-        />
-        <NavLabel $isActive={activeTab === 'CustomerService'}>
-          고객센터
-        </NavLabel>
-        {activeTab === 'CustomerService' && (
-          <IndicatorContainer>
-            <Light $isActive={showYellowGlow} />
-          </IndicatorContainer>
-        )}
-      </NavItem>
-      <Bar style={{ left: `${barPosition}px` }} />
-    </BottomNavContainer>
+    <DockContainer visible={visible}>
+      <Dock ref={navRef}>
+        {TABS.map((tab) => {
+          const isActive = tab.key === activeKey;
+          return (
+            <NavItem
+              key={tab.key}
+              data-key={tab.key}
+              onClick={() => handleClick(tab)}
+            >
+              <IconWrapper isActive={isActive && glow}>
+                <Icon src={tab.icon} alt={tab.label} />
+              </IconWrapper>
+              <Label isActive={isActive}>{tab.label}</Label>
+            </NavItem>
+          );
+        })}
+        <Bar style={{ left: barPos }} />
+      </Dock>
+    </DockContainer>
   );
 };
 
 export default BottomNav;
 
-// 스타일 컴포넌트
-const BottomNavContainer = styled.nav<{ isVisible: boolean }>`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background-color: #1d1d1b;
-  width: 100%;
-  max-width: 1440px;
+/* ========== Styled Components ========== */
+
+const DockContainer = styled.nav<{ visible: boolean }>`
   position: fixed;
   bottom: 0;
   left: 50%;
-  transform: translate(-50%, ${({ isVisible }) => (isVisible ? '0' : '100%')});
+  transform: translateX(-50%)
+    translateY(${({ visible }) => (visible ? '0' : '100%')});
+  transition: transform 0.3s ease;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 16px;
   z-index: 1000;
-  margin: 0 auto;
-  text-align: center;
-  padding: 15px 0 34px 0;
-  transition: transform 0.3s ease-in-out;
 `;
 
-const IndicatorContainer = styled.div`
-  position: absolute;
-  top: 0;
-  width: 60px;
-  height: 15px;
-  z-index: 0;
-  display: flex;
-  justify-content: center;
-`;
-
-const Bar = styled.div`
-  width: 30px;
-  height: 3px;
-  background-color: #ffffff;
-  position: absolute;
-  top: 0px;
-  margin-left: 15px;
-  transition: left 0.3s ease-in-out;
-`;
-
-const Light = styled.div<{ $isActive: boolean }>`
-  position: absolute;
-  width: 46px;
-  height: 36px;
-  background: linear-gradient(to top, #1d1d1b, white);
-  border-radius: 50%;
-  filter: blur(20px);
-  opacity: ${({ $isActive }) => ($isActive ? '0.8' : '0')};
-  top: -15px;
-  transition: opacity 0.5s ease-in-out;
-  clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
-`;
-
-const NavItem = styled.div<{ $isActive: boolean }>`
+const Dock = styled.div`
   position: relative;
+  display: flex;
+  background: rgba(29, 29, 27, 0.8);
+  backdrop-filter: blur(16px);
+  border-radius: 32px;
+  padding: 12px 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+
+  @media (max-width: 768px) {
+    border-radius: 0;
+  }
+`;
+
+const NavItem = styled.div`
+  flex: 1; /* 균등 분할 */
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: transform 0.3s ease-in-out;
-  z-index: 1;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px) scale(1.05);
+  }
 `;
 
-const Icon = styled.img<{ $isActive: boolean }>`
-  width: auto;
-  height: auto;
-  filter: ${({ $isActive }) =>
-    $isActive ? 'brightness(0) invert(1)' : 'none'};
+const IconWrapper = styled.div<{ isActive: boolean }>`
+  position: relative;
+  width: 48px;
+  height: 48px;
+  background: ${({ isActive }) =>
+    isActive ? '#f6ae24' : 'rgba(255,255,255,0.1)'};
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background: ${({ isActive }) =>
+      isActive ? '#f6ae24' : 'rgba(255,255,255,0.2)'};
+    transform: scale(1.1);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 30px;
+    background: rgba(255, 238, 0, 0.4);
+    filter: blur(16px);
+    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+    opacity: ${({ isActive }) => (isActive ? 1 : 0)};
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
 `;
 
-const NavLabel = styled.span<{ $isActive: boolean }>`
-  color: ${({ $isActive }) => ($isActive ? '#ffffff' : '#555555')};
-  font-weight: 800;
-  font-size: 10px;
-  margin-top: 11px;
-  transition: color 0.3s ease;
+const Icon = styled.img`
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+`;
+
+const Label = styled.span<{ isActive: boolean }>`
+  margin-top: 6px;
+  font-size: 11px;
+  color: ${({ isActive }) => (isActive ? '#fff' : 'rgba(255,255,255,0.7)')};
+  transition: color 0.2s ease;
+
+  @media (max-width: 768px) {
+    font-size: 10px;
+  }
+`;
+
+const Bar = styled.div`
+  position: absolute;
+  top: 0;
+  width: ${BAR_WIDTH}px;
+  height: 4px;
+  background-color: #fff;
+  border-radius: 2px;
+  transition: left 0.3s ease;
 `;

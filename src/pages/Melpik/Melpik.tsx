@@ -34,7 +34,7 @@ const MelpikPage: React.FC = () => {
       <Container>
         <Header>
           <Title>멜픽</Title>
-          <Subtitle>내 채널를 통해 나는 브랜드가 된다 </Subtitle>
+          <Subtitle>내 채널를 통해 나는 브랜드가 된다</Subtitle>
         </Header>
 
         <StatsRow>
@@ -67,10 +67,11 @@ const MelpikPage: React.FC = () => {
 export default MelpikPage;
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
+
+  margin: 0 auto;
   padding: 1rem;
+  box-sizing: border-box;
   background-color: #fff;
 `;
 
@@ -86,7 +87,7 @@ const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
   color: #000;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 `;
 
 const Subtitle = styled.p`
@@ -100,7 +101,8 @@ const StatsRow = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0 20px;
+  box-sizing: border-box;
+  /* padding 제거 */
 `;
 
 const ImageWrapper = styled.div`
@@ -120,6 +122,7 @@ const Divider = styled.div`
   height: 1px;
   background: #dddddd;
   margin: 20px 0;
+
   @media (min-width: 1024px) {
     margin: 50px 0;
   }
@@ -127,13 +130,14 @@ const Divider = styled.div`
 
 const GridMenu = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   width: 100%;
-
+  box-sizing: border-box;
+  max-width: 1000px;
+  margin: 0 auto 20px;
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr); /* 데스크탑에서 4열로 변경 */
-    margin-top: 50px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 `;
 
@@ -149,5 +153,5 @@ const GridItem = styled.div`
 
 const IconImage = styled.img`
   width: 100%;
-  height: 100%;
+  height: auto;
 `;

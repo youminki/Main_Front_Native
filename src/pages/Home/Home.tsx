@@ -11,7 +11,6 @@ import SubHeader from '../../components/Home/SubHeader';
 import { getProducts } from '../../api/upload/productApi';
 import { ProductListItem } from '../../api/upload/productApi';
 import HomeDetail from './HomeDetail';
-import SearchBar from '../../components/Home/SearchBar';
 
 // twoDepth header assets
 import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
@@ -141,7 +140,7 @@ const Home: React.FC = () => {
   return (
     <MainContainer>
       <ContentWrapper>
-        <SearchBar onSearch={setSearchQuery} />
+        {/* <SearchBar onSearch={setSearchQuery} /> */}
         <SubHeader
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
@@ -241,8 +240,8 @@ const ScrollToTopButton = styled.button`
     opacity: 1;
   }
 
-  @media (min-width: 1440px) {
-    right: calc((100vw - 1440px) / 2 + 20px);
+  @media (min-width: 1000px) {
+    right: calc((100vw - 1000px) / 2 + 20px);
   }
 `;
 
@@ -279,11 +278,13 @@ const ModalHeaderWrapper = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  max-width: 1440px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 0 27px;
   background: #fff;
   z-index: 2100;
+  max-width: 1000px;
+  margin: 0 auto 20px;
 `;
 const ModalHeaderContainer = styled.header`
   display: flex;

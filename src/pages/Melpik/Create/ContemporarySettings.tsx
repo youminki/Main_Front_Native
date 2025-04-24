@@ -175,9 +175,11 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
+  max-width: 1000px;
+  margin: 0 auto;
   background-color: #fff;
   padding: 1rem;
+  margin-bottom: 50px;
 `;
 
 const Form = styled.form`

@@ -246,7 +246,8 @@ const DetailContainer = styled.div`
   justify-content: space-between;
   padding: 5rem 0;
   padding-bottom: 80px;
-  max-width: 1440px;
+  max-width: 1000px;
+  margin: 0 auto 20px;
   margin: 0 auto;
   box-sizing: border-box;
 `;
@@ -263,7 +264,7 @@ const ConditionalContainer = styled.div`
   margin-top: 20px;
 `;
 const Separator = styled.div`
-  border: 1px solid #e0e0e0;
+  border: 1px solid #ccc;
   margin: 30px 0;
 `;
 const Message = styled.p`

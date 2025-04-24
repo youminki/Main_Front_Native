@@ -156,6 +156,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   margin: 0 auto;
+  max-width: 600px;
   padding: 1rem;
 `;
 
@@ -171,6 +172,7 @@ const Logo = styled.img`
   width: 150px;
   height: auto;
   margin-bottom: 21px;
+  margin-top: 50px;
 `;
 
 const SubContent = styled.div`
