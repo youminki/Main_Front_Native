@@ -264,7 +264,7 @@ const ConditionalContainer = styled.div`
   margin-top: 20px;
 `;
 const Separator = styled.div`
-  border: 1px solid #e0e0e0;
+  border: 1px solid #ccc;
   margin: 30px 0;
 `;
 const Message = styled.p`
