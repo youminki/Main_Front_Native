@@ -202,6 +202,7 @@ const Divider = styled.div`
 
 const Content = styled.div`
   flex: 1;
+  margin-top: 20px;
 `;
 
 const ScrollToTopButton = styled.button`

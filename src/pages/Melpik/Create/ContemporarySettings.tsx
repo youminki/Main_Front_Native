@@ -179,6 +179,7 @@ const Container = styled.div`
   margin: 0 auto;
   background-color: #fff;
   padding: 1rem;
+  margin-bottom: 50px;
 `;
 
 const Form = styled.form`
