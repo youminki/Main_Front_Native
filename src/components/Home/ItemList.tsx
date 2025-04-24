@@ -41,7 +41,6 @@ const ListContainer = styled.div`
   width: 100%;
   max-width: 1440px; /* 전체 최대 폭 */
   margin: 0 auto; /* 가운데 정렬 */
-  padding: 0 1rem; /* 좌우 여백 */
   box-sizing: border-box;
 `;
 
