@@ -60,7 +60,7 @@ const HeaderWrapper = styled.div`
   z-index: 1000;
 `;
 const HeaderContainer = styled.header<HeaderContainerProps>`
-  max-width: ${({ variant }) => (variant === 'twoDepth' ? '1000px' : '1440px')};
+  max-width: ${({ variant }) => (variant === 'twoDepth' ? '1000px' : '1000px')};
   margin: 0 auto;
   display: flex;
   justify-content: space-between;

@@ -240,8 +240,8 @@ const ScrollToTopButton = styled.button`
     opacity: 1;
   }
 
-  @media (min-width: 1440px) {
-    right: calc((100vw - 1440px) / 2 + 20px);
+  @media (min-width: 1000px) {
+    right: calc((100vw - 1000px) / 2 + 20px);
   }
 `;
 
@@ -278,7 +278,7 @@ const ModalHeaderWrapper = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  max-width: 1440px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 0 27px;
   background: #fff;

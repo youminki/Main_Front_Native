@@ -65,7 +65,7 @@ const ModalContent = styled.div<{ width: string; height: string }>`
   background-color: #ffffff;
   width: ${({ width }) => width};
   height: ${({ height }) => height};
-  max-width: 1440px;
+  max-width: 1000px;
 
   display: flex;
   flex-direction: column;

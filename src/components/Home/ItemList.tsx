@@ -39,7 +39,7 @@ export default ItemList;
 const ListContainer = styled.div`
   background-color: #fff;
   width: 100%;
-  max-width: 1440px; /* 전체 최대 폭 */
+  max-width: 1000px; /* 전체 최대 폭 */
   margin: 0 auto; /* 가운데 정렬 */
   box-sizing: border-box;
 `;
@@ -62,7 +62,7 @@ const ItemsWrapper = styled.div`
   }
 
   /* 대형 화면: 5열 */
-  @media (min-width: 1440px) {
+  @media (min-width: 1000px) {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 `;
