@@ -1,3 +1,4 @@
+// src/components/Home/SizeInfo.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
@@ -17,11 +18,8 @@ const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
     return <Message>사이즈 정보가 없습니다.</Message>;
   }
 
-  // 측정 키 정렬
   const measurementKeys = Object.keys(productSizes[0].measurements || {});
   const sortedKeys = measurementKeys.sort((a, b) => a.localeCompare(b));
-
-  // 대문자 알파벳 헤더 생성 (A, B, C, …)
   const alphaLabels = sortedKeys.map((_, idx) => String.fromCharCode(65 + idx));
 
   return (
@@ -38,7 +36,6 @@ const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
           />
         </PictureWrapper>
 
-        {/* 실제 측정 항목명 전부 표시 */}
         <LabelList>
           {sortedKeys.map((key) => (
             <LabelItem key={key}>{key}</LabelItem>
@@ -51,7 +48,6 @@ const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
           <thead>
             <Row>
               <Header>사이즈</Header>
-              {/* 대문자 알파벳 헤더 */}
               {alphaLabels.map((label) => (
                 <Header key={label}>{label}</Header>
               ))}
@@ -59,13 +55,10 @@ const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
           </thead>
           <tbody>
             {productSizes.map(({ size, measurements }) => {
-              // size에서 숫자만 추출 ("SIZE 55" → "55")
               const numericOnly = size.replace(/\D/g, '') || size;
-
               return (
                 <Row key={size}>
                   <Cell>{numericOnly}</Cell>
-                  {/* 실제 데이터는 sortedKeys 순서대로 */}
                   {sortedKeys.map((key) => {
                     const raw = measurements[key];
                     const displayVal =
@@ -102,19 +95,19 @@ const Title = styled.h3`
 `;
 
 const InfoWrapper = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 120px; // 이미지 + 라벨 영역
   align-items: center;
   justify-content: center;
   gap: 12px;
   width: 100%;
   max-width: 1000px;
   margin-bottom: 16px;
-  flex-wrap: wrap; /* 화면 크기 좁을 때 항목들이 겹치지 않도록 처리 */
+  overflow-x: auto;
 `;
 
 const PictureWrapper = styled.div`
-  flex: 1;
-  max-width: 50%; /* 이미지의 최대 크기 설정 */
+  flex: none;
   overflow: hidden;
   border-radius: 4px;
   background-color: #fff;
@@ -124,44 +117,35 @@ const PictureWrapper = styled.div`
 `;
 
 const StyledImg = styled.img`
+  min-width: 300px;
   width: 100%;
-  height: auto; /* 비율을 유지하며 높이 자동 조정 */
+  height: auto;
   object-fit: contain;
   image-rendering: crisp-edges;
 `;
 
 const LabelList = styled.ul`
-  flex: 1;
-  max-width: 50%;
-  height: ${IMAGE_HEIGHT};
+  display: flex;
+  flex-direction: row; // 가로 정렬
+  flex-wrap: wrap; // 너무 많으면 줄바꿈
+  justify-content: center;
+  align-items: center;
   list-style: none;
   margin: 0;
-  padding: 0 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 20px; /* 기본 갭을 크게 설정 */
-
-  /* 데스크탑 환경에서는 폰트 크기 및 갭을 더 크게 설정 */
-  @media (min-width: 1024px) {
-    gap: 30px; /* 갭을 더 크게 설정 */
-  }
+  padding: 0;
+  gap: 10px;
+  width: 100%;
 `;
-
 const LabelItem = styled.li`
-  font-size: 14px; /* 기본 폰트 크기 확대 */
+  font-size: 14px;
   font-weight: 500;
-  color: #333; /* 색상 대비를 높여 가독성 향상 */
-  background-color: #f4f4f4; /* 라벨 배경색을 연한 그레이로 설정 */
-  padding: 6px 10px; /* 패딩을 추가하여 여백 확보 */
-  border-radius: 4px; /* 라벨에 둥근 모서리 추가 */
-  width: 100%; /* 라벨이 길어져도 모두 보이도록 넓게 설정 */
+  color: #333;
+  padding: 6px 10px;
+  border-radius: 4px;
 
-  /* 데스크탑 환경에서는 폰트 크기와 패딩을 더 크게 설정 */
   @media (min-width: 1024px) {
-    font-size: 16px; /* 폰트 크기 확대 */
-    padding: 10px 14px; /* 패딩을 더 넓게 설정 */
+    font-size: 16px;
+    padding: 10px 14px;
   }
 `;
 
