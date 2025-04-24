@@ -11,7 +11,7 @@ import SubHeader from '../../components/Home/SubHeader';
 import { getProducts } from '../../api/upload/productApi';
 import { ProductListItem } from '../../api/upload/productApi';
 import HomeDetail from './HomeDetail';
-import SearchBar from '../../components/Home/SearchBar';
+// import SearchBar from '../../components/Home/SearchBar';
 
 // twoDepth header assets
 import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
@@ -141,7 +141,7 @@ const Home: React.FC = () => {
   return (
     <MainContainer>
       <ContentWrapper>
-        <SearchBar onSearch={setSearchQuery} />
+        {/* <SearchBar onSearch={setSearchQuery} /> */}
         <SubHeader
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
