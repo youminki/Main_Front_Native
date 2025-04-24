@@ -77,11 +77,35 @@ const CenterSection = styled.div`
   justify-content: center;
   align-items: center;
 `;
+// RightSection 에 position: relative; 추가
 const RightSection = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+  position: relative; /* SearchContainer 절대 위치 기준 */
 `;
+
+// 검색박스 → SearchContainer
+const SearchContainer = styled.div<{ open: boolean }>`
+  position: absolute;
+  top: 50%;
+  right: 40px; /* 아이콘 너비(24px) + 마진(16px) 고려 */
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: ${({ open }) => (open ? '0 2px 8px rgba(0,0,0,0.15)' : 'none')};
+  overflow: hidden;
+  width: ${({ open }) => (open ? 'min(240px, 100%)' : '0')};
+  height: ${({ open }) => (open ? 'auto' : '0')};
+  transition:
+    width 0.3s ease,
+    box-shadow 0.25s ease;
+  z-index: 1100;
+`;
+
+// Dropdown, Item, HistoryButton, ClearAll는 기존 그대로 사용
 
 // 텍스트/아이콘
 const LogoIcon = styled.img`
@@ -136,15 +160,15 @@ const SearchBox = styled.div<{ open: boolean }>`
   border-radius: 18px;
   padding: 4px;
   transition:
-    width 0.25s ease,
+    width 0.3s ease,
     box-shadow 0.25s ease,
     background 0.25s ease;
-  width: ${({ open }) => (open ? '240px' : '32px')};
+
   box-shadow: ${({ open }) =>
     open ? '0 2px 8px rgba(0, 0, 0, 0.15)' : 'none'};
   will-change: width, box-shadow;
   position: relative;
-  width: 100%;
+  flex-shrink: 0;
 `;
 const SearchIconWrapper = styled.div`
   display: flex;
@@ -159,11 +183,12 @@ const SearchInput = styled.input<{ open: boolean }>`
   margin-left: ${({ open }) => (open ? '8px' : '0')};
   border: none;
   outline: none;
-  width: ${({ open }) => (open ? 'auto' : '0')};
+
+  width: ${({ open }) => (open ? '100%' : '0')};
   opacity: ${({ open }) => (open ? 1 : 0)};
   transition:
-    width 0.25s ease,
-    margin-left 0.25s ease,
+    width 0.3s ease,
+    margin-left 0.3s ease,
     opacity 0.2s ease 0.1s;
 `;
 const Dropdown = styled.ul`
@@ -191,6 +216,7 @@ const Item = styled.li`
   display: flex;
   align-items: center;
   padding: 8px 12px;
+  font-size: 0.8rem;
   cursor: pointer;
   flex-shrink: 0;
   &:hover {
@@ -201,7 +227,7 @@ const Item = styled.li`
 const ClearAll = styled.div`
   text-align: center;
   padding: 8px;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #d00;
   cursor: pointer;
   &:hover {
@@ -435,11 +461,49 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
               onClick={handleBack}
             />
           </LeftSection>
+          // … HeaderContainer 내부 …
           <RightSection>
-            {/* 로그인/비로그인 상관없이 검색 아이콘 표시 */}
-            <SearchIconWrapper onClick={() => setOpenSearch((o) => !o)}>
+            {/* 검색 컨테이너 */}
+            <SearchContainer open={openSearch} ref={boxRef}>
+              <form
+                onSubmit={handleSearchSubmit}
+                style={{ flex: 1, display: 'flex' }}
+              >
+                <SearchInput
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder='검색어를 입력하세요'
+                  autoFocus={openSearch}
+                />
+              </form>
+              {openSearch && historyState.length > 0 && (
+                <Dropdown>
+                  {historyState.map((item, idx) => (
+                    <Item key={idx}>
+                      <HistoryButton onClick={() => handleHistoryClick(item)}>
+                        <BiTime size={16} style={{ marginRight: 8 }} />
+                        <span>{item}</span>
+                      </HistoryButton>
+                    </Item>
+                  ))}
+                  <ClearAll
+                    onClick={() => {
+                      localStorage.removeItem(HISTORY_KEY);
+                      setHistoryState([]);
+                    }}
+                  >
+                    전체 삭제
+                  </ClearAll>
+                </Dropdown>
+              )}
+            </SearchContainer>
+
+            {/* 아이콘은 항상 제자리 */}
+            <SearchIconWrapper onClick={handleSearchClick}>
               <Icon src={SearchIcon} alt='검색' />
             </SearchIconWrapper>
+
+            {/* 나머지 아이콘 */}
             {isLoggedIn ? (
               <>
                 <Icon
@@ -450,7 +514,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                 <Icon
                   src={AlarmIcon}
                   alt='알림'
-                  onClick={() => navigate('/Alarm')}
+                  onClick={() => navigate('/alarm')}
                 />
               </>
             ) : (
@@ -463,7 +527,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                 <Icon
                   src={AlarmIcon}
                   alt='알림'
-                  onClick={() => navigate('/Alarm')}
+                  onClick={() => navigate('/alarm')}
                 />
               </>
             )}
