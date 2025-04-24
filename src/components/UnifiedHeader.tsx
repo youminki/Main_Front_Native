@@ -63,7 +63,7 @@ const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
+  padding: 1rem;
   position: relative;
 `;
 const LeftSection = styled.div`
