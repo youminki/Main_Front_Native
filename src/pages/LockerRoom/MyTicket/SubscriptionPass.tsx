@@ -326,6 +326,7 @@ const Container = styled.div`
   margin: 0 auto;
   display: flex;
   justify-content: center;
+  max-width: 1000px;
 `;
 
 const ContentArea = styled.div`

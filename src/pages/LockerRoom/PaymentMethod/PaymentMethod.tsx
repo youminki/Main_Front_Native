@@ -212,6 +212,7 @@ const PaymentMethodContainer = styled.div`
 
   background-color: #fff;
   padding: 1rem;
+  max-width: 1000px;
 `;
 
 const Header = styled.div`

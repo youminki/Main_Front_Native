@@ -47,6 +47,8 @@ const BottomBarContainer = styled.div`
   margin: 0 auto;
   padding: 15px 0 34px 0;
   text-align: center;
+  max-width: 1000px;
+  margin: 0 auto;
 `;
 const CartButton = styled.button`
   width: 75px;

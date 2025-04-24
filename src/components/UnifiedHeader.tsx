@@ -16,7 +16,9 @@ import HomeIcon from '../assets/Header/HomeIcon.svg';
 import SearchIcon from '../assets/Header/SearchIcon.svg';
 
 import MypageModal from '../components/MypageModal';
-
+interface HeaderContainerProps {
+  variant?: 'default' | 'oneDepth' | 'twoDepth' | 'threeDepth';
+}
 // UnifiedHeader 컴포넌트에 전달되는 props 타입 정의
 interface UnifiedHeaderProps {
   variant?: 'default' | 'oneDepth' | 'twoDepth' | 'threeDepth';
@@ -57,8 +59,8 @@ const HeaderWrapper = styled.div`
 
   z-index: 1000;
 `;
-const HeaderContainer = styled.header`
-  max-width: 1440px;
+const HeaderContainer = styled.header<HeaderContainerProps>`
+  max-width: ${({ variant }) => (variant === 'twoDepth' ? '1000px' : '1440px')};
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -542,7 +544,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   if (variant === 'twoDepth') {
     return (
       <HeaderWrapper>
-        <HeaderContainer>
+        <HeaderContainer variant={variant}>
           <LeftSection>
             <CancelIcon
               src={CancleIconIcon}
