@@ -1,7 +1,7 @@
 // src/App.tsx
 import React from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
-import AppLayout from './components/AppLayout';
+import AppLayout from './pages/AppLayout';
 
 import Landing from './pages/Landing';
 import Login from './pages/Login';
