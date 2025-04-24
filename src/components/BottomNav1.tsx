@@ -42,21 +42,14 @@ const BottomNav: React.FC = () => {
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [glow, setGlow] = useState(false);
   const [barPos, setBarPos] = useState(0);
-
-  // 스크롤에 따라 보이기/숨기기
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
+
   useEffect(() => {
     lastScrollY.current = window.scrollY;
     const handleScroll = () => {
       const currentY = window.scrollY;
-      if (currentY > lastScrollY.current && currentY > 50) {
-        // 아래로 스크롤 → 숨김
-        setVisible(false);
-      } else {
-        // 위로 스크롤 → 보임
-        setVisible(true);
-      }
+      setVisible(!(currentY > lastScrollY.current && currentY > 50));
       lastScrollY.current = currentY;
     };
     window.addEventListener('scroll', handleScroll);
@@ -130,13 +123,15 @@ const Dock = styled.div`
   align-items: center;
   background: rgba(29, 29, 27, 0.8);
   backdrop-filter: blur(16px);
+  /* 데스크탑에서만 라운드 적용, 모바일에서는 radius 제거 */
   border-radius: 32px;
-  @media (max-width: 768px) {
-    border-radius: 0;
-  }
   padding: 12px 20px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   position: relative;
+
+  @media (max-width: 768px) {
+    border-radius: 0;
+  }
 `;
 
 const NavItem = styled.div`
@@ -166,7 +161,6 @@ const IconWrapper = styled.div<{ isActive: boolean }>`
     background 0.2s ease,
     transform 0.2s ease;
 
-  /* 박스 호버 시 살짝 키우고 배경 밝게 */
   &:hover {
     background: ${({ isActive }) =>
       isActive ? '#f6ae24' : 'rgba(255,255,255,0.2)'};
@@ -201,6 +195,10 @@ const Label = styled.span<{ isActive: boolean }>`
   font-size: 11px;
   color: ${({ isActive }) => (isActive ? '#fff' : 'rgba(255,255,255,0.7)')};
   transition: color 0.2s ease;
+
+  @media (max-width: 768px) {
+    font-size: 10px;
+  }
 `;
 
 const Bar = styled.div`
