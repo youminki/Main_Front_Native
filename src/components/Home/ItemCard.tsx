@@ -97,20 +97,22 @@ const CardContainer = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   cursor: pointer;
   width: 100%;
+  max-width: 100%;
   margin-bottom: 15px;
 `;
 
 const ImageWrapper = styled.div`
-  position: relative;
   width: 100%;
-  aspect-ratio: 2/3;
+  aspect-ratio: 2 / 3;
   background-color: #f5f5f5;
-  border: 1px solid #ccc;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  position: relative;
+  border: 1px solid #ccc;
 `;
 
 const Image = styled.img`
@@ -122,33 +124,46 @@ const Image = styled.img`
 const Brand = styled.h3`
   font-weight: 900;
   font-size: 11px;
-  margin: 6px 0 2px;
+  line-height: 11px;
+  color: #000000;
+  margin-bottom: 2px;
 `;
 
 const Description = styled.p`
+  margin-top: 6px;
+  font-weight: 400;
   font-size: 12px;
-  color: #999;
+  line-height: 13px;
+  color: #999999;
 `;
 
 const PriceWrapper = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-top: 6px;
+  border-left: 1px solid #e0e0e0;
 `;
 
 const OriginalPrice = styled.span`
   font-weight: 900;
   font-size: 16px;
+  line-height: 15px;
+  margin-left: 6px;
+  color: #000000;
 `;
 
 const NowLabel = styled.span`
+  font-weight: 400;
   font-size: 10px;
+  line-height: 9px;
+  color: #000000;
 `;
 
 const DiscountLabel = styled.span`
   font-weight: 800;
   font-size: 12px;
+  line-height: 11px;
   color: #f6ae24;
 `;
 
