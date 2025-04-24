@@ -172,6 +172,7 @@ const Logo = styled.img`
   width: 150px;
   height: auto;
   margin-bottom: 21px;
+  margin-top: 50px;
 `;
 
 const SubContent = styled.div`

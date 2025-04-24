@@ -17,16 +17,16 @@ interface Tab {
 const TABS: Tab[] = [
   { key: 'home', route: '/home', icon: HomeIcon, label: '홈' },
   { key: 'brand', route: '/brand', icon: BrandIcon, label: '브랜드' },
-  { key: 'Melpik', route: '/Melpik', icon: MelpikIcon, label: '멜픽' },
+  { key: 'melpik', route: '/melpik', icon: MelpikIcon, label: '멜픽' },
   {
-    key: 'LockerRoom',
-    route: '/LockerRoom',
+    key: 'lockerRoom',
+    route: '/lockerRoom',
     icon: LockerRoomIcon,
     label: '락커룸',
   },
   {
-    key: 'CustomerService',
-    route: '/CustomerService',
+    key: 'customerService',
+    route: '/customerService',
     icon: CustomerServiceIcon,
     label: '고객센터',
   },
@@ -45,17 +45,19 @@ const BottomNav: React.FC = () => {
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
 
+  // 스크롤 시 nav 숨김/표시
   useEffect(() => {
     lastScrollY.current = window.scrollY;
-    const handleScroll = () => {
-      const currentY = window.scrollY;
-      setVisible(!(currentY > lastScrollY.current && currentY > 50));
-      lastScrollY.current = currentY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setVisible(!(y > lastScrollY.current && y > 50));
+      lastScrollY.current = y;
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // activeKey, barPos 업데이트
   useEffect(() => {
     const current = TABS.find((t) => t.route === location.pathname);
     if (current && navRef.current) {
@@ -63,17 +65,24 @@ const BottomNav: React.FC = () => {
       const el = navRef.current.querySelector<HTMLElement>(
         `[data-key="${current.key}"]`
       );
-      if (el) setBarPos(el.offsetLeft + el.offsetWidth / 2 - BAR_WIDTH / 2);
+      if (el) {
+        const containerRect = navRef.current.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        // container 안에서의 left
+        const left =
+          elRect.left - containerRect.left + (elRect.width - BAR_WIDTH) / 2;
+        setBarPos(left);
+      }
     } else {
       setActiveKey(null);
     }
     setGlow(false);
-    const timer = setTimeout(() => setGlow(true), 300);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setGlow(true), 300);
+    return () => clearTimeout(t);
   }, [location.pathname]);
 
   const handleClick = (tab: Tab) => {
-    if (activeKey !== tab.key) {
+    if (tab.key !== activeKey) {
       setGlow(false);
       navigate(tab.route);
     }
@@ -114,20 +123,20 @@ const DockContainer = styled.nav<{ visible: boolean }>`
   transform: translateX(-50%)
     translateY(${({ visible }) => (visible ? '0' : '100%')});
   transition: transform 0.3s ease;
+  width: 100%;
+  max-width: 600px;
   padding: 0 16px;
   z-index: 1000;
 `;
 
 const Dock = styled.div`
+  position: relative;
   display: flex;
-  align-items: center;
   background: rgba(29, 29, 27, 0.8);
   backdrop-filter: blur(16px);
-  /* 데스크탑에서만 라운드 적용, 모바일에서는 radius 제거 */
   border-radius: 32px;
   padding: 12px 20px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  position: relative;
 
   @media (max-width: 768px) {
     border-radius: 0;
@@ -135,13 +144,14 @@ const Dock = styled.div`
 `;
 
 const NavItem = styled.div`
-  position: relative;
+  flex: 1; /* 균등 분할 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 12px;
+  justify-content: center;
   cursor: pointer;
   transition: transform 0.2s ease;
+
   &:hover {
     transform: translateY(-4px) scale(1.05);
   }
@@ -206,7 +216,7 @@ const Bar = styled.div`
   top: 0;
   width: ${BAR_WIDTH}px;
   height: 4px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 2px;
   transition: left 0.3s ease;
 `;
