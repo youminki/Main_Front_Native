@@ -284,6 +284,8 @@ const ModalHeaderWrapper = styled.div`
   padding: 0 27px;
   background: #fff;
   z-index: 2100;
+  max-width: 1000px;
+  margin: 0 auto 20px;
 `;
 const ModalHeaderContainer = styled.header`
   display: flex;

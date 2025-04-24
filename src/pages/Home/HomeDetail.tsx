@@ -246,7 +246,8 @@ const DetailContainer = styled.div`
   justify-content: space-between;
   padding: 5rem 0;
   padding-bottom: 80px;
-  max-width: 1440px;
+  max-width: 1000px;
+  margin: 0 auto 20px;
   margin: 0 auto;
   box-sizing: border-box;
 `;

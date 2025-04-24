@@ -59,6 +59,7 @@ const StyledModal = styled.div`
   align-items: center;
   padding: 27px;
   z-index: 9999;
+  max-width: 1000px;
 `;
 
 const ModalContent = styled.div<{ width: string; height: string }>`
@@ -69,7 +70,8 @@ const ModalContent = styled.div<{ width: string; height: string }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-width: 1440px;
+  max-width: 300px;
+  margin: 0 auto 20px;
 `;
 
 const ModalHeader = styled.div`
