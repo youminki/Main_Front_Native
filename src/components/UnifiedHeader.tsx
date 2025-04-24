@@ -54,7 +54,7 @@ const HeaderWrapper = styled.div`
   left: 0;
   right: 0;
   background: #fff;
-  border-bottom: 1px solid #e0e0e0;
+
   z-index: 1000;
 `;
 const HeaderContainer = styled.header`
@@ -197,13 +197,7 @@ const Item = styled.li`
     background: #f5f5f5;
   }
 `;
-const ItemText = styled.span`
-  display: flex;
-  align-items: center;
-  font-size: 0.95rem;
-  color: #333;
-  flex-shrink: 0;
-`;
+
 const ClearAll = styled.div`
   text-align: center;
   padding: 8px;
