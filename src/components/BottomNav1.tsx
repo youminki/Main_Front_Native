@@ -43,6 +43,26 @@ const BottomNav: React.FC = () => {
   const [glow, setGlow] = useState(false);
   const [barPos, setBarPos] = useState(0);
 
+  // 스크롤에 따라 보이기/숨기기
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  useEffect(() => {
+    lastScrollY.current = window.scrollY;
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY > lastScrollY.current && currentY > 50) {
+        // 아래로 스크롤 → 숨김
+        setVisible(false);
+      } else {
+        // 위로 스크롤 → 보임
+        setVisible(true);
+      }
+      lastScrollY.current = currentY;
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   useEffect(() => {
     const current = TABS.find((t) => t.route === location.pathname);
     if (current && navRef.current) {
@@ -67,7 +87,7 @@ const BottomNav: React.FC = () => {
   };
 
   return (
-    <DockContainer>
+    <DockContainer visible={visible}>
       <Dock ref={navRef}>
         {TABS.map((tab) => {
           const isActive = tab.key === activeKey;
@@ -78,7 +98,7 @@ const BottomNav: React.FC = () => {
               onClick={() => handleClick(tab)}
             >
               <IconWrapper isActive={isActive && glow}>
-                <Icon src={tab.icon} alt={tab.label} isActive={isActive} />
+                <Icon src={tab.icon} alt={tab.label} />
               </IconWrapper>
               <Label isActive={isActive}>{tab.label}</Label>
             </NavItem>
@@ -94,16 +114,16 @@ export default BottomNav;
 
 /* ========== Styled Components ========== */
 
-const DockContainer = styled.nav`
+const DockContainer = styled.nav<{ visible: boolean }>`
   position: fixed;
-  bottom: 0px;
+  bottom: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%)
+    translateY(${({ visible }) => (visible ? '0' : '100%')});
+  transition: transform 0.3s ease;
   padding: 0 16px;
   z-index: 1000;
 `;
-
-/* ========== Styled Components ========== */
 
 const Dock = styled.div`
   display: flex;
@@ -111,12 +131,9 @@ const Dock = styled.div`
   background: rgba(29, 29, 27, 0.8);
   backdrop-filter: blur(16px);
   border-radius: 32px;
-
-  /* 모바일 화면(max-width: 768px)일 때만 라운드 적용 */
   @media (max-width: 768px) {
     border-radius: 0;
   }
-
   padding: 12px 20px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   position: relative;
@@ -130,7 +147,6 @@ const NavItem = styled.div`
   margin: 0 12px;
   cursor: pointer;
   transition: transform 0.2s ease;
-
   &:hover {
     transform: translateY(-4px) scale(1.05);
   }
@@ -146,7 +162,16 @@ const IconWrapper = styled.div<{ isActive: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+
+  /* 박스 호버 시 살짝 키우고 배경 밝게 */
+  &:hover {
+    background: ${({ isActive }) =>
+      isActive ? '#f6ae24' : 'rgba(255,255,255,0.2)'};
+    transform: scale(1.1);
+  }
 
   &::before {
     content: '';
@@ -168,9 +193,7 @@ const IconWrapper = styled.div<{ isActive: boolean }>`
 const Icon = styled.img`
   width: 24px;
   height: 24px;
-  /* 항상 흰색으로 보이도록 고정 */
   filter: brightness(0) invert(1);
-  transition: filter 0.2s ease;
 `;
 
 const Label = styled.span<{ isActive: boolean }>`
