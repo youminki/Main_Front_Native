@@ -174,6 +174,7 @@ const SearchIconWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
   cursor: pointer;
   color: #333;
   flex-shrink: 0;
@@ -460,7 +461,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
               onClick={handleBack}
             />
           </LeftSection>
-          // … HeaderContainer 내부 …
+
           <RightSection>
             {/* 검색 컨테이너 */}
             <SearchContainer open={openSearch} ref={boxRef}>
