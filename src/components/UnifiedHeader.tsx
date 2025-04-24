@@ -178,7 +178,7 @@ const SearchIconWrapper = styled.div`
   color: #333;
   flex-shrink: 0;
 `;
-const SearchInput = styled.input<{ open: boolean }>`
+const SearchInput = styled.input<{ open?: boolean }>`
   flex: 1;
   margin-left: ${({ open }) => (open ? '8px' : '0')};
   border: none;
@@ -216,7 +216,6 @@ const Item = styled.li`
   display: flex;
   align-items: center;
   padding: 8px 12px;
-  font-size: 0.8rem;
   cursor: pointer;
   flex-shrink: 0;
   &:hover {
