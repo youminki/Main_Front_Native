@@ -96,7 +96,7 @@ const Footer: React.FC = () => {
 
   // "사전 등록하기" 버튼 클릭 시 /signup으로 이동
   const handleRegisterClick = () => {
-    navigate('/signup');
+    navigate('/login');
   };
 
   return (
@@ -116,7 +116,7 @@ const Footer: React.FC = () => {
       </InfoText>
 
       <RegisterButton onClick={handleRegisterClick}>
-        사전 등록하기
+        로그인 하러가기
       </RegisterButton>
 
       <CompanyInfo>
