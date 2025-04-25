@@ -130,7 +130,7 @@ const DockContainer = styled.nav<{ visible: boolean }>`
   @media (min-width: 768px) {
     bottom: 3%;
     transform: none;
-    left: 40%;
+    transform: translateX(-50%);
   }
 `;
 
