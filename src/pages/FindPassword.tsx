@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { schemaFindPassword } from '../hooks/ValidationYup';
@@ -7,7 +7,7 @@ import styled, { ThemeProvider } from 'styled-components';
 import Button from '../components/Button01';
 import InputField from '../components/InputField';
 import Theme from '../styles/Theme';
-import ReusableModal from '../components/ReusableModal';
+// import ReusableModal from '../components/ReusableModal';
 
 type FormValues = {
   email: string;
@@ -16,7 +16,7 @@ type FormValues = {
 };
 
 const FindPassword: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [setIsModalOpen] = useState(false);
   const {
     control,
     formState: { errors },
@@ -30,13 +30,13 @@ const FindPassword: React.FC = () => {
     },
   });
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
+  // const openModal = () => {
+  //   setIsModalOpen(true);
+  // };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  // const closeModal = () => {
+  //   setIsModalOpen(false);
+  // };
 
   return (
     <ThemeProvider theme={Theme}>
@@ -71,20 +71,18 @@ const FindPassword: React.FC = () => {
                 />
               )}
             />
-            <Button type='button' onClick={openModal}>
-              비밀번호 찾기
-            </Button>
+            <Button type='button'>비밀번호 찾기</Button>
           </FormWrapper>
         </ContentWrapper>
 
-        <ReusableModal
+        {/* <ReusableModal
           isOpen={isModalOpen}
           onClose={closeModal}
           title='비밀번호 찾기 - 조회결과'
         >
           등록하신 계정으로{' '}
           <span className='highlighted-text'>메일이 발송</span> 되었습니다.
-        </ReusableModal>
+        </ReusableModal> */}
       </Container>
     </ThemeProvider>
   );
