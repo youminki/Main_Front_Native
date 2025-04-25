@@ -9,7 +9,7 @@ const LandingPage1: React.FC = () => {
   const navigate = useNavigate();
 
   const handleRegisterClick = () => {
-    navigate('/signup');
+    navigate('/login');
   };
 
   return (
@@ -26,7 +26,7 @@ const LandingPage1: React.FC = () => {
           </BigTitle>
           <SubTitle>멜픽에서 새롭게 경험하세요</SubTitle>
           <RegisterButton onClick={handleRegisterClick}>
-            사전등록하기
+            로그인 하러가기
           </RegisterButton>
         </ContentBox>
       </Container>
