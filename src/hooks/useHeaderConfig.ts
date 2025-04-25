@@ -19,7 +19,7 @@ const headerRules: {
   getTitle?: (path: string) => string;
 }[] = [
   {
-    paths: ['/home', '/melpik', '/brand', '/lockerRoom', '/customerService'],
+    paths: ['/main', '/melpik', '/brand', '/lockerRoom', '/customerService'],
     variant: 'default',
   },
   {
