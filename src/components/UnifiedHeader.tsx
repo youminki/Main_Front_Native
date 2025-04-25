@@ -44,8 +44,8 @@ const fadeInDown = keyframes`
 
 // 애니메이션 래퍼 (threeDepth 전용)
 const AnimatedHeaderWrapper = styled.div<{ exit?: boolean }>`
-  animation: ${({ exit }) => (exit ? slideOut : slideIn)} 0.3s
-    cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  /* animation: ${({ exit }) => (exit ? slideOut : slideIn)} 0.3s
+    cubic-bezier(0.25, 0.1, 0.25, 1) forwards; */
   will-change: transform;
 `;
 
@@ -106,8 +106,6 @@ const SearchContainer = styled.div<{ open: boolean }>`
     box-shadow 0.25s ease;
   z-index: 1100;
 `;
-
-// Dropdown, Item, HistoryButton, ClearAll는 기존 그대로 사용
 
 // 텍스트/아이콘
 const LogoIcon = styled.img`
@@ -212,7 +210,7 @@ const Dropdown = styled.ul`
 
   overflow-y: auto;
   z-index: 1100;
-  animation: ${fadeInDown} 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  /* animation: ${fadeInDown} 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards; */
   will-change: opacity, transform;
 `;
 const Item = styled.li`
