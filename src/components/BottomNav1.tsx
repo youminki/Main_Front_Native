@@ -124,9 +124,14 @@ const DockContainer = styled.nav<{ visible: boolean }>`
     translateY(${({ visible }) => (visible ? '0' : '100%')});
   transition: transform 0.3s ease;
   width: 100%;
-  max-width: 600px;
+  max-width: 400px;
   padding: 0 16px;
   z-index: 1000;
+  @media (min-width: 768px) {
+    bottom: 3%;
+    transform: none;
+    left: 40%;
+  }
 `;
 
 const Dock = styled.div`
@@ -180,7 +185,7 @@ const IconWrapper = styled.div<{ isActive: boolean }>`
   &::before {
     content: '';
     position: absolute;
-    top: -10px;
+    top: -8px;
     left: 50%;
     transform: translateX(-50%);
     width: 50px;
