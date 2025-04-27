@@ -50,7 +50,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
   };
 
   const doAdd = async () => {
-    // Optimistic update + animation
     setLiked(true);
     setAnimating(true);
     setTimeout(() => setAnimating(false), 300);
@@ -63,7 +62,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
   };
 
   const doRemove = async () => {
-    // Optimistic removal
     setLiked(false);
     try {
       await removeFromCloset(+id);
@@ -111,12 +109,13 @@ const ItemCard: React.FC<ItemCardProps> = ({
         <Brand>{brand}</Brand>
         <Description>{description}</Description>
         <PriceWrapper>
-          <OriginalPrice>{price.toLocaleString()}</OriginalPrice>
+          <OriginalPrice>{price.toLocaleString()}원</OriginalPrice>
           <NowLabel>NOW</NowLabel>
           <DiscountLabel>{discount}%</DiscountLabel>
         </PriceWrapper>
       </CardContainer>
 
+      {/* 확인 모달 */}
       <ReusableModal
         isOpen={confirmAction !== null}
         onClose={closeConfirm}
@@ -126,6 +125,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
         <p>{modalMessage}</p>
       </ReusableModal>
 
+      {/* 오류 모달 */}
       <ReusableModal
         isOpen={errorModalOpen}
         onClose={() => setErrorModalOpen(false)}
@@ -146,7 +146,7 @@ const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 `;
 
 const ImageWrapper = styled.div`
@@ -165,11 +165,11 @@ const Image = styled.img`
 
 const LikeButton = styled.div<{ animating: boolean }>`
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  width: 32px;
-  height: 32px;
-  padding: 4px;
+  bottom: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  padding: 2px;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
@@ -178,22 +178,26 @@ const LikeButton = styled.div<{ animating: boolean }>`
   justify-content: center;
   cursor: pointer;
 
-  /* 하트 추가 시 비트 애니메이션 */
   ${({ animating }) =>
     animating &&
     css`
       animation: ${heartBeat} 0.3s ease-out;
     `}
+
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
 `;
 
 const Brand = styled.h3`
-  margin: 6px 0 2px;
-  font-size: 11px;
+  margin: 4px 0 2px;
+  font-size: 10px;
   font-weight: 900;
 `;
 
 const Description = styled.p`
-  font-size: 12px;
+  font-size: 11px;
   color: #999;
   margin-bottom: 4px;
 `;
@@ -201,20 +205,20 @@ const Description = styled.p`
 const PriceWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
 `;
 
 const OriginalPrice = styled.span`
   font-weight: 900;
-  font-size: 16px;
+  font-size: 14px;
 `;
 
 const NowLabel = styled.span`
-  font-size: 10px;
+  font-size: 9px;
 `;
 
 const DiscountLabel = styled.span`
   font-weight: 800;
-  font-size: 12px;
+  font-size: 11px;
   color: #f6ae24;
 `;
