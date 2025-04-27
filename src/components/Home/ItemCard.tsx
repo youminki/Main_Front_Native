@@ -43,6 +43,11 @@ const ItemCard: React.FC<ItemCardProps> = ({
   const [errorMsg, setErrorMsg] = useState('');
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
 
+  // “/” 이후의 텍스트만 보여주기
+  const displayDescription = description.includes('/')
+    ? description.split('/')[1]
+    : description;
+
   const handleCardClick = () => onOpenModal(id);
   const handleLikeClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -107,7 +112,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
           </LikeButton>
         </ImageWrapper>
         <Brand>{brand}</Brand>
-        <Description>{description}</Description>
+        <Description>{displayDescription}</Description>
         <PriceWrapper>
           <OriginalPrice>{price.toLocaleString()}원</OriginalPrice>
           <NowLabel>NOW</NowLabel>
