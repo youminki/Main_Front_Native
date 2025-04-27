@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie'; // 쿠키 삭제를 위해 import
 import MypageBox from '../assets/MypageBox.svg';
 import MystyleBox from '../assets/MystyleBox.svg';
-import ReusableModal2 from '../components/ReusableModal2';
+import ReusableModal2 from '../components/ReusableModal';
 
 type MypageModalProps = {
   isOpen: boolean;
@@ -145,7 +145,7 @@ const Overlay = styled.div`
 `;
 
 const ModalContainer = styled.div<ModalProps>`
-  max-width: 1000px;
+  max-width: 600px;
   width: 100%;
   min-height: 400px;
   padding: 40px;
