@@ -6,7 +6,7 @@ import Spinner from '../../components/Spinner';
 
 import ItemList, { UIItem } from '../../components/Home/ItemList';
 import Footer from '../../components/Home/Footer';
-import FilterContainer from '../../components/Home/FilterContainer';
+
 import SubHeader from '../../components/Home/SubHeader';
 import { getProducts, ProductListItem } from '../../api/upload/productApi';
 import HomeDetail from './HomeDetail';
@@ -15,6 +15,8 @@ import HomeDetail from './HomeDetail';
 import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
 import ShareIcon from '../../assets/Header/ShareIcon.svg';
 import HomeIcon from '../../assets/Header/HomeIcon.svg';
+
+import ReusableModal2 from '../../components/ReusableModal';
 
 const ITEMS_PER_LOAD = 10;
 
@@ -33,6 +35,9 @@ const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  // 추가: 준비 중 모달 상태
+  const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
 
   useEffect(() => {
     const newCategory = searchParams.get('categori') || 'Entire';
@@ -165,27 +170,47 @@ const Home: React.FC = () => {
       </ScrollToTopButton>
 
       {isModalOpen && (
-        <ModalOverlay>
-          <ModalContent>
-            <ModalHeaderWrapper>
-              <ModalHeaderContainer>
-                <LeftSection>
-                  <CancelIcon
-                    src={CancleIconIcon}
-                    alt='취소'
-                    onClick={handleCloseModal}
-                  />
-                </LeftSection>
-                <CenterSection />
-                <RightSection>
-                  <Icon src={ShareIcon} alt='공유' />
-                  <Icon src={HomeIcon} alt='홈' onClick={() => navigate('/')} />
-                </RightSection>
-              </ModalHeaderContainer>
-            </ModalHeaderWrapper>
-            {selectedItemId && <HomeDetail id={selectedItemId} />}
-          </ModalContent>
-        </ModalOverlay>
+        <>
+          <ModalOverlay>
+            <ModalContent>
+              <ModalHeaderWrapper>
+                <ModalHeaderContainer>
+                  <LeftSection>
+                    <CancelIcon
+                      src={CancleIconIcon}
+                      alt='취소'
+                      onClick={handleCloseModal}
+                    />
+                  </LeftSection>
+                  <CenterSection />
+                  <RightSection>
+                    {/* ShareIcon 클릭 시 준비중 모달 */}
+                    <Icon
+                      src={ShareIcon}
+                      alt='공유'
+                      onClick={() => setFeatureModalOpen(true)}
+                    />
+                    <Icon
+                      src={HomeIcon}
+                      alt='홈'
+                      onClick={() => navigate('/')}
+                    />
+                  </RightSection>
+                </ModalHeaderContainer>
+              </ModalHeaderWrapper>
+              {selectedItemId && <HomeDetail id={selectedItemId} />}
+            </ModalContent>
+          </ModalOverlay>
+
+          {/* 준비 중 모달 */}
+          <ReusableModal2
+            isOpen={isFeatureModalOpen}
+            onClose={() => setFeatureModalOpen(false)}
+            title='준비 중입니다'
+          >
+            아직 구현 전인 기능이에요.
+          </ReusableModal2>
+        </>
       )}
     </MainContainer>
   );

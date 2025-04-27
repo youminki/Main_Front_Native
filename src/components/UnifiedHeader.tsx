@@ -1,6 +1,7 @@
+// src/components/UnifiedHeader.tsx
 import React, { useState, useEffect, useRef, FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import Cookies from 'js-cookie';
 import { BiTime } from 'react-icons/bi';
 import { FaUserCircle } from 'react-icons/fa';
@@ -16,6 +17,7 @@ import HomeIcon from '../assets/Header/HomeIcon.svg';
 import SearchIcon from '../assets/Header/SearchIcon.svg';
 
 import MypageModal from '../components/MypageModal';
+import ReusableModal2 from '../components/ReusableModal';
 import { getHeaderInfo } from '../api/user/userApi';
 
 interface HeaderContainerProps {
@@ -29,6 +31,15 @@ interface UnifiedHeaderProps {
 }
 
 const HISTORY_KEY = 'search_history';
+
+const slideUp = keyframes`
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+`;
+const slideDown = keyframes`
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+`;
 
 const AnimatedHeaderWrapper = styled.div<{ exit?: boolean }>`
   will-change: transform;
@@ -68,34 +79,94 @@ const RightSection = styled.div`
   position: relative;
 `;
 
-const SearchContainer = styled.div<{ open: boolean }>`
-  position: absolute;
-  top: 50%;
-  right: 40px;
-  transform: translateY(-50%);
+const SearchBox = styled.div<{ open: boolean }>`
   display: flex;
-  flex-direction: column;
-  background: #fff;
+  align-items: center;
   border-radius: 18px;
+  padding: 4px;
   box-shadow: ${({ open }) => (open ? '0 2px 8px rgba(0,0,0,0.15)' : 'none')};
-  overflow: hidden;
-  width: ${({ open }) => (open ? 'min(240px,100%)' : '0')};
-  height: ${({ open }) => (open ? 'auto' : '0')};
   transition:
     width 0.3s ease,
-    box-shadow 0.25s ease;
-  z-index: 1100;
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+  will-change: width, box-shadow;
+  position: relative;
+`;
+const SearchInput = styled.input<{ open?: boolean }>`
+  flex: 1;
+  margin-left: ${({ open }) => (open ? '8px' : '0')};
+  border: none;
+  outline: none;
+  width: ${({ open }) => (open ? '100%' : '0')};
+  opacity: ${({ open }) => (open ? 1 : 0)};
+  transition:
+    width 0.3s ease,
+    margin-left 0.3s ease,
+    opacity 0.2s ease 0.1s;
+`;
+const SearchIconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
 `;
 
-const LogoIcon = styled.img`
-  height: 32px;
-  cursor: pointer;
+const Dropdown = styled.ul`
+  position: absolute;
+  top: 35px;
+  left: 0;
+  width: 100%;
+  min-width: 240px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  overflow-y: auto;
+  z-index: 1100;
 `;
+const Item = styled.li`
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  &:hover {
+    background: #f5f5f5;
+  }
+`;
+const ClearAll = styled.div`
+  text-align: center;
+  padding: 8px;
+  font-size: 0.8rem;
+  color: #d00;
+  cursor: pointer;
+  &:hover {
+    background: #fdecea;
+  }
+`;
+const HistoryButton = styled.button`
+  all: unset;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  cursor: pointer;
+  &:hover {
+    background: #f5f5f5;
+  }
+`;
+
 const Icon = styled.img`
   width: 24px;
   height: 24px;
   cursor: pointer;
-  flex-shrink: 0;
+`;
+const LogoIcon = styled.img`
+  height: 32px;
+  cursor: pointer;
 `;
 const ProfileImage = styled.img`
   width: 44px;
@@ -124,93 +195,9 @@ const Title = styled.h1`
 `;
 const BackButton = styled.img`
   cursor: pointer;
-  flex-shrink: 0;
 `;
 const CancelIcon = styled.img`
   cursor: pointer;
-  flex-shrink: 0;
-`;
-
-const SearchBox = styled.div<{ open: boolean }>`
-  display: flex;
-  align-items: center;
-  border-radius: 18px;
-  padding: 4px;
-  transition:
-    width 0.3s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease;
-  box-shadow: ${({ open }) => (open ? '0 2px 8px rgba(0,0,0,0.15)' : 'none')};
-  will-change: width, box-shadow;
-  position: relative;
-  flex-shrink: 0;
-`;
-const SearchIconWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #333;
-  flex-shrink: 0;
-`;
-const SearchInput = styled.input<{ open?: boolean }>`
-  flex: 1;
-  margin-left: ${({ open }) => (open ? '8px' : '0')};
-  border: none;
-  outline: none;
-  width: ${({ open }) => (open ? '100%' : '0')};
-  opacity: ${({ open }) => (open ? 1 : 0)};
-  transition:
-    width 0.3s ease,
-    margin-left 0.3s ease,
-    opacity 0.2s ease 0.1s;
-`;
-const Dropdown = styled.ul`
-  position: absolute;
-  top: 35px;
-  left: 0;
-  width: 100%;
-  min-width: 240px;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  list-style: none;
-  margin: 4px 0 0;
-  padding: 0;
-  overflow-y: auto;
-  z-index: 1100;
-`;
-const Item = styled.li`
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  cursor: pointer;
-  flex-shrink: 0;
-  &:hover {
-    background: #f5f5f5;
-  }
-`;
-const ClearAll = styled.div`
-  text-align: center;
-  padding: 8px;
-  font-size: 0.8rem;
-  color: #d00;
-  cursor: pointer;
-  &:hover {
-    background: #fdecea;
-  }
-`;
-const HistoryButton = styled.button`
-  all: unset;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 8px 12px;
-  cursor: pointer;
-  &:hover {
-    background: #f5f5f5;
-  }
 `;
 
 const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
@@ -221,11 +208,21 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  // 로그인 여부, 닉네임, 프로필 이미지 URL (없으면 null)
+  // 로그인 상태
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState('멜픽 회원');
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMypageOpen, setMypageOpen] = useState(false);
+
+  // 준비 중 모달
+  const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
+
+  // 검색
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [openSearch, setOpenSearch] = useState(false);
+  const [query, setQuery] = useState(searchParams.get('search') || '');
+  const [historyState, setHistoryState] = useState<string[]>([]);
+  const boxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (variant === 'default' || variant === 'oneDepth') {
@@ -233,7 +230,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
         const token = Cookies.get('accessToken');
         setIsLoggedIn(!!token);
 
-        // 쿠키에 저장된 프로필 이미지 URL 있으면 사용
         const imgFromCookie = Cookies.get('profileImageUrl');
         setProfileImageUrl(imgFromCookie || null);
 
@@ -241,21 +237,14 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
           try {
             const { nickname: nick } = await getHeaderInfo();
             setNickname(nick);
-          } catch (err) {
-            console.error('헤더 닉네임 조회 실패:', err);
+          } catch {
+            console.error('헤더 닉네임 조회 실패');
           }
         }
       };
       fetchHeaderInfo();
     }
   }, [variant]);
-
-  // 검색 관련
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [openSearch, setOpenSearch] = useState(false);
-  const [query, setQuery] = useState(searchParams.get('search') || '');
-  const [historyState, setHistoryState] = useState<string[]>([]);
-  const boxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem(HISTORY_KEY);
@@ -315,7 +304,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
       <>
         <HeaderWrapper>
           <HeaderContainer>
-            <LeftSection onClick={() => isLoggedIn && setIsModalOpen(true)}>
+            <LeftSection onClick={() => isLoggedIn && setMypageOpen(true)}>
               {isLoggedIn ? (
                 <Greeting>
                   {profileImageUrl ? (
@@ -346,16 +335,12 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                     open={openSearch}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) =>
-                      e.key === 'Enter' && handleSearchSubmit(e)
-                    }
                     placeholder='검색어를 입력하세요'
                   />
                 </form>
                 <SearchIconWrapper onClick={toggleSearch}>
                   <Icon src={SearchIcon} alt='검색' />
                 </SearchIconWrapper>
-
                 {openSearch && historyState.length > 0 && (
                   <Dropdown>
                     {historyState.map((item, idx) => (
@@ -383,12 +368,12 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                   <Icon
                     src={BasketIcon}
                     alt='장바구니'
-                    onClick={() => navigate('/basket')}
+                    onClick={() => setFeatureModalOpen(true)}
                   />
                   <Icon
                     src={AlarmIcon}
                     alt='알림'
-                    onClick={() => navigate('/Alarm')}
+                    onClick={() => setFeatureModalOpen(true)}
                   />
                 </>
               ) : (
@@ -401,17 +386,27 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                   <Icon
                     src={AlarmIcon}
                     alt='알림'
-                    onClick={() => navigate('/Alarm')}
+                    onClick={() => setFeatureModalOpen(true)}
                   />
                 </>
               )}
             </RightSection>
           </HeaderContainer>
         </HeaderWrapper>
+
         <MypageModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isMypageOpen}
+          onClose={() => setMypageOpen(false)}
         />
+
+        {/* 준비 중 모달 */}
+        <ReusableModal2
+          isOpen={isFeatureModalOpen}
+          onClose={() => setFeatureModalOpen(false)}
+          title='준비 중입니다'
+        >
+          아직 구현 전인 기능이에요.
+        </ReusableModal2>
       </>
     );
   }
@@ -419,106 +414,112 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   // --- oneDepth variant ---
   if (variant === 'oneDepth') {
     return (
-      <HeaderWrapper>
-        <HeaderContainer>
-          <LeftSection>
-            <BackButton
-              src={BackButtonIcon}
-              alt='뒤로가기'
-              onClick={handleBack}
-            />
-          </LeftSection>
-          <RightSection>
-            <SearchContainer open={openSearch} ref={boxRef}>
-              <form
-                onSubmit={handleSearchSubmit}
-                style={{ flex: 1, display: 'flex' }}
-              >
-                <SearchInput
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder='검색어를 입력하세요'
-                  autoFocus={openSearch}
-                />
-              </form>
-              {openSearch && historyState.length > 0 && (
-                <Dropdown>
-                  {historyState.map((item, idx) => (
-                    <Item key={idx}>
-                      <HistoryButton onClick={() => handleHistoryClick(item)}>
-                        <BiTime size={16} style={{ marginRight: 8 }} />
-                        <span>{item}</span>
-                      </HistoryButton>
-                    </Item>
-                  ))}
-                  <ClearAll
-                    onClick={() => {
-                      localStorage.removeItem(HISTORY_KEY);
-                      setHistoryState([]);
-                    }}
-                  >
-                    전체 삭제
-                  </ClearAll>
-                </Dropdown>
+      <>
+        <HeaderWrapper>
+          <HeaderContainer>
+            <LeftSection>
+              <BackButton
+                src={BackButtonIcon}
+                alt='뒤로가기'
+                onClick={handleBack}
+              />
+            </LeftSection>
+            <RightSection>
+              <SearchBox open={openSearch} ref={boxRef}>
+                <form
+                  onSubmit={handleSearchSubmit}
+                  style={{ flex: 1, display: 'flex' }}
+                >
+                  <SearchInput
+                    open={openSearch}
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder='검색어를 입력하세요'
+                  />
+                </form>
+              </SearchBox>
+              <SearchIconWrapper onClick={toggleSearch}>
+                <Icon src={SearchIcon} alt='검색' />
+              </SearchIconWrapper>
+              {isLoggedIn ? (
+                <>
+                  <Icon
+                    src={BasketIcon}
+                    alt='장바구니'
+                    onClick={() => setFeatureModalOpen(true)}
+                  />
+                  <Icon
+                    src={AlarmIcon}
+                    alt='알림'
+                    onClick={() => setFeatureModalOpen(true)}
+                  />
+                </>
+              ) : (
+                <>
+                  <Icon
+                    src={MypageIcon}
+                    alt='마이페이지'
+                    onClick={() => navigate('/login')}
+                  />
+                  <Icon
+                    src={AlarmIcon}
+                    alt='알림'
+                    onClick={() => setFeatureModalOpen(true)}
+                  />
+                </>
               )}
-            </SearchContainer>
-            <SearchIconWrapper onClick={toggleSearch}>
-              <Icon src={SearchIcon} alt='검색' />
-            </SearchIconWrapper>
-            {isLoggedIn ? (
-              <>
-                <Icon
-                  src={BasketIcon}
-                  alt='장바구니'
-                  onClick={() => navigate('/basket')}
-                />
-                <Icon
-                  src={AlarmIcon}
-                  alt='알림'
-                  onClick={() => navigate('/alarm')}
-                />
-              </>
-            ) : (
-              <>
-                <Icon
-                  src={MypageIcon}
-                  alt='마이페이지'
-                  onClick={() => navigate('/login')}
-                />
-                <Icon
-                  src={AlarmIcon}
-                  alt='알림'
-                  onClick={() => navigate('/alarm')}
-                />
-              </>
-            )}
-          </RightSection>
-        </HeaderContainer>
-      </HeaderWrapper>
+            </RightSection>
+          </HeaderContainer>
+        </HeaderWrapper>
+
+        {/* 준비 중 모달 */}
+        <ReusableModal2
+          isOpen={isFeatureModalOpen}
+          onClose={() => setFeatureModalOpen(false)}
+          title='준비 중입니다'
+        >
+          아직 구현 전인 기능이에요.
+        </ReusableModal2>
+      </>
     );
   }
 
   // --- twoDepth variant ---
   if (variant === 'twoDepth') {
     return (
-      <HeaderWrapper>
-        <HeaderContainer variant={variant}>
-          <LeftSection>
-            <CancelIcon
-              src={CancleIconIcon}
-              alt='취소'
-              onClick={() => navigate(-1)}
-            />
-          </LeftSection>
-          <CenterSection>
-            <Title>{title}</Title>
-          </CenterSection>
-          <RightSection>
-            <Icon src={ShareIcon} alt='공유' onClick={() => {}} />
-            <Icon src={HomeIcon} alt='홈' onClick={() => navigate('/')} />
-          </RightSection>
-        </HeaderContainer>
-      </HeaderWrapper>
+      <>
+        <HeaderWrapper>
+          <HeaderContainer variant='twoDepth'>
+            <LeftSection>
+              <CancelIcon
+                src={CancleIconIcon}
+                alt='취소'
+                onClick={() => navigate(-1)}
+              />
+            </LeftSection>
+            <CenterSection>
+              <Title>{title}</Title>
+            </CenterSection>
+            <RightSection>
+              <Icon
+                src={ShareIcon}
+                alt='공유'
+                onClick={() => setFeatureModalOpen(true)}
+              />
+              <Icon src={HomeIcon} alt='홈' onClick={() => navigate('/')} />
+            </RightSection>
+          </HeaderContainer>
+        </HeaderWrapper>
+
+        {/* 준비 중 모달 */}
+        <ReusableModal2
+          isOpen={isFeatureModalOpen}
+          onClose={() => setFeatureModalOpen(false)}
+          title='준비 중입니다'
+        >
+          아직 구현 전인 기능이에요.
+        </ReusableModal2>
+      </>
     );
   }
 
