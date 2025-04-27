@@ -11,12 +11,11 @@ import SubHeader from '../../components/Home/SubHeader';
 import { getProducts, ProductListItem } from '../../api/upload/productApi';
 import HomeDetail from './HomeDetail';
 
-// twoDepth header assets
 import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
 import ShareIcon from '../../assets/Header/ShareIcon.svg';
 import HomeIcon from '../../assets/Header/HomeIcon.svg';
 
-import ReusableModal2 from '../../components/ReusableModal';
+import ReusableModal2 from '../../components/ReusableModal2'; // 준비 중 모달
 
 const ITEMS_PER_LOAD = 10;
 
@@ -36,7 +35,7 @@ const Home: React.FC = () => {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // 추가: 준비 중 모달 상태
+  // 준비 중 모달 상태
   const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
 
   useEffect(() => {
@@ -156,7 +155,6 @@ const Home: React.FC = () => {
           barPosition={barPosition}
           onCategoryClick={() => setSearchQuery('')}
         />
-        {/* <FilterContainer /> */}
         <Content>
           <ItemList items={uiItems} onItemClick={handleOpenModal} />
           {isLoading && <Spinner />}
@@ -172,7 +170,7 @@ const Home: React.FC = () => {
       {isModalOpen && (
         <>
           <ModalOverlay>
-            <ModalContent>
+            <ModalBox>
               <ModalHeaderWrapper>
                 <ModalHeaderContainer>
                   <LeftSection>
@@ -184,7 +182,6 @@ const Home: React.FC = () => {
                   </LeftSection>
                   <CenterSection />
                   <RightSection>
-                    {/* ShareIcon 클릭 시 준비중 모달 */}
                     <Icon
                       src={ShareIcon}
                       alt='공유'
@@ -198,8 +195,10 @@ const Home: React.FC = () => {
                   </RightSection>
                 </ModalHeaderContainer>
               </ModalHeaderWrapper>
-              {selectedItemId && <HomeDetail id={selectedItemId} />}
-            </ModalContent>
+              <ModalBody>
+                {selectedItemId && <HomeDetail id={selectedItemId} />}
+              </ModalBody>
+            </ModalBox>
           </ModalOverlay>
 
           {/* 준비 중 모달 */}
@@ -219,6 +218,7 @@ const Home: React.FC = () => {
 export default Home;
 
 // styled-components
+
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -226,14 +226,17 @@ const MainContainer = styled.div`
   padding: 2rem 1rem;
   padding-top: 0px;
 `;
+
 const ContentWrapper = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
 `;
+
 const Content = styled.div`
   flex: 1;
 `;
+
 const ScrollToTopButton = styled.button`
   position: fixed;
   bottom: 120px;
@@ -268,56 +271,74 @@ const ScrollToTopButton = styled.button`
     right: calc((100vw - 1000px) / 2 + 20px);
   }
 `;
+
 const ArrowIcon = styled.svg`
   width: 28px;
   height: 28px;
   fill: #fff;
 `;
+
 const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+
   z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
-const ModalContent = styled.div`
+
+const ModalBox = styled.div`
   background: #fff;
   width: 100%;
+  max-width: 1000px;
   height: 100%;
   position: relative;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
+
 const ModalHeaderWrapper = styled.div`
   position: fixed;
   top: 0;
   width: 100%;
   max-width: 1000px;
-  margin: 0 auto 20px;
-  padding: 0 27px;
+  margin: 0 auto;
+
   background: #fff;
   z-index: 2100;
 `;
+
 const ModalHeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 20px 0 27px;
+  height: 60px;
 `;
+
+const ModalBody = styled.div``;
+
 const LeftSection = styled.div`
   cursor: pointer;
 `;
+
 const CenterSection = styled.div`
   flex: 1;
 `;
+
 const RightSection = styled.div`
   display: flex;
   gap: 19px;
 `;
+
 const CancelIcon = styled.img`
   cursor: pointer;
 `;
+
 const Icon = styled.img`
   cursor: pointer;
 `;
