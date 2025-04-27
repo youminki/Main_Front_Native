@@ -34,7 +34,7 @@ const TABS: Tab[] = [
   },
 ];
 
-const BAR_WIDTH = 30;
+const BAR_WIDTH = 40;
 
 const BottomNav: React.FC = () => {
   const navigate = useNavigate();
@@ -199,9 +199,9 @@ const IconWrapper = styled.div<{ isActive: boolean; disabled: boolean }>`
     top: -8px;
     left: 50%;
     transform: translateX(-50%);
-    width: 50px;
-    height: 30px;
-    background: rgba(255, 238, 0, 0.4);
+    width: 60px;
+    height: 60px;
+    background: rgba(250, 234, 6, 0.4);
     filter: blur(16px);
     clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
     opacity: ${({ isActive }) => (isActive ? 1 : 0)};
