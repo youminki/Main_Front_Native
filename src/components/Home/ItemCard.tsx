@@ -1,6 +1,6 @@
 // src/components/Home/ItemCard.tsx
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { HeartIcon } from '../../assets/library/HeartIcon';
 import { addToCloset, removeFromCloset } from '../../api/closet/closetApi';
 import ReusableModal from '../ReusableModal2';
@@ -19,6 +19,13 @@ type ItemCardProps = {
 
 type ConfirmAction = 'add' | 'remove' | null;
 
+// 하트 비트 애니메이션
+const heartBeat = keyframes`
+  0% { transform: scale(1); }
+  30% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+`;
+
 const ItemCard: React.FC<ItemCardProps> = ({
   id,
   image,
@@ -31,32 +38,38 @@ const ItemCard: React.FC<ItemCardProps> = ({
   onDelete,
 }) => {
   const [liked, setLiked] = useState<boolean>(initialLiked);
+  const [animating, setAnimating] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
 
   const handleCardClick = () => onOpenModal(id);
-
   const handleLikeClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setConfirmAction(liked ? 'remove' : 'add');
   };
 
   const doAdd = async () => {
+    // Optimistic update + animation
+    setLiked(true);
+    setAnimating(true);
+    setTimeout(() => setAnimating(false), 300);
     try {
       await addToCloset(+id);
-      setLiked(true);
     } catch (err: any) {
+      setLiked(false);
       showError(err);
     }
   };
 
   const doRemove = async () => {
+    // Optimistic removal
+    setLiked(false);
     try {
       await removeFromCloset(+id);
-      setLiked(false);
-      if (onDelete) onDelete(id);
+      onDelete && onDelete(id);
     } catch (err: any) {
+      setLiked(true);
       showError(err);
     }
   };
@@ -74,7 +87,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
   };
 
   const closeConfirm = () => setConfirmAction(null);
-
   const handleConfirm = () => {
     closeConfirm();
     if (confirmAction === 'add') doAdd();
@@ -92,7 +104,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
       <CardContainer onClick={handleCardClick}>
         <ImageWrapper>
           <Image src={image?.split('#')[0] ?? '/default.jpg'} alt={brand} />
-          <LikeButton onClick={handleLikeClick}>
+          <LikeButton onClick={handleLikeClick} animating={animating}>
             <HeartIcon filled={liked} />
           </LikeButton>
         </ImageWrapper>
@@ -105,7 +117,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
         </PriceWrapper>
       </CardContainer>
 
-      {/* 등록/삭제 확인 모달: onConfirm만 넘겨주면 “아니요/네” 버튼이 자동 */}
       <ReusableModal
         isOpen={confirmAction !== null}
         onClose={closeConfirm}
@@ -115,7 +126,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
         <p>{modalMessage}</p>
       </ReusableModal>
 
-      {/* 오류 모달 */}
       <ReusableModal
         isOpen={errorModalOpen}
         onClose={() => setErrorModalOpen(false)}
@@ -138,6 +148,7 @@ const CardContainer = styled.div`
   cursor: pointer;
   margin-bottom: 15px;
 `;
+
 const ImageWrapper = styled.div`
   position: relative;
   width: 100%;
@@ -145,44 +156,63 @@ const ImageWrapper = styled.div`
   background: #f5f5f5;
   border: 1px solid #ccc;
 `;
+
 const Image = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
 `;
-const LikeButton = styled.div`
+
+const LikeButton = styled.div<{ animating: boolean }>`
   position: absolute;
-  bottom: 4px;
-  right: 4px;
-  width: 36px;
-  height: 36px;
+  bottom: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
+  /* 하트 추가 시 비트 애니메이션 */
+  ${({ animating }) =>
+    animating &&
+    css`
+      animation: ${heartBeat} 0.3s ease-out;
+    `}
 `;
+
 const Brand = styled.h3`
   margin: 6px 0 2px;
   font-size: 11px;
   font-weight: 900;
 `;
+
 const Description = styled.p`
   font-size: 12px;
   color: #999;
   margin-bottom: 4px;
 `;
+
 const PriceWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
 `;
+
 const OriginalPrice = styled.span`
   font-weight: 900;
   font-size: 16px;
 `;
+
 const NowLabel = styled.span`
   font-size: 10px;
 `;
+
 const DiscountLabel = styled.span`
   font-weight: 800;
   font-size: 12px;
