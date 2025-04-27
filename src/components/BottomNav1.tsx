@@ -92,7 +92,7 @@ const BottomNav: React.FC = () => {
     <DockContainer visible={visible}>
       <Dock ref={navRef}>
         {TABS.map((tab) => {
-          const isActive = tab.key === activeKey;
+          const isActive = tab.key === activeKey && glow;
           const enabled = tab.key === 'home' || tab.key === 'lockerRoom';
           return (
             <NavItem
@@ -101,7 +101,7 @@ const BottomNav: React.FC = () => {
               disabled={!enabled}
               onClick={() => handleClick(tab, enabled)}
             >
-              <IconWrapper isActive={isActive && glow} disabled={!enabled}>
+              <IconWrapper isActive={isActive} disabled={!enabled}>
                 <Icon src={tab.icon} alt={tab.label} />
               </IconWrapper>
               <Label isActive={isActive} disabled={!enabled}>
@@ -144,7 +144,7 @@ const Dock = styled.div`
   background: rgba(29, 29, 27, 0.8);
   backdrop-filter: blur(16px);
   border-radius: 32px;
-  padding: 12px 20px;
+  padding: 12px 0;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 
   @media (max-width: 768px) {
@@ -160,15 +160,6 @@ const NavItem = styled.div<{ disabled: boolean }>`
   justify-content: center;
   cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
-  transition: transform 0.2s ease;
-
-  ${({ disabled }) =>
-    !disabled &&
-    css`
-      &:hover {
-        transform: translateY(-4px) scale(1.05);
-      }
-    `}
 `;
 
 const IconWrapper = styled.div<{ isActive: boolean; disabled: boolean }>`
@@ -176,31 +167,31 @@ const IconWrapper = styled.div<{ isActive: boolean; disabled: boolean }>`
   width: 48px;
   height: 48px;
   background: ${({ isActive }) =>
-    isActive ? '#f6ae24' : 'rgba(255,255,255,0.1)'};
+    isActive ? '#fff' : 'rgba(255,255,255,0.1)'};
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+  transition: background 0.2s ease;
 
-  /* disabled state */
   ${({ disabled }) =>
     disabled &&
     css`
       background: rgba(255, 255, 255, 0.05);
     `}
 
-  /* hover state when not disabled */
   ${({ disabled, isActive }) =>
     !disabled &&
     css`
       &:hover {
-        background: ${isActive ? '#f6ae24' : 'rgba(255,255,255,0.2)'};
-        transform: scale(1.1);
+        background: ${isActive ? '#fff' : 'rgba(255,255,255,0.2)'};
       }
     `}
+
+  img {
+    filter: ${({ isActive }) =>
+      isActive ? 'none' : 'brightness(0) invert(1)'};
+  }
 
   &::before {
     content: '';
@@ -222,7 +213,6 @@ const IconWrapper = styled.div<{ isActive: boolean; disabled: boolean }>`
 const Icon = styled.img`
   width: 24px;
   height: 24px;
-  filter: brightness(0) invert(1);
 `;
 
 const Label = styled.span<{ isActive: boolean; disabled: boolean }>`
