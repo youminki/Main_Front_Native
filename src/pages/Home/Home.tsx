@@ -151,7 +151,7 @@ const Home: React.FC = () => {
           barPosition={barPosition}
           onCategoryClick={() => setSearchQuery('')}
         />
-        <FilterContainer />
+        {/* <FilterContainer /> */}
         <Content>
           <ItemList items={uiItems} onItemClick={handleOpenModal} />
           {isLoading && <Spinner />}
