@@ -1,6 +1,8 @@
+// src/components/BottomNav.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
+
 import HomeIcon from '../assets/BottomNav/HomeIcon.svg';
 import BrandIcon from '../assets/BottomNav/BrandIcon.svg';
 import CustomerServiceIcon from '../assets/BottomNav/CustomerServiceIcon.svg';
@@ -20,7 +22,7 @@ const TABS: Tab[] = [
   { key: 'melpik', route: '/melpik', icon: MelpikIcon, label: '멜픽' },
   {
     key: 'lockerRoom',
-    route: '/lockerRoom',
+    route: '/my-closet',
     icon: LockerRoomIcon,
     label: '락커룸',
   },
@@ -68,7 +70,6 @@ const BottomNav: React.FC = () => {
       if (el) {
         const containerRect = navRef.current.getBoundingClientRect();
         const elRect = el.getBoundingClientRect();
-        // container 안에서의 left
         const left =
           elRect.left - containerRect.left + (elRect.width - BAR_WIDTH) / 2;
         setBarPos(left);
@@ -81,7 +82,8 @@ const BottomNav: React.FC = () => {
     return () => clearTimeout(t);
   }, [location.pathname]);
 
-  const handleClick = (tab: Tab) => {
+  const handleClick = (tab: Tab, enabled: boolean) => {
+    if (!enabled) return;
     if (tab.key !== activeKey) {
       setGlow(false);
       navigate(tab.route);
@@ -93,16 +95,20 @@ const BottomNav: React.FC = () => {
       <Dock ref={navRef}>
         {TABS.map((tab) => {
           const isActive = tab.key === activeKey;
+          const enabled = tab.key === 'home' || tab.key === 'lockerRoom';
           return (
             <NavItem
               key={tab.key}
               data-key={tab.key}
-              onClick={() => handleClick(tab)}
+              disabled={!enabled}
+              onClick={() => handleClick(tab, enabled)}
             >
-              <IconWrapper isActive={isActive && glow}>
+              <IconWrapper isActive={isActive && glow} disabled={!enabled}>
                 <Icon src={tab.icon} alt={tab.label} />
               </IconWrapper>
-              <Label isActive={isActive}>{tab.label}</Label>
+              <Label isActive={isActive} disabled={!enabled}>
+                {tab.label}
+              </Label>
             </NavItem>
           );
         })}
@@ -129,7 +135,6 @@ const DockContainer = styled.nav<{ visible: boolean }>`
   z-index: 1000;
   @media (min-width: 768px) {
     bottom: 3%;
-    transform: none;
     transform: translateX(-50%);
   }
 `;
@@ -148,21 +153,26 @@ const Dock = styled.div`
   }
 `;
 
-const NavItem = styled.div`
-  flex: 1; /* 균등 분할 */
+const NavItem = styled.div<{ disabled: boolean }>`
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
   transition: transform 0.2s ease;
 
-  &:hover {
-    transform: translateY(-4px) scale(1.05);
-  }
+  ${({ disabled }) =>
+    !disabled &&
+    css`
+      &:hover {
+        transform: translateY(-4px) scale(1.05);
+      }
+    `}
 `;
 
-const IconWrapper = styled.div<{ isActive: boolean }>`
+const IconWrapper = styled.div<{ isActive: boolean; disabled: boolean }>`
   position: relative;
   width: 48px;
   height: 48px;
@@ -176,11 +186,18 @@ const IconWrapper = styled.div<{ isActive: boolean }>`
     background 0.2s ease,
     transform 0.2s ease;
 
-  &:hover {
-    background: ${({ isActive }) =>
-      isActive ? '#f6ae24' : 'rgba(255,255,255,0.2)'};
-    transform: scale(1.1);
-  }
+  ${({ disabled }) =>
+    disabled
+      ? css`
+          background: rgba(255, 255, 255, 0.05);
+        `
+      : css`
+          &:hover {
+            background: ${({ isActive }) =>
+              isActive ? '#f6ae24' : 'rgba(255,255,255,0.2)'};
+            transform: scale(1.1);
+          }
+        `}
 
   &::before {
     content: '';
@@ -205,10 +222,15 @@ const Icon = styled.img`
   filter: brightness(0) invert(1);
 `;
 
-const Label = styled.span<{ isActive: boolean }>`
+const Label = styled.span<{ isActive: boolean; disabled: boolean }>`
   margin-top: 6px;
   font-size: 11px;
-  color: ${({ isActive }) => (isActive ? '#fff' : 'rgba(255,255,255,0.7)')};
+  color: ${({ isActive, disabled }) =>
+    disabled
+      ? 'rgba(255,255,255,0.5)'
+      : isActive
+        ? '#fff'
+        : 'rgba(255,255,255,0.7)'};
   transition: color 0.2s ease;
 
   @media (max-width: 768px) {
