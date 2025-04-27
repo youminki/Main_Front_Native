@@ -107,6 +107,7 @@ const OptionText = styled.div`
   font-size: 14px;
   text-align: center;
   color: ${Theme.colors.black};
+  z-index: 1;
 `;
 
 const Circle = styled.div`

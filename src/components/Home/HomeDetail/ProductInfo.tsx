@@ -1,16 +1,16 @@
+// src/components/Home/HomeDetail/ProductInfo.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Theme from '../../../styles/Theme';
 import AddTekImage from '../../../assets/ClosetIcon.svg';
 import { addToCloset } from '../../../api/closet/closetApi';
-import ReusableModal from '../../ReusableModal'; // ReusableModal import
+import ReusableModal from '../../ReusableModal';
 
 export interface ProductInfoProps {
   item: {
     brand: string;
     product_num: string;
     name: string;
-    originalPrice: number;
+    retailPrice: number;
     discountPercent: number;
     discountPrice: number;
   };
@@ -25,30 +25,18 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ item, productId }) => {
   const handleAddTekClick = async () => {
     try {
       await addToCloset(productId);
-      setModalMessage('찜 목록에 추가되었습니다!');
       setModalTitle('성공');
-      setIsModalOpen(true);
+      setModalMessage('찜 목록에 추가되었습니다!');
     } catch (err: any) {
       const status = err?.response?.status;
-      if (status === 409) {
-        setModalMessage('이미 찜한 상품입니다.');
-        setModalTitle('오류');
-        setIsModalOpen(true);
-      } else if (status === 401) {
-        setModalMessage('로그인이 필요합니다.');
-        setModalTitle('오류');
-        setIsModalOpen(true);
-      } else {
-        setModalMessage('찜 추가 중 오류가 발생했습니다.');
-        setModalTitle('오류');
-        setIsModalOpen(true);
-        console.error(err);
-      }
+      if (status === 409) setModalMessage('이미 찜한 상품입니다.');
+      else if (status === 401) setModalMessage('로그인이 필요합니다.');
+      else setModalMessage('에러가 발생했습니다.');
+      setModalTitle('알림');
+      console.error(err);
+    } finally {
+      setIsModalOpen(true);
     }
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
   };
 
   return (
@@ -56,17 +44,18 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ item, productId }) => {
       <CategoryText>
         브랜드 <span className='gt'>&gt;</span> {item.brand}
       </CategoryText>
-
       <ProductTitle>
         {item.product_num} / {item.name}
       </ProductTitle>
 
       <ContentContainer>
         <PriceContainer>
-          <OriginalPrice>{item.originalPrice.toLocaleString()}</OriginalPrice>
+          <OriginalPrice>{item.retailPrice.toLocaleString()}원</OriginalPrice>
           <DiscountRow>
             <DiscountPercent>{item.discountPercent}%</DiscountPercent>
-            <DiscountPrice>{item.discountPrice.toLocaleString()}</DiscountPrice>
+            <DiscountPrice>
+              {item.discountPrice.toLocaleString()}원
+            </DiscountPrice>
           </DiscountRow>
         </PriceContainer>
 
@@ -77,10 +66,11 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ item, productId }) => {
 
       <ReusableModal
         isOpen={isModalOpen}
-        onClose={closeModal}
+        onClose={() => setIsModalOpen(false)}
         title={modalTitle}
-        children={modalMessage}
-      />
+      >
+        {modalMessage}
+      </ReusableModal>
     </InfoContainer>
   );
 };
@@ -91,48 +81,34 @@ const InfoContainer = styled.div`
   width: 100%;
   margin-bottom: 30px;
 `;
-
 const CategoryText = styled.p`
-  font-weight: 400;
   font-size: 11px;
-  line-height: 11px;
   color: #000;
-
   & > span.gt {
-    color: #dddddd;
+    color: #ddd;
     padding: 0 4px;
   }
 `;
-
 const ProductTitle = styled.h2`
   font-weight: 700;
   font-size: 15px;
-  line-height: 18px;
-  color: #000;
   margin: 8px 0;
 `;
-
 const ContentContainer = styled.div`
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
 `;
-
 const PriceContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 20px 0 16px 0;
 `;
-
 const OriginalPrice = styled.span`
   font-weight: 700;
   font-size: 13px;
   text-decoration: line-through;
   color: #999;
 `;
-
 const DiscountRow = styled.div`
   display: flex;
   align-items: baseline;
@@ -140,7 +116,7 @@ const DiscountRow = styled.div`
 `;
 
 const DiscountPercent = styled.span`
-  color: ${Theme.colors.yellow};
+  color: #f6ae24;
   margin-right: 10px;
   font-weight: 900;
   font-size: 16px;
@@ -153,12 +129,8 @@ const DiscountPrice = styled.span`
 `;
 
 const TekImageContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
 `;
-
 const TekImage = styled.img`
   width: 80px;
   height: 80px;
