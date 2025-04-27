@@ -2,9 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie'; // 쿠키 삭제를 위해 import
 import MypageBox from '../assets/MypageBox.svg';
 import MystyleBox from '../assets/MystyleBox.svg';
-import ReusableModal2 from '../components/ReusableModal';
+import ReusableModal2 from '../components/ReusableModal2';
 
 type MypageModalProps = {
   isOpen: boolean;
@@ -14,7 +15,7 @@ type MypageModalProps = {
 const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
-  const [isPlaceholderOpen, setPlaceholderOpen] = useState(false); // 추가
+  const [isPlaceholderOpen, setPlaceholderOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,33 +24,39 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
 
   const handleOverlayClick = () => {
     setIsClosing(true);
-    setTimeout(() => onClose(), 400);
+    setTimeout(onClose, 400);
   };
+  const handleModalClick = (e: React.MouseEvent) => e.stopPropagation();
 
-  const handleModalClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
-
-  // 로그아웃
   const handleLogoutOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
     setLogoutModalOpen(true);
   };
+
+  // ★ 실제 로그아웃 로직
   const handleLogoutConfirm = () => {
-    console.log('로그아웃 실행됨');
+    // 로컬 스토리지에서 토큰 제거
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+
+    // 쿠키에서 토큰 및 프로필 이미지 URL 제거
+    Cookies.remove('accessToken');
+    Cookies.remove('refreshToken');
+    Cookies.remove('profileImageUrl');
+
+    // 모달 닫기
     setLogoutModalOpen(false);
     onClose();
+
+    // 로그인 페이지로 이동
     navigate('/login');
   };
 
-  // 아직 구현 전 모달 띄우기
   const handlePlaceholderClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPlaceholderOpen(true);
   };
-  const handlePlaceholderClose = () => {
-    setPlaceholderOpen(false);
-  };
+  const handlePlaceholderClose = () => setPlaceholderOpen(false);
 
   if (!isOpen) return null;
 
@@ -95,7 +102,7 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
         </ReusableModal2>
       )}
 
-      {/* 아직 구현 전 알림 모달 */}
+      {/* 준비 중 모달 */}
       {isPlaceholderOpen && (
         <ReusableModal2
           isOpen={isPlaceholderOpen}
@@ -110,8 +117,6 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
 };
 
 export default MypageModal;
-
-// ──────────────────────────── 스타일 정의 ────────────────────────────
 
 const slideUp = keyframes`
   from { transform: translateY(100%); }
@@ -128,7 +133,10 @@ interface ModalProps {
 
 const Overlay = styled.div`
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
@@ -137,8 +145,8 @@ const Overlay = styled.div`
 `;
 
 const ModalContainer = styled.div<ModalProps>`
+  max-width: 1000px;
   width: 100%;
-  max-width: 600px;
   min-height: 400px;
   padding: 40px;
   background: #fff;
@@ -163,17 +171,21 @@ const ModalHandle = styled.div`
   margin-top: 8px;
 `;
 const HandleBar = styled.div`
+  position: fixed;
+  top: 6px;
   width: 40px;
   height: 4px;
   background: #ddd;
   border-radius: 2px;
 `;
+
 const ModalHeader = styled.div`
   margin: 16px;
 `;
 const Title = styled.h2`
   font-size: 16px;
   font-weight: 800;
+  line-height: 18px;
   margin: 0;
 `;
 const Divider = styled.hr`
@@ -192,10 +204,8 @@ const ModalContentArea = styled.div`
   gap: 20px;
 `;
 const PlaceholderImage = styled.img`
-  width: auto;
-  height: auto;
-  object-fit: cover;
   cursor: pointer;
+  object-fit: cover;
 `;
 
 const LogoutButton = styled.button`
