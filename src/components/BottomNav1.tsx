@@ -1,7 +1,7 @@
 // src/components/BottomNav.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styled, { css, keyframes } from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import HomeIcon from '../assets/BottomNav/HomeIcon.svg';
 import BrandIcon from '../assets/BottomNav/BrandIcon.svg';
@@ -47,7 +47,6 @@ const BottomNav: React.FC = () => {
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
 
-  // 스크롤 시 nav 숨김/표시
   useEffect(() => {
     lastScrollY.current = window.scrollY;
     const onScroll = () => {
@@ -59,7 +58,6 @@ const BottomNav: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // activeKey, barPos 업데이트
   useEffect(() => {
     const current = TABS.find((t) => t.route === location.pathname);
     if (current && navRef.current) {
@@ -133,6 +131,7 @@ const DockContainer = styled.nav<{ visible: boolean }>`
   max-width: 400px;
   padding: 0 16px;
   z-index: 1000;
+
   @media (min-width: 768px) {
     bottom: 3%;
     transform: translateX(-50%);
@@ -186,18 +185,22 @@ const IconWrapper = styled.div<{ isActive: boolean; disabled: boolean }>`
     background 0.2s ease,
     transform 0.2s ease;
 
+  /* disabled state */
   ${({ disabled }) =>
-    disabled
-      ? css`
-          background: rgba(255, 255, 255, 0.05);
-        `
-      : css`
-          &:hover {
-            background: ${({ isActive }) =>
-              isActive ? '#f6ae24' : 'rgba(255,255,255,0.2)'};
-            transform: scale(1.1);
-          }
-        `}
+    disabled &&
+    css`
+      background: rgba(255, 255, 255, 0.05);
+    `}
+
+  /* hover state when not disabled */
+  ${({ disabled, isActive }) =>
+    !disabled &&
+    css`
+      &:hover {
+        background: ${isActive ? '#f6ae24' : 'rgba(255,255,255,0.2)'};
+        transform: scale(1.1);
+      }
+    `}
 
   &::before {
     content: '';

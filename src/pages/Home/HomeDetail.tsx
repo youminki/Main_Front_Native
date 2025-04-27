@@ -14,10 +14,10 @@ import PaymentMethod from '../../components/Home/HomeDetail/PaymentMethod';
 import SizeInfo from '../../components/Home/HomeDetail/SizeInfo';
 import MaterialInfo from '../../components/Home/HomeDetail/MaterialInfo';
 import ProductDetails from '../../components/Home/HomeDetail/ProductDetails';
-import BottomBar from '../../components/Home/HomeDetail/BottomBar';
+// import BottomBar from '../../components/Home/HomeDetail/BottomBar';
 import ServiceSelection from '../../components/Home/HomeDetail/ServiceSelection';
 import RentalOptions from '../../components/Home/HomeDetail/RentalOptions';
-import ShoppingBasket from '../../assets/Home/HomeDetail/ShoppingBasket.svg';
+// import ShoppingBasket from '../../assets/Home/HomeDetail/ShoppingBasket.svg';
 
 interface ProductDetail {
   id: number;
@@ -202,11 +202,11 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         />
       </ContentContainer>
 
-      <BottomBar
+      {/* <BottomBar
         cartIconSrc={ShoppingBasket}
         orderButtonLabel='제품 주문하기'
         onOrderClick={() => console.log('🛒 주문하기')}
-      />
+      /> */}
     </DetailContainer>
   );
 };
