@@ -15,7 +15,7 @@ interface Tab {
 }
 
 const TABS: Tab[] = [
-  { key: 'home', route: '/main', icon: HomeIcon, label: '홈' },
+  { key: 'home', route: '/home', icon: HomeIcon, label: '홈' },
   { key: 'brand', route: '/brand', icon: BrandIcon, label: '브랜드' },
   { key: 'melpik', route: '/melpik', icon: MelpikIcon, label: '멜픽' },
   {
