@@ -1,3 +1,4 @@
+// src/pages/PersonalLink.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
@@ -6,8 +7,8 @@ import personalLinkShareIcon from '../assets/personalLink/personalLinkShareIcon.
 import personalLinkProfileIcon from '../assets/personalLink/personalLinkProfileIcon.svg';
 import personalLinkAlramIcon from '../assets/personalLink/personalLinkAlramIcon.svg';
 
-/** ItemList 컴포넌트 임포트 */
-import ItemList from '../components/Home/ItemList';
+/** ItemList 컴포넌트 및 UIItem 타입 임포트 */
+import ItemList, { UIItem } from '../components/Home/ItemList';
 
 // 예시 아이템 데이터 (실제 서버나 API 연동 시 삭제/교체)
 const dummyItems = [
@@ -16,7 +17,7 @@ const dummyItems = [
     image: '이미지경로1.jpg',
     brand: 'SANDRO',
     description: 'SF23SRD07869 / 원피스',
-    category: 'onepiece', // 추가됨
+    category: 'onepiece',
     price: 489000,
     discount: 10,
   },
@@ -63,6 +64,19 @@ const PersonalLink: React.FC = () => {
       document.body.classList.remove('PersonalLink');
     };
   }, []);
+
+  // dummyItems → UIItem 타입으로 변환
+  const uiDummyItems: UIItem[] = dummyItems.map(
+    ({ id, image, brand, description, price, discount }) => ({
+      id: id.toString(),
+      image,
+      brand,
+      description,
+      price,
+      discount,
+      isLiked: false, // 개인 링크에서는 기본적으로 찜되지 않은 상태
+    })
+  );
 
   return (
     <Container>
@@ -150,7 +164,7 @@ const PersonalLink: React.FC = () => {
         <ProductListWrapper>
           <IntroText>👉 직접 입어보고 맘에 드는 것만 소개해드려요 👈</IntroText>
           {/* ItemList 컴포넌트 사용 (2열 그리드) */}
-          <ItemList items={dummyItems} />
+          <ItemList items={uiDummyItems} />
         </ProductListWrapper>
       )}
 
@@ -174,7 +188,6 @@ const Container = styled.div`
   flex-direction: column;
   position: relative;
   overflow-x: hidden;
-  /* padding: 1rem; */
 `;
 
 /* 상단 영역 (노란색 + 대각선) */
@@ -183,8 +196,6 @@ const TopSection = styled.div`
   width: 100%;
   height: 240px;
   background: #f6ae24;
-
-  /* 아래쪽을 대각선으로 잘라내기 */
   clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
   display: flex;
   align-items: center;
@@ -239,14 +250,13 @@ const UserImageWrapper = styled.div`
     height: 90px;
     border-radius: 50%;
     object-fit: cover;
-    background: #d9d9d9; /* 이미지가 없을 때 표시용 */
+    background: #d9d9d9;
   }
 `;
 
-/* 사용자 이름 (프로필 하단에 위치) */
+/* 사용자 이름 */
 const UserName = styled.div`
   margin-top: 8px;
-
   font-weight: 700;
   font-size: 18px;
   line-height: 20px;
@@ -262,15 +272,13 @@ const TabSection = styled.div`
   justify-content: center;
 `;
 
-/* 탭 아이템: 항상 border: 2px solid #f6ae24 */
 /* 탭 아이템 */
 const TabItem = styled.div<{ active: boolean }>`
   width: 50%;
   height: 50px;
-  border: 2px solid transparent; /* 변경: 모든 탭에 기본 투명 테두리 적용 */
+  border: 2px solid transparent;
   background: ${({ active }) => (active ? '#ffffff' : '#eeeeee')};
   color: ${({ active }) => (active ? '#000' : '#999')};
-
   font-weight: 800;
   font-size: 14px;
   display: flex;
@@ -278,7 +286,6 @@ const TabItem = styled.div<{ active: boolean }>`
   align-items: center;
   cursor: pointer;
 
-  /* 각 탭의 외곽 테두리 설정 */
   &:first-child {
     border-radius: 10px 0 0 10px;
   }
@@ -286,12 +293,10 @@ const TabItem = styled.div<{ active: boolean }>`
     border-radius: 0 10px 10px 0;
   }
 
-  /* 탭 활성화 시 외곽 테두리 색상 변경 */
   ${({ active }) =>
     active &&
     `
     border-color: #f6ae24;
-    border-style: solid;
   `}
 `;
 
@@ -315,34 +320,27 @@ const LinkItem = styled.div`
   margin-bottom: 15px;
   padding: 0 16px;
   box-sizing: border-box;
-
-  /* row 정렬: 라벨박스 -> 텍스트 -> 화살표 */
 `;
 
-/* 링크 라벨박스 (왼쪽), 오른쪽을 뾰족하게 처리 */
+/* 링크 라벨박스 */
 const LinkLabelBox = styled.div`
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   padding: 7px 12px;
   background: #000000;
   color: #ffffff;
-  font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: 12px;
-  line-height: 12px;
   border-radius: 5px 20px 20px 5px;
-
   margin-bottom: 20px;
 `;
 
-/* 링크 텍스트 래퍼 (제목, 설명) - 라벨박스 오른쪽에 위치 */
+/* 링크 텍스트 래퍼 */
 const LinkTextWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  margin-left: 12px; /* 라벨박스와 텍스트 사이 간격 */
+  margin-left: 12px;
 `;
 
 /* 링크 제목 */
@@ -361,7 +359,7 @@ const LinkDesc = styled.div`
   text-decoration: underline;
 `;
 
-/* 오른쪽 화살표 '>' */
+/* 오른쪽 화살표 */
 const LinkArrow = styled.div`
   position: absolute;
   right: 16px;
@@ -395,11 +393,9 @@ const Footer = styled.div`
   width: 100%;
   height: 20px;
   text-align: center;
-
   font-weight: 400;
   font-size: 12px;
   line-height: 20px;
   color: #f6ae24;
-
   margin-top: 50px;
 `;

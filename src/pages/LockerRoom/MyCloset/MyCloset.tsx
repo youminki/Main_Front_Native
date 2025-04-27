@@ -1,8 +1,9 @@
+// src/pages/LockerRoom/MyCloset/MyCloset.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
-import ItemList from '../../../components/LockerRoom/Mycloset/ItemList';
-import { getMyCloset, removeFromCloset } from '../../../api/closet/closetApi';
+import ItemList, { UIItem } from '../../../components/Home/ItemList';
+import { getMyCloset } from '../../../api/closet/closetApi';
 
 const visitLabel = '담긴 제품들';
 const salesLabel = '시즌';
@@ -10,58 +11,33 @@ const visits = '999';
 const sales = '2025 1분기';
 const dateRange = 'SPRING';
 
-type ClosetUIItem = {
-  id: string;
-  image: string;
-  brand: string;
-  description: string;
-  category: string;
-  price: number;
-  discount: number;
-};
-
 const MyCloset: React.FC = () => {
-  const [selectedCategory] = useState<'all' | string>('all');
-  const [items, setItems] = useState<ClosetUIItem[]>([]);
+  const [items, setItems] = useState<UIItem[]>([]);
 
-  // 마운트 시 찜 목록 조회
   useEffect(() => {
     getMyCloset()
       .then((res) => {
-        const uiItems = res.items.map((it) => {
+        const uiItems: UIItem[] = res.items.map((it) => {
           const pid = (it as any).productId ?? (it as any).id;
           return {
-            id: pid != null ? pid.toString() : '',
+            id: String(pid),
             image: it.mainImage,
             brand: it.brand,
             description: it.name,
-            category: it.category,
             price: (it as any).price ?? 0,
             discount: (it as any).discount ?? 0,
+            isLiked: true,
           };
         });
         setItems(uiItems);
       })
-      .catch((err) => {
-        console.error('찜 목록 조회 실패:', err);
-      });
+      .catch(console.error);
   }, []);
 
-  // 삭제 핸들러
-  const handleDelete = async (id: string) => {
-    try {
-      await removeFromCloset(Number(id));
-      setItems((prev) => prev.filter((item) => item.id !== id));
-    } catch (err) {
-      console.error('찜 삭제 실패:', err);
-    }
+  const handleDelete = (id: string) => {
+    // ItemCard의 삭제 직후 호출되어, 즉시 화면에서 제거
+    setItems((prev) => prev.filter((i) => i.id !== id));
   };
-
-  // 필터링
-  const filtered =
-    selectedCategory === 'all'
-      ? items
-      : items.filter((i) => i.category === selectedCategory);
 
   return (
     <Container>
@@ -78,7 +54,8 @@ const MyCloset: React.FC = () => {
       />
       <Divider />
       <Content>
-        <ItemList items={filtered} onDelete={handleDelete} />
+        {/* onDelete를 넘기면, 하트 → 확인 → 바로 List 갱신 */}
+        <ItemList items={items} onDelete={handleDelete} />
       </Content>
     </Container>
   );
@@ -86,30 +63,25 @@ const MyCloset: React.FC = () => {
 
 export default MyCloset;
 
-// 스타일
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #fff;
   padding: 1rem;
+  background: #fff;
 `;
 const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   width: 100%;
   margin-bottom: 6px;
 `;
 const Title = styled.h1`
-  font-weight: 800;
-  font-size: 24px;
-  color: #000;
   margin: 0;
+  font-size: 24px;
+  font-weight: 800;
 `;
 const Subtitle = styled.p`
   font-size: 12px;
-  color: #ccc;
+  color: #666;
 `;
 const Divider = styled.div`
   width: 100%;
@@ -119,5 +91,4 @@ const Divider = styled.div`
 `;
 const Content = styled.div`
   width: 100%;
-  margin-top: 30px;
 `;

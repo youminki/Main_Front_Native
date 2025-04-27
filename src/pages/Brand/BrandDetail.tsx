@@ -1,10 +1,10 @@
-// src/components/Home/BrandDetail.tsx
+// src/pages/Brand/BrandDetail.tsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import StatsSection from '../../components/Brand/StatsSection';
 import SubHeader from '../../components/Home/SubHeader';
-import ItemList from '../../components/Home/ItemList';
+import ItemList, { UIItem } from '../../components/Home/ItemList';
 import BrandIcon from '/src/assets/BrandIcon.svg';
 
 interface Brand {
@@ -104,21 +104,11 @@ const BrandDetail: React.FC = () => {
   const [barPosition, setBarPosition] = useState<number>(0);
 
   useEffect(() => {
-    const selectedElement = document.querySelector(
+    const el = document.querySelector(
       `[data-category="${selectedCategory}"]`
     ) as HTMLElement;
-    if (selectedElement) {
-      const { offsetLeft, offsetWidth } = selectedElement;
-      setBarPosition(offsetLeft + offsetWidth / 2 - 25);
-    }
+    if (el) setBarPosition(el.offsetLeft + el.offsetWidth / 2 - 25);
   }, [selectedCategory]);
-
-  const filteredItems =
-    selectedCategory === 'all'
-      ? items
-      : items.filter((item) => item.category === selectedCategory);
-
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (!brand) {
     return (
@@ -128,6 +118,23 @@ const BrandDetail: React.FC = () => {
       </Container>
     );
   }
+
+  const filtered =
+    selectedCategory === 'all'
+      ? items
+      : items.filter((it) => it.category === selectedCategory);
+
+  const uiItems: UIItem[] = filtered.map((it) => ({
+    id: it.id.toString(),
+    image: it.image,
+    brand: it.brand,
+    description: it.description,
+    price: it.price,
+    discount: it.discount,
+    isLiked: false,
+  }));
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   return (
     <Container>
@@ -142,6 +149,7 @@ const BrandDetail: React.FC = () => {
         BrandIcon={BrandIcon}
       />
       <Divider />
+
       <SubHeader
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
@@ -149,8 +157,9 @@ const BrandDetail: React.FC = () => {
         onCategoryClick={scrollToTop}
       />
       <Content>
-        <ItemList items={filteredItems} />
+        <ItemList items={uiItems} />
       </Content>
+
       <ScrollToTopButton onClick={scrollToTop}>
         <ArrowIcon xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
           <path d='M12 4l-8 8h6v8h4v-8h6z' />
@@ -162,49 +171,35 @@ const BrandDetail: React.FC = () => {
 
 export default BrandDetail;
 
-// 이하 styled-components (기존 유지)
-
+// styled-components
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: #fff;
-  position: relative;
+  background: #fff;
   padding: 1rem;
 `;
-
 const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   width: 100%;
   margin-bottom: 6px;
 `;
-
 const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
-  color: #000;
-  margin-bottom: 0;
+  margin: 0;
 `;
-
 const Subtitle = styled.p`
   font-size: 12px;
-  font-weight: 400;
   color: #ccc;
 `;
-
 const Divider = styled.div`
   width: 100%;
   height: 1px;
-  background: #dddddd;
-  margin-top: 30px;
+  background: #ddd;
+  margin: 30px 0;
 `;
-
 const Content = styled.div`
   flex: 1;
-  margin-top: 20px;
 `;
-
 const ScrollToTopButton = styled.button`
   position: fixed;
   bottom: 120px;
@@ -221,27 +216,19 @@ const ScrollToTopButton = styled.button`
   color: #fff;
   cursor: pointer;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease,
-    opacity 0.3s ease;
-  opacity: 0.9;
-
+    transform 0.3s,
+    box-shadow 0.3s,
+    opacity 0.3s;
   &:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
     opacity: 1;
   }
-
-  @media (min-width: 1000px) {
-    right: calc((100vw - 1000px) / 2 + 20px);
-  }
 `;
-
 const ArrowIcon = styled.svg`
   width: 28px;
   height: 28px;

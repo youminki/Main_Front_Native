@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import Cookies from 'js-cookie';
 import { BiTime } from 'react-icons/bi';
 import { FaUserCircle } from 'react-icons/fa';
@@ -29,19 +29,6 @@ interface UnifiedHeaderProps {
 }
 
 const HISTORY_KEY = 'search_history';
-
-const slideIn = keyframes`
-  from { transform: translate3d(100%, 0, 0); }
-  to   { transform: translate3d(0, 0, 0); }
-`;
-const slideOut = keyframes`
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(100%, 0, 0); }
-`;
-const fadeInDown = keyframes`
-  from { opacity: 0; transform: translate3d(0, -10px, 0); }
-  to   { opacity: 1; transform: translate3d(0, 0, 0); }
-`;
 
 const AnimatedHeaderWrapper = styled.div<{ exit?: boolean }>`
   will-change: transform;

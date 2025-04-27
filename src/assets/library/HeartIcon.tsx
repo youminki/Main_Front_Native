@@ -7,12 +7,12 @@ interface HeartIconProps {
 const HeartIcon: React.FC<HeartIconProps> = ({ filled }) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='1.5rem'
-    height='1.5rem'
+    width='24px'
+    height='24px'
     viewBox='0 0 24 24'
-    fill={filled ? '#f44336' : 'none'} // 눌렀을 땐 빨간색 채우기
-    stroke='#f44336' // 항상 빨간색 테두리
-    strokeWidth='2'
+    fill={filled ? '#f44336' : 'none'}
+    stroke='#000000'
+    strokeWidth='1'
     strokeLinecap='round'
     strokeLinejoin='round'
   >
