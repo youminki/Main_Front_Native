@@ -199,6 +199,7 @@ const MainContainer = styled.div`
   flex-direction: column;
   position: relative;
   padding: 2rem 1rem;
+  padding-top: 0px;
 `;
 const ContentWrapper = styled.div`
   flex: 1;
