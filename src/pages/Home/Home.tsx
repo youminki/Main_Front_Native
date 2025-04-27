@@ -241,14 +241,14 @@ const ScrollToTopButton = styled.button`
   position: fixed;
   bottom: 120px;
   right: 20px;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border: none;
   border-radius: 50%;
   background: linear-gradient(
     135deg,
-    rgba(255, 204, 0, 0.9),
-    rgba(255, 153, 0, 0.9)
+    rgba(255, 255, 255, 0.9),
+    rgba(244, 244, 244, 0.9)
   );
   color: #fff;
   cursor: pointer;
@@ -275,7 +275,7 @@ const ScrollToTopButton = styled.button`
 const ArrowIcon = styled.svg`
   width: 28px;
   height: 28px;
-  fill: #fff;
+  fill: #ff9d00;
 `;
 
 const ModalOverlay = styled.div`
