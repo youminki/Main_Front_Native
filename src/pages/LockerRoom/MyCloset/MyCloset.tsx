@@ -1,7 +1,8 @@
+// src/pages/LockerRoom/MyCloset/MyCloset.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
-import ItemList from '../../../components/LockerRoom/Mycloset/ItemList';
+import ItemList from '../../../components/Home/ItemList';
 import { getMyCloset, removeFromCloset } from '../../../api/closet/closetApi';
 
 const visitLabel = '담긴 제품들';
@@ -10,7 +11,7 @@ const visits = '999';
 const sales = '2025 1분기';
 const dateRange = 'SPRING';
 
-type ClosetUIItem = {
+export type ClosetUIItem = {
   id: string;
   image: string;
   brand: string;
@@ -21,17 +22,15 @@ type ClosetUIItem = {
 };
 
 const MyCloset: React.FC = () => {
-  const [selectedCategory] = useState<'all' | string>('all');
   const [items, setItems] = useState<ClosetUIItem[]>([]);
 
-  // 마운트 시 찜 목록 조회
   useEffect(() => {
     getMyCloset()
       .then((res) => {
         const uiItems = res.items.map((it) => {
           const pid = (it as any).productId ?? (it as any).id;
           return {
-            id: pid != null ? pid.toString() : '',
+            id: String(pid),
             image: it.mainImage,
             brand: it.brand,
             description: it.name,
@@ -42,12 +41,9 @@ const MyCloset: React.FC = () => {
         });
         setItems(uiItems);
       })
-      .catch((err) => {
-        console.error('찜 목록 조회 실패:', err);
-      });
+      .catch(console.error);
   }, []);
 
-  // 삭제 핸들러
   const handleDelete = async (id: string) => {
     try {
       await removeFromCloset(Number(id));
@@ -56,12 +52,6 @@ const MyCloset: React.FC = () => {
       console.error('찜 삭제 실패:', err);
     }
   };
-
-  // 필터링
-  const filtered =
-    selectedCategory === 'all'
-      ? items
-      : items.filter((i) => i.category === selectedCategory);
 
   return (
     <Container>
@@ -78,7 +68,7 @@ const MyCloset: React.FC = () => {
       />
       <Divider />
       <Content>
-        <ItemList items={filtered} onDelete={handleDelete} />
+        <ItemList items={items} onDelete={handleDelete} />
       </Content>
     </Container>
   );
@@ -86,7 +76,7 @@ const MyCloset: React.FC = () => {
 
 export default MyCloset;
 
-// 스타일
+// styled-components
 const Container = styled.div`
   display: flex;
   flex-direction: column;
