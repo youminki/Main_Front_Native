@@ -9,6 +9,7 @@ export interface ProductListItem {
   category: string;
   price: number;
   discount: number;
+  isLiked: boolean; // ← 추가
 }
 
 export interface ProductSize {
@@ -22,9 +23,9 @@ export interface ProductDetail {
   product_num: string;
   brand: string;
   mainImage: string;
-  retailPrice: number; // 기존 정가
-  discountPrice: number; // 세일가
-  discountPercent: number; // 할인율 (정가 대비)
+  retailPrice: number;
+  discountPrice: number;
+  discountPercent: number;
   product_img: string[];
   sizes: ProductSize[];
   size_picture: string;
@@ -54,12 +55,18 @@ export const getProducts = async (
   const response = await Axios.get('/admin/product/product/list', {
     params: { category },
   });
-  return (response.data || []).map((p: ProductListItem) => ({
-    ...p,
+  return (response.data || []).map((p: any) => ({
+    id: p.id,
     image:
       p.image && !p.image.startsWith('http')
         ? `${API_BASE_URL}${p.image}`
         : p.image,
+    brand: p.brand,
+    description: p.description,
+    category: p.category,
+    price: p.price,
+    discount: p.discount,
+    isLiked: Boolean(p.isLiked), // ← 서버에서 받은 isLiked 반영
   }));
 };
 
@@ -69,7 +76,6 @@ export const getProductInfo = async (
   const res = await Axios.get(`/admin/product/product/info/${id}`);
   const raw = res.data as any;
 
-  // 상대 경로 보정
   if (raw.mainImage && !raw.mainImage.startsWith('http')) {
     raw.mainImage = `${API_BASE_URL}${raw.mainImage}`;
   }
@@ -83,7 +89,6 @@ export const getProductInfo = async (
     raw.product_url = `${API_BASE_URL}${raw.product_url}`;
   }
 
-  // 할인 정보 매핑
   const retailPrice: number = raw.retailPrice;
   const discountPrice: number = raw.sale_price ?? retailPrice;
   const discountPercent: number =

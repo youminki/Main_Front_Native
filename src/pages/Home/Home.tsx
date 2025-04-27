@@ -4,12 +4,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Spinner from '../../components/Spinner';
 
-import ItemList from '../../components/Home/ItemList';
+import ItemList, { UIItem } from '../../components/Home/ItemList';
 import Footer from '../../components/Home/Footer';
 import FilterContainer from '../../components/Home/FilterContainer';
 import SubHeader from '../../components/Home/SubHeader';
-import { getProducts } from '../../api/upload/productApi';
-import { ProductListItem } from '../../api/upload/productApi';
+import { getProducts, ProductListItem } from '../../api/upload/productApi';
 import HomeDetail from './HomeDetail';
 
 // twoDepth header assets
@@ -21,7 +20,7 @@ const ITEMS_PER_LOAD = 10;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams(); // setSearchParams 제거
+  const [searchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<string>(
     searchParams.get('categori') || 'Entire'
   );
@@ -35,7 +34,6 @@ const Home: React.FC = () => {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // URL 쿼리 변경 감지
   useEffect(() => {
     const newCategory = searchParams.get('categori') || 'Entire';
     const newSearch = searchParams.get('search') || '';
@@ -43,7 +41,6 @@ const Home: React.FC = () => {
     setSearchQuery(newSearch);
   }, [searchParams]);
 
-  // indicator 위치 계산 (Home.tsx에서만 사용)
   useEffect(() => {
     const el = document.querySelector(
       `[data-category="${selectedCategory}"]`
@@ -78,14 +75,11 @@ const Home: React.FC = () => {
       try {
         const categoryForAPI = categoryMapping[selectedCategory];
         const prods = await getProducts(categoryForAPI);
-        if (categoryForAPI !== 'all') {
-          const filteredProds = prods.filter(
-            (product) => product.category === categoryForAPI
-          );
-          setProducts(filteredProds);
-        } else {
-          setProducts(prods);
-        }
+        setProducts(
+          categoryForAPI !== 'all'
+            ? prods.filter((p) => p.category === categoryForAPI)
+            : prods
+        );
       } catch (e) {
         console.error('제품 데이터를 불러오는데 실패했습니다:', e);
       } finally {
@@ -117,7 +111,7 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, [products, page, isLoading]);
 
-  // 필터링 + 페이지네이션 적용
+  // 필터링 + 페이지네이션
   const displayedProducts = products
     .filter(
       (item) =>
@@ -125,6 +119,17 @@ const Home: React.FC = () => {
         item.description.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .slice(0, page * ITEMS_PER_LOAD);
+
+  // ProductListItem[] → UIItem[] 매핑
+  const uiItems: UIItem[] = displayedProducts.map((p) => ({
+    id: p.id.toString(),
+    image: p.image,
+    brand: p.brand,
+    description: p.description,
+    price: p.price,
+    discount: p.discount,
+    isLiked: p.isLiked,
+  }));
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -140,7 +145,6 @@ const Home: React.FC = () => {
   return (
     <MainContainer>
       <ContentWrapper>
-        {/* <SearchBar onSearch={setSearchQuery} /> */}
         <SubHeader
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
@@ -149,7 +153,7 @@ const Home: React.FC = () => {
         />
         <FilterContainer />
         <Content>
-          <ItemList items={displayedProducts} onItemClick={handleOpenModal} />
+          <ItemList items={uiItems} onItemClick={handleOpenModal} />
           {isLoading && <Spinner />}
         </Content>
       </ContentWrapper>
@@ -174,7 +178,7 @@ const Home: React.FC = () => {
                 </LeftSection>
                 <CenterSection />
                 <RightSection>
-                  <Icon src={ShareIcon} alt='공유' onClick={() => {}} />
+                  <Icon src={ShareIcon} alt='공유' />
                   <Icon src={HomeIcon} alt='홈' onClick={() => navigate('/')} />
                 </RightSection>
               </ModalHeaderContainer>
@@ -189,25 +193,21 @@ const Home: React.FC = () => {
 
 export default Home;
 
-// 이하 styled-components (기존 유지)
-
+// styled-components
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
   padding: 2rem 1rem;
 `;
-
 const ContentWrapper = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
 `;
-
 const Content = styled.div`
   flex: 1;
 `;
-
 const ScrollToTopButton = styled.button`
   position: fixed;
   bottom: 120px;
@@ -233,58 +233,45 @@ const ScrollToTopButton = styled.button`
     transform 0.3s,
     box-shadow 0.3s,
     opacity 0.3s;
-
   &:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
     opacity: 1;
   }
-
   @media (min-width: 1000px) {
     right: calc((100vw - 1000px) / 2 + 20px);
   }
 `;
-
 const ArrowIcon = styled.svg`
   width: 28px;
   height: 28px;
   fill: #fff;
 `;
-
 const ModalOverlay = styled.div`
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.8);
   z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
-
 const ModalContent = styled.div`
+  background: #fff;
   width: 100%;
   height: 100%;
-  background: #fff;
   position: relative;
   overflow-y: auto;
 `;
-
 const ModalHeaderWrapper = styled.div`
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
+  width: 100%;
   max-width: 1000px;
-  margin: 0 auto;
+  margin: 0 auto 20px;
   padding: 0 27px;
   background: #fff;
   z-index: 2100;
-  max-width: 1000px;
-  margin: 0 auto 20px;
 `;
 const ModalHeaderContainer = styled.header`
   display: flex;
@@ -293,19 +280,13 @@ const ModalHeaderContainer = styled.header`
   margin: 20px 0 27px;
 `;
 const LeftSection = styled.div`
-  display: flex;
-  align-items: center;
   cursor: pointer;
 `;
 const CenterSection = styled.div`
   flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 const RightSection = styled.div`
   display: flex;
-  align-items: center;
   gap: 19px;
 `;
 const CancelIcon = styled.img`

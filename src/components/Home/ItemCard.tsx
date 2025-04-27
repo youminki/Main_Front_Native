@@ -1,8 +1,9 @@
+// src/components/Home/ItemCard.tsx
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { HeartIcon } from '../../assets/library/HeartIcon';
 import { addToCloset, removeFromCloset } from '../../api/closet/closetApi';
-import ReusableModal from '../ReusableModal';
+import ReusableModal from '../ReusableModal2';
 
 type ItemCardProps = {
   id: string;
@@ -11,8 +12,19 @@ type ItemCardProps = {
   description: string;
   price: number;
   discount: number;
+  isLiked: boolean;
   onOpenModal: (id: string) => void;
+  onDelete?: (id: string) => void;
 };
+
+type ConfirmAction = 'add' | 'remove' | null;
+
+// 하트 비트 애니메이션
+const heartBeat = keyframes`
+  0% { transform: scale(1); }
+  30% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+`;
 
 const ItemCard: React.FC<ItemCardProps> = ({
   id,
@@ -21,62 +33,83 @@ const ItemCard: React.FC<ItemCardProps> = ({
   description,
   price,
   discount,
+  isLiked: initialLiked,
   onOpenModal,
+  onDelete,
 }) => {
-  const [liked, setLiked] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [modalMessage, setModalMessage] = useState('');
+  const [liked, setLiked] = useState<boolean>(initialLiked);
+  const [animating, setAnimating] = useState(false);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
 
-  const handleClick = () => {
-    onOpenModal(id);
+  const handleCardClick = () => onOpenModal(id);
+  const handleLikeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setConfirmAction(liked ? 'remove' : 'add');
   };
 
-  const handleLikeToggle = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const doAdd = async () => {
+    // Optimistic update + animation
+    setLiked(true);
+    setAnimating(true);
+    setTimeout(() => setAnimating(false), 300);
     try {
-      if (!liked) {
-        await addToCloset(parseInt(id, 10));
-        setLiked(true);
-      } else {
-        await removeFromCloset(parseInt(id, 10));
-        setLiked(false);
-      }
+      await addToCloset(+id);
     } catch (err: any) {
-      const status = err.response?.status;
-      const msg =
-        status === 409
-          ? '이미 찜한 상품입니다.'
-          : status === 401
-            ? '로그인이 필요합니다.'
-            : '찜 처리 중 오류가 발생했습니다.';
-      setModalTitle('오류');
-      setModalMessage(msg);
-      setModalOpen(true);
+      setLiked(false);
+      showError(err);
     }
   };
 
-  const closeModal = () => {
-    setModalOpen(false);
-    setModalTitle('');
-    setModalMessage('');
+  const doRemove = async () => {
+    // Optimistic removal
+    setLiked(false);
+    try {
+      await removeFromCloset(+id);
+      onDelete && onDelete(id);
+    } catch (err: any) {
+      setLiked(true);
+      showError(err);
+    }
   };
 
-  const sanitizedImage =
-    image && image.trim() !== '' ? image.split('#')[0] : '/default-image.jpg';
-  const trimmedDescription = description.split('/')[1] || description;
+  const showError = (err: any) => {
+    const status = err.response?.status;
+    const msg =
+      status === 409
+        ? '이미 찜한 상품입니다.'
+        : status === 401
+          ? '로그인이 필요합니다.'
+          : '찜 처리 중 오류가 발생했습니다.';
+    setErrorMsg(msg);
+    setErrorModalOpen(true);
+  };
+
+  const closeConfirm = () => setConfirmAction(null);
+  const handleConfirm = () => {
+    closeConfirm();
+    if (confirmAction === 'add') doAdd();
+    else if (confirmAction === 'remove') doRemove();
+  };
+
+  const modalTitle = confirmAction === 'add' ? '찜 등록 확인' : '삭제 확인';
+  const modalMessage =
+    confirmAction === 'add'
+      ? '정말 이 상품을 내 옷장에 추가하시겠습니까?'
+      : '정말 이 상품을 내 옷장에 삭제하시겠습니까?';
 
   return (
     <>
-      <CardContainer onClick={handleClick}>
+      <CardContainer onClick={handleCardClick}>
         <ImageWrapper>
-          <Image src={sanitizedImage} alt={brand} />
-          <LikeButton liked={liked} onClick={handleLikeToggle}>
+          <Image src={image?.split('#')[0] ?? '/default.jpg'} alt={brand} />
+          <LikeButton onClick={handleLikeClick} animating={animating}>
             <HeartIcon filled={liked} />
           </LikeButton>
         </ImageWrapper>
         <Brand>{brand}</Brand>
-        <Description>{trimmedDescription}</Description>
+        <Description>{description}</Description>
         <PriceWrapper>
           <OriginalPrice>{price.toLocaleString()}</OriginalPrice>
           <NowLabel>NOW</NowLabel>
@@ -84,8 +117,21 @@ const ItemCard: React.FC<ItemCardProps> = ({
         </PriceWrapper>
       </CardContainer>
 
-      <ReusableModal isOpen={modalOpen} onClose={closeModal} title={modalTitle}>
-        {modalMessage}
+      <ReusableModal
+        isOpen={confirmAction !== null}
+        onClose={closeConfirm}
+        onConfirm={handleConfirm}
+        title={modalTitle}
+      >
+        <p>{modalMessage}</p>
+      </ReusableModal>
+
+      <ReusableModal
+        isOpen={errorModalOpen}
+        onClose={() => setErrorModalOpen(false)}
+        title='오류'
+      >
+        <p>{errorMsg}</p>
       </ReusableModal>
     </>
   );
@@ -93,25 +139,21 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
 export default ItemCard;
 
+// --- styled-components ---
+
 const CardContainer = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   cursor: pointer;
-  width: 100%;
-  max-width: 100%;
   margin-bottom: 15px;
 `;
 
 const ImageWrapper = styled.div`
+  position: relative;
   width: 100%;
   aspect-ratio: 2 / 3;
-  background-color: #f5f5f5;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
+  background: #f5f5f5;
   border: 1px solid #ccc;
 `;
 
@@ -121,60 +163,58 @@ const Image = styled.img`
   object-fit: cover;
 `;
 
+const LikeButton = styled.div<{ animating: boolean }>`
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  /* 하트 추가 시 비트 애니메이션 */
+  ${({ animating }) =>
+    animating &&
+    css`
+      animation: ${heartBeat} 0.3s ease-out;
+    `}
+`;
+
 const Brand = styled.h3`
-  font-weight: 900;
+  margin: 6px 0 2px;
   font-size: 11px;
-  line-height: 11px;
-  color: #000000;
-  margin-bottom: 2px;
+  font-weight: 900;
 `;
 
 const Description = styled.p`
-  margin-top: 6px;
-  font-weight: 400;
   font-size: 12px;
-  line-height: 13px;
-  color: #999999;
+  color: #999;
+  margin-bottom: 4px;
 `;
 
 const PriceWrapper = styled.div`
-  position: relative;
   display: flex;
   align-items: center;
   gap: 5px;
-  border-left: 1px solid #e0e0e0;
 `;
 
 const OriginalPrice = styled.span`
   font-weight: 900;
   font-size: 16px;
-  line-height: 15px;
-  margin-left: 6px;
-  color: #000000;
 `;
 
 const NowLabel = styled.span`
-  font-weight: 400;
   font-size: 10px;
-  line-height: 9px;
-  color: #000000;
 `;
 
 const DiscountLabel = styled.span`
   font-weight: 800;
   font-size: 12px;
-  line-height: 11px;
   color: #f6ae24;
-`;
-
-const LikeButton = styled.div<{ liked: boolean }>`
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
 `;

@@ -15,7 +15,7 @@ type ModalProps = {
 const ReusableModal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
-  onConfirm,
+
   title,
   children,
   width = '100%',
@@ -23,11 +23,6 @@ const ReusableModal: React.FC<ModalProps> = ({
   actions,
 }) => {
   if (!isOpen) return null;
-
-  const handleConfirmClick = () => {
-    if (onConfirm) onConfirm();
-    onClose(); // ✅ 네 버튼 클릭 시 모달 닫기
-  };
 
   return (
     <StyledModal>
@@ -42,12 +37,6 @@ const ReusableModal: React.FC<ModalProps> = ({
         <CloseButtonWrapper>
           <CloseButton onClick={onClose}>확인</CloseButton>
         </CloseButtonWrapper>
-        {onConfirm && (
-          <CloseButtonWrapper>
-            <NoButton onClick={onClose}>아니요</NoButton>
-            <YesButton onClick={handleConfirmClick}>네</YesButton>
-          </CloseButtonWrapper>
-        )}
       </ModalContent>
     </StyledModal>
   );
@@ -113,30 +102,6 @@ const CloseButtonWrapper = styled.div`
 
 const CloseButton = styled.button`
   width: 100%;
-  height: 50px;
-  background-color: #000000;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-`;
-
-const NoButton = styled.button`
-  flex: 1;
-  height: 50px;
-  background: #cccccc;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-`;
-
-const YesButton = styled.button`
-  flex: 1;
   height: 50px;
   background-color: #000000;
   color: #ffffff;
