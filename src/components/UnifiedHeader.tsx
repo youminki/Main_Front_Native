@@ -1,9 +1,9 @@
-// src/components/UnifiedHeader.tsx
 import React, { useState, useEffect, useRef, FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import Cookies from 'js-cookie';
 import { BiTime } from 'react-icons/bi';
+import { FaUserCircle } from 'react-icons/fa';
 
 import AlarmIcon from '../assets/Header/AlarmIcon.svg';
 import BasketIcon from '../assets/Header/BasketIcon.svg';
@@ -16,19 +16,20 @@ import HomeIcon from '../assets/Header/HomeIcon.svg';
 import SearchIcon from '../assets/Header/SearchIcon.svg';
 
 import MypageModal from '../components/MypageModal';
+import { getHeaderInfo } from '../api/user/userApi';
+
 interface HeaderContainerProps {
   variant?: 'default' | 'oneDepth' | 'twoDepth' | 'threeDepth';
 }
-// UnifiedHeader 컴포넌트에 전달되는 props 타입 정의
 interface UnifiedHeaderProps {
   variant?: 'default' | 'oneDepth' | 'twoDepth' | 'threeDepth';
   title?: string;
   onBack?: () => void;
   exit?: boolean;
 }
+
 const HISTORY_KEY = 'search_history';
 
-// 애니메이션 keyframes
 const slideIn = keyframes`
   from { transform: translate3d(100%, 0, 0); }
   to   { transform: translate3d(0, 0, 0); }
@@ -42,25 +43,19 @@ const fadeInDown = keyframes`
   to   { opacity: 1; transform: translate3d(0, 0, 0); }
 `;
 
-// 애니메이션 래퍼 (threeDepth 전용)
 const AnimatedHeaderWrapper = styled.div<{ exit?: boolean }>`
-  /* animation: ${({ exit }) => (exit ? slideOut : slideIn)} 0.3s
-    cubic-bezier(0.25, 0.1, 0.25, 1) forwards; */
   will-change: transform;
 `;
-
-// 기본 레이아웃
 const HeaderWrapper = styled.div`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   background: #fff;
-
   z-index: 1000;
 `;
 const HeaderContainer = styled.header<HeaderContainerProps>`
-  max-width: ${({ variant }) => (variant === 'twoDepth' ? '1000px' : '1000px')};
+  max-width: 1000px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -79,19 +74,17 @@ const CenterSection = styled.div`
   justify-content: center;
   align-items: center;
 `;
-// RightSection 에 position: relative; 추가
 const RightSection = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
-  position: relative; /* SearchContainer 절대 위치 기준 */
+  position: relative;
 `;
 
-// 검색박스 → SearchContainer
 const SearchContainer = styled.div<{ open: boolean }>`
   position: absolute;
   top: 50%;
-  right: 40px; /* 아이콘 너비(24px) + 마진(16px) 고려 */
+  right: 40px;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
@@ -99,7 +92,7 @@ const SearchContainer = styled.div<{ open: boolean }>`
   border-radius: 18px;
   box-shadow: ${({ open }) => (open ? '0 2px 8px rgba(0,0,0,0.15)' : 'none')};
   overflow: hidden;
-  width: ${({ open }) => (open ? 'min(240px, 100%)' : '0')};
+  width: ${({ open }) => (open ? 'min(240px,100%)' : '0')};
   height: ${({ open }) => (open ? 'auto' : '0')};
   transition:
     width 0.3s ease,
@@ -107,7 +100,6 @@ const SearchContainer = styled.div<{ open: boolean }>`
   z-index: 1100;
 `;
 
-// 텍스트/아이콘
 const LogoIcon = styled.img`
   height: 32px;
   cursor: pointer;
@@ -152,20 +144,16 @@ const CancelIcon = styled.img`
   flex-shrink: 0;
 `;
 
-// — 검색창 스타일 —
 const SearchBox = styled.div<{ open: boolean }>`
   display: flex;
   align-items: center;
-
   border-radius: 18px;
   padding: 4px;
   transition:
     width 0.3s ease,
     box-shadow 0.25s ease,
     background 0.25s ease;
-
-  box-shadow: ${({ open }) =>
-    open ? '0 2px 8px rgba(0, 0, 0, 0.15)' : 'none'};
+  box-shadow: ${({ open }) => (open ? '0 2px 8px rgba(0,0,0,0.15)' : 'none')};
   will-change: width, box-shadow;
   position: relative;
   flex-shrink: 0;
@@ -174,7 +162,6 @@ const SearchIconWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
   color: #333;
   flex-shrink: 0;
@@ -184,7 +171,6 @@ const SearchInput = styled.input<{ open?: boolean }>`
   margin-left: ${({ open }) => (open ? '8px' : '0')};
   border: none;
   outline: none;
-
   width: ${({ open }) => (open ? '100%' : '0')};
   opacity: ${({ open }) => (open ? 1 : 0)};
   transition:
@@ -196,10 +182,8 @@ const Dropdown = styled.ul`
   position: absolute;
   top: 35px;
   left: 0;
-
   width: 100%;
   min-width: 240px;
-
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -207,11 +191,8 @@ const Dropdown = styled.ul`
   list-style: none;
   margin: 4px 0 0;
   padding: 0;
-
   overflow-y: auto;
   z-index: 1100;
-  /* animation: ${fadeInDown} 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards; */
-  will-change: opacity, transform;
 `;
 const Item = styled.li`
   display: flex;
@@ -223,7 +204,6 @@ const Item = styled.li`
     background: #f5f5f5;
   }
 `;
-
 const ClearAll = styled.div`
   text-align: center;
   padding: 8px;
@@ -245,6 +225,7 @@ const HistoryButton = styled.button`
     background: #f5f5f5;
   }
 `;
+
 const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   variant = 'default',
   title,
@@ -253,50 +234,47 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  // Auth
+  // 로그인 여부, 닉네임, 프로필 이미지 URL (없으면 null)
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [nickname, setNickname] = useState('사용자');
+  const [nickname, setNickname] = useState('멜픽 회원');
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (variant === 'default' || variant === 'oneDepth') {
-      const check = () => {
+      const fetchHeaderInfo = async () => {
         const token = Cookies.get('accessToken');
-        const nick = Cookies.get('nickname');
         setIsLoggedIn(!!token);
-        if (token) setNickname(nick || '멜픽 회원');
+
+        // 쿠키에 저장된 프로필 이미지 URL 있으면 사용
+        const imgFromCookie = Cookies.get('profileImageUrl');
+        setProfileImageUrl(imgFromCookie || null);
+
+        if (token) {
+          try {
+            const { nickname: nick } = await getHeaderInfo();
+            setNickname(nick);
+          } catch (err) {
+            console.error('헤더 닉네임 조회 실패:', err);
+          }
+        }
       };
-      check();
-      const id = setInterval(check, 1000);
-      return () => clearInterval(id);
+      fetchHeaderInfo();
     }
   }, [variant]);
 
-  // 검색
+  // 검색 관련
   const [searchParams, setSearchParams] = useSearchParams();
   const [openSearch, setOpenSearch] = useState(false);
   const [query, setQuery] = useState(searchParams.get('search') || '');
   const [historyState, setHistoryState] = useState<string[]>([]);
   const boxRef = useRef<HTMLDivElement>(null);
 
-  // --- UnifiedHeader 내부에 추가 ---
-  const handleSearchClick = () => {
-    if (openSearch && query.trim()) {
-      // 열려 있고, query가 비어있지 않으면 검색 수행
-      handleSearchSubmit(new Event('submit') as any);
-    } else {
-      // 그렇지 않으면 토글만
-      toggleSearch();
-    }
-  };
-
-  // 히스토리 로드
   useEffect(() => {
     const stored = localStorage.getItem(HISTORY_KEY);
     if (stored) setHistoryState(JSON.parse(stored));
   }, []);
 
-  // 외부 클릭으로 닫기
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
@@ -336,12 +314,14 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     if (onBack) onBack();
     else navigate(-1);
   };
+
   const handleHistoryClick = (term: string) => {
     setQuery(term);
     saveHistory(term);
     setSearchParams({ search: term });
     setOpenSearch(false);
   };
+
   // --- default variant ---
   if (variant === 'default') {
     return (
@@ -351,10 +331,15 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
             <LeftSection onClick={() => isLoggedIn && setIsModalOpen(true)}>
               {isLoggedIn ? (
                 <Greeting>
-                  <ProfileImage
-                    src='https://via.placeholder.com/44'
-                    alt='프로필'
-                  />
+                  {profileImageUrl ? (
+                    <ProfileImage
+                      src={profileImageUrl}
+                      alt='프로필'
+                      onError={() => setProfileImageUrl(null)}
+                    />
+                  ) : (
+                    <FaUserCircle size={32} style={{ marginRight: 4 }} />
+                  )}
                   <GreetingText>
                     <Nickname>{nickname}</Nickname> 님 안녕하세요!
                   </GreetingText>
@@ -365,7 +350,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
             </LeftSection>
 
             <RightSection>
-              {/* 검색 기능 */}
               <SearchBox open={openSearch} ref={boxRef}>
                 <form
                   onSubmit={handleSearchSubmit}
@@ -375,16 +359,13 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                     open={openSearch}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleSearchSubmit(e as any);
-                      }
-                    }}
+                    onKeyDown={(e) =>
+                      e.key === 'Enter' && handleSearchSubmit(e)
+                    }
                     placeholder='검색어를 입력하세요'
                   />
                 </form>
-                <SearchIconWrapper onClick={handleSearchClick}>
+                <SearchIconWrapper onClick={toggleSearch}>
                   <Icon src={SearchIcon} alt='검색' />
                 </SearchIconWrapper>
 
@@ -410,7 +391,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                 )}
               </SearchBox>
 
-              {/* 나머지 아이콘 */}
               {isLoggedIn ? (
                 <>
                   <Icon
@@ -461,9 +441,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
               onClick={handleBack}
             />
           </LeftSection>
-
           <RightSection>
-            {/* 검색 컨테이너 */}
             <SearchContainer open={openSearch} ref={boxRef}>
               <form
                 onSubmit={handleSearchSubmit}
@@ -497,13 +475,9 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                 </Dropdown>
               )}
             </SearchContainer>
-
-            {/* 아이콘은 항상 제자리 */}
-            <SearchIconWrapper onClick={handleSearchClick}>
+            <SearchIconWrapper onClick={toggleSearch}>
               <Icon src={SearchIcon} alt='검색' />
             </SearchIconWrapper>
-
-            {/* 나머지 아이콘 */}
             {isLoggedIn ? (
               <>
                 <Icon
@@ -532,7 +506,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
               </>
             )}
           </RightSection>
-          {/* oneDepth 검색 드롭다운은 필요 시 추가 */}
         </HeaderContainer>
       </HeaderWrapper>
     );

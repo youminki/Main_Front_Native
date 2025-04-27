@@ -28,6 +28,7 @@ export interface SignupRequest {
   waistCircumference?: number;
   sleeveLength?: number;
 }
+
 export interface SignupResponse {
   email: string;
   name: string;
@@ -98,7 +99,6 @@ export interface VerifyCodeResponse {
 // =====================
 
 // 회원가입 API 호출 (POST /user)
-// 휴대폰 인증(verify-code API)을 먼저 진행한 경우에만 회원가입이 가능합니다.
 export const signUpUser = async (
   data: SignupRequest
 ): Promise<SignupResponse> => {
@@ -106,13 +106,13 @@ export const signUpUser = async (
     const response = await Axios.post('/user', data);
     return response.data;
   } catch (error: any) {
-    // 휴대폰 인증 미완료 등 에러 처리
     if (error.response && error.response.status === 400) {
       throw new Error('휴대폰 인증을 먼저 진행해주세요.');
     }
     throw error;
   }
 };
+
 // 모든 사용자 조회 API 호출 (GET /user)
 export const getUsers = async (
   limit?: number,
@@ -183,14 +183,28 @@ export const verifyCode = async (
   return response.data;
 };
 
-// =====================
-// (추가) 이메일 중복 체크 API 호출 (GET /user/check-email)
-// =====================
+// 이메일 중복 체크 API 호출 (GET /user/check-email)
 export const checkEmail = async (
   email: string
 ): Promise<AvailabilityResponse> => {
-  const response = await Axios.get(`/user/check-email`, {
+  const response = await Axios.get('/user/check-email', {
     params: { email },
   });
+  return response.data;
+};
+
+// =====================
+// 헤더용 사용자 정보 조회
+// =====================
+export interface HeaderInfoResponse {
+  nickname: string;
+}
+
+/**
+ * 로그인한 사용자의 닉네임을 반환합니다.
+ * GET /user/header-info
+ */
+export const getHeaderInfo = async (): Promise<HeaderInfoResponse> => {
+  const response = await Axios.get('/user/header-info');
   return response.data;
 };
