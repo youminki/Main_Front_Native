@@ -39,7 +39,7 @@ Axios.interceptors.response.use(
       } catch {
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');
-        // window.location.href = '/login';
+        window.location.href = '/login';
         return Promise.reject(error);
       }
     }

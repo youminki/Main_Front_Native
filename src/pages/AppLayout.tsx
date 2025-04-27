@@ -1,7 +1,8 @@
 // src/layouts/AppLayout.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
+import Cookies from 'js-cookie'; // 토큰 확인을 위해 추가
 
 import UnifiedHeader from '../components/UnifiedHeader';
 import BottomNav from '../components/BottomNav1';
@@ -11,6 +12,24 @@ import useImageLoader from '../hooks/useImageLoader';
 const AppLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  // 로그인 토큰 검사:
+  useEffect(() => {
+    const token = Cookies.get('accessToken');
+    // 아래 경로들은 인증 없이 접근 허용
+    const publicPaths = [
+      '/signup',
+      '/findid',
+      '/findPassword',
+      '/landing',
+      '/',
+      '/login',
+      '/PersonalLink',
+    ];
+    if (!publicPaths.includes(location.pathname) && !token) {
+      navigate('/login', { replace: true });
+    }
+  }, [location.pathname, navigate]);
 
   // 헤더/네비 설정
   const {
@@ -101,9 +120,6 @@ const ContentContainer = styled.div<{
 }>`
   flex: 1;
   padding: ${({ disablePadding }) => (disablePadding ? '0' : '70px 0')};
-  /* animation: ${({ exit, animate }) =>
-    exit ? slideOut : animate ? slideIn : 'none'}
-    0.3s ease-out; */
   overflow: auto;
 `;
 
