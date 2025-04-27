@@ -3,18 +3,12 @@ import { Axios } from '../Axios';
 
 export interface ProductListItem {
   id: number;
-  image: string; // 예: "/uploads/product-images/unique-image-name.jpg" 또는 절대 URL
+  image: string;
   brand: string;
   description: string;
   category: string;
   price: number;
   discount: number;
-}
-
-export interface ProductPrice {
-  originalPrice: number;
-  discountRate: number;
-  finalPrice: number;
 }
 
 export interface ProductSize {
@@ -28,7 +22,9 @@ export interface ProductDetail {
   product_num: string;
   brand: string;
   mainImage: string;
-  price: ProductPrice;
+  retailPrice: number; // 기존 정가
+  discountPrice: number; // 세일가
+  discountPercent: number; // 할인율 (정가 대비)
   product_img: string[];
   sizes: ProductSize[];
   size_picture: string;
@@ -43,72 +39,64 @@ export interface ProductDetail {
   lining: string;
   fit: string;
   color: string;
-  product_url: string; // 명세에 추가된 필드
+  product_url: string;
 }
 
 export interface GetProductInfoResponse {
   product: ProductDetail;
 }
 
-export interface UploadProductImageResponse {
-  filePath: string;
-}
-
-// Vite 환경에서는 import.meta.env를 사용합니다.
-// .env 파일에 VITE_API_URL=http://your-api-domain 입력
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5173';
 
-/**
- * 전체 제품(또는 카테고리 필터 적용된) 목록을 불러오는 API 함수
- * @param category 선택된 카테고리 ('all'인 경우 전체 조회)
- * @returns 제품 목록 (ProductListItem[])
- */
 export const getProducts = async (
   category?: string
 ): Promise<ProductListItem[]> => {
   const response = await Axios.get('/admin/product/product/list', {
     params: { category },
   });
-  // 응답이 배열 형태라고 가정하고, image가 상대경로이면 API_BASE_URL을 붙여줍니다.
-  const products: ProductListItem[] = (response.data || []).map(
-    (product: ProductListItem) => ({
-      ...product,
-      image:
-        product.image && !product.image.startsWith('http')
-          ? `${API_BASE_URL}${product.image}`
-          : product.image,
-    })
-  );
-  return products;
+  return (response.data || []).map((p: ProductListItem) => ({
+    ...p,
+    image:
+      p.image && !p.image.startsWith('http')
+        ? `${API_BASE_URL}${p.image}`
+        : p.image,
+  }));
 };
 
-/**
- * 제품 상세 정보를 불러오는 API 함수
- * @param id 제품의 id
- * @returns 제품 상세정보 (GetProductInfoResponse)
- */
 export const getProductInfo = async (
   id: number
 ): Promise<GetProductInfoResponse> => {
-  const response = await Axios.get(`/admin/product/product/info/${id}`);
-  const product: ProductDetail = response.data;
+  const res = await Axios.get(`/admin/product/product/info/${id}`);
+  const raw = res.data as any;
 
-  // mainImage, product_img, size_picture, product_url의 상대경로 보정
-  product.mainImage =
-    product.mainImage && !product.mainImage.startsWith('http')
-      ? `${API_BASE_URL}${product.mainImage}`
-      : product.mainImage;
-  product.product_img = product.product_img.map((img) =>
+  // 상대 경로 보정
+  if (raw.mainImage && !raw.mainImage.startsWith('http')) {
+    raw.mainImage = `${API_BASE_URL}${raw.mainImage}`;
+  }
+  raw.product_img = raw.product_img.map((img: string) =>
     img && !img.startsWith('http') ? `${API_BASE_URL}${img}` : img
   );
-  product.size_picture =
-    product.size_picture && !product.size_picture.startsWith('http')
-      ? `${API_BASE_URL}${product.size_picture}`
-      : product.size_picture;
-  product.product_url =
-    product.product_url && !product.product_url.startsWith('http')
-      ? `${API_BASE_URL}${product.product_url}`
-      : product.product_url;
+  if (raw.size_picture && !raw.size_picture.startsWith('http')) {
+    raw.size_picture = `${API_BASE_URL}${raw.size_picture}`;
+  }
+  if (raw.product_url && !raw.product_url.startsWith('http')) {
+    raw.product_url = `${API_BASE_URL}${raw.product_url}`;
+  }
+
+  // 할인 정보 매핑
+  const retailPrice: number = raw.retailPrice;
+  const discountPrice: number = raw.sale_price ?? retailPrice;
+  const discountPercent: number =
+    retailPrice > 0
+      ? Math.round(((retailPrice - discountPrice) / retailPrice) * 100)
+      : 0;
+
+  const product: ProductDetail = {
+    ...raw,
+    retailPrice,
+    discountPrice,
+    discountPercent,
+  };
 
   return { product };
 };

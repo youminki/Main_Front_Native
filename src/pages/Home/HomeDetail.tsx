@@ -25,11 +25,9 @@ interface ProductDetail {
   product_num: string;
   brand: string;
   mainImage: string;
-  price: {
-    originalPrice: number;
-    discountRate: number;
-    finalPrice: number;
-  };
+  retailPrice: number;
+  discountPrice: number;
+  discountPercent: number;
   product_img: string[];
   sizes: { size: string; measurements: Record<string, any> }[];
   size_picture: string;
@@ -44,14 +42,13 @@ interface ProductDetail {
   lining: string;
   fit: string;
   color: string;
+  product_url: string;
 }
 
 type HomeDetailProps = { id?: string };
 
 const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
-  // ─── 1. 최상단 Hooks ───
   const params = useParams<{ id: string }>();
-
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -59,7 +56,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedService, setSelectedService] = useState('');
 
-  // ─── 2. 이미지 배열 계산 (Hook) ───
   const images = useMemo<string[]>(() => {
     if (!product) return [];
     return product.product_img.length
@@ -67,17 +63,13 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       : [product.mainImage];
   }, [product]);
 
-  // ─── 3. 슬라이드 핸들러 (Hook) ───
   const handleSwipeLeft = useCallback(() => {
-    if (images.length > 0) {
-      setCurrentImageIndex((p) => (p + 1) % images.length);
-    }
+    if (images.length) setCurrentImageIndex((i) => (i + 1) % images.length);
   }, [images.length]);
 
   const handleSwipeRight = useCallback(() => {
-    if (images.length > 0) {
-      setCurrentImageIndex((p) => (p === 0 ? images.length - 1 : p - 1));
-    }
+    if (images.length)
+      setCurrentImageIndex((i) => (i === 0 ? images.length - 1 : i - 1));
   }, [images.length]);
 
   const handleMouseDown = useCallback(
@@ -86,11 +78,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       const startX = e.clientX;
       const onMove = (ev: MouseEvent) => {
         if (Math.abs(ev.clientX - startX) > 50) {
-          if (ev.clientX - startX > 0) {
-            handleSwipeRight();
-          } else {
-            handleSwipeLeft();
-          }
+          ev.clientX - startX > 0 ? handleSwipeRight() : handleSwipeLeft();
           window.removeEventListener('mousemove', onMove);
           window.removeEventListener('mouseup', onUp);
         }
@@ -105,11 +93,9 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     [handleSwipeLeft, handleSwipeRight]
   );
 
-  // ─── 4. 데이터 로드 + fabricComposition 매핑 (Hook) ───
   useEffect(() => {
     const id = propId || params.id;
     if (!id) return;
-
     getProductInfo(Number(id))
       .then((res) => {
         const api = res.product as APIProductDetail & Record<string, any>;
@@ -128,49 +114,25 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           };
         }
 
-        const {
-          fabricComposition: _fabric,
-          product_url: _product_url,
-          ...rest
-        } = api;
+        const { fabricComposition: _f, ...rest } = api;
         setProduct({ ...rest, fabricComposition: mappedFabric });
       })
-      .catch((e) => console.error('제품 상세정보 로드 실패:', e))
+      .catch((e) => console.error(e))
       .finally(() => setLoading(false));
   }, [propId, params.id]);
 
-  // ─── 5. Early Returns ───
   if (loading) return <Spinner />;
   if (!product) return <div>제품을 찾을 수 없습니다.</div>;
 
-  // ─── 6. 이벤트 핸들러 ───
-  const handleOrderClick = () => console.log('🛒 주문하기');
-
-  // ─── 7. 렌더링용 데이터 ───
   const productInfoItem = {
     brand: product.brand,
     product_num: product.product_num,
     name: product.name,
-    originalPrice: product.price.originalPrice,
-    discountPercent: product.price.discountRate,
-    discountPrice: product.price.finalPrice,
-  };
-  const sizeOptions = product.sizes.map((s) => s.size);
-  const colorOptions = product.color.split(',').map((c) => c.trim());
-  const materialData = {
-    두께감: product.thickness,
-    신축성: product.elasticity,
-    안감: product.lining,
-    촉감: product.fit,
-    비침: product.transparency,
-  };
-  const detailsData = {
-    품번: product.product_num,
-    계절감: product.season,
-    제조사: product.manufacturer,
+    retailPrice: product.retailPrice,
+    discountPercent: product.discountPercent,
+    discountPrice: product.discountPrice,
   };
 
-  // ─── 8. JSX ───
   return (
     <DetailContainer>
       <ImageSlider
@@ -194,6 +156,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         <ConditionalContainer>
           {selectedService === 'rental' && <RentalOptions />}
           {selectedService === 'purchase' && <PaymentMethod />}
+
           {selectedService === '' && <Message>서비스를 선택하세요</Message>}
         </ConditionalContainer>
 
@@ -204,8 +167,8 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           setSelectedSize={setSelectedSize}
           selectedColor={selectedColor}
           setSelectedColor={setSelectedColor}
-          sizeOptions={sizeOptions}
-          colorOptions={colorOptions}
+          sizeOptions={product.sizes.map((s) => s.size)}
+          colorOptions={product.color.split(',').map((c) => c.trim())}
         />
 
         <Separator />
@@ -217,20 +180,32 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
 
         <Separator />
 
-        <MaterialInfo materialData={materialData} />
+        <MaterialInfo
+          materialData={{
+            두께감: product.thickness,
+            신축성: product.elasticity,
+            안감: product.lining,
+            촉감: product.fit,
+            비침: product.transparency,
+          }}
+        />
 
         <Separator />
 
         <ProductDetails
           fabricComposition={product.fabricComposition}
-          detailsData={detailsData}
+          detailsData={{
+            품번: product.product_num,
+            계절감: product.season,
+            제조사: product.manufacturer,
+          }}
         />
       </ContentContainer>
 
       <BottomBar
         cartIconSrc={ShoppingBasket}
         orderButtonLabel='제품 주문하기'
-        onOrderClick={handleOrderClick}
+        onOrderClick={() => console.log('🛒 주문하기')}
       />
     </DetailContainer>
   );
@@ -239,16 +214,13 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
 export default HomeDetail;
 
 /* Styled Components */
-
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 5rem 0;
-  padding-bottom: 80px;
+  padding: 5rem 0 80px;
   max-width: 1000px;
   margin: 0 auto 20px;
-  margin: 0 auto;
   box-sizing: border-box;
 `;
 const ContentContainer = styled.div`
