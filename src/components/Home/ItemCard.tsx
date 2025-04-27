@@ -11,7 +11,7 @@ type ItemCardProps = {
   description: string;
   price: number;
   discount: number;
-  onOpenModal?: (id: string) => void;
+  onOpenModal: (id: string) => void;
 };
 
 const ItemCard: React.FC<ItemCardProps> = ({
@@ -28,19 +28,18 @@ const ItemCard: React.FC<ItemCardProps> = ({
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
 
-  const handleCardClick = () => {
-    if (onOpenModal) onOpenModal(id);
+  const handleClick = () => {
+    onOpenModal(id);
   };
 
   const handleLikeToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const pid = parseInt(id, 10);
       if (!liked) {
-        await addToCloset(pid);
+        await addToCloset(parseInt(id, 10));
         setLiked(true);
       } else {
-        await removeFromCloset(pid);
+        await removeFromCloset(parseInt(id, 10));
         setLiked(false);
       }
     } catch (err: any) {
@@ -63,25 +62,23 @@ const ItemCard: React.FC<ItemCardProps> = ({
     setModalMessage('');
   };
 
-  // 이미지 URL 보정 & 기본값
   const sanitizedImage =
     image && image.trim() !== '' ? image.split('#')[0] : '/default-image.jpg';
-  // description 뒤 '/' 제거
   const trimmedDescription = description.split('/')[1] || description;
 
   return (
     <>
-      <CardContainer onClick={handleCardClick}>
+      <CardContainer onClick={handleClick}>
         <ImageWrapper>
           <Image src={sanitizedImage} alt={brand} />
-          <LikeButton onClick={handleLikeToggle}>
+          <LikeButton liked={liked} onClick={handleLikeToggle}>
             <HeartIcon filled={liked} />
           </LikeButton>
         </ImageWrapper>
         <Brand>{brand}</Brand>
         <Description>{trimmedDescription}</Description>
         <PriceWrapper>
-          <OriginalPrice>{price.toLocaleString()}원</OriginalPrice>
+          <OriginalPrice>{price.toLocaleString()}</OriginalPrice>
           <NowLabel>NOW</NowLabel>
           <DiscountLabel>{discount}%</DiscountLabel>
         </PriceWrapper>
@@ -96,13 +93,14 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
 export default ItemCard;
 
-// Styled Components
 const CardContainer = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   cursor: pointer;
+  width: 100%;
+  max-width: 100%;
   margin-bottom: 15px;
 `;
 
@@ -110,6 +108,9 @@ const ImageWrapper = styled.div`
   width: 100%;
   aspect-ratio: 2 / 3;
   background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
   border: 1px solid #ccc;
 `;
@@ -120,7 +121,53 @@ const Image = styled.img`
   object-fit: cover;
 `;
 
-const LikeButton = styled.div`
+const Brand = styled.h3`
+  font-weight: 900;
+  font-size: 11px;
+  line-height: 11px;
+  color: #000000;
+  margin-bottom: 2px;
+`;
+
+const Description = styled.p`
+  margin-top: 6px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 13px;
+  color: #999999;
+`;
+
+const PriceWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-left: 1px solid #e0e0e0;
+`;
+
+const OriginalPrice = styled.span`
+  font-weight: 900;
+  font-size: 16px;
+  line-height: 15px;
+  margin-left: 6px;
+  color: #000000;
+`;
+
+const NowLabel = styled.span`
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 9px;
+  color: #000000;
+`;
+
+const DiscountLabel = styled.span`
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 11px;
+  color: #f6ae24;
+`;
+
+const LikeButton = styled.div<{ liked: boolean }>`
   position: absolute;
   bottom: 4px;
   right: 4px;
@@ -130,39 +177,4 @@ const LikeButton = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-`;
-
-const Brand = styled.h3`
-  font-weight: 900;
-  font-size: 11px;
-  margin: 6px 0 2px;
-  color: #000;
-`;
-
-const Description = styled.p`
-  font-size: 12px;
-  color: #999;
-`;
-
-const PriceWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-`;
-
-const OriginalPrice = styled.span`
-  font-weight: 900;
-  font-size: 16px;
-  color: #000;
-`;
-
-const NowLabel = styled.span`
-  font-size: 10px;
-  color: #000;
-`;
-
-const DiscountLabel = styled.span`
-  font-weight: 800;
-  font-size: 12px;
-  color: #f6ae24;
 `;
