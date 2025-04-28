@@ -4,11 +4,25 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import MypageBox from '../assets/MypageBox.svg';
 import MystyleBox from '../assets/MystyleBox.svg';
-import ReusableModal2 from '../components/ReusableModal';
+import ReusableModal2 from '../components/ReusableModal2';
+import { logoutUser } from '../api/user/userApi';
+import { Axios } from '../api/Axios';
 
 type MypageModalProps = {
   isOpen: boolean;
   onClose: () => void;
+};
+
+const getEmailFromToken = (): string | null => {
+  const token =
+    Cookies.get('accessToken') || localStorage.getItem('accessToken') || '';
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(window.atob(token.split('.')[1]));
+    return payload.email as string;
+  } catch {
+    return null;
+  }
 };
 
 const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
@@ -25,32 +39,48 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
     setIsClosing(true);
     setTimeout(onClose, 400);
   };
-  const handleModalClick = (e: React.MouseEvent) => e.stopPropagation();
+
+  const handleModalClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
 
   const handleLogoutOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
     setLogoutModalOpen(true);
   };
 
-  const handleLogoutConfirm = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+  const handleLogoutConfirm = async () => {
+    const email = getEmailFromToken();
+    try {
+      if (email) {
+        await logoutUser(email);
+      }
+    } catch (err) {
+      console.error('logout error:', err);
+    } finally {
+      Cookies.remove('accessToken');
+      Cookies.remove('refreshToken');
+      Cookies.remove('profileImageUrl');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
 
-    Cookies.remove('accessToken');
-    Cookies.remove('refreshToken');
-    Cookies.remove('profileImageUrl');
+      Axios.defaults.headers.Authorization = '';
+      setLogoutModalOpen(false);
+      onClose();
+      navigate('/login', { replace: true });
 
-    setLogoutModalOpen(false);
-    onClose();
-
-    navigate('/login');
+      window.location.reload();
+    }
   };
 
   const handlePlaceholderClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPlaceholderOpen(true);
   };
-  const handlePlaceholderClose = () => setPlaceholderOpen(false);
+
+  const handlePlaceholderClose = () => {
+    setPlaceholderOpen(false);
+  };
 
   if (!isOpen) return null;
 
@@ -65,7 +95,6 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
             <Title>마이페이지</Title>
           </ModalHeader>
           <Divider />
-
           <ModalContentArea>
             <PlaceholderImage
               src={MypageBox}
@@ -79,7 +108,6 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
             />
           </ModalContentArea>
           <Divider />
-
           <LogoutButton onClick={handleLogoutOpen}>로그아웃</LogoutButton>
         </ModalContainer>
       </Overlay>
@@ -114,6 +142,7 @@ const slideUp = keyframes`
   from { transform: translateY(100%); }
   to   { transform: translateY(0); }
 `;
+
 const slideDown = keyframes`
   from { transform: translateY(0); }
   to   { transform: translateY(100%); }
@@ -170,7 +199,6 @@ const HandleBar = styled.div`
   background: #ddd;
   border-radius: 2px;
 `;
-
 const ModalHeader = styled.div`
   margin: 16px;
 `;
@@ -187,7 +215,6 @@ const Divider = styled.hr`
   border: none;
   margin: 0;
 `;
-
 const ModalContentArea = styled.div`
   flex: 1;
   display: flex;
@@ -199,7 +226,6 @@ const PlaceholderImage = styled.img`
   cursor: pointer;
   object-fit: cover;
 `;
-
 const LogoutButton = styled.button`
   width: 100%;
   height: 56px;

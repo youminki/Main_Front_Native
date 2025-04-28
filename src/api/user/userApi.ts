@@ -1,3 +1,4 @@
+// src/api/user/userApi.ts
 import { Axios } from '../Axios';
 
 export interface SignupRequest {
@@ -93,15 +94,8 @@ export interface VerifyCodeResponse {
 export const signUpUser = async (
   data: SignupRequest
 ): Promise<SignupResponse> => {
-  try {
-    const response = await Axios.post('/user', data);
-    return response.data;
-  } catch (error: any) {
-    if (error.response && error.response.status === 400) {
-      throw new Error('휴대폰 인증을 먼저 진행해주세요.');
-    }
-    throw error;
-  }
+  const response = await Axios.post('/user', data);
+  return response.data;
 };
 
 export const getUsers = async (
@@ -181,5 +175,10 @@ export interface HeaderInfoResponse {
 
 export const getHeaderInfo = async (): Promise<HeaderInfoResponse> => {
   const response = await Axios.get('/user/header-info');
+  return response.data;
+};
+
+export const logoutUser = async (email: string): Promise<MessageResponse> => {
+  const response = await Axios.post<MessageResponse>('/auth/logout', { email });
   return response.data;
 };
