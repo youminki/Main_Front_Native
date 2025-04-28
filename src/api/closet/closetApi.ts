@@ -6,6 +6,9 @@ export interface ClosetItem {
   name: string;
   brand: string;
   category: string;
+  price: number;
+  description: string;
+  discountRate: number;
 }
 
 export interface ClosetListResponse {

@@ -7,14 +7,13 @@ import HomeDetail from '../../Home/HomeDetail';
 import { getMyCloset } from '../../../api/closet/closetApi';
 import CancleIconIcon from '../../../assets/Header/CancleIcon.svg';
 
-const visitLabel = '담긴 제품들';
 const salesLabel = '시즌';
-const visits = '999';
 const sales = '2025 1분기';
 const dateRange = 'SPRING';
 
 const MyCloset: React.FC = () => {
   const [items, setItems] = useState<UIItem[]>([]);
+  const [visitsCount, setVisitsCount] = useState<number>(0);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -28,18 +27,17 @@ const MyCloset: React.FC = () => {
   useEffect(() => {
     getMyCloset()
       .then((res) => {
-        const uiItems: UIItem[] = res.items.map((it) => {
-          const pid = (it as any).productId ?? (it as any).id;
-          return {
-            id: String(pid),
-            image: it.mainImage,
-            brand: it.brand,
-            description: it.name,
-            price: (it as any).price ?? 0,
-            discount: (it as any).discount ?? 0,
-            isLiked: true,
-          };
-        });
+        setVisitsCount(res.count);
+
+        const uiItems: UIItem[] = res.items.map((it) => ({
+          id: String(it.productId),
+          image: it.mainImage,
+          brand: it.brand,
+          description: it.name,
+          price: it.price,
+          discount: it.discountRate,
+          isLiked: true,
+        }));
         setItems(uiItems);
       })
       .catch(console.error);
@@ -66,10 +64,10 @@ const MyCloset: React.FC = () => {
       </Header>
 
       <StatsSection
-        visits={visits}
+        visits={visitsCount}
         sales={sales}
         dateRange={dateRange}
-        visitLabel={visitLabel}
+        visitLabel='담긴 제품들'
         salesLabel={salesLabel}
       />
 
@@ -118,44 +116,36 @@ const Container = styled.div`
   background: #fff;
   padding: 1rem;
 `;
-
 const Header = styled.div`
   width: 100%;
   margin-bottom: 6px;
 `;
-
 const Title = styled.h1`
   margin: 0;
   font-size: 24px;
   font-weight: 800;
 `;
-
 const Subtitle = styled.p`
   font-size: 12px;
   color: #666;
 `;
-
 const Divider = styled.div`
   width: 100%;
   height: 1px;
   background: #ddd;
   margin: 30px 0;
 `;
-
 const Content = styled.div`
   width: 100%;
 `;
-
 const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-
   z-index: 3000;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
-
 const ModalBox = styled.div`
   background: #fff;
   width: 100%;
@@ -163,14 +153,10 @@ const ModalBox = styled.div`
   height: 100%;
   position: relative;
   overflow-y: auto;
-
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
+  (&::-webkit-scrollbar) {
     display: none;
   }
 `;
-
 const ModalHeaderWrapper = styled.div`
   position: fixed;
   top: 0;
@@ -180,7 +166,6 @@ const ModalHeaderWrapper = styled.div`
   background: #fff;
   z-index: 3100;
 `;
-
 const ModalHeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
@@ -188,24 +173,19 @@ const ModalHeaderContainer = styled.header`
   height: 60px;
   padding: 0 1rem;
 `;
-
 const ModalBody = styled.div`
   padding-top: 60px;
   padding: 1rem;
 `;
-
 const LeftSection = styled.div`
   cursor: pointer;
 `;
-
 const CenterSection = styled.div`
   flex: 1;
 `;
-
 const RightSection = styled.div`
   width: 24px;
 `;
-
 const CancelIcon = styled.img`
   width: 24px;
   height: 24px;
