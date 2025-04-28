@@ -21,11 +21,10 @@ interface CardFormValues {
 const AddCard: React.FC = () => {
   const navigate = useNavigate();
 
-  // 모달 상태들
-  const [isModalOpen, setIsModalOpen] = useState(false); // "전체보기" 모달
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAgree, setIsAgree] = useState(false);
-  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false); // "카드 등록 확인" 모달
-  const [isFinalModalOpen, setIsFinalModalOpen] = useState(false); // "등록 완료" 모달
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
+  const [isFinalModalOpen, setIsFinalModalOpen] = useState(false);
 
   const {
     control,
@@ -44,39 +43,33 @@ const AddCard: React.FC = () => {
     },
   });
 
-  // onFocus 시 기존 마스킹(●) 제거 (필요하다면)
   const handleFocusClear = (e: React.FocusEvent<HTMLInputElement>) => {
     if (e.target.value.includes('●')) {
       e.target.value = '';
     }
   };
 
-  // 폼 제출 시 유효성 검사 통과 → "카드 등록 확인" 모달 오픈
   const onSubmit = (data: CardFormValues) => {
     console.log('Form Submit Data:', data);
     setIsRegistrationModalOpen(true);
   };
 
-  // "카드 등록 확인" 모달에서 '네' 버튼 클릭 → "등록 완료" 모달 오픈
   const handleRegistrationConfirm = () => {
     setIsRegistrationModalOpen(false);
     setIsFinalModalOpen(true);
   };
 
-  // 최종 모달 확인 → /payment-method로 이동
   const handleFinalConfirm = () => {
     setIsFinalModalOpen(false);
     navigate('/payment-method');
   };
 
-  // 숫자만 입력되도록 onKeyPress 핸들러 (다른 필드에도 사용)
   const handleNumberKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!/^\d$/.test(e.key)) {
       e.preventDefault();
     }
   };
 
-  // onInput 핸들러: 입력값에서 숫자 이외의 문자를 제거 (생년월일/사업자번호 등)
   const handleNumberInput = (e: React.FormEvent<HTMLInputElement>) => {
     const target = e.target as HTMLInputElement;
     target.value = target.value.replace(/[^0-9]/g, '');
@@ -86,7 +79,6 @@ const AddCard: React.FC = () => {
     <>
       <FormContainer onSubmit={handleSubmit(onSubmit)}>
         <Container>
-          {/* === 1) 카드등록 동의 영역 === */}
           <AgreementSection>
             <CheckboxLabel>
               <Checkbox
@@ -106,7 +98,6 @@ const AddCard: React.FC = () => {
             </InfoRow>
           </AgreementSection>
 
-          {/* === 2) 카드사 선택 === */}
           <InputField
             label='카드사 선택 *'
             id='cardIssuer'
@@ -116,7 +107,6 @@ const AddCard: React.FC = () => {
             onSelectChange={(val: string) => console.log('카드사 선택:', val)}
           />
 
-          {/* === 3) 카드번호 (Controller 사용: 자동 포매팅) === */}
           <Controller
             name='cardNumber'
             control={control}
@@ -124,11 +114,10 @@ const AddCard: React.FC = () => {
               const handleCardNumberChange = (
                 e: React.ChangeEvent<HTMLInputElement>
               ) => {
-                // 숫자만 추출, 최대 16자리
                 const rawValue = e.target.value
                   .replace(/[^0-9]/g, '')
                   .slice(0, 16);
-                // 4자리씩 하이픈(-) 삽입 (예: 1234567812345678 → "1234-5678-1234-5678")
+
                 const formatted = rawValue.match(/.{1,4}/g)?.join('-') || '';
                 field.onChange(formatted);
               };
@@ -138,7 +127,7 @@ const AddCard: React.FC = () => {
                   label='카드번호 (16자리) *'
                   id='cardNumber'
                   placeholder='카드번호를 입력해주세요.'
-                  maxLength={19} // 16자리 숫자 + 3개 하이픈 = 19자
+                  maxLength={19}
                   error={errors.cardNumber}
                   value={field.value}
                   onChange={handleCardNumberChange}
@@ -149,7 +138,6 @@ const AddCard: React.FC = () => {
             }}
           />
 
-          {/* === 4) 유효기간 & 비밀번호 (앞 2자리) === */}
           <TwoColumns>
             <ColumnItem>
               <Controller
@@ -200,7 +188,6 @@ const AddCard: React.FC = () => {
             </ColumnItem>
           </TwoColumns>
 
-          {/* === 5) 생년월일 or 사업자번호 (6자리 또는 10자리, 숫자만) === */}
           <InputField
             label='생년월일 6자리 or 사업자번호 10자리 (법인) *'
             id='birthOrBusiness'
@@ -213,7 +200,6 @@ const AddCard: React.FC = () => {
             onFocus={handleFocusClear}
           />
 
-          {/* === 안내 메시지 === */}
           <GuideMessage>
             ※ 결제를 위한 등록은 본인카드 그리고 사업자는 법인 카드가
             가능합니다.
@@ -221,7 +207,6 @@ const AddCard: React.FC = () => {
             자세한 문의 ( 평일 09:00 ~ 18:00 ) 서비스팀에 남겨주세요.
           </GuideMessage>
 
-          {/* === "전체보기" 모달 === */}
           <ReusableModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
@@ -235,14 +220,12 @@ const AddCard: React.FC = () => {
         </Container>
       </FormContainer>
 
-      {/* 하단 고정 버튼 - "카드 등록" (노란색) */}
       <FixedBottomBar
         text='카드 등록'
         color='yellow'
         onClick={handleSubmit(onSubmit)}
       />
 
-      {/* "카드 등록 확인" 모달 (ReusableModal2) */}
       <ReusableModal2
         isOpen={isRegistrationModalOpen}
         onClose={() => setIsRegistrationModalOpen(false)}
@@ -254,7 +237,6 @@ const AddCard: React.FC = () => {
         <>카드를 등록하시겠습니까?</>
       </ReusableModal2>
 
-      {/* "등록 완료" 모달 (ReusableModal) */}
       <ReusableModal
         isOpen={isFinalModalOpen}
         onClose={handleFinalConfirm}
@@ -267,8 +249,6 @@ const AddCard: React.FC = () => {
 };
 
 export default AddCard;
-
-/* ------------------ 스타일 정의 ------------------ */
 
 const FormContainer = styled.form`
   padding: 1rem;

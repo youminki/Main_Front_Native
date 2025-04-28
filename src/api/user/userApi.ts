@@ -1,15 +1,11 @@
 import { Axios } from '../Axios';
 
-// =====================
-// 인터페이스 정의
-// =====================
-
 export interface SignupRequest {
   email: string;
   password: string;
   name: string;
   nickname: string;
-  birthdate: string; // "YYYY-MM-DD" 형식
+  birthdate: string;
   address: string;
   phoneNumber: string;
   gender: string;
@@ -94,11 +90,6 @@ export interface VerifyCodeResponse {
   message: string;
 }
 
-// =====================
-// API 호출 함수
-// =====================
-
-// 회원가입 API 호출 (POST /user)
 export const signUpUser = async (
   data: SignupRequest
 ): Promise<SignupResponse> => {
@@ -113,7 +104,6 @@ export const signUpUser = async (
   }
 };
 
-// 모든 사용자 조회 API 호출 (GET /user)
 export const getUsers = async (
   limit?: number,
   page?: number
@@ -124,19 +114,16 @@ export const getUsers = async (
   return response.data;
 };
 
-// 이메일로 사용자 조회 API 호출 (GET /user/{email})
 export const getUserByEmail = async (email: string): Promise<UserDetail> => {
   const response = await Axios.get(`/user/${email}`);
   return response.data;
 };
 
-// 사용자 삭제 API 호출 (DELETE /user/{email})
 export const deleteUser = async (email: string): Promise<MessageResponse> => {
   const response = await Axios.delete(`/user/${email}`);
   return response.data;
 };
 
-// 차단된 사용자 조회 API 호출 (GET /user/blocked)
 export const getBlockedUsers = async (
   limit?: number,
   page?: number
@@ -147,7 +134,6 @@ export const getBlockedUsers = async (
   return response.data;
 };
 
-// 개인 웹페이지 주소 중복 체크 API 호출 (GET /user/check-webpage)
 export const checkWebpage = async (
   personalWebpage: string
 ): Promise<AvailabilityResponse> => {
@@ -157,7 +143,6 @@ export const checkWebpage = async (
   return response.data;
 };
 
-// 닉네임 중복 체크 API 호출 (GET /user/check-nickname)
 export const checkNickname = async (
   nickname: string
 ): Promise<AvailabilityResponse> => {
@@ -167,7 +152,6 @@ export const checkNickname = async (
   return response.data;
 };
 
-// 휴대폰 인증 요청 API 호출 (POST /user/verify-phone)
 export const verifyPhone = async (
   data: VerifyPhoneRequest
 ): Promise<VerifyPhoneResponse> => {
@@ -175,7 +159,6 @@ export const verifyPhone = async (
   return response.data;
 };
 
-// 휴대폰 인증 코드 검증 API 호출 (POST /user/verify-code)
 export const verifyCode = async (
   data: VerifyCodeRequest
 ): Promise<VerifyCodeResponse> => {
@@ -183,7 +166,6 @@ export const verifyCode = async (
   return response.data;
 };
 
-// 이메일 중복 체크 API 호출 (GET /user/check-email)
 export const checkEmail = async (
   email: string
 ): Promise<AvailabilityResponse> => {
@@ -193,17 +175,10 @@ export const checkEmail = async (
   return response.data;
 };
 
-// =====================
-// 헤더용 사용자 정보 조회
-// =====================
 export interface HeaderInfoResponse {
   nickname: string;
 }
 
-/**
- * 로그인한 사용자의 닉네임을 반환합니다.
- * GET /user/header-info
- */
 export const getHeaderInfo = async (): Promise<HeaderInfoResponse> => {
   const response = await Axios.get('/user/header-info');
   return response.data;

@@ -12,16 +12,13 @@ import MICHAA from '../../assets/Landing/MICHAA.jpg';
 import MOJO from '../../assets/Landing/MOJO.jpg';
 import HangerIcon from '../../assets/Landing/hangerIcon.svg';
 
-// 각 브랜드 아이템의 폭과 아이템 사이의 간격
-const BRAND_ITEM_WIDTH = 240; // 이미지 폭
-const BRAND_ITEM_GAP = 20; // 아이템 사이 간격
-const BRAND_COUNT = 9; // 아이템 개수
+const BRAND_ITEM_WIDTH = 240;
+const BRAND_ITEM_GAP = 20;
+const BRAND_COUNT = 9;
 
-// 원본 세트의 총 너비 (마지막 아이템 뒤의 간격은 제외)
 const totalWidth =
-  BRAND_COUNT * BRAND_ITEM_WIDTH + (BRAND_COUNT - 1) * BRAND_ITEM_GAP; // 예: 9*240 + 8*20 = 2320px
+  BRAND_COUNT * BRAND_ITEM_WIDTH + (BRAND_COUNT - 1) * BRAND_ITEM_GAP;
 
-// 애니메이션 이동 거리는 원본 세트의 너비와 동일
 const totalAnimationDistance = totalWidth;
 
 const scroll = keyframes`
@@ -55,7 +52,6 @@ const LandingPage3: React.FC = () => {
 
         <BrandList>
           <ScrollingWrapper>
-            {/* 원본 세트 */}
             {brands.map((brand, idx) => (
               <Brand key={idx}>
                 <BrandImage
@@ -70,7 +66,7 @@ const LandingPage3: React.FC = () => {
                 <BrandName>{brand.name}</BrandName>
               </Brand>
             ))}
-            {/* 복제 세트 */}
+
             {brands.map((brand, idx) => (
               <Brand key={`clone-${idx}`}>
                 <BrandImage
@@ -95,8 +91,6 @@ const LandingPage3: React.FC = () => {
 };
 
 export default LandingPage3;
-
-/* ====================== Styled Components ====================== */
 
 const Container = styled.div`
   height: 660px;
@@ -153,7 +147,6 @@ const BrandList = styled.div`
   margin-bottom: 32px;
 `;
 
-// ScrollingWrapper의 너비는 원본과 복제본을 합쳐야 하므로 totalWidth의 두 배로 고정
 const ScrollingWrapper = styled.div`
   display: flex;
   gap: ${BRAND_ITEM_GAP}px;

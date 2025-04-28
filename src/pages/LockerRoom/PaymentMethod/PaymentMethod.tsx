@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate, useLocation } from 'react-router-dom'; // 수정
+import { useNavigate, useLocation } from 'react-router-dom';
 import StatsSection from '../../../components/StatsSection';
 import PeriodSection from '../../../components/PeriodSection';
 import CardIcon from '../../../assets/LockerRoom/CardIcon.svg';
@@ -11,7 +11,6 @@ const visits = '1';
 const sales = '2025 1분기';
 const dateRange = 'SPRING';
 
-// 카드 데이터 타입
 interface CardData {
   registerDate?: string;
   brand?: string;
@@ -19,7 +18,6 @@ interface CardData {
   isOrange?: boolean;
 }
 
-// 결제 내역 데이터 타입
 interface PaymentData {
   date: string;
   detail: string;
@@ -34,7 +32,6 @@ const PaymentMethod: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ 카드 목록을 State로 관리
   const [cards, setCards] = useState<CardData[]>([
     {
       registerDate: '등록일 2025.02.01',
@@ -43,12 +40,10 @@ const PaymentMethod: React.FC = () => {
       isOrange: true,
     },
     {
-      // "카드 추가" 용
       isOrange: false,
     },
   ]);
 
-  // 결제 내역 (고정 데이터)
   const payments: PaymentData[] = [
     {
       date: '2025-03-10 / 이용권 결제',
@@ -76,7 +71,6 @@ const PaymentMethod: React.FC = () => {
     },
   ];
 
-  // ✅ 수정 후 돌아올 때, location.state에서 updatedCard, cardIndex를 가져와서 cards를 업데이트
   useEffect(() => {
     const { state } = location;
     if (
@@ -85,14 +79,13 @@ const PaymentMethod: React.FC = () => {
       state.cardIndex !== undefined
     ) {
       const { updatedCard, cardIndex } = state;
-      // 기존 cards 복사 후 해당 인덱스의 카드 정보를 수정
+
       const newCards = [...cards];
       newCards[cardIndex] = updatedCard;
       setCards(newCards);
     }
   }, [location.state, cards]);
 
-  // 카드 스크롤 이벤트로 현재 카드 인덱스 추적
   const handleScroll = () => {
     if (!cardsWrapperRef.current) return;
     const scrollLeft = cardsWrapperRef.current.scrollLeft;
@@ -120,11 +113,9 @@ const PaymentMethod: React.FC = () => {
       <Divider />
 
       <ScrollContainer>
-        {/* 카드 표시 영역 */}
         <CardsWrapper ref={cardsWrapperRef} onScroll={handleScroll}>
           {cards.map((card, idx) =>
             card.isOrange ? (
-              /* 오렌지색 카드, 클릭 시 카드 상세 페이지로 이동 */
               <CardOrange
                 key={idx}
                 onClick={() =>
@@ -140,7 +131,6 @@ const PaymentMethod: React.FC = () => {
                   <CardRegisterDate>{card.registerDate}</CardRegisterDate>
                 </CardTop>
                 <CardBody>
-                  {/* brand 왼쪽에 CardIcon.svg 이미지를 row로 정렬 */}
                   <CardBrandRow>
                     <CardIconImg src={CardIcon} alt='card icon' />
                     <CardBrandText>{card.brand}</CardBrandText>
@@ -149,7 +139,6 @@ const PaymentMethod: React.FC = () => {
                 </CardBody>
               </CardOrange>
             ) : (
-              /* "카드 추가" 용 흰색 카드 */
               <CardWhite
                 key={idx}
                 onClick={() => navigate('/payment-method/AddCard')}
@@ -166,14 +155,12 @@ const PaymentMethod: React.FC = () => {
           )}
         </CardsWrapper>
 
-        {/* 페이지 인디케이터 (Dots) */}
         <DotsContainer>
           {cards.map((_, idx) => (
             <Dot key={idx} active={currentCard === idx} />
           ))}
         </DotsContainer>
 
-        {/* 결제내역 목록 */}
         <PaymentList>
           <PeriodSection
             selectedPeriod={selectedPeriod}
@@ -204,7 +191,6 @@ const PaymentMethod: React.FC = () => {
 
 export default PaymentMethod;
 
-/* ========== 기존 스타일 ========== */
 const PaymentMethodContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -243,8 +229,6 @@ const Divider = styled.div`
   background: #dddddd;
   margin-top: 30px;
 `;
-
-/* ========== 새로 추가된 스타일 ========== */
 
 const ScrollContainer = styled.div`
   display: flex;

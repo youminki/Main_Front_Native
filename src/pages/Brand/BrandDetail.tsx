@@ -1,4 +1,3 @@
-// src/pages/Brand/BrandDetail.tsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -171,7 +170,6 @@ const BrandDetail: React.FC = () => {
 
 export default BrandDetail;
 
-// styled-components
 const Container = styled.div`
   display: flex;
   flex-direction: column;

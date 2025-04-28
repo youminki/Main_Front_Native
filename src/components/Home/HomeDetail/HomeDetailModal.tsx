@@ -1,11 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-/**
- * 간단한 모달 컨테이너 컴포넌트
- * - 모달 외부 영역 클릭 시 닫힘
- * - 모달 내부는 children으로 원하는 UI를 자유롭게 구성
- */
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -24,13 +19,11 @@ const ReusableModal2: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // 모달 외부(배경) 클릭 시 닫기
     e.stopPropagation();
     onClose();
   };
 
   const handleContentClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // 모달 내부 클릭 시, 이벤트 버블링 방지
     e.stopPropagation();
   };
 

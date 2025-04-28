@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom';
 const SalesSettlementDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
-  // 더미 데이터 (SalesSettlement에서 가져온 데이터 참고)
   const settlements = [
     {
       id: 1,
@@ -84,10 +83,7 @@ const SalesSettlementDetail: React.FC = () => {
       </Note>
 
       <Divider />
-      {/*
-        테이블을 감싸는 래퍼를 두고 overflow-x: auto로 설정
-        -> 화면이 좁아지면 가로 스크롤이 생기면서 텍스트가 줄바꿈되지 않음
-      */}
+
       <TableWrapper>
         <Table>
           <thead>
@@ -120,7 +116,6 @@ const SalesSettlementDetail: React.FC = () => {
 
 export default SalesSettlementDetail;
 
-// 스타일 정의
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -181,22 +176,19 @@ const Divider = styled.div`
   margin: 30px 0;
 `;
 
-// 테이블을 감싸는 래퍼
 const TableWrapper = styled.div`
   width: 100%;
-  overflow-x: auto; /* 가로 스크롤 */
+  overflow-x: auto;
 `;
 
 const Table = styled.table`
   width: 100%;
   margin-top: 20px;
   border-collapse: collapse;
-  /* 테이블이 너무 좁아지지 않도록 필요한 경우 min-width 설정 가능 */
-  /* min-width: 1000px; */
 `;
 
 const ThRight = styled.th`
-  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  white-space: nowrap;
   text-align: left;
   font-weight: 800;
   font-size: 10px;
@@ -206,7 +198,7 @@ const ThRight = styled.th`
 `;
 
 const ThLeft = styled.th`
-  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  white-space: nowrap;
   text-align: right;
   font-weight: 800;
   font-size: 10px;
@@ -216,7 +208,7 @@ const ThLeft = styled.th`
 `;
 
 const TdLeft = styled.td`
-  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  white-space: nowrap;
   padding: 20px;
   border: 1px solid #dddddd;
   text-align: left;
@@ -228,7 +220,7 @@ const TdLeft = styled.td`
 `;
 
 const TdRight = styled.td`
-  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  white-space: nowrap;
   padding: 20px;
   border: 1px solid #dddddd;
 
@@ -244,7 +236,7 @@ const ProductName = styled.span<{ isBold?: boolean }>`
 `;
 
 const SubInfo = styled.p<{ isBold?: boolean }>`
-  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  white-space: nowrap;
 
   font-weight: ${({ isBold }) => (isBold ? 800 : 400)};
   font-size: 12px;

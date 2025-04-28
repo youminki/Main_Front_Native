@@ -28,10 +28,8 @@ const TermsAndConditionsOfUseDetail: React.FC = () => {
         </ContentBox>
       </Section>
 
-      {/* 구분선 */}
       <Divider />
 
-      {/* 안내 메시지 */}
       <NoticeMessage>
         <Bullet>※</Bullet>
         <NoticeText>
@@ -44,8 +42,6 @@ const TermsAndConditionsOfUseDetail: React.FC = () => {
 };
 
 export default TermsAndConditionsOfUseDetail;
-
-/* ----- 스타일 정의 ----- */
 
 const DetailContainer = styled.div`
   margin: 0 auto;

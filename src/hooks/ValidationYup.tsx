@@ -20,7 +20,7 @@ export const schemaInfo = yup.object({
     .matches(
       /^(?=.*@)(?=.*(\.com|\.net)).+$/,
       '이메일은 "@"와 ".com" 또는 ".net"을 포함해야 합니다.'
-    ), // 추가된 검증
+    ),
   password: yup
     .string()
     .required('비밀번호를 입력해주세요.')
@@ -129,7 +129,6 @@ export const schemaSignup = yup
     bottom: yup.string().required('사이즈 선택.'),
     brand: yup.string().required('선호 브랜드를 선택해주세요.'),
 
-    // 추가 필드
     instar: yup
       .string()
       .required('인스타 아이디를 입력해주세요.')
@@ -171,7 +170,7 @@ export const schemaLogin = yup.object({
     .matches(
       /^(?=.*@)(?=.*(\.com|\.net)).+$/,
       '이메일은 "@"와 ".com" 또는 ".net"을 포함해야 합니다.'
-    ), // 추가된 검증
+    ),
   password: yup
     .string()
     .required('비밀번호를 입력해주세요.')
@@ -214,21 +213,17 @@ export const schemaFindId = yup.object({
 export const schemaCardRegistration = yup.object({
   cardNumber: yup
     .string()
-    // 1) 하이픈 제거
+
     .transform((value) => value.replace(/-/g, ''))
     .required('카드번호를 입력해주세요.')
     .matches(/^\d{16}$/, '카드번호는 16자리 숫자여야 합니다.'),
 
   cardExpiration: yup
     .string()
-    // 2) 공백 제거 (원한다면)
+
     .transform((value) => value.replace(/\s/g, ''))
     .required('유효기간을 입력해주세요.')
-    .matches(
-      // '05/24' 형태만 허용 (공백 없이)
-      /^(0[1-9]|1[0-2])\/\d{2}$/,
-      '유효기간은 MM/YY 형식이어야 합니다.'
-    ),
+    .matches(/^(0[1-9]|1[0-2])\/\d{2}$/, '유효기간은 MM/YY 형식이어야 합니다.'),
 
   cardPassword: yup
     .string()

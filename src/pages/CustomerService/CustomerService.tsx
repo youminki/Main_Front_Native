@@ -73,8 +73,6 @@ const CustomerService: React.FC = () => {
 
 export default CustomerService;
 
-// ───────────────────────────────────────────────────────────
-
 const Container = styled.div`
   width: 100%;
 

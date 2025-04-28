@@ -12,224 +12,224 @@ const FavoriteBrandsSection = () => (
 const BrandOptions = () => (
   <>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="48" value="48" />
-      <label htmlFor="48">
+      <input type='checkbox' name='favoriteBrandSeq' id='48' value='48' />
+      <label htmlFor='48'>
         <span></span>CADELL
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="57" value="57" />
-      <label htmlFor="57">
+      <input type='checkbox' name='favoriteBrandSeq' id='57' value='57' />
+      <label htmlFor='57'>
         <span></span>CC Collect
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="10" value="10" />
-      <label htmlFor="10">
+      <input type='checkbox' name='favoriteBrandSeq' id='10' value='10' />
+      <label htmlFor='10'>
         <span></span>CLUB MONACO
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="30" value="30" />
-      <label htmlFor="30">
+      <input type='checkbox' name='favoriteBrandSeq' id='30' value='30' />
+      <label htmlFor='30'>
         <span></span>DECO
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="15" value="15" />
-      <label htmlFor="15">
+      <input type='checkbox' name='favoriteBrandSeq' id='15' value='15' />
+      <label htmlFor='15'>
         <span></span>DEW L
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="51" value="51" />
-      <label htmlFor="51">
+      <input type='checkbox' name='favoriteBrandSeq' id='51' value='51' />
+      <label htmlFor='51'>
         <span></span>DOUCAN
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="17" value="17" />
-      <label htmlFor="17">
+      <input type='checkbox' name='favoriteBrandSeq' id='17' value='17' />
+      <label htmlFor='17'>
         <span></span>EGOIST
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="20" value="20" />
-      <label htmlFor="20">
+      <input type='checkbox' name='favoriteBrandSeq' id='20' value='20' />
+      <label htmlFor='20'>
         <span></span>G-CUT
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="23" value="23" />
-      <label htmlFor="23">
+      <input type='checkbox' name='favoriteBrandSeq' id='23' value='23' />
+      <label htmlFor='23'>
         <span></span>it MICHAA
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="11" value="11" />
-      <label htmlFor="11">
+      <input type='checkbox' name='favoriteBrandSeq' id='11' value='11' />
+      <label htmlFor='11'>
         <span></span>JIGOTT
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="13" value="13" />
-      <label htmlFor="13">
+      <input type='checkbox' name='favoriteBrandSeq' id='13' value='13' />
+      <label htmlFor='13'>
         <span></span>JJ JIGOTT
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="19" value="19" />
-      <label htmlFor="19">
+      <input type='checkbox' name='favoriteBrandSeq' id='19' value='19' />
+      <label htmlFor='19'>
         <span></span>KENNETH LADY
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="32" value="32" />
-      <label htmlFor="32">
+      <input type='checkbox' name='favoriteBrandSeq' id='32' value='32' />
+      <label htmlFor='32'>
         <span></span>LÄTT BY T
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="50" value="50" />
-      <label htmlFor="50">
+      <input type='checkbox' name='favoriteBrandSeq' id='50' value='50' />
+      <label htmlFor='50'>
         <span></span>Lazyna
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="45" value="45" />
-      <label htmlFor="45">
+      <input type='checkbox' name='favoriteBrandSeq' id='45' value='45' />
+      <label htmlFor='45'>
         <span></span>LINE
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="18" value="18" />
-      <label htmlFor="18">
+      <input type='checkbox' name='favoriteBrandSeq' id='18' value='18' />
+      <label htmlFor='18'>
         <span></span>LYNN
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="34" value="34" />
-      <label htmlFor="34">
+      <input type='checkbox' name='favoriteBrandSeq' id='34' value='34' />
+      <label htmlFor='34'>
         <span></span>MAJE
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="46" value="46" />
-      <label htmlFor="46">
+      <input type='checkbox' name='favoriteBrandSeq' id='46' value='46' />
+      <label htmlFor='46'>
         <span></span>Mark de niel
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="22" value="22" />
-      <label htmlFor="22">
+      <input type='checkbox' name='favoriteBrandSeq' id='22' value='22' />
+      <label htmlFor='22'>
         <span></span>MICHAA
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="16" value="16" />
-      <label htmlFor="16">
+      <input type='checkbox' name='favoriteBrandSeq' id='16' value='16' />
+      <label htmlFor='16'>
         <span></span>MOJO.S.PHINE
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="47" value="47" />
-      <label htmlFor="47">
+      <input type='checkbox' name='favoriteBrandSeq' id='47' value='47' />
+      <label htmlFor='47'>
         <span></span>Mujatzz
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="29" value="29" />
-      <label htmlFor="29">
+      <input type='checkbox' name='favoriteBrandSeq' id='29' value='29' />
+      <label htmlFor='29'>
         <span></span>OLIVE DES OLIVE
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="35" value="35" />
-      <label htmlFor="35">
+      <input type='checkbox' name='favoriteBrandSeq' id='35' value='35' />
+      <label htmlFor='35'>
         <span></span>O˙2nd
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="26" value="26" />
-      <label htmlFor="26">
+      <input type='checkbox' name='favoriteBrandSeq' id='26' value='26' />
+      <label htmlFor='26'>
         <span></span>RENEEVON
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="27" value="27" />
-      <label htmlFor="27">
+      <input type='checkbox' name='favoriteBrandSeq' id='27' value='27' />
+      <label htmlFor='27'>
         <span></span>SANDRO
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="21" value="21" />
-      <label htmlFor="21">
+      <input type='checkbox' name='favoriteBrandSeq' id='21' value='21' />
+      <label htmlFor='21'>
         <span></span>SATIN
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="25" value="25" />
-      <label htmlFor="25">
+      <input type='checkbox' name='favoriteBrandSeq' id='25' value='25' />
+      <label htmlFor='25'>
         <span></span>SISLEY
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="2" value="2" />
-      <label htmlFor="2">
+      <input type='checkbox' name='favoriteBrandSeq' id='2' value='2' />
+      <label htmlFor='2'>
         <span></span>SJSJ
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="33" value="33" />
-      <label htmlFor="33">
+      <input type='checkbox' name='favoriteBrandSeq' id='33' value='33' />
+      <label htmlFor='33'>
         <span></span>SJYP
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="28" value="28" />
-      <label htmlFor="28">
+      <input type='checkbox' name='favoriteBrandSeq' id='28' value='28' />
+      <label htmlFor='28'>
         <span></span>STUDIO TOMBOY
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="1" value="1" />
-      <label htmlFor="1">
+      <input type='checkbox' name='favoriteBrandSeq' id='1' value='1' />
+      <label htmlFor='1'>
         <span></span>SYSTEM
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="58" value="58" />
-      <label htmlFor="58">
+      <input type='checkbox' name='favoriteBrandSeq' id='58' value='58' />
+      <label htmlFor='58'>
         <span></span>S_Blanc
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="24" value="24" />
-      <label htmlFor="24">
+      <input type='checkbox' name='favoriteBrandSeq' id='24' value='24' />
+      <label htmlFor='24'>
         <span></span>S˙SOLEZIA
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="14" value="14" />
-      <label htmlFor="14">
+      <input type='checkbox' name='favoriteBrandSeq' id='14' value='14' />
+      <label htmlFor='14'>
         <span></span>THE IZZAT
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="12" value="12" />
-      <label htmlFor="12">
+      <input type='checkbox' name='favoriteBrandSeq' id='12' value='12' />
+      <label htmlFor='12'>
         <span></span>THE IZZAT Collection
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="31" value="31" />
-      <label htmlFor="31">
+      <input type='checkbox' name='favoriteBrandSeq' id='31' value='31' />
+      <label htmlFor='31'>
         <span></span>TIME
       </label>
     </BrandCheckbox>
     <BrandCheckbox>
-      <input type="checkbox" name="favoriteBrandSeq" id="36" value="36" />
-      <label htmlFor="36">
+      <input type='checkbox' name='favoriteBrandSeq' id='36' value='36' />
+      <label htmlFor='36'>
         <span></span>ZOOC
       </label>
     </BrandCheckbox>
@@ -263,9 +263,7 @@ const BrandContainer = styled.div`
 const BrandCheckbox = styled.div`
   display: flex;
   align-items: center;
-  width: calc(
-    50% - 10px
-  ); // 모바일에서 두 개의 체크박스를 나란히 표시하기 위해 50%로 조정
+  width: calc(50% - 10px);
   margin-bottom: 10px;
 
   input {
@@ -277,6 +275,6 @@ const BrandCheckbox = styled.div`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    width: calc(100% - 10px); // 모바일에서는 한 줄에 한 개씩 표시
+    width: calc(100% - 10px);
   }
 `;

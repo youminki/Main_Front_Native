@@ -9,7 +9,6 @@ export interface MaterialInfoProps {
   materialData: MaterialData;
 }
 
-// 옵션별 선택지 정의
 const materialOptions: Record<string, string[]> = {
   두께감: ['매우 두꺼움', '두꺼움', '적당', '얇음'],
   신축성: ['좋음', '약간있음', '없음', '허리밴딩'],
@@ -18,7 +17,6 @@ const materialOptions: Record<string, string[]> = {
   비침: ['비침있음', '약간있음', '적당', '비침없음'],
 };
 
-// 선택 값 가져오기
 const getSelectedValue = (
   key: string,
   options: string[],
@@ -28,11 +26,9 @@ const getSelectedValue = (
   return options.includes(value) ? value : options[0];
 };
 
-// 마크 위치 계산 (각 옵션의 중앙을 계산)
 const calculatePosition = (index: number, total: number) =>
   `${(index / total) * 100 + 100 / total / 2}%`;
 
-// 각 옵션에 대한 색상 정의 (예시)
 const optionColors: Record<string, string[]> = {
   두께감: ['#696969', '#808080', '#A9A9A9', '#D3D3D3'],
   신축성: ['#696969', '#808080', '#A9A9A9', '#D3D3D3'],
@@ -63,7 +59,7 @@ const MaterialInfo: React.FC<MaterialInfoProps> = ({ materialData }) => (
                     style={{
                       left: `${(index / options.length) * 100}%`,
                       width: `${(1 / options.length) * 100}%`,
-                      backgroundColor: optionColors[key][index], // 각 옵션별 색상
+                      backgroundColor: optionColors[key][index],
                     }}
                   />
                 ))}
@@ -75,8 +71,8 @@ const MaterialInfo: React.FC<MaterialInfoProps> = ({ materialData }) => (
                     key={option}
                     selected={option === selected}
                     style={{
-                      left: `${(index / options.length) * 100}%`, // 옵션을 각 영역의 중앙에 배치
-                      width: `${(1 / options.length) * 100}%`, // 각 옵션이 동일한 넓이를 가짐
+                      left: `${(index / options.length) * 100}%`,
+                      width: `${(1 / options.length) * 100}%`,
                     }}
                   >
                     {option}
@@ -93,7 +89,6 @@ const MaterialInfo: React.FC<MaterialInfoProps> = ({ materialData }) => (
 
 export default MaterialInfo;
 
-// Styled Components
 const Container = styled.div`
   margin-top: 40px;
 `;
@@ -151,7 +146,7 @@ const ColoredBar = styled.div`
 
 const Thumb = styled.div`
   position: absolute;
-  top: -8px; /* Ensure the Thumb is always above the track */
+  top: -8px;
   width: 14px;
   height: 14px;
   border: 3px solid #f6ae24;

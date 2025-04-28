@@ -1,11 +1,10 @@
-// Button02.tsx
 import React from 'react';
 import styled, { css, keyframes } from 'styled-components';
 
 interface Button02Props {
   children: React.ReactNode;
   onClick?: () => void;
-  // 기본 노란색, 성공 시 파란색, 실패 시 빨간색, 추가: 검정색
+
   color: 'yellow' | 'blue' | 'red' | 'black';
 }
 
@@ -81,7 +80,6 @@ const StyledButton = styled.button<{
               }
             `
           : css`
-              /* black */
               background-color: #333333;
               &:hover {
                 background-color: #1a1a1a;

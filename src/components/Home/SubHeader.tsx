@@ -1,4 +1,3 @@
-// src/components/Home/SubHeader.tsx
 import React from 'react';
 import styled from 'styled-components';
 import { useSearchParams } from 'react-router-dom';
@@ -56,7 +55,7 @@ const SubHeader: React.FC<SubHeaderProps> = ({
   const handleClick = (category: string) => {
     const newParams = new URLSearchParams(searchParams.toString());
     newParams.set('categori', category);
-    newParams.delete('search'); // 검색 초기화
+    newParams.delete('search');
     setSearchParams(newParams);
 
     setSelectedCategory(category);

@@ -36,7 +36,6 @@ export const LoginPost = async (
 
     console.log('✅ 로그인 성공:', response.data);
 
-    // 🔑 토큰을 쿠키에 저장 (보안 설정 포함)
     Cookies.set('accessToken', response.data.accessToken, {
       secure: true,
       httpOnly: false,
@@ -46,14 +45,12 @@ export const LoginPost = async (
       httpOnly: false,
     });
 
-    // ✅ API 요청 시 자동으로 accessToken 포함
     Axios.defaults.headers.Authorization = `Bearer ${response.data.accessToken}`;
 
     return response.data;
   } catch (error: any) {
     console.error('❌ 로그인 실패:', error);
 
-    // ✅ 에러 메시지 처리
     let errorMessage: LoginError = {
       message: '로그인 요청에 실패했습니다.',
       statusCode: error.response?.status,

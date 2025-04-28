@@ -1,16 +1,12 @@
-// src/pages/PersonalLink.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-/** 실제 사용 시 경로를 맞춰 import 해주세요. */
 import personalLinkShareIcon from '../assets/personalLink/personalLinkShareIcon.svg';
 import personalLinkProfileIcon from '../assets/personalLink/personalLinkProfileIcon.svg';
 import personalLinkAlramIcon from '../assets/personalLink/personalLinkAlramIcon.svg';
 
-/** ItemList 컴포넌트 및 UIItem 타입 임포트 */
 import ItemList, { UIItem } from '../components/Home/ItemList';
 
-// 예시 아이템 데이터 (실제 서버나 API 연동 시 삭제/교체)
 const dummyItems = [
   {
     id: 1,
@@ -51,13 +47,10 @@ const dummyItems = [
 ];
 
 const PersonalLink: React.FC = () => {
-  // 탭 상태: 'personalLink' or 'productIntro'
   const [activeTab, setActiveTab] = useState<'personalLink' | 'productIntro'>(
     'personalLink'
   );
 
-  // PersonalLink 페이지가 마운트될 때 body에 클래스를 추가하고,
-  // 언마운트될 때 제거하여 글로벌 CSS를 적용
   useEffect(() => {
     document.body.classList.add('PersonalLink');
     return () => {
@@ -65,7 +58,6 @@ const PersonalLink: React.FC = () => {
     };
   }, []);
 
-  // dummyItems → UIItem 타입으로 변환
   const uiDummyItems: UIItem[] = dummyItems.map(
     ({ id, image, brand, description, price, discount }) => ({
       id: id.toString(),
@@ -74,21 +66,18 @@ const PersonalLink: React.FC = () => {
       description,
       price,
       discount,
-      isLiked: false, // 개인 링크에서는 기본적으로 찜되지 않은 상태
+      isLiked: false,
     })
   );
 
   return (
     <Container>
-      {/* 상단 영역 (노란색 + 대각선) */}
       <TopSection>
         <TopInner>
-          {/* 왼쪽: 공유 아이콘 */}
           <IconButton>
             <img src={personalLinkShareIcon} alt='share' />
           </IconButton>
 
-          {/* 중앙: 프로필 + 이름 (세로 정렬) */}
           <CenterColumn>
             <UserImageWrapper>
               <img src={personalLinkProfileIcon} alt='user profile' />
@@ -96,14 +85,12 @@ const PersonalLink: React.FC = () => {
             <UserName>bominism71</UserName>
           </CenterColumn>
 
-          {/* 오른쪽: 알림 아이콘 */}
           <IconButton>
             <img src={personalLinkAlramIcon} alt='alarm' />
           </IconButton>
         </TopInner>
       </TopSection>
 
-      {/* 탭 영역 */}
       <TabSection>
         <TabItem
           active={activeTab === 'personalLink'}
@@ -119,7 +106,6 @@ const PersonalLink: React.FC = () => {
         </TabItem>
       </TabSection>
 
-      {/* 탭에 따라 다른 콘텐츠 렌더링 */}
       {activeTab === 'personalLink' && (
         <LinkListWrapper>
           <LinkItem>
@@ -163,7 +149,7 @@ const PersonalLink: React.FC = () => {
       {activeTab === 'productIntro' && (
         <ProductListWrapper>
           <IntroText>👉 직접 입어보고 맘에 드는 것만 소개해드려요 👈</IntroText>
-          {/* ItemList 컴포넌트 사용 (2열 그리드) */}
+
           <ItemList items={uiDummyItems} />
         </ProductListWrapper>
       )}
@@ -175,11 +161,6 @@ const PersonalLink: React.FC = () => {
 
 export default PersonalLink;
 
-/* ----------------------------------------
-   Styled Components
----------------------------------------- */
-
-/* 전체 컨테이너 */
 const Container = styled.div`
   max-width: 1000px;
   margin: 0 auto;
@@ -190,7 +171,6 @@ const Container = styled.div`
   overflow-x: hidden;
 `;
 
-/* 상단 영역 (노란색 + 대각선) */
 const TopSection = styled.div`
   position: relative;
   width: 100%;
@@ -202,7 +182,6 @@ const TopSection = styled.div`
   justify-content: center;
 `;
 
-/* 상단 내부(아이콘 2개 + 중앙 프로필/이름) 가로 배치 */
 const TopInner = styled.div`
   margin-top: 10px;
   width: 90%;
@@ -211,14 +190,12 @@ const TopInner = styled.div`
   align-items: center;
 `;
 
-/* 중앙에 프로필 + 이름 세로 정렬 */
 const CenterColumn = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
-/* 아이콘 버튼 */
 const IconButton = styled.button`
   width: 40px;
   height: 40px;
@@ -370,7 +347,6 @@ const LinkArrow = styled.div`
   }
 `;
 
-/* 제품소개 리스트 */
 const ProductListWrapper = styled.div`
   flex: 1;
   width: 100%;
@@ -380,7 +356,6 @@ const ProductListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-/* 상단 안내문 */
 const IntroText = styled.div`
   font-weight: 400;
   font-size: 14px;
@@ -388,7 +363,6 @@ const IntroText = styled.div`
   margin-bottom: 20px;
 `;
 
-/* 하단 영역 */
 const Footer = styled.div`
   width: 100%;
   height: 20px;

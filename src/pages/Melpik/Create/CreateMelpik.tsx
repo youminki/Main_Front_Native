@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 import ContentList from '../../../components/Melpik/CreateMelpik/ContentList';
 
-// 동적 데이터
 const visitLabel = '인스타 계정';
 const salesLabel = '현재 등록수  ';
 const visits = '@styleweex';

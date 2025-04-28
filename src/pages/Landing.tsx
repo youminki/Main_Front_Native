@@ -1,4 +1,3 @@
-// src/components/Landing/Landing.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Header from '../components/Landing/Header';
@@ -9,14 +8,13 @@ import LandingPage4 from '../components/Landing/LandingPage4';
 import LandingPage5 from '../components/Landing/LandingPage5';
 import LandingPage6 from '../components/Landing/LandingPage6';
 import LandingPage7 from '../components/Landing/LandingPage7';
-// import BottomNav from '../components/Landing/BottomNav';
+
 import Footer from '../components/Landing/Footer';
 
 interface ScrollFadeInProps {
   children: React.ReactNode;
 }
 
-// 스크롤 방향 감지 훅
 const useScrollDirection = () => {
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down');
   const lastScrollY = useRef(window.scrollY);
@@ -43,7 +41,6 @@ const ScrollFadeIn: React.FC<ScrollFadeInProps> = ({ children }) => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          // 뷰포트에 진입 시 visible 처리
           if (entry.isIntersecting) {
             setVisible(true);
             observer.unobserve(entry.target);
@@ -75,29 +72,24 @@ const Landing: React.FC = () => {
   useEffect(() => {
     document.body.classList.add('landing');
 
-    // 1) 모든 <img> 태그를 수집
     const images = document.querySelectorAll('img');
     let loadedCount = 0;
     const totalImages = images.length;
 
-    // 이미지가 하나도 없다면 즉시 로딩 해제
     if (totalImages === 0) {
       setLoading(false);
       return;
     }
 
-    // 2) 이미지 로드/에러 콜백
     const handleImageLoadOrError = () => {
       loadedCount += 1;
-      // 모든 이미지가 로드되거나 에러가 난 경우 로딩 해제
+
       if (loadedCount === totalImages) {
         setLoading(false);
       }
     };
 
-    // 3) 각 이미지마다 load/error 이벤트 리스너 등록
     images.forEach((img) => {
-      // 이미 로드가 끝난 이미지라면(캐시 등) 바로 카운트
       if (img.complete) {
         handleImageLoadOrError();
       } else {
@@ -106,7 +98,6 @@ const Landing: React.FC = () => {
       }
     });
 
-    // clean-up
     return () => {
       images.forEach((img) => {
         img.removeEventListener('load', handleImageLoadOrError);
@@ -116,7 +107,6 @@ const Landing: React.FC = () => {
     };
   }, []);
 
-  // 로딩 중이면 스피너 표시
   if (loading) {
     return (
       <LoadingOverlay>
@@ -125,24 +115,19 @@ const Landing: React.FC = () => {
     );
   }
 
-  // 로딩 완료 후 랜딩 페이지 표시
   return (
     <LandingContainer>
-      {/* 전체 배경을 그리는 래퍼 */}
       <BackgroundWrapper>
-        {/* 배경띠2 */}
         <BackgroundStripe2 />
-        {/* 배경띠1 */}
+
         <BackgroundStripe1 />
       </BackgroundWrapper>
 
       <Header />
 
       <ContentWrapper>
-        {/* 페이지1 */}
         <LandingPage1 />
 
-        {/* 페이지2 ~ 페이지7 */}
         <ScrollFadeIn>
           <LandingPage2 />
         </ScrollFadeIn>
@@ -163,7 +148,6 @@ const Landing: React.FC = () => {
         </ScrollFadeIn>
       </ContentWrapper>
 
-      {/* Footer에도 애니메이션 효과 적용 */}
       <ScrollFadeIn>
         <Footer />
       </ScrollFadeIn>
@@ -173,11 +157,9 @@ const Landing: React.FC = () => {
 
 export default Landing;
 
-/* ====================== Styled Components ====================== */
-
 const LandingContainer = styled.div`
   position: relative;
-  background-color: #f5f5f5; /* 혹은 원하는 색상 */
+  background-color: #f5f5f5;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -223,9 +205,6 @@ const ContentWrapper = styled.div`
   align-items: center;
 `;
 
-/**
- * FadeInWrapper는 스크롤 시 애니메이션 효과를 주는 컨테이너
- */
 const FadeInWrapper = styled.div<{ scrollDirection: 'up' | 'down' }>`
   width: 100%;
   max-width: 700px;
@@ -233,7 +212,6 @@ const FadeInWrapper = styled.div<{ scrollDirection: 'up' | 'down' }>`
 
   overflow: hidden;
 
-  /* 초기 상태 */
   opacity: 0;
   transform: ${({ scrollDirection }) =>
     scrollDirection === 'down'
@@ -254,23 +232,20 @@ const FadeInWrapper = styled.div<{ scrollDirection: 'up' | 'down' }>`
   }
 `;
 
-/* 로딩 스피너 애니메이션 */
 const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 `;
 
-/* 로딩 스피너 스타일 (노란색) */
 const LoadingSpinner = styled.div`
-  border: 8px solid rgba(246, 172, 54, 0.3); /* 반투명 노란색 */
-  border-top: 8px solid #f6ac36; /* 노란색 */
+  border: 8px solid rgba(246, 172, 54, 0.3);
+  border-top: 8px solid #f6ac36;
   border-radius: 50%;
   width: 60px;
   height: 60px;
   animation: ${spin} 1s linear infinite;
 `;
 
-/* 로딩 오버레이 스타일 */
 const LoadingOverlay = styled.div`
   position: fixed;
   top: 0;

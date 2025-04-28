@@ -1,4 +1,3 @@
-// src/hooks/useImageLoader.ts
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +9,6 @@ export default function useImageLoader(
   const [exit, setExit] = useState(false);
 
   useEffect(() => {
-    // reset loading on path change
     setLoading(true);
     const imgs = Array.from(document.querySelectorAll('img'));
     if (imgs.length === 0) {

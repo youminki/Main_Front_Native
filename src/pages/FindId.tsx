@@ -148,7 +148,6 @@ const FindId: React.FC = () => {
 
 export default FindId;
 
-// 스타일 컴포넌트 정의
 const Container = styled.div`
   display: flex;
   flex-direction: column;

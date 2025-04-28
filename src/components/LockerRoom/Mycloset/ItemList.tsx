@@ -1,4 +1,3 @@
-// src/components/LockerRoom/Mycloset/ItemList.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import ItemCard from './ItemCard';
@@ -20,7 +19,6 @@ type ItemListProps = {
 const ItemList: React.FC<ItemListProps> = ({ items, onDelete }) => {
   const [itemList, setItemList] = useState<Item[]>([]);
 
-  // 부모가 items를 바꾸면 내부 상태 동기화
   useEffect(() => {
     setItemList(items);
   }, [items]);

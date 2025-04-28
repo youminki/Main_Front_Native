@@ -1,23 +1,20 @@
-// src/api/Axios.ts
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
 export const Axios = axios.create({
   baseURL: 'https://api.stylewh.com',
-  withCredentials: true, // 세션 쿠키 전송
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
 });
 
-// 로그인 시 저장된 accessToken이 있다면 기본 헤더로 설정
 const accessToken = Cookies.get('accessToken');
 if (accessToken) {
   Axios.defaults.headers.Authorization = `Bearer ${accessToken}`;
 }
 
-// 401 응답 인터셉터: 리프레시 토큰으로 재발급 시도
 Axios.interceptors.response.use(
   (response) => response,
   async (error) => {

@@ -1,4 +1,3 @@
-// src/pages/Login.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
@@ -127,7 +126,6 @@ const Login: React.FC = () => {
           </ExtraLinks>
         </LoginContainer>
 
-        {/* 로그인 실패 모달 */}
         <ReusableModal
           isOpen={isModalOpen}
           onClose={handleModalClose}
@@ -136,7 +134,6 @@ const Login: React.FC = () => {
           {modalMessage}
         </ReusableModal>
 
-        {/* 준비 중 기능 모달 */}
         <ReusableModal
           isOpen={isFeatureModalOpen}
           onClose={() => setIsFeatureModalOpen(false)}
@@ -151,7 +148,6 @@ const Login: React.FC = () => {
 
 export default Login;
 
-// ───── styled components ─────
 const Container = styled.div`
   display: flex;
   flex-direction: column;

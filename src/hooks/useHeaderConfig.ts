@@ -1,4 +1,3 @@
-// src/hooks/useHeaderConfig.ts
 import { matchPath } from 'react-router-dom';
 
 type Variant = 'default' | 'oneDepth' | 'twoDepth' | 'threeDepth';

@@ -1,4 +1,3 @@
-// src/components/Home/HomeDetail/ProductInfo.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import AddTekImage from '../../../assets/ClosetIcon.svg';

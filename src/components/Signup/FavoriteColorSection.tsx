@@ -2,22 +2,22 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface FavoriteColorSectionProps {
-  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void; // 선택 변경 이벤트 핸들러
+  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const FavoriteColorSection: React.FC<FavoriteColorSectionProps> = ({
   onChange,
 }) => (
   <>
-    <Label htmlFor="favoriteColorSeq">좋아하는 색상을 선택하세요</Label>
+    <Label htmlFor='favoriteColorSeq'>좋아하는 색상을 선택하세요</Label>
     <Select
-      name="favoriteColorSeq"
-      id="favoriteColorSeq"
+      name='favoriteColorSeq'
+      id='favoriteColorSeq'
       onChange={onChange}
       required
-      defaultValue=""
+      defaultValue=''
     >
-      <option value="" disabled>
+      <option value='' disabled>
         좋아하는 색상을 선택하세요
       </option>
       {colorOptions.map(({ value, label, backgroundColor, textColor }) => (

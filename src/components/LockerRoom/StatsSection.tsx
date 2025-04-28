@@ -28,7 +28,7 @@ const StatsSection: React.FC<StatsSectionProps> = ({
         <StatLabel>{salesLabel}</StatLabel>
         <StatNumber>{sales}</StatNumber>
       </Row>
-      {/* 수정된 DateLabel */}
+
       <DateLabel>{dateRange}</DateLabel>
     </StatBox>
   </StatsContainer>

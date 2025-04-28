@@ -7,7 +7,6 @@ import BletIcon from '../../../assets/Melpik/blet.svg';
 import StatsSection from '../../../components/StatsSection';
 
 const Schedule: React.FC = () => {
-  // 동적 데이터 (프롭스로 전달할 값)
   const visits = 4;
   const sales = 2;
   const dateRange = '2025.01.06 ~ 01.10';

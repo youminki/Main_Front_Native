@@ -1,4 +1,3 @@
-// src/pages/LockerRoom/MyCloset/MyCloset.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
@@ -19,7 +18,6 @@ const MyCloset: React.FC = () => {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // 배경 페이지 스크롤 잠금
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? 'hidden' : '';
     return () => {
@@ -113,8 +111,6 @@ const MyCloset: React.FC = () => {
 
 export default MyCloset;
 
-// styled-components
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -150,8 +146,6 @@ const Content = styled.div`
   width: 100%;
 `;
 
-/* Modal */
-
 const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
@@ -170,7 +164,6 @@ const ModalBox = styled.div`
   position: relative;
   overflow-y: auto;
 
-  /* 스크롤바 숨김 */
   scrollbar-width: none;
   -ms-overflow-style: none;
   &::-webkit-scrollbar {
@@ -197,7 +190,7 @@ const ModalHeaderContainer = styled.header`
 `;
 
 const ModalBody = styled.div`
-  padding-top: 60px; /* 헤더 높이 만큼 여백 */
+  padding-top: 60px;
   padding: 1rem;
 `;
 

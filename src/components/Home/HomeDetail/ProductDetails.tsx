@@ -71,7 +71,6 @@ const Title = styled.div`
   margin-bottom: 8px;
 `;
 
-/** 원단 정보 테이블 **/
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -79,7 +78,6 @@ const Table = styled.table`
 `;
 
 const Tr = styled.tr`
-  /* 각 행마다 아래쪽 경계선만 표시 */
   &:not(:last-child) {
     border-bottom: 1px solid #e0e0e0;
   }
@@ -102,7 +100,6 @@ const TdValue = styled.td`
   gap: 8px;
 `;
 
-/** pill 스타일 **/
 const Tag = styled.span`
   display: inline-block;
   padding: 4px 8px;
@@ -119,20 +116,17 @@ const EmptyTag = styled(Tag)`
   font-weight: 400;
 `;
 
-/** 상세 정보 영역 **/
 const DetailSection = styled.div`
   margin-top: 40px;
   margin-bottom: 40px;
 `;
 
-/** 제품상세 제공고시 박스에 테두리 **/
 const DetailInfo = styled.div`
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   overflow: hidden;
 `;
 
-/** 각 행마다 아래쪽 경계선 **/
 const InfoRow = styled.div`
   display: flex;
 
@@ -141,7 +135,6 @@ const InfoRow = styled.div`
   }
 `;
 
-/** 왼쪽 라벨에 오른쪽 경계선 **/
 const InfoLabel = styled.div`
   width: 80px;
   padding: 10px;
@@ -152,7 +145,6 @@ const InfoLabel = styled.div`
   border-right: 1px solid #e0e0e0;
 `;
 
-/** 오른쪽 값 영역 **/
 const InfoValue = styled.div`
   flex: 1;
   padding: 10px;

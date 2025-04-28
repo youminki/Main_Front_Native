@@ -1,7 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 
-// 위아래로 튕기는 애니메이션
 const bounce = keyframes`
   0%   { transform: translateY(0); }
   50%  { transform: translateY(-12px); }

@@ -14,10 +14,8 @@ const SettingMelpik: React.FC = () => {
   const visitLabel = '인스타 계정';
   const salesLabel = '등록된 링크';
 
-  // 멜픽 주소 상태 (readOnly이지만, 내부에서 value를 가져오기 위함)
   const [melpickAddress] = useState('styleweex');
 
-  // ✅ 계좌 및 링크 정보 상태 관리
   const [accountInfo, setAccountInfo] = useState({
     bank: '국민은행',
     accountNumber: '',
@@ -29,11 +27,9 @@ const SettingMelpik: React.FC = () => {
     linkUrl: '',
   });
 
-  // ✅ 모달 상태 관리
   const [isAccountModalOpen, setAccountModalOpen] = useState(false);
   const [isLinkModalOpen, setLinkModalOpen] = useState(false);
 
-  // ✅ 프로필 이미지 상태 관리
   const [profileImage, setProfileImage] = useState<string>('');
 
   const handleImageChangeClick = () => {
@@ -48,7 +44,6 @@ const SettingMelpik: React.FC = () => {
     }
   };
 
-  // ✅ 계좌번호 마스킹 처리 함수
   const maskAccountNumber = (number: string) => {
     if (number.length > 5) {
       return `${number.slice(0, 5)} ****`;
@@ -56,7 +51,6 @@ const SettingMelpik: React.FC = () => {
     return number;
   };
 
-  // ✅ 링크 데이터
   const [links, setLinks] = useState([
     {
       id: 1,
@@ -88,18 +82,13 @@ const SettingMelpik: React.FC = () => {
     setLinks(links.filter((link) => link.id !== linkId));
   };
 
-  // ✅ 링크 복사 버튼 동작 (InputField value에서 가져옴)
   const handleCopyLink = () => {
     const linkToCopy = `melpick.com/${melpickAddress}`;
 
     navigator.clipboard
       .writeText(linkToCopy)
-      .then(() => {
-        // alert('링크가 복사되었습니다!');
-      })
-      .catch(() => {
-        // alert('링크 복사에 실패했습니다.');
-      });
+      .then(() => {})
+      .catch(() => {});
   };
 
   return (
@@ -122,7 +111,6 @@ const SettingMelpik: React.FC = () => {
         <Divider />
 
         <Section>
-          {/* ✅ 멜픽 주소 (변경불가) + 링크복사 버튼 */}
           <InputField
             label='멜픽 주소 (변경불가)'
             id='melpickAddress'
@@ -199,7 +187,6 @@ const SettingMelpik: React.FC = () => {
           </LinkList>
         </Section>
 
-        {/* 계좌등록 모달 */}
         <ReusableModal
           isOpen={isAccountModalOpen}
           onClose={() => setAccountModalOpen(false)}
@@ -252,7 +239,6 @@ const SettingMelpik: React.FC = () => {
           </ModalContent>
         </ReusableModal>
 
-        {/* 개인 링크등록 모달 */}
         <ReusableModal
           isOpen={isLinkModalOpen}
           onClose={() => setLinkModalOpen(false)}
@@ -282,7 +268,6 @@ const SettingMelpik: React.FC = () => {
           </ModalContent>
         </ReusableModal>
 
-        {/* ↓ 개인 링크모달 아래에 프로필 이미지 수정 필드 추가 */}
         <Section>
           <ProfileImageLabel>프로필 이미지 수정</ProfileImageLabel>
           <ProfileImageField>
@@ -309,7 +294,6 @@ const SettingMelpik: React.FC = () => {
 
 export default SettingMelpik;
 
-/* 스타일 정의 */
 const Container = styled.div`
   display: flex;
   flex-direction: column;

@@ -153,7 +153,7 @@ const ContemporarySettings: React.FC = () => {
             />
           </Row>
           <Divider />
-          {/* 추가: 어깨너비, 가슴둘레 */}
+
           <Row>
             <InputField
               label='어깨너비 cm (선택)'
@@ -173,7 +173,6 @@ const ContemporarySettings: React.FC = () => {
             />
           </Row>
 
-          {/* 추가: 허리둘레, 소매길이 */}
           <Row>
             <InputField
               label='허리둘레 cm (선택)'

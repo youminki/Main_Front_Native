@@ -1,4 +1,3 @@
-// src/components/Landing/Header.tsx
 import React from 'react';
 import styled from 'styled-components';
 import LandingLogoIcon from '../../assets/Landing/LandingLogoIcon.svg';

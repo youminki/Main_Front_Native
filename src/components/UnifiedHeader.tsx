@@ -1,4 +1,3 @@
-// src/components/UnifiedHeader.tsx
 import React, { useState, useEffect, useRef, FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -199,16 +198,13 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  // 로그인 상태
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState('멜픽 회원');
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [isMypageOpen, setMypageOpen] = useState(false);
 
-  // 준비 중 모달
   const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
 
-  // 검색
   const [searchParams, setSearchParams] = useSearchParams();
   const [openSearch, setOpenSearch] = useState(false);
   const [query, setQuery] = useState(searchParams.get('search') || '');
@@ -289,7 +285,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     setOpenSearch(false);
   };
 
-  // --- default variant ---
   if (variant === 'default') {
     return (
       <>
@@ -390,7 +385,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
           onClose={() => setMypageOpen(false)}
         />
 
-        {/* 준비 중 모달 */}
         <ReusableModal2
           isOpen={isFeatureModalOpen}
           onClose={() => setFeatureModalOpen(false)}
@@ -402,7 +396,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     );
   }
 
-  // --- oneDepth variant ---
   if (variant === 'oneDepth') {
     return (
       <>
@@ -463,7 +456,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
           </HeaderContainer>
         </HeaderWrapper>
 
-        {/* 준비 중 모달 */}
         <ReusableModal2
           isOpen={isFeatureModalOpen}
           onClose={() => setFeatureModalOpen(false)}
@@ -475,7 +467,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     );
   }
 
-  // --- twoDepth variant ---
   if (variant === 'twoDepth') {
     return (
       <>
@@ -502,7 +493,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
           </HeaderContainer>
         </HeaderWrapper>
 
-        {/* 준비 중 모달 */}
         <ReusableModal2
           isOpen={isFeatureModalOpen}
           onClose={() => setFeatureModalOpen(false)}
@@ -514,7 +504,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     );
   }
 
-  // --- threeDepth variant ---
   if (variant === 'threeDepth') {
     return (
       <AnimatedHeaderWrapper exit={exit}>

@@ -845,7 +845,6 @@ const ViewDetailsButton = styled.button`
   }
 `;
 
-/* Modal 관련 스타일 */
 const Modal = styled.div`
   position: fixed;
   top: 0;

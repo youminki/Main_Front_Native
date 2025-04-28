@@ -1,4 +1,3 @@
-// src/components/FilterModal.tsx
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 
@@ -97,7 +96,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
         </FixedHeader>
 
         <ScrollContent>
-          {/* 계절 */}
           <Section>
             <SectionTitleWithParen text='계절 (셋팅 : 없음)' />
             <ButtonRow>
@@ -117,7 +115,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
           </Section>
           <DashedDivider />
 
-          {/* 사이즈 */}
           <Section>
             <SectionTitleWithParen text='사이즈 (셋팅 : 없음)' />
             <ButtonRow>
@@ -137,7 +134,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
           </Section>
           <DashedDivider />
 
-          {/* 색상 */}
           <Section>
             <SectionTitleWithParen text='색상 (셋팅 : 없음)' />
             <ColorButtonGrid>
@@ -157,7 +153,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
           </Section>
           <DashedDivider />
 
-          {/* 스타일 */}
           <Section>
             <SectionTitleWithParen text='스타일 (셋팅 : 없음)' />
             <ButtonRow>
@@ -177,7 +172,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
           </Section>
           <DashedDivider />
 
-          {/* 소재 */}
           <Section>
             <SectionTitleWithParen text='소재 (셋팅 : 없음)' />
             <ButtonRow>
@@ -211,7 +205,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
 
 export default FilterModal;
 
-// Section 제목 괄호 스타일
 const ParenText = styled.span`
   font-weight: 400;
   font-size: 12px;

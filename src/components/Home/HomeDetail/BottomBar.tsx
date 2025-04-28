@@ -1,4 +1,3 @@
-// src/components/Home/HomeDetail/BottomBar.tsx
 import styled from 'styled-components';
 
 interface BottomBarProps {

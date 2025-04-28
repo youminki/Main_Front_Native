@@ -49,15 +49,12 @@ const MyInfo: React.FC = () => {
   const [melpickAddress, setMelpickAddress] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // 프로필 이미지 상태 (초기에는 빈 문자열)
   const [profileImage, setProfileImage] = useState<string>('');
 
-  // 파일 인풋 ref 없이 버튼 클릭 시 직접 file input click 트리거
   const handleImageChangeClick = () => {
     document.getElementById('profile-image-input')?.click();
   };
 
-  // 파일 선택 시 이미지 URL을 state에 저장
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -103,7 +100,6 @@ const MyInfo: React.FC = () => {
       return;
     }
     setErrorMessage(null);
-    // 회원가입 처리...
   };
 
   return (
@@ -113,7 +109,6 @@ const MyInfo: React.FC = () => {
           <Form onSubmit={handleSubmit(onSubmit)}>
             {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
 
-            {/* readOnly: 계정(이메일) */}
             <InputField
               label='계정(이메일)'
               id='email'
@@ -128,7 +123,6 @@ const MyInfo: React.FC = () => {
               readOnly
             />
 
-            {/* 수정 가능: 비밀번호 */}
             <InputField
               label='비밀번호 *(숫자, 문자를 조합하여 8자리 이상 입력하세요)'
               id='password'
@@ -141,7 +135,6 @@ const MyInfo: React.FC = () => {
               autoComplete='current-password'
             />
 
-            {/* 수정 가능: 비밀번호 확인 */}
             <InputField
               label='비밀번호 확인 *'
               id='passwordConfirm'
@@ -153,7 +146,6 @@ const MyInfo: React.FC = () => {
               maxLength={20}
             />
 
-            {/* readOnly: 닉네임 */}
             <InputField
               label='닉네임(8글자 이내)'
               id='nickname'
@@ -169,7 +161,6 @@ const MyInfo: React.FC = () => {
             />
 
             <RowLabel>
-              {/* readOnly: 이름 */}
               <InputField
                 label='이름'
                 id='name'
@@ -182,7 +173,6 @@ const MyInfo: React.FC = () => {
                 readOnly
               />
 
-              {/* readOnly: 태어난 해 (as CustomSelect → disabled 적용) */}
               <InputField
                 label='태어난 해'
                 id='birthYear'
@@ -203,7 +193,6 @@ const MyInfo: React.FC = () => {
               </InputField>
             </RowLabel>
 
-            {/* readOnly: 성별 → 버튼 disable 처리 */}
             <GenderField>
               <InputFieldLabel>성별</InputFieldLabel>
               <GenderRow>
@@ -226,7 +215,6 @@ const MyInfo: React.FC = () => {
               </GenderRow>
             </GenderField>
 
-            {/* 수정 가능: 전화번호 */}
             <PhoneField>
               <InputField
                 label='전화번호 *(11자를 입력하세요)'
@@ -244,7 +232,6 @@ const MyInfo: React.FC = () => {
             </PhoneField>
 
             <RowLabel>
-              {/* 수정 가능: 지역 */}
               <InputField
                 label='지역 *'
                 id='region'
@@ -260,7 +247,6 @@ const MyInfo: React.FC = () => {
                 <option value='경기도'>경기도</option>
               </InputField>
 
-              {/* 수정 가능: 구 */}
               <InputField
                 label='구 *'
                 id='district'
@@ -278,7 +264,6 @@ const MyInfo: React.FC = () => {
               </InputField>
             </RowLabel>
 
-            {/* readOnly: 멜픽 주소설정 */}
             <InputField
               label='멜픽 주소설정(영문, 숫자 12글자 이내)'
               id='melpickAddress'
@@ -297,7 +282,6 @@ const MyInfo: React.FC = () => {
               readOnly
             />
 
-            {/* 프로필 이미지 변경 필드 */}
             <ProfileImageLabel>프로필 이미지 수정</ProfileImageLabel>
             <ProfileImageField>
               {profileImage ? (
@@ -308,7 +292,7 @@ const MyInfo: React.FC = () => {
               <ChangeImageButton type='button' onClick={handleImageChangeClick}>
                 이미지 수정
               </ChangeImageButton>
-              {/* 숨겨진 파일 인풋 */}
+
               <HiddenFileInput
                 id='profile-image-input'
                 type='file'
@@ -334,7 +318,6 @@ const MyInfo: React.FC = () => {
 
 export default MyInfo;
 
-/* 스타일 정의 */
 const Container = styled.div`
   display: flex;
   flex-direction: column;

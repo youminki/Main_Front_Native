@@ -4,7 +4,6 @@ import styled from 'styled-components';
 const PersonalInformationProcessingPolicyDetail: React.FC = () => {
   return (
     <DetailContainer>
-      {/* 상단 제목 */}
       <Section>
         <Label>공지사항</Label>
         <Box>
@@ -12,7 +11,6 @@ const PersonalInformationProcessingPolicyDetail: React.FC = () => {
         </Box>
       </Section>
 
-      {/* 등록일 */}
       <Section>
         <Label>등록일</Label>
         <Box>
@@ -20,7 +18,6 @@ const PersonalInformationProcessingPolicyDetail: React.FC = () => {
         </Box>
       </Section>
 
-      {/* 상세내용 */}
       <Section>
         <Label>상세내용</Label>
         <ContentBox>
@@ -30,10 +27,8 @@ const PersonalInformationProcessingPolicyDetail: React.FC = () => {
         </ContentBox>
       </Section>
 
-      {/* 구분선 */}
       <Divider />
 
-      {/* 안내 메시지 */}
       <NoticeMessage>
         <Bullet>※</Bullet>
         <NoticeText>
@@ -46,8 +41,6 @@ const PersonalInformationProcessingPolicyDetail: React.FC = () => {
 };
 
 export default PersonalInformationProcessingPolicyDetail;
-
-/* ----- 스타일 정의 ----- */
 
 const DetailContainer = styled.div`
   margin: 0 auto;

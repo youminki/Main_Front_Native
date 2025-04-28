@@ -1,4 +1,3 @@
-// src/pages/Home/HomeDetail.tsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -213,7 +212,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
 
 export default HomeDetail;
 
-/* Styled Components */
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;

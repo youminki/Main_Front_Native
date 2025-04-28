@@ -69,7 +69,6 @@ const TermsAndConditionsOfUse: React.FC = () => {
         />
 
         <TermsAndConditionsOfUseListContainer>
-          {/* TermsAndConditionsOfUseItem 클릭 시 handleItemClick 실행 */}
           <TermsAndConditionsOfUseItem>
             <TextWrapper>
               <ItemTitle>

@@ -44,13 +44,12 @@ const Alarm: React.FC = () => {
         setSelectedPeriod={setSelectedPeriod}
       />
 
-      {/* 알림 리스트 */}
       <AlarmList>
         {alarmList.map((item, index) => (
           <AlarmItem key={item.id}>
             <BulletWrapper>
               <BulletIcon src={AlarmIcon} alt='alarm-icon' />
-              {/* 마지막 아이템 이후 선 제거를 원하면 조건부로 */}
+
               {index !== alarmList.length - 1 && <VerticalLine />}
             </BulletWrapper>
             <AlarmContent>
@@ -67,7 +66,6 @@ const Alarm: React.FC = () => {
 
 export default Alarm;
 
-/* 스타일 정의 */
 const AlarmContainer = styled.div`
   margin: 0 auto;
   background-color: #ffffff;

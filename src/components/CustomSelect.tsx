@@ -1,4 +1,3 @@
-// StyledSelect.ts
 import styled from 'styled-components';
 
 export const CustomSelect = styled.select`
@@ -7,7 +6,7 @@ export const CustomSelect = styled.select`
   border-radius: 4px;
   height: 57px;
   width: 100%;
-  padding: 0 40px 0 16px; /* 오른쪽에 아이콘 들어갈 공간 확보 */
+  padding: 0 40px 0 16px;
 
   font-weight: 800;
   font-size: 13px;

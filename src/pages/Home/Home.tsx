@@ -1,4 +1,3 @@
-// src/pages/Home/Home.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -15,7 +14,7 @@ import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
 import ShareIcon from '../../assets/Header/ShareIcon.svg';
 import HomeIcon from '../../assets/Header/HomeIcon.svg';
 
-import ReusableModal2 from '../../components/ReusableModal2'; // 준비 중 모달
+import ReusableModal2 from '../../components/ReusableModal2';
 
 const ITEMS_PER_LOAD = 10;
 
@@ -35,7 +34,6 @@ const Home: React.FC = () => {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // 준비 중 모달 상태
   const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
 
   useEffect(() => {
@@ -72,7 +70,6 @@ const Home: React.FC = () => {
     Coat: 'Coat',
   };
 
-  // 카테고리 변경 시 데이터 fetch
   useEffect(() => {
     setIsLoading(true);
     (async () => {
@@ -94,7 +91,6 @@ const Home: React.FC = () => {
     window.scrollTo({ top: 0 });
   }, [selectedCategory]);
 
-  // 무한 스크롤
   useEffect(() => {
     const onScroll = () => {
       if (isLoading) return;
@@ -115,7 +111,6 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, [products, page, isLoading]);
 
-  // 필터링 + 페이지네이션
   const displayedProducts = products
     .filter(
       (item) =>
@@ -124,7 +119,6 @@ const Home: React.FC = () => {
     )
     .slice(0, page * ITEMS_PER_LOAD);
 
-  // ProductListItem[] → UIItem[] 매핑
   const uiItems: UIItem[] = displayedProducts.map((p) => ({
     id: p.id.toString(),
     image: p.image,
@@ -201,7 +195,6 @@ const Home: React.FC = () => {
             </ModalBox>
           </ModalOverlay>
 
-          {/* 준비 중 모달 */}
           <ReusableModal2
             isOpen={isFeatureModalOpen}
             onClose={() => setFeatureModalOpen(false)}
@@ -216,8 +209,6 @@ const Home: React.FC = () => {
 };
 
 export default Home;
-
-// styled-components
 
 const MainContainer = styled.div`
   display: flex;

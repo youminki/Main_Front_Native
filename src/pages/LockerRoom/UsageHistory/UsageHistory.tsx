@@ -1,8 +1,7 @@
-// src/components/UsageHistory/UsageHistory.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
-import PeriodSection from '../../../components/PeriodSection'; // 추가된 import
+import PeriodSection from '../../../components/PeriodSection';
 import sampleImage from '../../../assets/sample-dress.svg';
 import PriceIcon from '../../../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../../../assets/Basket/ProductInfoIcon.svg';
@@ -25,9 +24,8 @@ interface BasketItem {
 }
 
 const UsageHistory: React.FC = () => {
-  // 기간 선택 상태 (3개월 / 6개월)
   const [selectedPeriod, setSelectedPeriod] = useState(6);
-  // Basket.tsx와 동일한 아이템 구조
+
   const [items] = useState<BasketItem[]>([
     {
       id: 1,
@@ -57,10 +55,8 @@ const UsageHistory: React.FC = () => {
       isSelected: true,
       rentalDays: '구매',
     },
-    // 필요에 따라 아이템 추가 가능
   ]);
 
-  // 선택된 기간에 따라 아이템 목록을 필터링 (예시: 3개월이면 앞의 3개, 6개월이면 전체)
   const filteredItems = selectedPeriod === 3 ? items.slice(0, 3) : items;
 
   return (
@@ -81,7 +77,6 @@ const UsageHistory: React.FC = () => {
       <Divider />
 
       <Section>
-        {/* 기존 SettlementHeader 영역을 PeriodSection 컴포넌트로 대체 */}
         <PeriodSection
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
@@ -188,7 +183,6 @@ const UsageHistory: React.FC = () => {
 
 export default UsageHistory;
 
-/* UsageHistory 기본 스타일 */
 const UsageHistoryContainer = styled.div`
   display: flex;
   flex-direction: column;

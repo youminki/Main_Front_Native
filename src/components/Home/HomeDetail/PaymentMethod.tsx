@@ -1,4 +1,3 @@
-// src/components/Home/HomeDetail/PaymentMethod.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Theme from '../../../styles/Theme';

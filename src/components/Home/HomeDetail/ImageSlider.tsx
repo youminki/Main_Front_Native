@@ -1,4 +1,3 @@
-// ImageSlider.tsx
 import React, { memo } from 'react';
 import { useSwipeable, SwipeableHandlers } from 'react-swipeable';
 import styled from 'styled-components';
@@ -7,8 +6,8 @@ import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 export interface ImageSliderProps {
   images: string[];
   currentImageIndex: number;
-  handleSwipeLeft: () => void; // 다음
-  handleSwipeRight: () => void; // 이전
+  handleSwipeLeft: () => void;
+  handleSwipeRight: () => void;
   handleMouseDown: (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => void;
@@ -63,11 +62,8 @@ const Container = styled.div`
   position: relative;
   overflow: hidden;
   background-color: #f5f5f5;
-
-  /* border: 1px solid #ccc; */
 `;
 
-/** 데스크탑에서는 보이고 모바일에서는 숨김 */
 const arrowStyles = `
   position: absolute;
   top: 50%;

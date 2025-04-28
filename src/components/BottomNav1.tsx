@@ -1,4 +1,3 @@
-// src/components/BottomNav.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled, { css } from 'styled-components';
@@ -117,8 +116,6 @@ const BottomNav: React.FC = () => {
 };
 
 export default BottomNav;
-
-/* ========== Styled Components ========== */
 
 const DockContainer = styled.nav<{ visible: boolean }>`
   position: fixed;

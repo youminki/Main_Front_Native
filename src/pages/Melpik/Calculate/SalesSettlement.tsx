@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import StatsSection from '../../../components/StatsSection';
 import FixedBottomBar from '../../../components/FixedBottomBar';
-import PeriodSection from '../../../components/PeriodSection'; // PeriodSection import 추가
+import PeriodSection from '../../../components/PeriodSection';
 
 const SalesSettlement: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(6);
@@ -15,9 +15,6 @@ const SalesSettlement: React.FC = () => {
 
   const visitLabel = '미정산금';
   const salesLabel = '다음 정산일';
-
-  // 기존 settlementDate는 더 이상 사용하지 않고, PeriodSection에서 선택된 기간에 따라 텍스트가 표시됩니다.
-  // const settlementDate = '2024.12.01 ~ 2025.05.31';
 
   const settlements = [
     {
@@ -88,7 +85,6 @@ const SalesSettlement: React.FC = () => {
         <Subtitle>내 채널을 통해 나는 브랜드가 된다</Subtitle>
       </Header>
 
-      {/* 상단 통계 영역 */}
       <StatsRow>
         <StatsSection
           visits={visits}
@@ -102,7 +98,6 @@ const SalesSettlement: React.FC = () => {
       <Divider />
 
       <Section>
-        {/* 기존 SettlementHeader를 PeriodSection 컴포넌트로 대체 */}
         <PeriodSection
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}

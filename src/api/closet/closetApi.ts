@@ -1,8 +1,7 @@
-// src/api/closet/closetApi.ts
 import { Axios } from '../Axios';
 
 export interface ClosetItem {
-  productId: number; // 찜한 상품의 ID
+  productId: number;
   mainImage: string;
   name: string;
   brand: string;
@@ -14,7 +13,6 @@ export interface ClosetListResponse {
   items: ClosetItem[];
 }
 
-/** 찜 추가 */
 export const addToCloset = async (productId: number): Promise<void> => {
   const resp = await Axios.post(`/closet/${productId}`);
   if (resp.status !== 201) {
@@ -22,7 +20,6 @@ export const addToCloset = async (productId: number): Promise<void> => {
   }
 };
 
-/** 찜 삭제 */
 export const removeFromCloset = async (productId: number): Promise<void> => {
   const resp = await Axios.delete(`/closet/${productId}`);
   if (resp.status !== 200) {
@@ -30,7 +27,6 @@ export const removeFromCloset = async (productId: number): Promise<void> => {
   }
 };
 
-/** 내 찜 목록 조회 */
 export const getMyCloset = async (): Promise<ClosetListResponse> => {
   const resp = await Axios.get<ClosetListResponse>('/closet/me');
   return resp.data;

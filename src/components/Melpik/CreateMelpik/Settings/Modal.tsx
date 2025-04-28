@@ -105,7 +105,6 @@ const Modal: React.FC<ModalProps> = ({
         </ModalOverlay>
       )}
 
-      {/* 3가지 브랜드 선택 경고 모달 */}
       <ReusableModal2
         isOpen={warningModalVisible}
         onClose={() => setWarningModalVisible(false)}
@@ -114,7 +113,6 @@ const Modal: React.FC<ModalProps> = ({
         <p>3가지 브랜드를 선택해야 합니다.</p>
       </ReusableModal2>
 
-      {/* 취소 확인 모달 */}
       <ReusableModal2
         isOpen={cancelConfirmationVisible}
         onClose={() => setCancelConfirmationVisible(false)}

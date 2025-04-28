@@ -11,7 +11,6 @@ import { YellowButton, BlackButton } from '../components/ButtonWrapper';
 import ReusableModal from '../components/ReusableModal';
 import ReusableModal2 from '../components/ReusableModal2';
 
-// yup 스키마 (전화번호는 "010" + 8자리 숫자여야 함)
 const paymentSchema = yup.object().shape({
   deliveryContact: yup
     .string()
@@ -52,12 +51,10 @@ interface BasketItem {
 }
 
 const PaymentPage: React.FC = () => {
-  // 수령인 (반드시 입력되어야 함)
   const [recipient, setRecipient] = useState<string>('');
-  // 홈 이동 여부 (결제 완료 alert 후 홈 이동)
+
   const [navigateHome, setNavigateHome] = useState(false);
 
-  // 샘플 장바구니 아이템
   const [items] = useState<BasketItem[]>([
     {
       id: 1,
@@ -74,25 +71,22 @@ const PaymentPage: React.FC = () => {
     },
   ]);
 
-  // 배송방법 선택
   const [selectedMethod, setSelectedMethod] = useState('매니저 배송');
 
-  // 배송지 정보 (전화번호는 "010"이 기본값; "010" 부분은 수정 불가)
   const [deliveryInfo, setDeliveryInfo] = useState({
     address: '',
     detailAddress: '',
     contact: '010',
   });
-  // 반납지 정보 (기본값 "010"으로 시작)
+
   const [returnInfo, setReturnInfo] = useState({
     address: '',
     detailAddress: '',
     contact: '010',
   });
-  // 반납지와 동일 여부 (기본값 false: '새로 입력' 선택)
+
   const [isSameAsDelivery, setIsSameAsDelivery] = useState(false);
 
-  // 모달 상태 (주소 검색/배송목록, alert용)
   const [modalType, setModalType] = useState<'none' | 'search' | 'list'>(
     'none'
   );
@@ -112,10 +106,8 @@ const PaymentPage: React.FC = () => {
   };
   const handleCloseModalCommon = () => setModalType('none');
 
-  // 결제 확인용 ReusableModal2 상태
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
-  // 배송 연락처 입력 핸들러 (입력 시 "010"은 고정, 나머지 8자리 입력)
   const handleDeliveryContactChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -144,7 +136,6 @@ const PaymentPage: React.FC = () => {
     setReturnInfo({ ...returnInfo, contact: value });
   };
 
-  // "배송지와 동일" 버튼 클릭 시 현재 입력된 배송지 정보(주소, 상세주소, 연락처)를 반납지에 복사
   const handleUseSameAddressConditional = () => {
     setReturnInfo({ ...deliveryInfo });
     setIsSameAsDelivery(true);
@@ -155,7 +146,6 @@ const PaymentPage: React.FC = () => {
     setIsSameAsDelivery(false);
   };
 
-  // 결제금액 계산 (매니저 배송이면 VAT 15,000 추가)
   const baseTotal = items.reduce((acc, item) => acc + item.price, 0);
   const additionalCost = selectedMethod === '매니저 배송' ? 15000 : 0;
   const finalAmount = baseTotal + additionalCost;
@@ -189,7 +179,6 @@ const PaymentPage: React.FC = () => {
     }
   };
 
-  // ReusableModal2의 onConfirm: "네" 버튼 클릭 시 실행
   const handleConfirmPayment = () => {
     setConfirmModalOpen(false);
     setModalAlert({ isOpen: true, message: '결제가 완료되었습니다.' });
@@ -546,8 +535,6 @@ const PaymentPage: React.FC = () => {
 
 export default PaymentPage;
 
-/* ==================== 스타일 정의 ==================== */
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -635,7 +622,6 @@ const DetailAddressInput = styled.input`
   }
 `;
 
-// ReturnOption 및 OptionButton (배송지와 동일 버튼) 수정
 const ReturnOption = styled.div`
   display: inline-flex;
   border-radius: 10px;

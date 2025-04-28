@@ -1,8 +1,7 @@
-// src/components/Home/MypageModal.tsx
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie'; // 쿠키 삭제를 위해 import
+import Cookies from 'js-cookie';
 import MypageBox from '../assets/MypageBox.svg';
 import MystyleBox from '../assets/MystyleBox.svg';
 import ReusableModal2 from '../components/ReusableModal';
@@ -33,22 +32,17 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
     setLogoutModalOpen(true);
   };
 
-  // ★ 실제 로그아웃 로직
   const handleLogoutConfirm = () => {
-    // 로컬 스토리지에서 토큰 제거
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
 
-    // 쿠키에서 토큰 및 프로필 이미지 URL 제거
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
     Cookies.remove('profileImageUrl');
 
-    // 모달 닫기
     setLogoutModalOpen(false);
     onClose();
 
-    // 로그인 페이지로 이동
     navigate('/login');
   };
 
@@ -90,7 +84,6 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
         </ModalContainer>
       </Overlay>
 
-      {/* 로그아웃 확인 모달 */}
       {isLogoutModalOpen && (
         <ReusableModal2
           isOpen={isLogoutModalOpen}
@@ -102,7 +95,6 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
         </ReusableModal2>
       )}
 
-      {/* 준비 중 모달 */}
       {isPlaceholderOpen && (
         <ReusableModal2
           isOpen={isPlaceholderOpen}

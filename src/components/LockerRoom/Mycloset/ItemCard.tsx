@@ -1,4 +1,3 @@
-// src/components/LockerRoom/Mycloset/ItemCard.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -168,7 +167,7 @@ const DiscountLabel = styled.span`
 `;
 
 const ModalContentWrapper = styled.div`
-  flex: 1; /* 모달 바디 안에서 가로세로 모두 확장 */
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -179,7 +178,7 @@ const ModalContentWrapper = styled.div`
 const ModalImage = styled.img`
   max-width: 20%;
   max-height: 100%;
-  object-fit: contain; /* 이미지 비율 유지하며 공간 최대 활용 */
+  object-fit: contain;
 `;
 
 const ModalMessage = styled.p`

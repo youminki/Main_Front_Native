@@ -3,12 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 
-// SVG 이미지 import 예시
 import RegularPass from '../../../assets/LockerRoom/RegularPass.svg';
 import OnetimePass from '../../../assets/LockerRoom/OnetimePass.svg';
 import AddPass from '../../../assets/LockerRoom/AddPass.svg';
 
-// 동적 데이터
 const visitLabel = '사용중인 이용권';
 const salesLabel = '시즌';
 const visits = '2';
@@ -35,17 +33,14 @@ const MyTicket: React.FC = () => {
       <Divider />
 
       <TicketWrapper>
-        {/* 티켓 1: 정기 구독권 */}
         <TicketCard onClick={() => navigate('/my-ticket/SubscriptionPass')}>
           <img src={RegularPass} alt='정기 구독권 이미지' />
         </TicketCard>
 
-        {/* 티켓 2: 1회 이용권 */}
         <TicketCard onClick={() => navigate('/my-ticket/OnetimePass')}>
           <img src={OnetimePass} alt='1회 이용권 이미지' />
         </TicketCard>
 
-        {/* 티켓 3: 이용권 추가 - 클릭 시 이동 */}
         <TicketCard onClick={() => navigate('/my-ticket/PurchaseOfPasses')}>
           <img src={AddPass} alt='이용권 추가 이미지' />
         </TicketCard>

@@ -104,7 +104,6 @@ const StatsRow = styled.div`
   justify-content: space-between;
   width: 100%;
   box-sizing: border-box;
-  /* padding 제거 */
 `;
 
 const ImageWrapper = styled.div`

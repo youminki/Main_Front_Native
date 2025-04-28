@@ -1,19 +1,19 @@
-import { Axios } from "../api/Axios.ts";
+import { Axios } from '../api/Axios.ts';
 
 interface LoginResponse {
-  accessToken: string; // 서버에서 반환하는 액세스 토큰의 구조에 따라 수정
-  refreshToken?: string; // 만약 리프레시 토큰도 반환된다면 추가
+  accessToken: string;
+  refreshToken?: string;
   user?: {
     id: string;
     email: string;
-    [key: string]: any; // 유저 데이터 구조에 맞게 세부 필드 추가 가능
+    [key: string]: any;
   };
 }
 
 interface LoginError {
   message: string;
   statusCode?: number;
-  [key: string]: any; // 에러 객체의 추가적인 필드를 정의 가능
+  [key: string]: any;
 }
 
 /**
@@ -28,16 +28,16 @@ export const LoginPost = async (
   password: string
 ): Promise<LoginResponse> => {
   try {
-    const response = await Axios.post<LoginResponse>("/auth/login", {
+    const response = await Axios.post<LoginResponse>('/auth/login', {
       email,
       password,
     });
     return response.data;
   } catch (error: any) {
-    console.error("Login failed:", error);
+    console.error('Login failed:', error);
     const errorMessage: LoginError = {
       message:
-        error.response?.data?.message || "알 수 없는 에러가 발생했습니다.",
+        error.response?.data?.message || '알 수 없는 에러가 발생했습니다.',
       statusCode: error.response?.status,
     };
     throw errorMessage;

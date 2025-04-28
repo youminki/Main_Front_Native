@@ -1,4 +1,3 @@
-// src/api/upload/productApi.ts
 import { Axios } from '../Axios';
 
 export interface ProductListItem {
@@ -9,7 +8,7 @@ export interface ProductListItem {
   category: string;
   price: number;
   discount: number;
-  isLiked: boolean; // ← 추가
+  isLiked: boolean;
 }
 
 export interface ProductSize {
@@ -66,7 +65,7 @@ export const getProducts = async (
     category: p.category,
     price: p.price,
     discount: p.discount,
-    isLiked: Boolean(p.isLiked), // ← 서버에서 받은 isLiked 반영
+    isLiked: Boolean(p.isLiked),
   }));
 };
 

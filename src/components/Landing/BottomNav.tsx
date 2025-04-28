@@ -18,30 +18,18 @@ const BottomNav: React.FC = () => {
 
 export default BottomNav;
 
-/* ====================== Styled Components ====================== */
-
-/**
- * 1) 전체 컨테이너
- *  - 440×250 크기
- *  - 배경색 #F5AB35
- *  - 테두리 윗부분만 둥글게 (20px 20px 0 0)
- */
 const Container = styled.div`
   width: 440px;
   height: 250px;
   background: #f5ab35;
   border-radius: 20px 20px 0px 0px;
 
-  /* Flex를 이용해 세로 정렬 */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 `;
 
-/**
- * 2) 상단 텍스트 (17px, 흰색, 투명도 0.9)
- */
 const TopText = styled.div`
   font-style: normal;
   font-weight: 400;
@@ -51,16 +39,9 @@ const TopText = styled.div`
   color: #ffffff;
   opacity: 0.9;
 
-  /* 요소 간 간격을 위해 margin 사용 가능 */
   margin-bottom: 12px;
 `;
 
-/**
- * 3) 'melpik 시작하기' 버튼
- *  - 폭 250px, 높이 40px
- *  - 둥근 모양 (border-radius: 100px)
- *  - 흰색 배경, 검정 텍스트
- */
 const StartButton = styled.button`
   width: 250px;
   height: 40px;
@@ -76,13 +57,9 @@ const StartButton = styled.button`
   text-align: center;
   color: #000000;
 
-  /* 위아래 여백 */
   margin: 0 auto 12px auto;
 `;
 
-/**
- * 4) 하단 텍스트 (17px, 흰색, 투명도 0.9)
- */
 const BottomText = styled.div`
   font-style: normal;
   font-weight: 400;

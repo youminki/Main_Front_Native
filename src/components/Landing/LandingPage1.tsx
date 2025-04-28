@@ -1,4 +1,3 @@
-// src/components/Landing/LandingPage1.tsx
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +13,6 @@ const LandingPage1: React.FC = () => {
 
   return (
     <Wrapper>
-      {/* LeftLabelImage는 기존 절대 배치 유지 */}
       <LeftLabelImage src={LeftLabel} alt='Left Label' />
 
       <Container>
@@ -36,12 +34,10 @@ const LandingPage1: React.FC = () => {
 
 export default LandingPage1;
 
-/* ====================== Styled Components ====================== */
-
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
-  /* 고정 높이를 제거하고 여백만 설정 */
+
   margin: 20px 10px;
   overflow: visible;
 `;
@@ -60,7 +56,7 @@ const Container = styled.div`
   width: 100%;
   max-width: 1000px;
   min-height: 440px;
-  /* 기본: 16:9 비율 유지 */
+
   aspect-ratio: 16 / 9;
   border-radius: 10px;
   box-sizing: border-box;
@@ -73,7 +69,6 @@ const Container = styled.div`
   margin: 0 auto;
 
   @media (min-width: 1000px) {
-    /* 너비가 1000px 이상이면 높이를 700px로 고정 */
     height: 700px;
     aspect-ratio: unset;
   }
@@ -91,7 +86,7 @@ const ContentBox = styled.div`
 
 const BigTitle = styled.h1`
   font-weight: 800;
-  font-size: 2rem; /* rem 단위 사용으로 반응형 적용 */
+  font-size: 2rem;
   line-height: 1.1;
   text-align: center;
   color: #ffffff;

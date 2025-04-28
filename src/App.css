@@ -10,7 +10,6 @@
   font-display: swap;
 }
 
-/* 전역 폰트 설정 및 폰트 스무딩 */
 html,
 body {
   font-family: 'NanumSquare Neo', sans-serif;
@@ -20,13 +19,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 나머지 스타일 */
 #root {
   margin: 0 auto;
   padding: 1rem;
 }
 
-/* 기타 스타일 (중복 제거) */
 .logo {
   height: 6em;
   padding: 1.5em;

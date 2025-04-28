@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
-import SearchIcon from '../../../assets/CustomerService/SearchIcon.svg'; // 아이콘 경로
+import SearchIcon from '../../../assets/CustomerService/SearchIcon.svg';
 
 type PeriodSectionProps = {
   selectedPeriod: number;

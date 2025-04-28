@@ -1,4 +1,3 @@
-// src/components/Home/SizeInfo.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
@@ -76,7 +75,6 @@ const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
 
 export default SizeInfo;
 
-// Styled Components
 const Container = styled.div`
   width: 100%;
   display: flex;
@@ -95,7 +93,7 @@ const Title = styled.h3`
 
 const InfoWrapper = styled.div`
   display: grid;
-  grid-template-columns: auto 120px; // 이미지 + 라벨 영역
+  grid-template-columns: auto 120px;
   align-items: center;
   justify-content: center;
   gap: 12px;
@@ -125,8 +123,8 @@ const StyledImg = styled.img`
 
 const LabelList = styled.ul`
   display: flex;
-  flex-direction: row; // 가로 정렬
-  flex-wrap: wrap; // 너무 많으면 줄바꿈
+  flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   list-style: none;

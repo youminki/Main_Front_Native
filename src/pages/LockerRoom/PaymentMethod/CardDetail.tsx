@@ -1,4 +1,3 @@
-// CardDetail.tsx
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -54,7 +53,6 @@ const CardDetail: React.FC = () => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isFinalModalOpen, setIsFinalModalOpen] = useState(false);
 
-  // 삭제 모달을 위한 상태 추가
   const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
     useState(false);
   const [isDeleteFinalModalOpen, setIsDeleteFinalModalOpen] = useState(false);
@@ -80,19 +78,16 @@ const CardDetail: React.FC = () => {
     navigate('/payment-method');
   };
 
-  // "등록 카드삭제" 버튼 클릭 시 삭제 확인 모달 오픈
   const handleDeleteCard = () => {
     console.log('등록 카드삭제 버튼 클릭');
     setIsDeleteConfirmModalOpen(true);
   };
 
-  // 삭제 확인 모달 "네" 버튼 클릭 시 삭제 완료 모달 오픈
   const handleDeleteConfirmYes = () => {
     setIsDeleteConfirmModalOpen(false);
     setIsDeleteFinalModalOpen(true);
   };
 
-  // 등록 카드 삭제 완료 모달 "확인" 버튼 클릭 시 /payment-method로 이동하도록 수정
   const handleDeleteFinalConfirm = () => {
     setIsDeleteFinalModalOpen(false);
     navigate('/payment-method');
@@ -119,7 +114,6 @@ const CardDetail: React.FC = () => {
             />
           </FieldSection>
 
-          {/* 카드번호 */}
           <FieldSection>
             <Controller
               name='cardNumber'
@@ -150,7 +144,6 @@ const CardDetail: React.FC = () => {
             />
           </FieldSection>
 
-          {/* 유효기간 & 비밀번호 (앞 2자리) */}
           <TwoColumns>
             <Column>
               <Controller
@@ -206,7 +199,6 @@ const CardDetail: React.FC = () => {
             </Column>
           </TwoColumns>
 
-          {/* 생년/사업자번호 */}
           <FieldSection>
             <Controller
               name='birthOrBusiness'
@@ -233,7 +225,6 @@ const CardDetail: React.FC = () => {
             자세한 문의 ( 평일 09:00 ~ 18:00 ) 서비스팀에 남겨주세요.
           </GuideMessage>
 
-          {/* GuideMessage 아래 "등록 카드삭제" 버튼 */}
           <DeleteButtonWrapper>
             <DeleteButton type='button' onClick={handleDeleteCard}>
               등록 카드삭제
@@ -267,7 +258,6 @@ const CardDetail: React.FC = () => {
         <>카드 수정이 완료되었습니다</>
       </ReusableModal>
 
-      {/* 등록 카드 삭제 확인 모달 */}
       <ReusableModal2
         isOpen={isDeleteConfirmModalOpen}
         onClose={() => setIsDeleteConfirmModalOpen(false)}
@@ -279,7 +269,6 @@ const CardDetail: React.FC = () => {
         <>등록된 카드를 삭제하시겠습니까?</>
       </ReusableModal2>
 
-      {/* 등록 카드 삭제 완료 모달 */}
       <ReusableModal
         isOpen={isDeleteFinalModalOpen}
         onClose={handleDeleteFinalConfirm}
@@ -292,8 +281,6 @@ const CardDetail: React.FC = () => {
 };
 
 export default CardDetail;
-
-/* ------------------ 스타일 정의 ------------------ */
 
 const FormContainer = styled.form``;
 

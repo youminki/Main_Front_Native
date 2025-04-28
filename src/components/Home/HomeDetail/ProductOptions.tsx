@@ -1,4 +1,3 @@
-// src/components/Home/HomeDetail/ProductOptions.tsx
 import React from 'react';
 import styled from 'styled-components';
 import Theme from '../../../styles/Theme';
@@ -8,8 +7,8 @@ export interface ProductOptionsProps {
   setSelectedSize: (size: string) => void;
   selectedColor: string;
   setSelectedColor: (color: string) => void;
-  sizeOptions: string[]; // API에서 받은 사이즈 옵션 배열
-  colorOptions: string[]; // API에서 받은 색상 옵션 배열 추가
+  sizeOptions: string[];
+  colorOptions: string[];
 }
 
 const ProductOptions: React.FC<ProductOptionsProps> = ({

@@ -1,12 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-// import ReusableModal from '../../../components/ReusableModal'; // <-- 제거
 
 const OnetimePass: React.FC = () => {
   return (
     <Container>
       <ContentArea>
-        {/* 1) 이용 중인 이용권 */}
         <Section>
           <SectionTitle>이용 중인 이용권</SectionTitle>
           <ReadOnlyBox>
@@ -14,7 +12,6 @@ const OnetimePass: React.FC = () => {
           </ReadOnlyBox>
         </Section>
 
-        {/* 2) 이용권 사용기간 */}
         <Section>
           <SectionTitle>이용권 사용기간</SectionTitle>
           <ReadOnlyBox>
@@ -22,7 +19,6 @@ const OnetimePass: React.FC = () => {
           </ReadOnlyBox>
         </Section>
 
-        {/* 3) 이용권 결제일시 */}
         <Section>
           <SectionTitle>이용권 결제일시</SectionTitle>
           <ReadOnlyBox>
@@ -30,7 +26,6 @@ const OnetimePass: React.FC = () => {
           </ReadOnlyBox>
         </Section>
 
-        {/* 4) 이용권(매달) 결제금액 + 5) 다음 결제일 */}
         <Section>
           <Row style={{ gap: '20px' }}>
             <HalfSection>
@@ -46,7 +41,6 @@ const OnetimePass: React.FC = () => {
           </Row>
         </Section>
 
-        {/* 6) 이용권 코드 */}
         <Section>
           <SectionTitle>이용권 코드</SectionTitle>
           <InFieldBox>
@@ -56,7 +50,6 @@ const OnetimePass: React.FC = () => {
           </InFieldBox>
         </Section>
 
-        {/* 7) 시즌 자동연장 */}
         <Section>
           <SectionTitle>시즌 자동연장</SectionTitle>
           <InFieldBoxGray>
@@ -68,10 +61,8 @@ const OnetimePass: React.FC = () => {
           </InFieldBoxGray>
         </Section>
 
-        {/* 8) 구분선 */}
         <Divider />
 
-        {/* 9) 안내 메시지 */}
         <NoticeArea>
           <NoticeText>
             ※ 이용 중인 구독권은 시즌 중간에{' '}
@@ -88,9 +79,6 @@ const OnetimePass: React.FC = () => {
 
 export default OnetimePass;
 
-/* ------------------------------------------------------------------
-   아래부터는 OnetimePass에서 쓰던 스타일
------------------------------------------------------------------- */
 const Container = styled.div`
   position: relative;
   background: #ffffff;

@@ -81,7 +81,6 @@ const Content: React.FC<{ item: ContentItem }> = ({ item }) => {
   );
 };
 
-// `ContentList` 컴포넌트 정의
 const ContentList: React.FC = () => {
   const data: ContentItem[] = [
     {
@@ -119,7 +118,6 @@ const ContentList: React.FC = () => {
 
 export default ContentList;
 
-// 스타일 정의
 const ScrollableContent = styled.div`
   display: flex;
   overflow-x: auto;

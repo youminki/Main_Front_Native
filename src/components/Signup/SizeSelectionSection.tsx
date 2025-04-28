@@ -2,59 +2,59 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface SizeSelectionSectionProps {
-  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void; // 사이즈 변경 이벤트 핸들러
+  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const SizeSelectionSection: React.FC<SizeSelectionSectionProps> = ({
   onChange,
 }) => (
   <>
-    <Label htmlFor="sizeOnePieceSeq">평소 입는 원피스(사이즈)</Label>
+    <Label htmlFor='sizeOnePieceSeq'>평소 입는 원피스(사이즈)</Label>
     <Select
-      name="sizeOnePieceSeq"
-      id="sizeOnePieceSeq"
+      name='sizeOnePieceSeq'
+      id='sizeOnePieceSeq'
       onChange={onChange}
       required
-      defaultValue=""
+      defaultValue=''
     >
-      <option value="" disabled>
+      <option value='' disabled>
         사이즈를 선택하세요
       </option>
-      <option value="201">S (44)</option>
-      <option value="202">M (55)</option>
-      <option value="203">L (66)</option>
+      <option value='201'>S (44)</option>
+      <option value='202'>M (55)</option>
+      <option value='203'>L (66)</option>
     </Select>
 
-    <Label htmlFor="sizeJacketSeq">평소 입는 정장(사이즈)</Label>
+    <Label htmlFor='sizeJacketSeq'>평소 입는 정장(사이즈)</Label>
     <Select
-      name="sizeJacketSeq"
-      id="sizeJacketSeq"
+      name='sizeJacketSeq'
+      id='sizeJacketSeq'
       onChange={onChange}
       required
-      defaultValue=""
+      defaultValue=''
     >
-      <option value="" disabled>
+      <option value='' disabled>
         사이즈를 선택하세요
       </option>
-      <option value="201">S (44)</option>
-      <option value="202">M (55)</option>
-      <option value="203">L (66)</option>
+      <option value='201'>S (44)</option>
+      <option value='202'>M (55)</option>
+      <option value='203'>L (66)</option>
     </Select>
 
-    <Label htmlFor="sizeCoatSeq">평소 입는 아우터(사이즈)</Label>
+    <Label htmlFor='sizeCoatSeq'>평소 입는 아우터(사이즈)</Label>
     <Select
-      name="sizeCoatSeq"
-      id="sizeCoatSeq"
+      name='sizeCoatSeq'
+      id='sizeCoatSeq'
       onChange={onChange}
       required
-      defaultValue=""
+      defaultValue=''
     >
-      <option value="" disabled>
+      <option value='' disabled>
         사이즈를 선택하세요
       </option>
-      <option value="201">S (44)</option>
-      <option value="202">M (55)</option>
-      <option value="203">L (66)</option>
+      <option value='201'>S (44)</option>
+      <option value='202'>M (55)</option>
+      <option value='203'>L (66)</option>
     </Select>
   </>
 );

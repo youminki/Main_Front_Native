@@ -1,4 +1,3 @@
-// src/components/Home/HomeDetail/RentalOptions.tsx
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaChevronLeft, FaChevronRight, FaPlus, FaMinus } from 'react-icons/fa';

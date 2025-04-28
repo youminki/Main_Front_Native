@@ -1,17 +1,15 @@
-// ProductReview.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom'; // ★ 추가
+import { useNavigate } from 'react-router-dom';
 import StatsSection from '../../../components/StatsSection';
 import PeriodSection from '../../../components/PeriodSection';
 
-// 예시 아이콘 import
 import sampleImage from '../../../assets/sample-dress.svg';
 import ProductInfoIcon from '../../../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../../../assets/Basket/ServiceInfoIcon.svg';
-import EvaluationIcon from '../../../assets/Basket/EvaluationIcon.svg'; // ★ 평가 아이콘
-import FilledStarIcon from '../../../assets/Basket/FilledStarIcon.svg'; // ★ 채워진 별
-import EmptyStarIcon from '../../../assets/Basket/EmptyStarIcon.svg'; // ★ 빈 별
+import EvaluationIcon from '../../../assets/Basket/EvaluationIcon.svg';
+import FilledStarIcon from '../../../assets/Basket/FilledStarIcon.svg';
+import EmptyStarIcon from '../../../assets/Basket/EmptyStarIcon.svg';
 
 interface BasketItem {
   id: number;
@@ -27,12 +25,12 @@ interface BasketItem {
   imageUrl: string;
   isSelected: boolean;
   rentalDays?: string;
-  rating?: number; // 별점(0~5)
+  rating?: number;
 }
 
 const ProductReview: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(6);
-  const navigate = useNavigate(); // ★ useNavigate 훅 사용
+  const navigate = useNavigate();
 
   const [items] = useState<BasketItem[]>([
     {
@@ -67,7 +65,6 @@ const ProductReview: React.FC = () => {
     },
   ]);
 
-  // 선택된 기간에 따라 아이템 목록을 필터링 (예시: 3개월이면 앞의 3개, 6개월이면 전체)
   const filteredItems = selectedPeriod === 3 ? items.slice(0, 3) : items;
 
   return (
@@ -105,7 +102,6 @@ const ProductReview: React.FC = () => {
                     <ItemType>{item.nameType}</ItemType>
                   </ItemName>
 
-                  {/* 진행 서비스 */}
                   {item.type === 'rental' ? (
                     <InfoRowFlex>
                       <IconArea>
@@ -141,7 +137,6 @@ const ProductReview: React.FC = () => {
                     </InfoRowFlex>
                   )}
 
-                  {/* 제품 정보 */}
                   <InfoRowFlex>
                     <IconArea>
                       <Icon src={ProductInfoIcon} alt='Product Info' />
@@ -160,7 +155,6 @@ const ProductReview: React.FC = () => {
                     </TextContainer>
                   </InfoRowFlex>
 
-                  {/* 평가 아이콘 + 별점 */}
                   <InfoRowFlex>
                     <IconArea>
                       <Icon src={EvaluationIcon} alt='평가' />
@@ -193,12 +187,10 @@ const ProductReview: React.FC = () => {
               </ContentWrapper>
 
               <ButtonContainer>
-                {/* "제품상세" 버튼 -> /item/:id 로 이동 */}
                 <DeleteButton onClick={() => navigate(`/item/${item.id}`)}>
                   제품상세
                 </DeleteButton>
 
-                {/* "작성" 버튼 -> /payment-review/Write 로 이동 */}
                 <PurchaseButton
                   onClick={() => navigate('/payment-review/Write')}
                 >
@@ -215,9 +207,6 @@ const ProductReview: React.FC = () => {
 
 export default ProductReview;
 
-/* ============================= */
-/*  스타일 정의 시작            */
-/* ============================= */
 const ProductReviewContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -436,7 +425,6 @@ const LabelDetailText = styled.span`
   white-space: nowrap;
 `;
 
-/* ========== 별 아이콘(채워짐/비어있음) ========== */
 const StarRow = styled.div`
   display: flex;
   align-items: center;

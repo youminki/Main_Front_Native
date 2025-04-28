@@ -1,15 +1,11 @@
-// 기존 Footer 컴포넌트 파일 (Footer.tsx)
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-// 시작일: 3월 25일 00:00
 const START_DATE = new Date('2025-03-25T00:00:00');
-// 마감일: 3월 31일 00:00
+
 const TARGET_DATE = new Date('2025-04-19T00:00:00');
 
-// 20분당 1명 증가 → 1시간당 3명 증가
-// 총 6일(144시간) → 최대 인원 = 144 * 3 = 432명
 const PER_HOUR = 3;
 const MAX_PEOPLE = 432;
 
@@ -21,26 +17,21 @@ interface TimeLeft {
 }
 
 const Footer: React.FC = () => {
-  // 남은 시간
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     d: 0,
     h: 0,
     m: 0,
     s: 0,
   });
-  // 현재 인원 수
+
   const [people, setPeople] = useState(0);
 
   const navigate = useNavigate();
 
-  // ---------------------------
-  // 1) D-Day(남은 시간) 계산 함수
-  // ---------------------------
   const calculateTimeLeft = (): TimeLeft => {
-    const now = Date.now(); // 현재 시간(ms)
+    const now = Date.now();
     const diff = TARGET_DATE.getTime() - now;
 
-    // 이미 마감일이 지났다면 0일 00:00:00
     if (diff <= 0) {
       return { d: 0, h: 0, m: 0, s: 0 };
     }
@@ -53,20 +44,15 @@ const Footer: React.FC = () => {
     return { d, h, m, s };
   };
 
-  // ---------------------------
-  // 2) 인원 수 계산 함수
-  // ---------------------------
   const calculatePeopleCount = (): number => {
     const now = Date.now();
     const start = START_DATE.getTime();
     const target = TARGET_DATE.getTime();
 
-    // 마감일 이후라면 최대 인원
     if (now >= target) return MAX_PEOPLE;
-    // 시작일 이전이라면 0명
+
     if (now <= start) return 0;
 
-    // (현재 시각 - 시작일) 동안 지난 시간을 기준으로 1시간당 3명 증가
     const elapsedHours = (now - start) / (1000 * 60 * 60);
     let count = elapsedHours * PER_HOUR;
 
@@ -77,24 +63,18 @@ const Footer: React.FC = () => {
     return Math.floor(count);
   };
 
-  // ---------------------------
-  // 3) useEffect로 주기적 갱신
-  // ---------------------------
   useEffect(() => {
     const updateState = () => {
       setTimeLeft(calculateTimeLeft());
       setPeople(calculatePeopleCount());
     };
 
-    // 마운트되면 즉시 1회 실행
     updateState();
 
-    // 이후 1초마다 실행
     const timerId = setInterval(updateState, 1000);
     return () => clearInterval(timerId);
   }, []);
 
-  // "사전 등록하기" 버튼 클릭 시 /signup으로 이동
   const handleRegisterClick = () => {
     navigate('/login');
   };
@@ -132,13 +112,10 @@ const Footer: React.FC = () => {
 
 export default Footer;
 
-/* ---------------------------
-// styled-components
-// --------------------------- */
 const FooterContainer = styled.footer`
   height: 309px;
   margin: 0 auto;
-  /* 아래 여백 제거 */
+
   margin-bottom: 0;
   background: #f5ab35;
   border-radius: 20px 20px 0 0;

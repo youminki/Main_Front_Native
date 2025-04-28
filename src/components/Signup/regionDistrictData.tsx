@@ -233,7 +233,7 @@ export const regionDistrictData: { [key: string]: string[] } = {
     '예천군',
     '봉화군',
     '울진군',
-    '울릉군', // 추가
+    '울릉군',
   ],
   경상남도: [
     '창원시 마산합포구',
@@ -244,11 +244,10 @@ export const regionDistrictData: { [key: string]: string[] } = {
     '김해시',
     '거제시',
     '양산시',
-    // "마산시"는 통합되어 현재 창원시 산하 → 제거
     '통영시',
     '사천시',
     '진주시',
-    '밀양시', // 추가
+    '밀양시',
     '창녕군',
     '고성군',
     '남해군',
@@ -258,7 +257,7 @@ export const regionDistrictData: { [key: string]: string[] } = {
     '함양군',
     '거창군',
     '합천군',
-    '하동군', // 추가
+    '하동군',
   ],
   제주특별자치도: ['제주시', '서귀포시'],
 };

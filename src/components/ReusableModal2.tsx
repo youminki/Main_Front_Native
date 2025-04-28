@@ -24,7 +24,7 @@ const ReusableModal2: React.FC<ModalProps> = ({
 
   const handleConfirmClick = () => {
     if (onConfirm) onConfirm();
-    onClose(); // ✅ 네 버튼 클릭 시 모달 닫기
+    onClose();
   };
 
   return (
@@ -89,7 +89,7 @@ const ModalBody = styled.div`
   font-size: 14px;
   font-weight: 400;
   text-align: center;
-  /* max-height: 230px; */
+
   height: 100%;
   display: flex;
   justify-content: center;

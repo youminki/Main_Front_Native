@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-// 아이콘/이미지
 import CheckButtonIcon from '../../assets/Landing/CheckButton.svg';
 import SampleImage from '../../assets/Landing/SampleImage5.png';
 
@@ -19,7 +18,6 @@ const LandingPage5: React.FC = () => {
       </TopSection>
 
       <CardWrapper>
-        {/* 이미지 영역 */}
         <CardImage src={SampleImage} alt='Sample' />
       </CardWrapper>
 
@@ -54,8 +52,6 @@ const LandingPage5: React.FC = () => {
 };
 
 export default LandingPage5;
-
-/* ====================== Styled Components ====================== */
 
 const Container = styled.div`
   height: 750px;
@@ -101,12 +97,10 @@ const BigTitle = styled.h1`
   margin: 0;
 `;
 
-/* "손쉽게 브랜딩"에 색상 #FF7E61 적용 */
 const Highlight = styled.span`
   color: #ff7e61;
 `;
 
-/* 가운데 정렬된 래퍼 */
 const CardWrapper = styled.div`
   width: auto;
   display: flex;
@@ -114,22 +108,16 @@ const CardWrapper = styled.div`
   margin-bottom: 18px;
 `;
 
-/* 이미지 전체 너비 사용 */
 const CardImage = styled.img`
   width: 100%;
   height: auto;
   object-fit: cover;
 `;
 
-/* ------------------- 블릿 리스트 스타일 ------------------- */
-/* 
-   1) width: 80%; margin: 0 auto 로 전체 리스트를 화면 가운데로
-   2) 항목은 flex-start로 아이콘과 텍스트를 왼쪽 정렬
-*/
 const BulletList = styled.ul`
   list-style: none;
   padding: 0;
-  margin: 0 auto; /* 수평 가운데 정렬 */
+  margin: 0 auto;
   width: 80%;
 
   display: flex;
@@ -140,7 +128,7 @@ const BulletList = styled.ul`
 const BulletItem = styled.li`
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* 아이콘+텍스트 왼쪽 정렬 */
+  justify-content: flex-start;
 `;
 
 const CheckIcon = styled.img`
@@ -149,7 +137,6 @@ const CheckIcon = styled.img`
   margin-right: 10px;
 `;
 
-/* "브랜드의 셀러"만 굵게 표시하기 위한 span */
 const BoldSpan = styled.span`
   font-weight: 800;
 `;
@@ -160,7 +147,7 @@ const BulletText = styled.span`
   font-size: 15px;
   line-height: 40px;
   color: #000;
-  text-align: left; /* 텍스트를 왼쪽 정렬 */
+  text-align: left;
 `;
 
 const BottomBackground = styled.div`

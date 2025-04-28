@@ -8,7 +8,6 @@ import FixedBottomBar from '../../../components/FixedBottomBar';
 const SettlementRequest: React.FC = () => {
   const taxRate = 0.04;
 
-  // 이미지의 값을 임시 데이터로 설정
   const preTaxAmount = 90000;
   const taxAmount = Math.floor(preTaxAmount * taxRate);
   const netAmount = preTaxAmount - taxAmount;

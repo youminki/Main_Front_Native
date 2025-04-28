@@ -86,7 +86,6 @@ const Signup: React.FC = () => {
     watch,
   } = methods;
 
-  // visualViewport 지원 여부에 따라 초기 높이 설정
   const initialHeight = window.visualViewport
     ? window.visualViewport.height
     : window.innerHeight;
@@ -119,7 +118,6 @@ const Signup: React.FC = () => {
     };
   }, [initialHeight]);
 
-  // 핸드폰 인증 관련 상태
   const [isPhoneVerificationSent, setIsPhoneVerificationSent] =
     useState<boolean>(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState<boolean>(false);
@@ -147,7 +145,6 @@ const Signup: React.FC = () => {
     };
   }, []);
 
-  // 인증 상태 및 버튼 관련 상태
   const [isEmailChecked, setIsEmailChecked] = useState<boolean>(false);
   const [isNicknameChecked, setIsNicknameChecked] = useState<boolean>(false);
   const [isMelpickAddressChecked, setIsMelpickAddressChecked] =
@@ -178,13 +175,11 @@ const Signup: React.FC = () => {
   const [phoneApiError, setPhoneApiError] = useState<string>('');
   const [melpickApiError, setMelpickApiError] = useState<string>('');
 
-  // 성별 및 주소 상태
   const [gender, setGender] = useState<string>('여성');
   const [selectedGenderButton, setSelectedGenderButton] =
     useState<string>('여성');
   const [melpickAddress, setMelpickAddress] = useState<string>('');
 
-  // 브랜드 선택 상태
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const handleBrandSelect = (brands: string[]) => {
     setSelectedBrands(brands);
@@ -194,7 +189,6 @@ const Signup: React.FC = () => {
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
-  // 회원가입 결과 및 모달 상태
   const [signupResult, setSignupResult] = useState<React.ReactNode>('');
   const [isSignupSuccess, setIsSignupSuccess] = useState<boolean>(false);
   const [showSignupResultModal, setShowSignupResultModal] =
@@ -363,7 +357,6 @@ const Signup: React.FC = () => {
   };
 
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
-    // 필수 인증 항목 체크
     const missing: string[] = [];
     if (!isEmailChecked) missing.push('이메일 인증을 완료하세요.');
     if (!isNicknameChecked) missing.push('닉네임 인증을 완료하세요.');
@@ -450,7 +443,6 @@ const Signup: React.FC = () => {
     }
   };
 
-  // FixedBottomBar 버튼 클릭 시 폼 검증 후 제출 (한 번만 실행)
   const onSignupButtonClick = async () => {
     if (isSubmitting) return;
     const valid = await trigger();
@@ -472,7 +464,7 @@ const Signup: React.FC = () => {
       setShowSignupResultModal(true);
       return;
     }
-    // 버튼 클릭으로만 제출하도록 폼의 onSubmit은 사용하지 않음
+
     await handleSubmit(onSubmit)();
   };
 
@@ -875,7 +867,7 @@ const Signup: React.FC = () => {
                 {...register('sleeve')}
               />
             </RowLabel>
-            {/* 키보드가 열려있을 때 FixedBottomBar 숨김 */}
+
             {!isKeyboardOpen && (
               <FixedBottomBar
                 type='button'
@@ -914,7 +906,6 @@ const Signup: React.FC = () => {
 
 export default Signup;
 
-/* --- styled-components --- */
 const Container = styled.div`
   display: flex;
   flex-direction: column;

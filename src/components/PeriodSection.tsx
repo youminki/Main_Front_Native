@@ -10,7 +10,6 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
   selectedPeriod,
   setSelectedPeriod,
 }) => {
-  // 선택된 기간에 따라 DateRange 텍스트 설정 (필요에 따라 날짜 범위 대신 단순 기간 표기)
   const dateRangeText =
     selectedPeriod === 3
       ? '2025.03.01 ~ 2025.05.31'

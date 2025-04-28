@@ -1,4 +1,3 @@
-// src/components/Home/ItemCard.tsx
 import React, { useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { HeartIcon } from '../../assets/library/HeartIcon';
@@ -19,7 +18,6 @@ type ItemCardProps = {
 
 type ConfirmAction = 'add' | 'remove' | null;
 
-// 하트 비트 애니메이션
 const heartBeat = keyframes`
   0% { transform: scale(1); }
   30% { transform: scale(1.4); }
@@ -43,7 +41,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
   const [errorMsg, setErrorMsg] = useState('');
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
 
-  // “/” 이후의 텍스트만 보여주기
   const displayDescription = description.includes('/')
     ? description.split('/')[1]
     : description;
@@ -120,7 +117,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
         </PriceWrapper>
       </CardContainer>
 
-      {/* 확인 모달 */}
       <ReusableModal
         isOpen={confirmAction !== null}
         onClose={closeConfirm}
@@ -130,7 +126,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
         <p>{modalMessage}</p>
       </ReusableModal>
 
-      {/* 오류 모달 */}
       <ReusableModal
         isOpen={errorModalOpen}
         onClose={() => setErrorModalOpen(false)}
@@ -143,8 +138,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
 };
 
 export default ItemCard;
-
-// --- styled-components ---
 
 const CardContainer = styled.div`
   position: relative;

@@ -1,7 +1,6 @@
 import React, { useState, forwardRef } from 'react';
 import styled from 'styled-components';
 import Button02 from './Button02';
-// import { SeasonToggle } from '../components/Home/FilterContainer';
 
 type InputFieldProps = {
   label: string;
@@ -9,7 +8,7 @@ type InputFieldProps = {
   type?: string;
   error?: { message: string };
   buttonLabel?: string;
-  // 타입 수정: 'yellow' | 'blue' | 'red'
+
   buttonColor?: 'yellow' | 'blue' | 'red';
   onButtonClick?: () => void;
   prefix?: string;
@@ -57,7 +56,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       prefix,
       prefixcontent,
       as,
-      // isEmailField,
+
       useToggle = false,
       options,
       onSelectChange,
@@ -65,7 +64,6 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     },
     ref
   ) => {
-    // const [toggle, setToggle] = useState(false);
     const [selectedOption, setSelectedOption] = useState(
       options ? options[0] : ''
     );
@@ -129,18 +127,10 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                 </ButtonWrapper>
               )}
 
-              {useToggle && (
-                <ToggleWrapper>
-                  {/* <SeasonToggle
-                    isActive={toggle}
-                    toggle={() => setToggle(!toggle)}
-                  /> */}
-                </ToggleWrapper>
-              )}
+              {useToggle && <ToggleWrapper></ToggleWrapper>}
             </InputWrapper>
           </InputRow>
 
-          {/* 에러 메시지 영역 */}
           <ErrorContainer>
             {error && <ErrorMessage>{error.message}</ErrorMessage>}
           </ErrorContainer>
@@ -152,7 +142,6 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
 
 export default InputField;
 
-/* --- styled-components --- */
 const InputContainer = styled.div`
   display: flex;
   flex-direction: column;

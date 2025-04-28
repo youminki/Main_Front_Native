@@ -1,4 +1,3 @@
-// src/components/Basket.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import sampleImage from '../assets/sample-dress.svg';
@@ -249,7 +248,6 @@ const Basket: React.FC = () => {
 
 export default Basket;
 
-/* 기본 스타일 */
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -265,7 +263,6 @@ const Header = styled.div`
   margin-bottom: 15px;
 `;
 
-/* 체크박스 디자인 - 직접 컬러 명시 */
 const Checkbox = styled.input`
   margin-bottom: 5px;
   width: 20px;
@@ -384,10 +381,6 @@ const DetailHighlight = styled.span`
   white-space: nowrap;
 `;
 
-/**
- * InfoRowFlex:
- * 아이콘과 텍스트 컨테이너를 row로 정렬 (align-items: stretch로 텍스트 높이에 맞춰 아이콘 영역 확장)
- */
 const InfoRowFlex = styled.div`
   display: flex;
   align-items: stretch;
@@ -395,10 +388,6 @@ const InfoRowFlex = styled.div`
   width: 100%;
 `;
 
-/**
- * IconArea:
- * 아이콘이 들어갈 영역 – 텍스트 영역의 높이에 맞춰 자동으로 늘어나며, 항상 상단에 위치합니다.
- */
 const IconArea = styled.div`
   flex: 0 0 auto;
   display: flex;
@@ -406,10 +395,6 @@ const IconArea = styled.div`
   justify-content: center;
 `;
 
-/**
- * TextContainer:
- * 아이콘 옆의 텍스트 영역 (column으로 정렬, 내부 행은 nowrap)
- */
 const TextContainer = styled.div`
   flex: 1;
   display: flex;

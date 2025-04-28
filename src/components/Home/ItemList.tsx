@@ -1,4 +1,3 @@
-// src/components/Home/ItemList.tsx
 import React from 'react';
 import styled from 'styled-components';
 import ItemCard from './ItemCard';
@@ -15,9 +14,9 @@ export interface UIItem {
 
 type ItemListProps = {
   items: UIItem[];
-  /** 모달 열기 */
+
   onItemClick?: (id: string) => void;
-  /** 찜 해제(삭제) */
+
   onDelete?: (id: string) => void;
 };
 
