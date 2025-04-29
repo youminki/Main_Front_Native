@@ -16,7 +16,7 @@ import HomeIcon from '../../assets/Header/HomeIcon.svg';
 
 import ReusableModal2 from '../../components/ReusableModal2';
 
-const ITEMS_PER_LOAD = 10;
+const ITEMS_PER_LOAD = 20;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
