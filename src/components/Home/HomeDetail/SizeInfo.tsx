@@ -8,7 +8,6 @@ export interface SizeInfoProps {
 
 const SIZE_PLACEHOLDER = '/images/size-placeholder.png';
 
-// 44->S, 55->M, 66->L, 77->XL 매핑
 const SIZE_LABELS: Record<string, string> = {
   '44': 'S',
   '55': 'M',
@@ -28,7 +27,6 @@ const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
   const sortedKeys = measurementKeys.sort((a, b) => a.localeCompare(b));
   const alphaLabels = sortedKeys.map((_, idx) => String.fromCharCode(65 + idx));
 
-  // 사이즈 라벨 매핑 함수
   const formatSize = (raw: string) => {
     if (/free/i.test(raw)) return 'Free';
     const num = raw.replace(/\D/g, '');
