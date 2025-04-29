@@ -8,6 +8,14 @@ export interface SizeInfoProps {
 
 const SIZE_PLACEHOLDER = '/images/size-placeholder.png';
 
+// 44->S, 55->M, 66->L, 77->XL 매핑
+const SIZE_LABELS: Record<string, string> = {
+  '44': 'S',
+  '55': 'M',
+  '66': 'L',
+  '77': 'XL',
+};
+
 const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
   const [imgSrc, setImgSrc] = useState(size_picture);
   const handleImageError = () => setImgSrc(SIZE_PLACEHOLDER);
@@ -19,6 +27,14 @@ const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
   const measurementKeys = Object.keys(productSizes[0].measurements || {});
   const sortedKeys = measurementKeys.sort((a, b) => a.localeCompare(b));
   const alphaLabels = sortedKeys.map((_, idx) => String.fromCharCode(65 + idx));
+
+  // 사이즈 라벨 매핑 함수
+  const formatSize = (raw: string) => {
+    if (/free/i.test(raw)) return 'Free';
+    const num = raw.replace(/\D/g, '');
+    const label = SIZE_LABELS[num];
+    return label ? `${num}(${label})` : num;
+  };
 
   return (
     <Container>
@@ -52,20 +68,17 @@ const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
             </Row>
           </thead>
           <tbody>
-            {productSizes.map(({ size, measurements }) => {
-              const numericOnly = size.replace(/\D/g, '') || size;
-              return (
-                <Row key={size}>
-                  <Cell>{numericOnly}</Cell>
-                  {sortedKeys.map((key) => {
-                    const raw = measurements[key];
-                    const displayVal =
-                      typeof raw === 'number' ? Math.round(raw) : (raw ?? '-');
-                    return <Cell key={key}>{displayVal}</Cell>;
-                  })}
-                </Row>
-              );
-            })}
+            {productSizes.map(({ size, measurements }) => (
+              <Row key={size}>
+                <Cell>{formatSize(size)}</Cell>
+                {sortedKeys.map((key) => {
+                  const raw = measurements[key];
+                  const displayVal =
+                    typeof raw === 'number' ? Math.round(raw) : (raw ?? '-');
+                  return <Cell key={key}>{displayVal}</Cell>;
+                })}
+              </Row>
+            ))}
           </tbody>
         </Table>
       </TableWrapper>
@@ -133,6 +146,7 @@ const LabelList = styled.ul`
   gap: 10px;
   width: 100%;
 `;
+
 const LabelItem = styled.li`
   font-size: 14px;
   font-weight: 500;
