@@ -28,13 +28,14 @@ const Home: React.FC = () => {
     searchParams.get('search') || ''
   );
   const [barPosition, setBarPosition] = useState<number>(0);
+
   const [products, setProducts] = useState<ProductListItem[]>([]);
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
+  const [isFeatureModalOpen, setFeatureModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const newCategory = searchParams.get('categori') || 'Entire';
@@ -44,8 +45,31 @@ const Home: React.FC = () => {
   }, [searchParams]);
 
   useEffect(() => {
+    const categoryKey =
+      selectedCategory === 'Entire' ? 'all' : selectedCategory;
+    setIsLoading(true);
+
+    (async () => {
+      try {
+        const prods = await getProducts(categoryKey);
+        setProducts(
+          categoryKey === 'all'
+            ? prods
+            : prods.filter((p) => p.category === categoryKey)
+        );
+        setPage(1);
+        window.scrollTo({ top: 0 });
+      } catch (err) {
+        console.error('제품 데이터를 불러오는데 실패했습니다:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [selectedCategory]);
+
+  useEffect(() => {
     const el = document.querySelector(
-      `[data-category="${selectedCategory}"]`
+      `[data-category=\"${selectedCategory}\"]`
     ) as HTMLElement;
     if (el) {
       const { offsetLeft, offsetWidth } = el;
@@ -53,71 +77,14 @@ const Home: React.FC = () => {
     }
   }, [selectedCategory]);
 
-  const categoryMapping: { [key: string]: string } = {
-    Entire: 'all',
-    MiniDress: 'MiniDress',
-    MidiDress: 'MidiDress',
-    LongDress: 'LongDress',
-    TowDress: 'TowDress',
-    JumpSuit: 'JumpSuit',
-    Blouse: 'Blouse',
-    KnitTop: 'KnitTop',
-    ShirtTop: 'ShirtTop',
-    MiniSkirt: 'MiniSkirt',
-    MidiSkirt: 'MidiSkirt',
-    Pants: 'Pants',
-    Jacket: 'Jacket',
-    Coat: 'Coat',
-  };
-
-  useEffect(() => {
-    setIsLoading(true);
-    (async () => {
-      try {
-        const categoryForAPI = categoryMapping[selectedCategory];
-        const prods = await getProducts(categoryForAPI);
-        setProducts(
-          categoryForAPI !== 'all'
-            ? prods.filter((p) => p.category === categoryForAPI)
-            : prods
-        );
-      } catch (e) {
-        console.error('제품 데이터를 불러오는데 실패했습니다:', e);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-    setPage(1);
-    window.scrollTo({ top: 0 });
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    const onScroll = () => {
-      if (isLoading) return;
-      if (
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 100
-      ) {
-        if (page * ITEMS_PER_LOAD < products.length) {
-          setIsLoading(true);
-          setTimeout(() => {
-            setPage((p) => p + 1);
-            setIsLoading(false);
-          }, 500);
-        }
-      }
-    };
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [products, page, isLoading]);
-
-  const displayedProducts = products
-    .filter(
-      (item) =>
-        item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .slice(0, page * ITEMS_PER_LOAD);
+  // 검색 필터 + 페이징
+  const filtered = products.filter(
+    (item) =>
+      item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const hasMore = page * ITEMS_PER_LOAD < filtered.length;
+  const displayedProducts = filtered.slice(0, page * ITEMS_PER_LOAD);
 
   const uiItems: UIItem[] = displayedProducts.map((p) => ({
     id: p.id.toString(),
@@ -128,6 +95,22 @@ const Home: React.FC = () => {
     discount: p.discount,
     isLiked: p.isLiked,
   }));
+
+  useEffect(() => {
+    if (!hasMore) return;
+
+    const onScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 100
+      ) {
+        setPage((prev) => prev + 1);
+      }
+    };
+
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [hasMore]);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -154,7 +137,9 @@ const Home: React.FC = () => {
           {isLoading && <Spinner />}
         </Content>
       </ContentWrapper>
+
       <Footer />
+
       <ScrollToTopButton onClick={scrollToTop}>
         <ArrowIcon viewBox='0 0 24 24'>
           <path d='M12 4l-8 8h6v8h4v-8h6z' />
@@ -215,7 +200,7 @@ const MainContainer = styled.div`
   flex-direction: column;
   position: relative;
   padding: 2rem 1rem;
-  padding-top: 0px;
+  padding-top: 0;
 `;
 
 const ContentWrapper = styled.div`
@@ -253,11 +238,13 @@ const ScrollToTopButton = styled.button`
     transform 0.3s,
     box-shadow 0.3s,
     opacity 0.3s;
+
   &:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
     opacity: 1;
   }
+
   @media (min-width: 1000px) {
     right: calc((100vw - 1000px) / 2 + 20px);
   }
@@ -272,7 +259,6 @@ const ArrowIcon = styled.svg`
 const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-
   z-index: 2000;
   display: flex;
   align-items: center;
@@ -288,6 +274,7 @@ const ModalBox = styled.div`
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -299,7 +286,6 @@ const ModalHeaderWrapper = styled.div`
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
-
   background: #fff;
   z-index: 2100;
 `;
@@ -308,7 +294,6 @@ const ModalHeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   padding: 1rem;
 `;
 
