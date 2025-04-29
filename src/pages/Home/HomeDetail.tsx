@@ -195,7 +195,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           fabricComposition={product.fabricComposition}
           detailsData={{
             품번: product.product_num,
-            계절감: product.season,
+            시즌: product.season,
             제조사: product.manufacturer,
           }}
         />
