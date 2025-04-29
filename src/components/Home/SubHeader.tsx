@@ -1,6 +1,8 @@
-import React from 'react';
+// src/components/Header/SubHeader.tsx
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 import { useSearchParams } from 'react-router-dom';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 import Entire from '../../assets/SubHeader/Entire.svg';
 import MiniDress from '../../assets/SubHeader/MiniDress.svg';
@@ -51,6 +53,7 @@ const SubHeader: React.FC<SubHeaderProps> = ({
   barPosition,
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const iconsRef = useRef<HTMLDivElement>(null);
 
   const handleClick = (category: string) => {
     const newParams = new URLSearchParams(searchParams.toString());
@@ -62,25 +65,44 @@ const SubHeader: React.FC<SubHeaderProps> = ({
     onCategoryClick();
   };
 
+  const scroll = (dir: 'left' | 'right') => {
+    if (!iconsRef.current) return;
+    const amount = ICON_WIDTH * 3;
+    iconsRef.current.scrollBy({
+      left: dir === 'left' ? -amount : amount,
+      behavior: 'smooth',
+    });
+  };
+
   return (
     <SubHeaderWrapper>
-      <IconsWrapper>
-        {homeIcons.map((icon, index) => {
-          const isSelected = icon.category === selectedCategory;
-          return (
-            <IconContainer
-              key={index}
-              data-category={icon.category}
-              selected={isSelected}
-              onClick={() => handleClick(icon.category)}
-            >
-              <Icon src={icon.src} alt={icon.alt} />
-              <IconText selected={isSelected}>{icon.alt}</IconText>
-            </IconContainer>
-          );
-        })}
-        <Indicator position={barPosition} />
-      </IconsWrapper>
+      <ContentWrapper>
+        <ArrowButtonWrapper onClick={() => scroll('left')}>
+          <FiChevronLeft size={24} />
+        </ArrowButtonWrapper>
+
+        <IconsWrapper ref={iconsRef}>
+          {homeIcons.map((icon, idx) => {
+            const isSelected = icon.category === selectedCategory;
+            return (
+              <IconContainer
+                key={idx}
+                data-category={icon.category}
+                selected={isSelected}
+                onClick={() => handleClick(icon.category)}
+              >
+                <Icon src={icon.src} alt={icon.alt} />
+                <IconText selected={isSelected}>{icon.alt}</IconText>
+              </IconContainer>
+            );
+          })}
+          <Indicator position={barPosition} />
+        </IconsWrapper>
+
+        <ArrowButtonWrapper onClick={() => scroll('right')}>
+          <FiChevronRight size={24} />
+        </ArrowButtonWrapper>
+      </ContentWrapper>
       <Divider />
     </SubHeaderWrapper>
   );
@@ -91,6 +113,25 @@ export default SubHeader;
 const SubHeaderWrapper = styled.div`
   width: 100%;
   margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 1000px;
+`;
+
+const ArrowButtonWrapper = styled.div`
+  display: none;
+  @media (min-width: 1024px) {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0 8px;
+  }
 `;
 
 const IconsWrapper = styled.div`
