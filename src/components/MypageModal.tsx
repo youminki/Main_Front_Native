@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import MypageBox from '../assets/MypageBox.svg';
 import MystyleBox from '../assets/MystyleBox.svg';
-import ReusableModal2 from '../components/ReusableModal';
+import ReusableModal2 from '../components/ReusableModal2';
 import { logoutUser } from '../api/user/userApi';
 import { Axios } from '../api/Axios';
 
