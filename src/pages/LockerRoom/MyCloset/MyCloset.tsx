@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaTshirt } from 'react-icons/fa';
 
 import StatsSection from '../../../components/StatsSection';
-import ItemList, { UIItem } from '../../../components/Home/ItemList';
+import ItemList, { UIItem } from '../../../components/Home/MyclosetItemList';
 import HomeDetail from '../../Home/HomeDetail';
 import { getMyCloset } from '../../../api/closet/closetApi';
 import CancleIconIcon from '../../../assets/Header/CancleIcon.svg';
