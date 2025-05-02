@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react'; // useRef 추가
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Spinner from '../../components/Spinner';
 
 import ItemList, { UIItem } from '../../components/Home/ItemList';
 import Footer from '../../components/Home/Footer';
-
 import SubHeader from '../../components/Home/SubHeader';
 import { getProducts, ProductListItem } from '../../api/upload/productApi';
 import HomeDetail from './HomeDetail';
@@ -13,9 +12,10 @@ import HomeDetail from './HomeDetail';
 import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
 import ShareIcon from '../../assets/Header/ShareIcon.svg';
 import HomeIcon from '../../assets/Header/HomeIcon.svg';
-
 import ReusableModal2 from '../../components/ReusableModal2';
 import { FaTh } from 'react-icons/fa';
+// 필터 모달 컨테이너
+import FilterContainer from '../../components/Home/FilterContainer';
 
 const ITEMS_PER_LOAD = 20;
 
@@ -41,7 +41,6 @@ const Home: React.FC = () => {
   const isModalOpen = Boolean(modalId);
   const [isFeatureModalOpen, setFeatureModalOpen] = useState<boolean>(false);
 
-  // 열 개수 선택 핸들러
   const selectCols = (n: number) => {
     setViewCols(n);
     setMenuOpen(false);
@@ -78,7 +77,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     const el = document.querySelector(
-      `[data-category="${selectedCategory}"]`
+      `[data-category=\"${selectedCategory}\"]`
     ) as HTMLElement;
     if (el) {
       const { offsetLeft, offsetWidth } = el;
@@ -147,11 +146,11 @@ const Home: React.FC = () => {
         barPosition={barPosition}
         onCategoryClick={() => setSearchQuery('')}
       />
-
-      <DropdownContainer ref={menuRef}>
+      <ControlsContainer ref={menuRef}>
         <DropdownToggle onClick={() => setMenuOpen((o) => !o)}>
           <FaTh size={20} />
         </DropdownToggle>
+        <FilterContainer />
         {menuOpen && (
           <DropdownMenu>
             {[1, 2, 3, 4, 5].map((n) => (
@@ -167,9 +166,8 @@ const Home: React.FC = () => {
             ))}
           </DropdownMenu>
         )}
-      </DropdownContainer>
+      </ControlsContainer>
 
-      {/* 제품 리스트 */}
       <ContentWrapper>
         <ItemList
           items={uiItems}
@@ -178,15 +176,12 @@ const Home: React.FC = () => {
         />
         {isLoading && <Spinner />}
       </ContentWrapper>
-
       <Footer />
-
       <ScrollToTopButton onClick={scrollToTop}>
         <ArrowIcon viewBox='0 0 24 24'>
           <path d='M12 4l-8 8h6v8h4v-8h6z' />
         </ArrowIcon>
       </ScrollToTopButton>
-
       {isModalOpen && modalId && (
         <>
           <ModalOverlay>
@@ -220,7 +215,6 @@ const Home: React.FC = () => {
               </ModalBody>
             </ModalBox>
           </ModalOverlay>
-
           <ReusableModal2
             isOpen={isFeatureModalOpen}
             onClose={() => setFeatureModalOpen(false)}
@@ -241,7 +235,16 @@ const MainContainer = styled.div`
   flex-direction: column;
   position: relative;
   padding: 2rem 1rem;
-  padding-top: 0;
+
+  padding-top: calc(60px + 2rem);
+`;
+
+const ControlsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 8px 0px;
 `;
 
 const ContentWrapper = styled.div`
@@ -263,7 +266,6 @@ const ScrollToTopButton = styled.button`
     rgba(255, 255, 255, 0.9),
     rgba(244, 244, 244, 0.9)
   );
-  color: #fff;
   cursor: pointer;
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -275,15 +277,13 @@ const ScrollToTopButton = styled.button`
     transform 0.3s,
     box-shadow 0.3s,
     opacity 0.3s;
-
   &:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
     opacity: 1;
   }
-
   @media (min-width: 1000px) {
-    right: calc((100vw - 1000px) / 2 + 20px);
+    right: calc((100vw-1000px) / 2+20px);
   }
 `;
 
@@ -296,27 +296,24 @@ const ArrowIcon = styled.svg`
 const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2000;
 `;
-
 const ModalBox = styled.div`
   background: #fff;
   width: 100%;
   max-width: 1000px;
   height: 100%;
-  position: relative;
   overflow-y: auto;
+  position: relative;
   scrollbar-width: none;
   -ms-overflow-style: none;
-
   &::-webkit-scrollbar {
     display: none;
   }
 `;
-
 const ModalHeaderWrapper = styled.div`
   position: fixed;
   top: 0;
@@ -326,58 +323,55 @@ const ModalHeaderWrapper = styled.div`
   background: #fff;
   z-index: 2100;
 `;
-
 const ModalHeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
 `;
-
 const ModalBody = styled.div``;
-
 const LeftSection = styled.div`
   cursor: pointer;
 `;
-
 const CenterSection = styled.div`
   flex: 1;
 `;
-
 const RightSection = styled.div`
   display: flex;
   gap: 19px;
 `;
-
 const CancelIcon = styled.img`
   cursor: pointer;
 `;
-
 const Icon = styled.img`
   cursor: pointer;
 `;
-const DropdownContainer = styled.div`
-  margin: 8px 16px;
-  position: relative;
-`;
 
 const DropdownToggle = styled.button`
-  background: none;
-  border: none;
-  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background-color: #e6e6e6;
+  }
 `;
 
 const DropdownMenu = styled.ul`
   position: absolute;
-  left: 0;
-
+  right: calc(80px + 0px);
+  top: calc(130px + 36px);
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
   list-style: none;
   padding: 8px 0;
-  margin: 0 0 4px;
+  margin: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 140px;
   z-index: 10;
@@ -400,8 +394,8 @@ const DropdownItem = styled.li<{ active: boolean }>`
     }
   }
 `;
+
 const OptionNumber = styled.span`
-  display: inline-block;
   width: 20px;
   text-align: center;
   margin-right: 8px;

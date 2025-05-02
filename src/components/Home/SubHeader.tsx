@@ -111,8 +111,14 @@ const SubHeader: React.FC<SubHeaderProps> = ({
 export default SubHeader;
 
 const SubHeaderWrapper = styled.div`
-  width: 100%;
-  margin-bottom: 20px;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  height: 100px; /* 실제 헤더 높이로 조정하세요 */
+  z-index: 1000;
+  background: #fff;
+
   display: flex;
   justify-content: center;
 `;
