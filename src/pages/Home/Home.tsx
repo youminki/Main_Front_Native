@@ -377,7 +377,7 @@ const DropdownToggle = styled.button`
 const DropdownMenu = styled.ul`
   position: absolute;
   right: calc(60px + 0px);
-  top: calc(110px + 36px);
+  top: calc(85px + 36px);
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
