@@ -16,6 +16,18 @@ import ReusableModal2 from '../../components/ReusableModal2';
 import { FaTh } from 'react-icons/fa';
 // 필터 모달 컨테이너
 import FilterContainer from '../../components/Home/FilterContainer';
+import { keyframes } from 'styled-components';
+
+const fadeInDown = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
 
 const ITEMS_PER_LOAD = 20;
 
@@ -161,7 +173,7 @@ const Home: React.FC = () => {
                 onClick={() => selectCols(n)}
               >
                 <OptionNumber>{n}</OptionNumber>
-                <OptionText>열 보기</OptionText>
+                <OptionText>열로 보기</OptionText>
               </DropdownItem>
             ))}
           </DropdownMenu>
@@ -375,6 +387,8 @@ const DropdownMenu = styled.ul`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 140px;
   z-index: 10;
+
+  animation: ${fadeInDown} 0.25s ease-out;
 `;
 
 const DropdownItem = styled.li<{ active: boolean }>`
@@ -394,14 +408,18 @@ const DropdownItem = styled.li<{ active: boolean }>`
     }
   }
 `;
-
 const OptionNumber = styled.span`
-  width: 20px;
-  text-align: center;
-  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: auto;
+  padding: 0 4px;
   font-weight: 700;
 `;
 
 const OptionText = styled.span`
-  flex: 1;
+  display: flex;
+  align-items: center;
+  margin-left: 0;
 `;
