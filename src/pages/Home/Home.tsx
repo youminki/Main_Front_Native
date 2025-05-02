@@ -250,10 +250,6 @@ const ContentWrapper = styled.div`
   flex-direction: column;
 `;
 
-const Content = styled.div`
-  flex: 1;
-`;
-
 const ScrollToTopButton = styled.button`
   position: fixed;
   bottom: 120px;
