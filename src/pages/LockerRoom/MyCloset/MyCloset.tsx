@@ -1,5 +1,9 @@
+// src/pages/LockerRoom/MyCloset/MyCloset.tsx
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { FaTshirt } from 'react-icons/fa';
 
 import StatsSection from '../../../components/StatsSection';
 import ItemList, { UIItem } from '../../../components/Home/ItemList';
@@ -13,9 +17,9 @@ const dateRange = 'SPRING';
 
 const MyCloset: React.FC = () => {
   const [items, setItems] = useState<UIItem[]>([]);
-  const [visitsCount, setVisitsCount] = useState<number>(0);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? 'hidden' : '';
@@ -27,18 +31,17 @@ const MyCloset: React.FC = () => {
   useEffect(() => {
     getMyCloset()
       .then((res) => {
-        setVisitsCount(res.count);
-
-        const uiItems: UIItem[] = res.items.map((it) => ({
-          id: String(it.productId),
-          image: it.mainImage,
-          brand: it.brand,
-          description: it.name,
-          price: it.price,
-          discount: it.discountRate,
-          isLiked: true,
-        }));
-        setItems(uiItems);
+        setItems(
+          res.items.map((it) => ({
+            id: String(it.productId),
+            image: it.mainImage,
+            brand: it.brand,
+            description: it.name,
+            price: it.price,
+            discount: it.discountRate,
+            isLiked: true,
+          }))
+        );
       })
       .catch(console.error);
   }, []);
@@ -51,9 +54,14 @@ const MyCloset: React.FC = () => {
     setSelectedItemId(id);
     setIsModalOpen(true);
   };
+
   const handleCloseDetail = () => {
     setIsModalOpen(false);
     setSelectedItemId(null);
+  };
+
+  const goToLocker = () => {
+    navigate('/home');
   };
 
   return (
@@ -64,7 +72,7 @@ const MyCloset: React.FC = () => {
       </Header>
 
       <StatsSection
-        visits={visitsCount}
+        visits={items.length}
         sales={sales}
         dateRange={dateRange}
         visitLabel='담긴 제품들'
@@ -74,11 +82,21 @@ const MyCloset: React.FC = () => {
       <Divider />
 
       <Content>
-        <ItemList
-          items={items}
-          onDelete={handleDelete}
-          onItemClick={handleOpenDetail}
-        />
+        {items.length === 0 ? (
+          <EmptyState>
+            <EmptyMessage>락커룸에 보관한 옷이 없습니다.</EmptyMessage>
+            <AddButton onClick={goToLocker}>
+              <FaTshirt size={48} />
+              <ButtonText>옷 추가하러 가기</ButtonText>
+            </AddButton>
+          </EmptyState>
+        ) : (
+          <ItemList
+            items={items}
+            onDelete={handleDelete}
+            onItemClick={handleOpenDetail}
+          />
+        )}
       </Content>
 
       {isModalOpen && selectedItemId && (
@@ -116,28 +134,62 @@ const Container = styled.div`
   background: #fff;
   padding: 1rem;
 `;
+
 const Header = styled.div`
   width: 100%;
   margin-bottom: 6px;
 `;
+
 const Title = styled.h1`
   margin: 0;
   font-size: 24px;
   font-weight: 800;
 `;
+
 const Subtitle = styled.p`
   font-size: 12px;
   color: #666;
 `;
+
 const Divider = styled.div`
   width: 100%;
   height: 1px;
   background: #ddd;
   margin: 30px 0;
 `;
+
 const Content = styled.div`
   width: 100%;
 `;
+
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 1rem;
+`;
+
+const EmptyMessage = styled.p`
+  font-size: 16px;
+  color: #999;
+  margin-bottom: 1.5rem;
+`;
+
+const AddButton = styled.button`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+`;
+
+const ButtonText = styled.span`
+  margin-top: 0.5rem;
+  font-size: 14px;
+  color: #333;
+`;
+
 const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
@@ -146,6 +198,7 @@ const ModalOverlay = styled.div`
   align-items: center;
   justify-content: center;
 `;
+
 const ModalBox = styled.div`
   background: #fff;
   width: 100%;
@@ -153,10 +206,12 @@ const ModalBox = styled.div`
   height: 100%;
   position: relative;
   overflow-y: auto;
-  (&::-webkit-scrollbar) {
+
+  &::-webkit-scrollbar {
     display: none;
   }
 `;
+
 const ModalHeaderWrapper = styled.div`
   position: fixed;
   top: 0;
@@ -166,6 +221,7 @@ const ModalHeaderWrapper = styled.div`
   background: #fff;
   z-index: 3100;
 `;
+
 const ModalHeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
@@ -173,19 +229,24 @@ const ModalHeaderContainer = styled.header`
   height: 60px;
   padding: 0 1rem;
 `;
+
 const ModalBody = styled.div`
   padding-top: 60px;
   padding: 1rem;
 `;
+
 const LeftSection = styled.div`
   cursor: pointer;
 `;
+
 const CenterSection = styled.div`
   flex: 1;
 `;
+
 const RightSection = styled.div`
   width: 24px;
 `;
+
 const CancelIcon = styled.img`
   width: 24px;
   height: 24px;
