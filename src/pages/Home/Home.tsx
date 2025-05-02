@@ -267,7 +267,7 @@ const ContentWrapper = styled.div`
 
 const ScrollToTopButton = styled.button`
   position: fixed;
-  bottom: 120px;
+  bottom: 150px;
   right: 20px;
   width: 50px;
   height: 50px;
@@ -295,7 +295,7 @@ const ScrollToTopButton = styled.button`
     opacity: 1;
   }
   @media (min-width: 1000px) {
-    right: calc((100vw-1000px) / 2+20px);
+    right: calc((100vw - 1000px) / 2 + 20px);
   }
 `;
 
