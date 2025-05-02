@@ -165,7 +165,7 @@ const Home: React.FC = () => {
         <FilterContainer />
         {menuOpen && (
           <DropdownMenu>
-            {[3, 4, 5, 6].map((n) => (
+            {[1, 2, 3, 4, 5, 6].map((n) => (
               <DropdownItem
                 key={n}
                 active={viewCols === n}
