@@ -20,7 +20,8 @@ const ITEMS_PER_LOAD = 20;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [selectedCategory, setSelectedCategory] = useState<string>(
     searchParams.get('categori') || 'Entire'
   );
@@ -33,17 +34,18 @@ const Home: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const modalId = searchParams.get('id');
+  const isModalOpen = Boolean(modalId);
   const [isFeatureModalOpen, setFeatureModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    const newCategory = searchParams.get('categori') || 'Entire';
-    const newSearch = searchParams.get('search') || '';
-    setSelectedCategory(newCategory);
-    setSearchQuery(newSearch);
+    const c = searchParams.get('categori') || 'Entire';
+    const s = searchParams.get('search') || '';
+    setSelectedCategory(c);
+    setSearchQuery(s);
   }, [searchParams]);
 
+  // 제품 데이터 로드
   useEffect(() => {
     const categoryKey =
       selectedCategory === 'Entire' ? 'all' : selectedCategory;
@@ -69,7 +71,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     const el = document.querySelector(
-      `[data-category=\"${selectedCategory}\"]`
+      `[data-category="${selectedCategory}"]`
     ) as HTMLElement;
     if (el) {
       const { offsetLeft, offsetWidth } = el;
@@ -77,7 +79,6 @@ const Home: React.FC = () => {
     }
   }, [selectedCategory]);
 
-  // 검색 필터 + 페이징
   const filtered = products.filter(
     (item) =>
       item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -96,9 +97,9 @@ const Home: React.FC = () => {
     isLiked: p.isLiked,
   }));
 
+  // 무한 스크롤
   useEffect(() => {
     if (!hasMore) return;
-
     const onScroll = () => {
       if (
         window.innerHeight + window.scrollY >=
@@ -107,7 +108,6 @@ const Home: React.FC = () => {
         setPage((prev) => prev + 1);
       }
     };
-
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, [hasMore]);
@@ -115,12 +115,19 @@ const Home: React.FC = () => {
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const handleOpenModal = (id: string) => {
-    setSelectedItemId(id);
-    setIsModalOpen(true);
+    const params: any = {
+      ...(searchParams.get('categori') && { categori: selectedCategory }),
+      ...(searchParams.get('search') && { search: searchQuery }),
+      id,
+    };
+    setSearchParams(params, { replace: true });
   };
+
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedItemId(null);
+    const params = Object.fromEntries(searchParams.entries());
+    delete params.id;
+    setSearchParams(params, { replace: true });
+    setFeatureModalOpen(false);
   };
 
   return (
@@ -128,7 +135,10 @@ const Home: React.FC = () => {
       <ContentWrapper>
         <SubHeader
           selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
+          setSelectedCategory={(cat) => {
+            setSearchQuery('');
+            setSearchParams({ categori: cat }, { replace: true });
+          }}
           barPosition={barPosition}
           onCategoryClick={() => setSearchQuery('')}
         />
@@ -146,7 +156,7 @@ const Home: React.FC = () => {
         </ArrowIcon>
       </ScrollToTopButton>
 
-      {isModalOpen && (
+      {isModalOpen && modalId && (
         <>
           <ModalOverlay>
             <ModalBox>
@@ -175,7 +185,7 @@ const Home: React.FC = () => {
                 </ModalHeaderContainer>
               </ModalHeaderWrapper>
               <ModalBody>
-                {selectedItemId && <HomeDetail id={selectedItemId} />}
+                <HomeDetail id={modalId} />
               </ModalBody>
             </ModalBox>
           </ModalOverlay>
