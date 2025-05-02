@@ -9,6 +9,7 @@ import StatsSection from '../../../components/StatsSection';
 import ItemList, { UIItem } from '../../../components/Home/MyclosetItemList';
 import HomeDetail from '../../Home/HomeDetail';
 import { getMyCloset } from '../../../api/closet/closetApi';
+import Spinner from '../../../components/Spinner'; // Spinner import 추가
 import CancleIconIcon from '../../../assets/Header/CancleIcon.svg';
 
 const salesLabel = '시즌';
@@ -17,6 +18,7 @@ const dateRange = 'SPRING';
 
 const MyCloset: React.FC = () => {
   const [items, setItems] = useState<UIItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 추가
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -43,7 +45,10 @@ const MyCloset: React.FC = () => {
           }))
         );
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => {
+        setLoading(false); // 로딩 완료
+      });
   }, []);
 
   const handleDelete = (id: string) => {
@@ -82,7 +87,9 @@ const MyCloset: React.FC = () => {
       <Divider />
 
       <Content>
-        {items.length === 0 ? (
+        {loading ? (
+          <Spinner /> // 로딩 중 스피너 표시
+        ) : items.length === 0 ? (
           <EmptyState>
             <EmptyMessage>락커룸에 보관한 옷이 없습니다.</EmptyMessage>
             <AddButton onClick={goToLocker}>
@@ -127,6 +134,7 @@ const MyCloset: React.FC = () => {
 
 export default MyCloset;
 
+// 이하 styled-components 정의 (변경 없음)
 const Container = styled.div`
   display: flex;
   flex-direction: column;
