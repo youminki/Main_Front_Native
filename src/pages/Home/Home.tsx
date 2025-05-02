@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // useRef 추가
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Spinner from '../../components/Spinner';
@@ -15,13 +15,16 @@ import ShareIcon from '../../assets/Header/ShareIcon.svg';
 import HomeIcon from '../../assets/Header/HomeIcon.svg';
 
 import ReusableModal2 from '../../components/ReusableModal2';
+import { FaTh } from 'react-icons/fa';
 
 const ITEMS_PER_LOAD = 20;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-
+  const [viewCols, setViewCols] = useState<number>(3);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>(
     searchParams.get('categori') || 'Entire'
   );
@@ -38,6 +41,12 @@ const Home: React.FC = () => {
   const isModalOpen = Boolean(modalId);
   const [isFeatureModalOpen, setFeatureModalOpen] = useState<boolean>(false);
 
+  // 열 개수 선택 핸들러
+  const selectCols = (n: number) => {
+    setViewCols(n);
+    setMenuOpen(false);
+  };
+
   useEffect(() => {
     const c = searchParams.get('categori') || 'Entire';
     const s = searchParams.get('search') || '';
@@ -45,12 +54,10 @@ const Home: React.FC = () => {
     setSearchQuery(s);
   }, [searchParams]);
 
-  // 제품 데이터 로드
   useEffect(() => {
     const categoryKey =
       selectedCategory === 'Entire' ? 'all' : selectedCategory;
     setIsLoading(true);
-
     (async () => {
       try {
         const prods = await getProducts(categoryKey);
@@ -97,7 +104,6 @@ const Home: React.FC = () => {
     isLiked: p.isLiked,
   }));
 
-  // 무한 스크롤
   useEffect(() => {
     if (!hasMore) return;
     const onScroll = () => {
@@ -132,20 +138,45 @@ const Home: React.FC = () => {
 
   return (
     <MainContainer>
+      <SubHeader
+        selectedCategory={selectedCategory}
+        setSelectedCategory={(cat) => {
+          setSearchQuery('');
+          setSearchParams({ categori: cat }, { replace: true });
+        }}
+        barPosition={barPosition}
+        onCategoryClick={() => setSearchQuery('')}
+      />
+
+      <DropdownContainer ref={menuRef}>
+        <DropdownToggle onClick={() => setMenuOpen((o) => !o)}>
+          <FaTh size={20} />
+        </DropdownToggle>
+        {menuOpen && (
+          <DropdownMenu>
+            {[1, 2, 3, 4, 5].map((n) => (
+              <DropdownItem
+                key={n}
+                active={viewCols === n}
+                className={n > 3 ? 'hide-mobile' : ''}
+                onClick={() => selectCols(n)}
+              >
+                <OptionNumber>{n}</OptionNumber>
+                <OptionText>열 보기</OptionText>
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        )}
+      </DropdownContainer>
+
+      {/* 제품 리스트 */}
       <ContentWrapper>
-        <SubHeader
-          selectedCategory={selectedCategory}
-          setSelectedCategory={(cat) => {
-            setSearchQuery('');
-            setSearchParams({ categori: cat }, { replace: true });
-          }}
-          barPosition={barPosition}
-          onCategoryClick={() => setSearchQuery('')}
+        <ItemList
+          items={uiItems}
+          columns={viewCols}
+          onItemClick={handleOpenModal}
         />
-        <Content>
-          <ItemList items={uiItems} onItemClick={handleOpenModal} />
-          {isLoading && <Spinner />}
-        </Content>
+        {isLoading && <Spinner />}
       </ContentWrapper>
 
       <Footer />
@@ -328,4 +359,59 @@ const CancelIcon = styled.img`
 
 const Icon = styled.img`
   cursor: pointer;
+`;
+const DropdownContainer = styled.div`
+  margin: 8px 16px;
+  position: relative;
+`;
+
+const DropdownToggle = styled.button`
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+`;
+
+const DropdownMenu = styled.ul`
+  position: absolute;
+  left: 0;
+
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  list-style: none;
+  padding: 8px 0;
+  margin: 0 0 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 140px;
+  z-index: 10;
+`;
+
+const DropdownItem = styled.li<{ active: boolean }>`
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  color: ${({ active }) => (active ? '#ff9d00' : '#333')};
+  background: ${({ active }) => (active ? '#fff7e6' : 'transparent')};
+  &:hover {
+    background: #f5f5f5;
+  }
+  &.hide-mobile {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+`;
+const OptionNumber = styled.span`
+  display: inline-block;
+  width: 20px;
+  text-align: center;
+  margin-right: 8px;
+  font-weight: 700;
+`;
+
+const OptionText = styled.span`
+  flex: 1;
 `;

@@ -18,7 +18,7 @@ type ItemCardProps = {
 
 type ConfirmAction = 'add' | 'remove' | null;
 
-const heartBeat = keyframes`
+const heartbeat = keyframes`
   0% { transform: scale(1); }
   30% { transform: scale(1.4); }
   100% { transform: scale(1); }
@@ -35,7 +35,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
   onOpenModal,
   onDelete,
 }) => {
-  const [liked, setLiked] = useState<boolean>(initialLiked);
+  const [liked, setLiked] = useState(initialLiked);
   const [animating, setAnimating] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -67,7 +67,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
     setLiked(false);
     try {
       await removeFromCloset(+id);
-      onDelete && onDelete(id);
+      onDelete?.(id);
     } catch (err: any) {
       setLiked(true);
       showError(err);
@@ -89,8 +89,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
   const closeConfirm = () => setConfirmAction(null);
   const handleConfirm = () => {
     closeConfirm();
-    if (confirmAction === 'add') doAdd();
-    else if (confirmAction === 'remove') doRemove();
+    confirmAction === 'add' ? doAdd() : doRemove();
   };
 
   const modalTitle = confirmAction === 'add' ? '찜 등록 확인' : '삭제 확인';
@@ -101,9 +100,9 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
   return (
     <>
-      <CardContainer onClick={handleCardClick}>
+      <Card onClick={handleCardClick}>
         <ImageWrapper>
-          <Image src={image?.split('#')[0] ?? '/default.jpg'} alt={brand} />
+          <Image src={image.split('#')[0] || '/default.jpg'} alt={brand} />
           <LikeButton onClick={handleLikeClick} animating={animating}>
             <HeartIcon filled={liked} />
           </LikeButton>
@@ -112,10 +111,12 @@ const ItemCard: React.FC<ItemCardProps> = ({
         <Description>{displayDescription}</Description>
         <PriceWrapper>
           <OriginalPrice>{price.toLocaleString()}원</OriginalPrice>
-          <NowLabel>NOW</NowLabel>
-          <DiscountLabel>{discount}%</DiscountLabel>
+          <SubPrice>
+            <NowLabel>NOW</NowLabel>
+            <DiscountLabel>{discount}%</DiscountLabel>
+          </SubPrice>
         </PriceWrapper>
-      </CardContainer>
+      </Card>
 
       <ReusableModal
         isOpen={confirmAction !== null}
@@ -139,7 +140,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
 export default ItemCard;
 
-const CardContainer = styled.div`
+const Card = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -150,7 +151,7 @@ const CardContainer = styled.div`
 const ImageWrapper = styled.div`
   position: relative;
   width: 100%;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 2/3;
   background: #f5f5f5;
   border: 1px solid #ccc;
 `;
@@ -175,13 +176,11 @@ const LikeButton = styled.div<{ animating: boolean }>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-
   ${({ animating }) =>
     animating &&
     css`
-      animation: ${heartBeat} 0.3s ease-out;
+      animation: ${heartbeat} 0.3s ease-out;
     `}
-
   & svg {
     width: 16px;
     height: 16px;
@@ -192,23 +191,41 @@ const Brand = styled.h3`
   margin: 4px 0 2px;
   font-size: 10px;
   font-weight: 900;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 const Description = styled.p`
   font-size: 11px;
   color: #999;
   margin-bottom: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 const PriceWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
 `;
 
 const OriginalPrice = styled.span`
   font-weight: 900;
   font-size: 14px;
+`;
+
+const SubPrice = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
 `;
 
 const NowLabel = styled.span`

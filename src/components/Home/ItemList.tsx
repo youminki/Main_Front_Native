@@ -14,36 +14,35 @@ export interface UIItem {
 
 type ItemListProps = {
   items: UIItem[];
-
+  columns?: number;
   onItemClick?: (id: string) => void;
-
   onDelete?: (id: string) => void;
 };
 
 const ItemList: React.FC<ItemListProps> = ({
   items,
+  columns = 5,
   onItemClick,
   onDelete,
-}) => (
-  <ListContainer>
-    <ItemsWrapper>
-      {items.map((item) => (
-        <ItemCard
-          key={item.id}
-          id={item.id}
-          image={item.image}
-          brand={item.brand}
-          description={item.description}
-          price={item.price}
-          discount={item.discount}
-          isLiked={item.isLiked}
-          onOpenModal={onItemClick ?? (() => {})}
-          onDelete={onDelete}
-        />
-      ))}
-    </ItemsWrapper>
-  </ListContainer>
-);
+}) => {
+  const handleOpen = onItemClick ?? (() => {});
+  const handleDelete = onDelete ?? (() => {});
+
+  return (
+    <ListContainer>
+      <ItemsWrapper columns={columns}>
+        {items.map((item) => (
+          <ItemCard
+            key={item.id}
+            {...item}
+            onOpenModal={handleOpen}
+            onDelete={handleDelete}
+          />
+        ))}
+      </ItemsWrapper>
+    </ListContainer>
+  );
+};
 
 export default ItemList;
 
@@ -53,18 +52,8 @@ const ListContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const ItemsWrapper = styled.div`
+const ItemsWrapper = styled.div<{ columns: number }>`
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-  @media (min-width: 1000px) {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
+  grid-template-columns: repeat(${({ columns }) => columns}, minmax(0, 1fr));
 `;
