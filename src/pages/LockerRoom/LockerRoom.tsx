@@ -83,14 +83,23 @@ const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
   margin: 0;
+  color: #000;
+
+  @media (min-width: 1024px) {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
 `;
 
 const Subtitle = styled.p`
   font-size: 12px;
   line-height: 28px;
   margin: 0;
-
   color: #cccccc;
+
+  @media (min-width: 1024px) {
+    font-size: 16px;
+  }
 `;
 
 const StatsRow = styled.div`
@@ -98,7 +107,6 @@ const StatsRow = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
-
 const MenuIcon = styled.img`
   width: 64px;
   height: 58px;
@@ -109,6 +117,10 @@ const Divider = styled.div`
   height: 1px;
   background: #ddd;
   margin: 20px 0;
+
+  @media (min-width: 1024px) {
+    margin: 50px 0;
+  }
 `;
 
 const GridMenu = styled.div`

@@ -95,8 +95,11 @@ const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
   margin: 0;
+  color: #000;
+
   @media (min-width: 1024px) {
     font-size: 32px;
+    margin-bottom: 10px;
   }
 `;
 
@@ -104,25 +107,21 @@ const Subtitle = styled.p`
   font-size: 12px;
   line-height: 28px;
   margin: 0;
-
   color: #cccccc;
+
+  @media (min-width: 1024px) {
+    font-size: 16px;
+  }
 `;
 
 const StatsRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  @media (min-width: 1024px) {
-    margin-bottom: 32px;
-  }
 `;
-
 const Icon = styled.img`
   width: 64px;
   height: auto;
-  @media (min-width: 1024px) {
-    width: 120px;
-  }
 `;
 
 const Divider = styled.div`
