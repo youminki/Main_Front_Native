@@ -1,32 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import Spinner from '../../components/Spinner';
-
 import ItemList, { UIItem } from '../../components/Home/ItemList';
 import Footer from '../../components/Home/Footer';
 import SubHeader from '../../components/Home/SubHeader';
 import { getProducts, ProductListItem } from '../../api/upload/productApi';
 import HomeDetail from './HomeDetail';
-
 import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
 import ShareIcon from '../../assets/Header/ShareIcon.svg';
 import HomeIcon from '../../assets/Header/HomeIcon.svg';
 import ReusableModal2 from '../../components/ReusableModal2';
-import { FaTh } from 'react-icons/fa';
-// 필터 모달 컨테이너
 import FilterContainer from '../../components/Home/FilterContainer';
-import { keyframes } from 'styled-components';
+import { FaTh } from 'react-icons/fa';
 
 const fadeInDown = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
 const ITEMS_PER_LOAD = 20;
@@ -169,7 +159,9 @@ const Home: React.FC = () => {
               <DropdownItem
                 key={n}
                 active={viewCols === n}
-                className={n > 3 ? 'hide-mobile' : ''}
+                className={
+                  n <= 2 ? 'hide-desktop' : n >= 4 ? 'hide-mobile' : ''
+                }
                 onClick={() => selectCols(n)}
               >
                 <OptionNumber>{n}</OptionNumber>
@@ -242,12 +234,12 @@ const Home: React.FC = () => {
 
 export default Home;
 
+/* styled components */
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
   padding: 2rem 1rem;
-
   padding-top: calc(70px + 2rem);
 `;
 
@@ -257,6 +249,7 @@ const ControlsContainer = styled.div`
   justify-content: flex-end;
   gap: 10px;
   margin: 8px 0px;
+  position: relative;
 `;
 
 const ContentWrapper = styled.div`
@@ -376,8 +369,8 @@ const DropdownToggle = styled.button`
 
 const DropdownMenu = styled.ul`
   position: absolute;
-  right: calc(60px + 0px);
-  top: calc(85px + 36px);
+  right: calc(50px + 0px);
+  top: calc(5px + 36px);
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -387,7 +380,6 @@ const DropdownMenu = styled.ul`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 140px;
   z-index: 10;
-
   animation: ${fadeInDown} 0.25s ease-out;
 `;
 
@@ -402,17 +394,23 @@ const DropdownItem = styled.li<{ active: boolean }>`
   &:hover {
     background: #f5f5f5;
   }
+
   &.hide-mobile {
     @media (max-width: 768px) {
       display: none;
     }
   }
+  &.hide-desktop {
+    @media (min-width: 769px) {
+      display: none;
+    }
+  }
 `;
+
 const OptionNumber = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: auto;
   padding: 0 4px;
   font-weight: 700;
