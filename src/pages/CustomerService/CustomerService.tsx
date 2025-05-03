@@ -1,41 +1,36 @@
 import React from 'react';
-import styled from 'styled-components';
-import { ThemeProvider } from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import Theme from '../../styles/Theme';
 import StatsSection from '../../components/StatsSection';
 
 import CustomerServiceIcon from '../../assets/CustomerServiceIcons.svg';
-import FrequentlyAskedQuestionsBox from '../../assets/CustomerService/FrequentlyAskedQuestionsBox.svg';
-import NoticeBox from '../../assets/CustomerService/NoticeBox.svg';
-import PersonalInformationProcessingPolicyBox from '../../assets/CustomerService/PersonalInformationProcessingPolicyBox.svg';
-import TermsAndConditionsOfUseBox from '../../assets/CustomerService/TermsAndConditionsOfUseBox.svg';
+import FrequentlyAskedQuestionsBox from '../../assets/CustomerService/FrequentlyAskedQuestions.svg';
+import NoticeBox from '../../assets/CustomerService/Notice.svg';
+import PersonalInformationProcessingPolicyBox from '../../assets/CustomerService/PersonalInformationProcessingPolicy.svg';
+import TermsAndConditionsOfUseBox from '../../assets/CustomerService/TermsAndConditionsOfUse.svg';
+
+const menuItems = [
+  { icon: NoticeBox, label: '공지사항', path: '/CustomerService/Notice' },
+  {
+    icon: FrequentlyAskedQuestionsBox,
+    label: '자주 묻는 질문',
+    path: '/CustomerService/FrequentlyAskedQuestions',
+  },
+  {
+    icon: TermsAndConditionsOfUseBox,
+    label: '이용약관',
+    path: '/CustomerService/TermsAndConditionsOfUse',
+  },
+  {
+    icon: PersonalInformationProcessingPolicyBox,
+    label: '개인정보처리방침',
+    path: '/CustomerService/PersonalInformationProcessingPolicy',
+  },
+];
 
 const CustomerService: React.FC = () => {
   const navigate = useNavigate();
-
-  const visits = '999';
-  const sales = '999';
-  const dateRange = 'NEW 2025. 03.';
-  const visitLabel = '공지사항';
-  const salesLabel = '자주 묻는 질문';
-
-  const menuItems = [
-    {
-      icon: FrequentlyAskedQuestionsBox,
-      path: '/CustomerService/FrequentlyAskedQuestions',
-    },
-    { icon: NoticeBox, path: '/CustomerService/Notice' },
-    {
-      icon: PersonalInformationProcessingPolicyBox,
-      path: '/CustomerService/PersonalInformationProcessingPolicy',
-    },
-    {
-      icon: TermsAndConditionsOfUseBox,
-      path: '/CustomerService/TermsAndConditionsOfUse',
-    },
-  ];
-
   return (
     <ThemeProvider theme={Theme}>
       <Container>
@@ -46,15 +41,13 @@ const CustomerService: React.FC = () => {
 
         <StatsRow>
           <StatsSection
-            visits={visits}
-            sales={sales}
-            dateRange={dateRange}
-            visitLabel={visitLabel}
-            salesLabel={salesLabel}
+            visits='999'
+            sales='999'
+            dateRange='NEW 2025. 03.'
+            visitLabel='공지사항'
+            salesLabel='자주 묻는 질문'
           />
-          <ImageWrapper>
-            <Icon src={CustomerServiceIcon} alt='고객센터 아이콘' />
-          </ImageWrapper>
+          <Icon src={CustomerServiceIcon} alt='고객센터 아이콘' />
         </StatsRow>
 
         <Divider />
@@ -62,7 +55,13 @@ const CustomerService: React.FC = () => {
         <GridMenu>
           {menuItems.map((item, idx) => (
             <GridItem key={idx} onClick={() => navigate(item.path)}>
-              <IconImage src={item.icon} alt='' />
+              <IconLabelRow>
+                <IconImage src={item.icon} alt={item.label} />
+                <Label>{item.label}</Label>
+              </IconLabelRow>
+              <PickButton>
+                PICK <Arrow>→</Arrow>
+              </PickButton>
             </GridItem>
           ))}
         </GridMenu>
@@ -75,60 +74,63 @@ export default CustomerService;
 
 const Container = styled.div`
   width: 100%;
-
-  margin: 0 auto;
   padding: 1rem;
+  background: #fff;
   box-sizing: border-box;
-  background-color: #fff;
+  @media (min-width: 1024px) {
+    padding: 3rem;
+  }
 `;
 
 const Header = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
   margin-bottom: 6px;
+  @media (min-width: 1024px) {
+    margin-bottom: 24px;
+  }
 `;
 
 const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
-  color: #000;
-  margin-bottom: 0;
+  margin: 0;
+  @media (min-width: 1024px) {
+    font-size: 32px;
+  }
 `;
 
 const Subtitle = styled.p`
   font-size: 12px;
-  font-weight: 400;
   color: #666;
+  margin: 0;
+  @media (min-width: 1024px) {
+    font-size: 16px;
+  }
 `;
 
 const StatsRow = styled.div`
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  width: 100%;
-  box-sizing: border-box;
-`;
-
-const ImageWrapper = styled.div`
-  flex-shrink: 0;
-  display: flex;
   align-items: center;
-  justify-content: center;
+  @media (min-width: 1024px) {
+    margin-bottom: 32px;
+  }
 `;
 
 const Icon = styled.img`
   width: 64px;
   height: auto;
+  @media (min-width: 1024px) {
+    width: 120px;
+  }
 `;
 
 const Divider = styled.div`
   width: 100%;
   height: 1px;
-  background: #dddddd;
+  background: #ddd;
   margin: 20px 0;
-
   @media (min-width: 1024px) {
     margin: 50px 0;
   }
@@ -136,30 +138,71 @@ const Divider = styled.div`
 
 const GridMenu = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
   width: 100%;
-  box-sizing: border-box;
-  max-width: 1000px;
-  margin: 0 auto 20px;
+  /* 데스크탑: 3열, 셀 높이는 콘텐츠 기준으로 늘어남 */
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, 1fr);
   }
 `;
 
 const GridItem = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  flex-direction: column;
+  justify-content: space-between;
 
-  &:hover {
-    transform: translateY(-4px);
-  }
+  padding: 1rem;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+
+  /* 셀을 꽉 채우기 위해 높이를 자동으로 늘림 */
+  width: 100%;
+  height: 100%;
+`;
+
+const IconLabelRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
 `;
 
 const IconImage = styled.img`
-  width: 100%;
-  height: auto;
+  object-fit: contain;
+
+  @media (min-width: 1024px) {
+    width: 150px;
+    height: 150px;
+  }
+`;
+
+const Label = styled.div`
+  font-weight: 700;
+  font-size: 14px;
+  color: #000;
+  @media (min-width: 1024px) {
+    font-size: 24px;
+  }
+`;
+
+const PickButton = styled.div`
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  font-size: 12px;
+  font-weight: 600;
+  @media (min-width: 1024px) {
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+`;
+
+const Arrow = styled.span`
+  margin-left: 4px;
 `;
