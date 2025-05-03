@@ -248,7 +248,7 @@ const MainContainer = styled.div`
   position: relative;
   padding: 2rem 1rem;
 
-  padding-top: calc(40px + 2rem);
+  padding-top: calc(70px + 2rem);
 `;
 
 const ControlsContainer = styled.div`
