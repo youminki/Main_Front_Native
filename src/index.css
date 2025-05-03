@@ -5,8 +5,11 @@
   src:
     url('/fonts/woff2/NanumSquareNeo-Variable.woff2') format('woff2'),
     url('/fonts/woff/NanumSquareNeo-Variable.woff') format('woff'),
+    url('/fonts/TTF/NanumSquareNeo-aLt.ttf') format('ttf'),
+    url('/fonts/OTF/NanumSquareNeoOTF-Bd.otf') format('otf'),
     url('/fonts/TTF/NanumSquareNeo-aLt.ttf') format('truetype'),
     url('/fonts/OTF/NanumSquareNeoOTF-Bd.otf') format('opentype');
+
   font-weight: 100 900;
 
   font-display: swap;
