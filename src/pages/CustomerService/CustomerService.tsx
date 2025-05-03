@@ -102,11 +102,10 @@ const Title = styled.h1`
 
 const Subtitle = styled.p`
   font-size: 12px;
-  color: #666;
+  line-height: 28px;
   margin: 0;
-  @media (min-width: 1024px) {
-    font-size: 16px;
-  }
+
+  color: #cccccc;
 `;
 
 const StatsRow = styled.div`

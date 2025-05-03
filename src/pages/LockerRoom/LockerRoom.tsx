@@ -87,8 +87,10 @@ const Title = styled.h1`
 
 const Subtitle = styled.p`
   font-size: 12px;
-  color: #ccc;
+  line-height: 28px;
   margin: 0;
+
+  color: #cccccc;
 `;
 
 const StatsRow = styled.div`
