@@ -33,11 +33,13 @@ const homeIcons = [
   { src: MidiDress, alt: '미디원피스', category: 'MidiDress' },
   { src: LongDress, alt: '롱 원피스', category: 'LongDress' },
   { src: TowDress, alt: '투피스', category: 'TowDress' },
+
   { src: JumpSuit, alt: '점프수트', category: 'JumpSuit' },
   { src: Blouse, alt: '블라우스', category: 'Blouse' },
   { src: KnitTop, alt: '니트 상의', category: 'KnitTop' },
   { src: ShirtTop, alt: '셔츠 상의', category: 'ShirtTop' },
   { src: MiniSkirt, alt: '미니 스커트', category: 'MiniSkirt' },
+
   { src: MidiSkirt, alt: '미디 스커트', category: 'MidiSkirt' },
   { src: LongSkirt, alt: '롱 스커트', category: 'LongSkirt' },
   { src: Pants, alt: '팬츠', category: 'Pants' },
