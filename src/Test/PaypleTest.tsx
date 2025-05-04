@@ -14,7 +14,7 @@ declare global {
 // --- 외부 스크립트 로더 ---
 const loadScript = (src: string): Promise<void> =>
   new Promise((resolve, reject) => {
-    console.log(`[📦] 스크립트 로드 시도: ${src}`);
+    console.log(`[ㅁ] 스크립트 로드 시도: ${src}`);
 
     if (document.querySelector(`script[src="${src}"]`)) {
       console.log(`[✔️] 이미 로드된 스크립트: ${src}`);
@@ -39,12 +39,32 @@ const loadScript = (src: string): Promise<void> =>
     document.head.appendChild(script);
   });
 
-// --- Payple SDK와 jQuery 로드 (TSX 안에서만 작동하는 확실한 방식) ---
+// --- jQuery 로딩 완료될 때까지 대기 ---
+const waitForJQuery = () =>
+  new Promise<void>((resolve, reject) => {
+    let count = 0;
+    const maxTries = 20;
+    const interval = setInterval(() => {
+      if (window.jQuery) {
+        console.log('[✅] window.jQuery 준비 완료');
+        window.$ = window.jQuery;
+        clearInterval(interval);
+        resolve();
+      } else {
+        count++;
+        if (count >= maxTries) {
+          clearInterval(interval);
+          reject(new Error('jQuery 로딩 대기 실패'));
+        }
+      }
+    }, 100); // 최대 2초 대기
+  });
+
+// --- Payple SDK와 jQuery 로드 ---
 const loadPaypleSdk = async (): Promise<void> => {
   console.log('[🚀] jQuery 로드 시작');
   await loadScript('https://code.jquery.com/jquery-3.6.0.min.js');
-
-  window.$ = window.jQuery;
+  await waitForJQuery(); // ✅ jQuery가 확실히 준비될 때까지 대기
 
   console.log('[🕒] Payple SDK 수동 삽입 시작');
   return new Promise((resolve, reject) => {
@@ -63,7 +83,7 @@ const loadPaypleSdk = async (): Promise<void> => {
       reject(new Error('Payple SDK 로딩 실패'));
     };
 
-    document.body.appendChild(script); // ✅ body에 직접 삽입
+    document.body.appendChild(script);
   });
 };
 
