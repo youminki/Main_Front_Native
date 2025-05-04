@@ -14,7 +14,7 @@ declare global {
 // --- 외부 스크립트 로더 ---
 const loadScript = (src: string): Promise<void> =>
   new Promise((resolve, reject) => {
-    console.log(`[] 스크립트 로드 시도: ${src}`);
+    console.log(`[📦] 스크립트 로드 시도: ${src}`);
 
     if (document.querySelector(`script[src="${src}"]`)) {
       console.log(`[✔️] 이미 로드된 스크립트: ${src}`);
@@ -39,21 +39,32 @@ const loadScript = (src: string): Promise<void> =>
     document.head.appendChild(script);
   });
 
-// --- Payple SDK와 jQuery 로드 ---
+// --- Payple SDK와 jQuery 로드 (TSX 안에서만 작동하는 확실한 방식) ---
 const loadPaypleSdk = async (): Promise<void> => {
   console.log('[🚀] jQuery 로드 시작');
   await loadScript('https://code.jquery.com/jquery-3.6.0.min.js');
 
-  // Payple SDK에서 jQuery를 인식할 수 있도록 전역에 바인딩
   window.$ = window.jQuery;
 
-  // 약간의 딜레이 후 SDK 로드 (jQuery 바인딩 보장)
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  console.log('[🕒] Payple SDK 수동 삽입 시작');
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://democpay.payple.kr/js/cpay.payple.1.0.1.js';
+    script.async = true;
 
-  console.log('[🚀] Payple SDK 로드 시작');
-  await loadScript('https://democpay.payple.kr/js/cpay.payple.1.0.1.js');
+    script.onload = () => {
+      console.log('[✅] Payple SDK 로드 성공');
+      console.log('[🔍] window.cpay 확인:', window.cpay);
+      resolve();
+    };
 
-  console.log('[🔍] window.cpay 확인:', window.cpay);
+    script.onerror = (e) => {
+      console.error('[❌] Payple SDK 로드 실패', e);
+      reject(new Error('Payple SDK 로딩 실패'));
+    };
+
+    document.body.appendChild(script); // ✅ body에 직접 삽입
+  });
 };
 
 // --- 카드 등록용 데이터 요청 ---
