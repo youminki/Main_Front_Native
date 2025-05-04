@@ -19,6 +19,12 @@ import Pants from '../../assets/SubHeader/Pants.svg';
 import Jacket from '../../assets/SubHeader/Jacket.svg';
 import Coat from '../../assets/SubHeader/Coat.svg';
 
+import Top from '../../assets/SubHeader/Top.svg';
+import Tshirt from '../../assets/SubHeader/Tshirt.svg';
+import Cardigan from '../../assets/SubHeader/Cardigan.svg';
+import Best from '../../assets/SubHeader/Best.svg';
+import Padding from '../../assets/SubHeader/Padding.svg';
+
 const homeIcons = [
   { src: Entire, alt: '전체', category: 'Entire' },
   { src: MiniDress, alt: '미니원피스', category: 'MiniDress' },
@@ -34,6 +40,12 @@ const homeIcons = [
   { src: Pants, alt: '팬츠', category: 'Pants' },
   { src: Jacket, alt: '자켓', category: 'Jacket' },
   { src: Coat, alt: '코트', category: 'Coat' },
+
+  { src: Top, alt: '탑', category: 'Top' },
+  { src: Tshirt, alt: '티셔츠', category: 'Tshirt' },
+  { src: Cardigan, alt: '가디건', category: 'Cardigan' },
+  { src: Best, alt: '베스트', category: 'Best' },
+  { src: Padding, alt: '패딩', category: 'Padding' },
 ];
 
 interface SubHeaderProps {
