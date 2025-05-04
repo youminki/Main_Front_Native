@@ -3,9 +3,7 @@ import styled from 'styled-components';
 
 declare global {
   interface Window {
-    cpay?: {
-      request: (data: any) => void;
-    };
+    PaypleCpayAuthCheck?: (data: any) => void;
   }
 }
 
@@ -18,7 +16,7 @@ const fetchCardRegisterData = async () => {
   });
 
   const url = `https://api.stylewh.com/payple/card-register-data?${params}`;
-  console.log(`[] 카드 등록 데이터 요청: ${url}`);
+  console.log(`[🌐] 카드 등록 데이터 요청: ${url}`);
 
   const res = await fetch(url);
   if (!res.ok) {
@@ -39,15 +37,14 @@ const PaypleTest: React.FC = () => {
     try {
       const data = await fetchCardRegisterData();
 
-      console.log('[❓] window.cpay:', window.cpay);
-      console.log('[❓] window.cpay?.request:', window.cpay?.request);
+      console.log('[❓] window.PaypleCpayAuthCheck:', window.PaypleCpayAuthCheck);
 
-      if (!window.cpay?.request) {
-        throw new Error('Payple SDK 준비 오류: window.cpay.request가 없음');
+      if (typeof window.PaypleCpayAuthCheck !== 'function') {
+        throw new Error('Payple SDK 준비 오류: PaypleCpayAuthCheck 함수가 없음');
       }
 
       console.log('[🟢] 카드 등록 요청 실행');
-      window.cpay.request(data);
+      window.PaypleCpayAuthCheck(data);
     } catch (e) {
       console.error('[🔥] 카드 등록 중 오류 발생:', e);
       setError('카드 등록 중 오류가 발생했습니다.');
