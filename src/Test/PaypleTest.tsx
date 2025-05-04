@@ -14,7 +14,7 @@ declare global {
 // --- 외부 스크립트 로더 ---
 const loadScript = (src: string): Promise<void> =>
   new Promise((resolve, reject) => {
-    console.log(`[📦] 스크립트 로드 시도: ${src}`);
+    console.log(`[] 스크립트 로드 시도: ${src}`);
 
     if (document.querySelector(`script[src="${src}"]`)) {
       console.log(`[✔️] 이미 로드된 스크립트: ${src}`);
