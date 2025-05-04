@@ -13,21 +13,37 @@ declare global {
 // --- 유틸 함수: 외부 스크립트 로드 ---
 const loadScript = (src: string): Promise<void> =>
   new Promise((resolve, reject) => {
+    console.log(`[📦] 스크립트 로드 시도: ${src}`);
+
     if (document.querySelector(`script[src="${src}"]`)) {
+      console.log(`[✔️] 이미 로드된 스크립트: ${src}`);
       resolve();
       return;
     }
+
     const script = document.createElement('script');
     script.src = src;
     script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error(`Failed to load ${src}`));
+
+    script.onload = () => {
+      console.log(`[✅] 스크립트 로드 성공: ${src}`);
+      resolve();
+    };
+
+    script.onerror = (e) => {
+      console.error(`[❌] 스크립트 로드 실패: ${src}`, e);
+      reject(new Error(`Failed to load ${src}`));
+    };
+
     document.head.appendChild(script);
   });
 
 // --- 유틸 함수: Payple SDK와 jQuery 순차 로드 ---
 const loadPaypleSdk = async (): Promise<void> => {
+  console.log('[🚀] jQuery 로드 시작');
   await loadScript('https://code.jquery.com/jquery-3.6.0.min.js');
+
+  console.log('[🚀] Payple SDK 로드 시작');
   await loadScript('https://democpay.payple.kr/js/cpay.payple.1.0.1.js');
 };
 
@@ -38,16 +54,19 @@ const fetchCardRegisterData = async () => {
     userName: '황민서',
     userEmail: 'seehm1541@gmail.com',
   });
-  const res = await fetch(
-    `https://api.stylewh.com/payple/card-register-data?${params}`,
-    {
-      headers: { Authorization: 'Bearer YOUR_ACCESS_TOKEN' },
-    }
-  );
+
+  const url = `https://api.stylewh.com/payple/card-register-data?${params}`;
+  console.log(`[🌐] 카드 등록 데이터 요청: ${url}`);
+
+  const res = await fetch(url); // 인증 없이 호출
   if (!res.ok) {
+    console.error(`[❌] API 응답 실패 (${res.status}): ${res.statusText}`);
     throw new Error(`서버 오류 ${res.status}`);
   }
-  return res.json();
+
+  const json = await res.json();
+  console.log('[✅] 카드 등록 데이터 수신:', json);
+  return json;
 };
 
 const PaypleTest: React.FC = () => {
@@ -58,9 +77,11 @@ const PaypleTest: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
+        console.log('[🚀] Payple SDK 로딩 시작');
         await loadPaypleSdk();
+        console.log('[🎉] Payple SDK 로딩 완료');
       } catch (e) {
-        console.error(e);
+        console.error('[🔥] SDK 또는 jQuery 로딩 중 오류 발생:', e);
         setError('스크립트 로딩에 실패했습니다.');
       } finally {
         setLoading(false);
@@ -74,11 +95,12 @@ const PaypleTest: React.FC = () => {
     try {
       const data = await fetchCardRegisterData();
       if (!window.cpay?.request) {
-        throw new Error('Payple SDK 준비 오류');
+        throw new Error('Payple SDK 준비 오류: window.cpay.request가 없음');
       }
+      console.log('[🟢] 카드 등록 요청 실행');
       window.cpay.request(data);
     } catch (e) {
-      console.error(e);
+      console.error('[🔥] 카드 등록 중 오류 발생:', e);
       setError('카드 등록 중 오류가 발생했습니다.');
     }
   }, []);
