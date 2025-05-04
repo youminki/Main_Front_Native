@@ -13,8 +13,10 @@ import JumpSuit from '../../assets/SubHeader/JumpSuit.svg';
 import Blouse from '../../assets/SubHeader/Blouse.svg';
 import KnitTop from '../../assets/SubHeader/KnitTop.svg';
 import ShirtTop from '../../assets/SubHeader/ShirtTop.svg';
+
 import MiniSkirt from '../../assets/SubHeader/MiniSkirt.svg';
 import MidiSkirt from '../../assets/SubHeader/MidiSkirt.svg';
+import LongSkirt from '../../assets/SubHeader/LongSkirt.svg';
 import Pants from '../../assets/SubHeader/Pants.svg';
 import Jacket from '../../assets/SubHeader/Jacket.svg';
 import Coat from '../../assets/SubHeader/Coat.svg';
@@ -37,6 +39,7 @@ const homeIcons = [
   { src: ShirtTop, alt: '셔츠 상의', category: 'ShirtTop' },
   { src: MiniSkirt, alt: '미니 스커트', category: 'MiniSkirt' },
   { src: MidiSkirt, alt: '미디 스커트', category: 'MidiSkirt' },
+  { src: LongSkirt, alt: '롱 스커트', category: 'LongSkirt' },
   { src: Pants, alt: '팬츠', category: 'Pants' },
   { src: Jacket, alt: '자켓', category: 'Jacket' },
   { src: Coat, alt: '코트', category: 'Coat' },
