@@ -6,7 +6,7 @@ declare global {
     cpay?: {
       request: (data: any) => void;
     };
-    $?: any; // jQuery
+    $?: any;
     jQuery?: any;
   }
 }
@@ -44,8 +44,11 @@ const loadPaypleSdk = async (): Promise<void> => {
   console.log('[🚀] jQuery 로드 시작');
   await loadScript('https://code.jquery.com/jquery-3.6.0.min.js');
 
-  // 명시적으로 jQuery를 window 객체에 바인딩
+  // Payple SDK에서 jQuery를 인식할 수 있도록 전역에 바인딩
   window.$ = window.jQuery;
+
+  // 약간의 딜레이 후 SDK 로드 (jQuery 바인딩 보장)
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   console.log('[🚀] Payple SDK 로드 시작');
   await loadScript('https://democpay.payple.kr/js/cpay.payple.1.0.1.js');
