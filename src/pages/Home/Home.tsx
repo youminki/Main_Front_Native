@@ -10,6 +10,7 @@ import HomeDetail from './HomeDetail';
 import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
 import ShareIcon from '../../assets/Header/ShareIcon.svg';
 import HomeIcon from '../../assets/Header/HomeIcon.svg';
+import ArrowIconSvg from '../../assets/ArrowIcon.svg';
 import ReusableModal2 from '../../components/ReusableModal2';
 import FilterContainer from '../../components/Home/FilterContainer';
 import { FaTh } from 'react-icons/fa';
@@ -182,9 +183,7 @@ const Home: React.FC = () => {
       </ContentWrapper>
       <Footer />
       <ScrollToTopButton onClick={scrollToTop}>
-        <ArrowIcon viewBox='0 0 24 24'>
-          <path d='M12 4l-8 8h6v8h4v-8h6z' />
-        </ArrowIcon>
+        <ArrowIconImg src={ArrowIconSvg} alt='위로 이동' />
       </ScrollToTopButton>
       {isModalOpen && modalId && (
         <>
@@ -265,19 +264,15 @@ const ScrollToTopButton = styled.button`
   width: 50px;
   height: 50px;
   border: none;
-  border-radius: 50%;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.9),
-    rgba(244, 244, 244, 0.9)
-  );
   cursor: pointer;
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.9;
+
+  background: #f6ae24;
+  border-radius: 6px;
   transition:
     transform 0.3s,
     box-shadow 0.3s,
@@ -292,11 +287,7 @@ const ScrollToTopButton = styled.button`
   }
 `;
 
-const ArrowIcon = styled.svg`
-  width: 28px;
-  height: 28px;
-  fill: #ff9d00;
-`;
+const ArrowIconImg = styled.img``;
 
 const ModalOverlay = styled.div`
   position: fixed;
