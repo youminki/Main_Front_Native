@@ -65,6 +65,8 @@ import ScheduleReservation1 from './pages/Melpik/Schedule/ScheduleReservation1';
 import ScheduleReservation2 from './pages/Melpik/Schedule/ScheduleReservation2';
 import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
 
+import PaypleTest from './Test/PaypleTest.tsx';
+
 const App: React.FC = () => (
   <Router>
     <Routes>
@@ -73,6 +75,7 @@ const App: React.FC = () => (
       <Route path='/' element={<Navigate to='/landing' replace />} />
       <Route path='/login' element={<Login />} />
       <Route path='/PersonalLink' element={<PersonalLink />} />
+      <Route path='/test/payple' element={<PaypleTest />} />
 
       <Route element={<AppLayout />}>
         <Route path='/signup' element={<Signup />} />
