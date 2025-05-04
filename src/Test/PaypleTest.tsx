@@ -1,4 +1,3 @@
-// src/pages/Test/PaypleTest.tsx
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 
@@ -7,10 +6,12 @@ declare global {
     cpay?: {
       request: (data: any) => void;
     };
+    $?: any; // jQuery
+    jQuery?: any;
   }
 }
 
-// --- 유틸 함수: 외부 스크립트 로드 ---
+// --- 외부 스크립트 로더 ---
 const loadScript = (src: string): Promise<void> =>
   new Promise((resolve, reject) => {
     console.log(`[📦] 스크립트 로드 시도: ${src}`);
@@ -38,16 +39,21 @@ const loadScript = (src: string): Promise<void> =>
     document.head.appendChild(script);
   });
 
-// --- 유틸 함수: Payple SDK와 jQuery 순차 로드 ---
+// --- Payple SDK와 jQuery 로드 ---
 const loadPaypleSdk = async (): Promise<void> => {
   console.log('[🚀] jQuery 로드 시작');
   await loadScript('https://code.jquery.com/jquery-3.6.0.min.js');
 
+  // 명시적으로 jQuery를 window 객체에 바인딩
+  window.$ = window.jQuery;
+
   console.log('[🚀] Payple SDK 로드 시작');
   await loadScript('https://democpay.payple.kr/js/cpay.payple.1.0.1.js');
+
+  console.log('[🔍] window.cpay 확인:', window.cpay);
 };
 
-// --- 유틸 함수: 카드 등록용 데이터 Fetch ---
+// --- 카드 등록용 데이터 요청 ---
 const fetchCardRegisterData = async () => {
   const params = new URLSearchParams({
     userId: '70',
@@ -58,7 +64,7 @@ const fetchCardRegisterData = async () => {
   const url = `https://api.stylewh.com/payple/card-register-data?${params}`;
   console.log(`[🌐] 카드 등록 데이터 요청: ${url}`);
 
-  const res = await fetch(url); // 인증 없이 호출
+  const res = await fetch(url);
   if (!res.ok) {
     console.error(`[❌] API 응답 실패 (${res.status}): ${res.statusText}`);
     throw new Error(`서버 오류 ${res.status}`);
@@ -94,9 +100,14 @@ const PaypleTest: React.FC = () => {
     setError(null);
     try {
       const data = await fetchCardRegisterData();
+
+      console.log('[❓] window.cpay:', window.cpay);
+      console.log('[❓] window.cpay?.request:', window.cpay?.request);
+
       if (!window.cpay?.request) {
         throw new Error('Payple SDK 준비 오류: window.cpay.request가 없음');
       }
+
       console.log('[🟢] 카드 등록 요청 실행');
       window.cpay.request(data);
     } catch (e) {
@@ -114,7 +125,7 @@ const PaypleTest: React.FC = () => {
       </SButton>
 
       {error ? (
-        <SMessage type='error'>{error}</SMessage>
+        <SMessage type="error">{error}</SMessage>
       ) : !loading ? (
         <SMessage>SDK 준비 완료! 버튼을 눌러 등록을 시작하세요.</SMessage>
       ) : null}
@@ -124,7 +135,7 @@ const PaypleTest: React.FC = () => {
 
 export default PaypleTest;
 
-// --- Styled Components ---
+// --- 스타일 정의 ---
 const SContainer = styled.div`
   max-width: 480px;
   margin: 40px auto;
