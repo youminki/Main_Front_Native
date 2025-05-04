@@ -18,7 +18,7 @@ const fetchCardRegisterData = async () => {
   });
 
   const url = `https://api.stylewh.com/payple/card-register-data?${params}`;
-  console.log(`[🌐] 카드 등록 데이터 요청: ${url}`);
+  console.log(`[] 카드 등록 데이터 요청: ${url}`);
 
   const res = await fetch(url);
   if (!res.ok) {
