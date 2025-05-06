@@ -2,15 +2,10 @@ import * as yup from 'yup';
 
 export const schemaMyStyle = yup.object({
   height: yup.string().required('키를 선택해주세요.'),
-
   size: yup.string().required('몸무게를 선택해주세요.'),
-
   dress: yup.string().required('원피스 사이즈를 선택해주세요.'),
-
   top: yup.string().required('상의 사이즈를 선택해주세요.'),
-
   bottom: yup.string().required('하의 사이즈를 선택해주세요.'),
-
   brand: yup.string().required('선호 브랜드를 선택해주세요.'),
 });
 
@@ -25,6 +20,7 @@ export const schemaSignupContemporary = yup.object({
   exposureFrequency: yup.string().required('노출 빈도를 선택해주세요.'),
 });
 
+// MyInfo 폼 전용 스키마 (currentPassword, newPassword, confirmNewPassword 로 변경)
 export const schemaInfo = yup.object({
   email: yup
     .string()
@@ -35,18 +31,27 @@ export const schemaInfo = yup.object({
       /^(?=.*@)(?=.*(\.com|\.net)).+$/,
       '이메일은 "@"와 ".com" 또는 ".net"을 포함해야 합니다.'
     ),
-  password: yup
+  currentPassword: yup
     .string()
-    .required('비밀번호를 입력해주세요.')
+    .required('현재 비밀번호를 입력해주세요.')
     .min(8, '비밀번호는 최소 8자 이상이어야 합니다.')
     .max(20, '비밀번호는 최대 20자까지 입력 가능합니다.')
     .matches(
       /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,20}$/,
       '비밀번호는 영문과 숫자를 포함해야 합니다.'
     ),
-  passwordConfirm: yup
+  newPassword: yup
     .string()
-    .oneOf([yup.ref('password')], '비밀번호가 일치하지 않습니다.')
+    .required('새 비밀번호를 입력해주세요.')
+    .min(8, '비밀번호는 최소 8자 이상이어야 합니다.')
+    .max(20, '비밀번호는 최대 20자까지 입력 가능합니다.')
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,20}$/,
+      '비밀번호는 영문과 숫자를 포함해야 합니다.'
+    ),
+  confirmNewPassword: yup
+    .string()
+    .oneOf([yup.ref('newPassword')], '비밀번호가 일치하지 않습니다.')
     .required('비밀번호 확인을 위해 다시 입력해주세요.'),
   nickname: yup
     .string()
@@ -77,7 +82,7 @@ export const schemaInfo = yup.object({
     .required('멜픽 주소를 입력해주세요.')
     .matches(
       /^[a-zA-Z0-9]{1,12}$/,
-      '멜픽 주소는 영문과 숫자로 이루어진 1~12자 이내로 입력해주세요.'
+      '영문과 숫자로 이루어진 1~12자 이내로 입력해주세요.'
     ),
 });
 
@@ -134,7 +139,7 @@ export const schemaSignup = yup
       .required('멜픽 주소를 입력해주세요.')
       .matches(
         /^[a-zA-Z0-9]{1,12}$/,
-        '멜픽 주소는 영문과 숫자로 이루어진 1~12자 이내로 입력해주세요.'
+        '영문과 숫자로 이루어진 1~12자 이내로 입력해주세요.'
       ),
     height: yup.string().required('키를 선택해주세요.'),
     size: yup.string().required('몸무게를 선택해주세요.'),
@@ -142,7 +147,6 @@ export const schemaSignup = yup
     top: yup.string().required('사이즈 선택.'),
     bottom: yup.string().required('사이즈 선택.'),
     brand: yup.string().required('선호 브랜드를 선택해주세요.'),
-
     instar: yup
       .string()
       .required('인스타 아이디를 입력해주세요.')
@@ -153,7 +157,6 @@ export const schemaSignup = yup
       .transform((value, originalValue) =>
         originalValue === null ? undefined : value
       ),
-
     chest: yup
       .string()
       .notRequired()
@@ -227,23 +230,18 @@ export const schemaFindId = yup.object({
 export const schemaCardRegistration = yup.object({
   cardNumber: yup
     .string()
-
     .transform((value) => value.replace(/-/g, ''))
     .required('카드번호를 입력해주세요.')
     .matches(/^\d{16}$/, '카드번호는 16자리 숫자여야 합니다.'),
-
   cardExpiration: yup
     .string()
-
     .transform((value) => value.replace(/\s/g, ''))
     .required('유효기간을 입력해주세요.')
     .matches(/^(0[1-9]|1[0-2])\/\d{2}$/, '유효기간은 MM/YY 형식이어야 합니다.'),
-
   cardPassword: yup
     .string()
     .required('비밀번호를 입력해주세요.')
     .matches(/^\d{2}$/, '비밀번호는 정확히 2자리 숫자여야 합니다.'),
-
   birthOrBusiness: yup
     .string()
     .required('생년월일 또는 사업자번호를 입력해주세요.')

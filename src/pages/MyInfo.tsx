@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+// src/pages/MyInfo.tsx
+import React, { useState, useRef, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import {
   useForm,
@@ -14,6 +15,7 @@ import Theme from '../styles/Theme';
 import BottomBar from '../components/BottomNav2';
 import ResetButtonIcon from '../assets/ResetButton.png';
 import { FaCamera } from 'react-icons/fa';
+import { regionDistrictData } from '../components/Signup/regionDistrictData';
 
 // Form data type
 type MyInfoFormData = {
@@ -30,10 +32,8 @@ type MyInfoFormData = {
   melpickAddress: string;
 };
 
-// Constants
 const BIRTH_YEARS = Array.from({ length: 100 }, (_, i) => 2023 - i);
-const REGIONS = ['서울특별시', '경기도'];
-const DISTRICTS = ['강남구', '서초구', '금천구'];
+const REGIONS = Object.keys(regionDistrictData);
 
 export default function MyInfo() {
   const methods = useForm<MyInfoFormData>({
@@ -58,8 +58,23 @@ export default function MyInfo() {
     register,
     handleSubmit,
     control,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = methods;
+
+  const selectedRegion = watch('region');
+  const [districts, setDistricts] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (selectedRegion && regionDistrictData[selectedRegion]) {
+      setDistricts(regionDistrictData[selectedRegion]);
+      // region 변경 시 district 초기화
+      setValue('district', '');
+    } else {
+      setDistricts([]);
+    }
+  }, [selectedRegion, setValue]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [prefixAddress, setPrefixAddress] = useState('');
@@ -68,7 +83,6 @@ export default function MyInfo() {
   const [isVerified, setIsVerified] = useState(false);
 
   const onSubmit: SubmitHandler<MyInfoFormData> = (data) => {
-    // 공통 비밀번호 검증 로직
     if (isVerified) {
       if (data.newPassword !== data.confirmNewPassword) {
         setErrorMsg('새 비밀번호가 일치하지 않습니다.');
@@ -107,7 +121,7 @@ export default function MyInfo() {
             />
           </Field>
 
-          {/* Nickname (editable) */}
+          {/* Nickname */}
           <Field>
             <InputField
               label='닉네임(8글자 이내)'
@@ -119,7 +133,7 @@ export default function MyInfo() {
             />
           </Field>
 
-          {/* Password Section */}
+          {/* 비밀번호 변경 */}
           <SectionLabel>비밀번호 변경</SectionLabel>
           <Field>
             <InputField
@@ -133,6 +147,7 @@ export default function MyInfo() {
               onButtonClick={handleVerifyCurrent}
             />
           </Field>
+
           {isVerified && (
             <>
               <Field>
@@ -158,7 +173,7 @@ export default function MyInfo() {
             </>
           )}
 
-          {/* Name & BirthYear (read-only) */}
+          {/* 이름 & 출생 연도 */}
           <Row>
             <Field>
               <InputField
@@ -192,7 +207,7 @@ export default function MyInfo() {
             </Field>
           </Row>
 
-          {/* Phone (read-only) */}
+          {/* 전화번호 */}
           <Field>
             <InputField
               label='전화번호'
@@ -204,7 +219,7 @@ export default function MyInfo() {
             />
           </Field>
 
-          {/* Region & District (editable) */}
+          {/* 지역 & 구 */}
           <Row>
             <Field>
               <InputField
@@ -231,20 +246,21 @@ export default function MyInfo() {
                 as={CustomSelect}
                 {...register('district')}
                 error={errors.district}
+                disabled={!selectedRegion}
               >
                 <option value='' disabled>
-                  선택
+                  {selectedRegion ? '선택' : '지역 먼저 선택'}
                 </option>
-                {DISTRICTS.map((district) => (
-                  <option key={district} value={district}>
-                    {district}
+                {districts.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
                   </option>
                 ))}
               </InputField>
             </Field>
           </Row>
 
-          {/* Melpick Address (editable) */}
+          {/* 멜픽 주소 */}
           <Field>
             <Controller
               name='melpickAddress'
@@ -260,7 +276,7 @@ export default function MyInfo() {
                   buttonColor='yellow'
                   onButtonClick={() => console.log('주소 확인:', prefixAddress)}
                   {...field}
-                  onChange={(e) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     field.onChange(e);
                     setPrefixAddress(e.target.value);
                   }}
@@ -270,7 +286,7 @@ export default function MyInfo() {
             />
           </Field>
 
-          {/* Profile Image (editable) */}
+          {/* 프로필 이미지 */}
           <ProfileSection>
             <SectionLabel>프로필 이미지</SectionLabel>
             <AvatarWrapper onClick={() => fileInputRef.current?.click()}>
