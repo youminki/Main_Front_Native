@@ -193,7 +193,6 @@ const MyinfoList: React.FC = () => {
   return (
     <>
       <Container>
-        <Header>설정</Header>
         <ProfileSection>
           <AvatarIcon>
             <FaUserCircle />
@@ -255,16 +254,12 @@ export default MyinfoList;
 
 // Styled Components
 const Container = styled.div`
-  max-width: 480px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 16px;
   background: #fff;
 `;
-const Header = styled.h2`
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 24px;
-`;
+
 const ProfileSection = styled.div`
   display: flex;
   align-items: center;

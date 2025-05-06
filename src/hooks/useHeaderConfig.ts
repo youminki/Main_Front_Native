@@ -72,6 +72,7 @@ const headerRules: {
       '/alarm',
       '/MyInfo',
       '/MyStyle',
+      '/MyInfoList',
     ],
     variant: 'threeDepth',
     getTitle: getThreeDepthTitle,
@@ -147,6 +148,7 @@ function getThreeDepthTitle(path: string): string {
     '/alarm': '알람',
     '/MyInfo': '내 정보',
     '/MyStyle': '내 스타일',
+    '/MyInfoList': '내 정보',
   };
   for (const pattern in map) {
     if (matchPath(pattern, path)) return map[pattern];
