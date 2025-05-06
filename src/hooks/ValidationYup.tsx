@@ -1,5 +1,17 @@
 import * as yup from 'yup';
 
+export const schemaPassword = yup.object({
+  currentPassword: yup.string().required('현재 비밀번호를 입력하세요.'),
+  newPassword: yup
+    .string()
+    .required('새 비밀번호를 입력하세요.')
+    .min(8, '8자 이상 작성해야 합니다.'),
+  confirmNewPassword: yup
+    .string()
+    .required('확인을 위해 비밀번호를 다시 입력하세요.')
+    .oneOf([yup.ref('newPassword')], '비밀번호가 일치하지 않습니다.'),
+});
+
 export const schemaMyStyle = yup.object({
   height: yup.string().required('키를 선택해주세요.'),
   size: yup.string().required('몸무게를 선택해주세요.'),

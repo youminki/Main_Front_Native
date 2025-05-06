@@ -8,23 +8,21 @@ type InputFieldProps = {
   type?: string;
   error?: { message: string };
   buttonLabel?: string;
-
   buttonColor?: 'yellow' | 'blue' | 'red';
-  onButtonClick?: () => void;
+  onButtonClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   prefix?: string;
   prefixcontent?: string | React.ReactNode;
   as?: React.ElementType;
-  isEmailField?: boolean;
   useToggle?: boolean;
   options?: string[];
   onSelectChange?: (value: string) => void;
+  readOnly?: boolean;
   [key: string]: any;
 };
 
 function parsePrefixContent(content: string) {
   const tokens = content.split(/(해당없음|\(.*?\)|\|)/g);
   let applyGray = false;
-
   return tokens.map((token, i) => {
     if (token === '|') {
       applyGray = true;
@@ -39,7 +37,7 @@ function parsePrefixContent(content: string) {
     ) {
       return <GraySpan key={i}>{token}</GraySpan>;
     }
-    return token;
+    return <React.Fragment key={i}>{token}</React.Fragment>;
   });
 }
 
@@ -56,35 +54,34 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       prefix,
       prefixcontent,
       as,
-
       useToggle = false,
       options,
       onSelectChange,
+      readOnly = false,
       ...rest
     },
     ref
   ) => {
-    const [selectedOption, setSelectedOption] = useState(
-      options ? options[0] : ''
+    const [selectedOption, setSelectedOption] = useState<string>(
+      options && options.length > 0 ? options[0] : ''
     );
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedOption(e.target.value);
-      if (onSelectChange) {
-        onSelectChange(e.target.value);
-      }
+      const val = e.target.value;
+      setSelectedOption(val);
+      onSelectChange?.(val);
     };
 
     const renderPrefixContent = () => {
       if (!prefixcontent) return null;
       if (typeof prefixcontent === 'string') {
         return (
-          <PrefixcontentText>
+          <PrefixContentText>
             {parsePrefixContent(prefixcontent)}
-          </PrefixcontentText>
+          </PrefixContentText>
         );
       }
-      return <PrefixcontentText>{prefixcontent}</PrefixcontentText>;
+      return <PrefixContentText>{prefixcontent}</PrefixContentText>;
     };
 
     return (
@@ -96,51 +93,59 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
           )}
         </Label>
 
-        <div>
-          <InputRow>
-            {prefix && <PrefixText>{prefix}</PrefixText>}
-            <InputWrapper>
-              {prefixcontent && renderPrefixContent()}
+        <InputRow>
+          {prefix && <PrefixText>{prefix}</PrefixText>}
+          <InputWrapper>
+            {prefixcontent && renderPrefixContent()}
 
-              {options ? (
-                <Select
-                  id={id}
-                  value={selectedOption}
-                  onChange={handleSelectChange}
-                  {...rest}
-                >
-                  {options.map((option: string) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </Select>
-              ) : (
-                <Input as={as} type={type} id={id} ref={ref} {...rest} />
-              )}
+            {options ? (
+              <Select
+                id={id}
+                value={selectedOption}
+                onChange={handleSelectChange}
+                disabled={readOnly}
+                {...rest}
+              >
+                {options.map((option: string) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </Select>
+            ) : (
+              <Input
+                as={as}
+                type={type}
+                id={id}
+                ref={ref}
+                disabled={readOnly}
+                {...rest}
+              />
+            )}
 
-              {buttonLabel && (
-                <ButtonWrapper>
-                  <Button02 onClick={onButtonClick} color={buttonColor}>
-                    {buttonLabel}
-                  </Button02>
-                </ButtonWrapper>
-              )}
+            {buttonLabel && onButtonClick && (
+              <ButtonWrapper>
+                <Button02 onClick={onButtonClick} color={buttonColor}>
+                  {buttonLabel}
+                </Button02>
+              </ButtonWrapper>
+            )}
 
-              {useToggle && <ToggleWrapper></ToggleWrapper>}
-            </InputWrapper>
-          </InputRow>
+            {useToggle && <ToggleWrapper />}
+          </InputWrapper>
+        </InputRow>
 
-          <ErrorContainer>
-            {error && <ErrorMessage>{error.message}</ErrorMessage>}
-          </ErrorContainer>
-        </div>
+        <ErrorContainer>
+          {error && <ErrorMessage>{error.message}</ErrorMessage>}
+        </ErrorContainer>
       </InputContainer>
     );
   }
 );
 
 export default InputField;
+
+// Styled Components
 
 const InputContainer = styled.div`
   display: flex;
@@ -152,8 +157,6 @@ const Label = styled.label<{ $isEmpty: boolean }>`
   margin-bottom: 10px;
   font-size: 12px;
   font-weight: 700;
-  line-height: 11.05px;
-  text-align: left;
   visibility: ${({ $isEmpty }) => ($isEmpty ? 'hidden' : 'visible')};
   white-space: nowrap;
   overflow: hidden;
@@ -164,7 +167,6 @@ const GrayText = styled.span`
   padding-left: 3px;
   color: #888888;
   font-size: 12px;
-  line-height: 14px;
 `;
 
 const InputRow = styled.div`
@@ -179,11 +181,10 @@ const PrefixText = styled.span`
   color: #000000;
 `;
 
-const PrefixcontentText = styled.span`
+const PrefixContentText = styled.span`
   margin-left: 10px;
   font-weight: 800;
   font-size: 13px;
-  line-height: 14px;
   color: #000000;
 `;
 
@@ -192,68 +193,70 @@ const GraySpan = styled.span`
 `;
 
 const InputWrapper = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   border: 1px solid #dddddd;
   border-radius: 4px;
   height: 57px;
-  overflow: hidden;
   flex: 1;
-  position: relative;
 `;
 
 const ButtonWrapper = styled.div`
   position: absolute;
   right: 0;
-  top: 0;
-  bottom: 0;
   display: flex;
   align-items: center;
+  height: 100%;
 `;
 
 const ToggleWrapper = styled.div`
   position: absolute;
-  right: 10px;
-  top: 0;
-  bottom: 0;
+  right: 40px;
   display: flex;
   align-items: center;
+  height: 100%;
 `;
 
 const Input = styled.input`
-  font-size: 16px;
+  flex: 1;
+  height: 100%;
   border: none;
   padding: 0 11px;
-  flex: 1;
-  height: 57px;
-  width: 100%;
-  font-weight: 400;
   font-size: 13px;
-  line-height: 14px;
-  background-color: ${({ readOnly }) => (readOnly ? '#f0f0f0' : 'white')};
-  color: ${({ readOnly }) => (readOnly ? '#999999' : '#000000')};
+  background-color: white;
+  color: #000000;
+
+  &:disabled {
+    background-color: #f0f0f0;
+    color: #999999;
+    cursor: not-allowed;
+  }
+
   &:focus {
     outline: none;
   }
 `;
 
 const Select = styled.select`
-  font-size: 16px;
-  border: 1px solid #000000;
-  border-radius: 4px;
-  height: 57px;
-  width: 100%;
-  padding: 0 40px 0 16px;
+  flex: 1;
+  height: 100%;
+  border: none;
+  padding: 0 16px;
   font-weight: 800;
   font-size: 13px;
-  line-height: 14px;
-  color: #000000;
   appearance: none;
-  background: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'10'%20height%3D'6'%20viewBox%3D'0%200%2010%206'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M0%200l5%206l5-6z'%20fill%3D'%23000'%20/%3E%3C/svg%3E")
-    no-repeat right 16px center/10px 6px;
+  background-color: white;
+  color: #000000;
+
+  &:disabled {
+    background-color: #f0f0f0;
+    color: #999999;
+    cursor: not-allowed;
+  }
+
   &:focus {
     outline: none;
-    border-color: #000000;
   }
 `;
 
@@ -264,8 +267,6 @@ const ErrorContainer = styled.div`
 `;
 
 const ErrorMessage = styled.span`
-  display: block;
   color: blue;
   font-size: 12px;
-  font-weight: 400;
 `;
