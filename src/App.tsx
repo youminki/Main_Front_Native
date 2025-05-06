@@ -13,7 +13,9 @@ import Signup from './pages/Signup';
 import FindId from './pages/FindId';
 import FindPassword from './pages/FindPassword';
 import MyInfo from './pages/MyInfo';
+import MyinfoList from './pages/MyinfoList';
 import MyStyle from './pages/MyStyle';
+
 import Basket from './pages/Basket';
 import Alarm from './pages/Alarm';
 import Payment from './pages/Payment';
@@ -83,6 +85,7 @@ const App: React.FC = () => (
         <Route path='/findPassword' element={<FindPassword />} />
         {/* User Pages */}
         <Route path='/MyInfo' element={<MyInfo />} />
+        <Route path='/MyinfoList' element={<MyinfoList />} />
         <Route path='/MyStyle' element={<MyStyle />} />
 
         {/* Main */}

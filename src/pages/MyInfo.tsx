@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
-import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
+import {
+  useForm,
+  FormProvider,
+  SubmitHandler,
+  Controller,
+} from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { schemaInfo } from '../hooks/ValidationYup';
 import InputField from '../components/InputField';
+import { CustomSelect } from '../components/CustomSelect';
 import Theme from '../styles/Theme';
 import BottomBar from '../components/BottomNav2';
 import ResetButtonIcon from '../assets/ResetButton.png';
-import { CustomSelect } from '../components/CustomSelect';
+import { FaCamera } from 'react-icons/fa';
 
+// Form data type
 type MyInfoFormData = {
   email: string;
-  password: string;
-  passwordConfirm: string;
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
   nickname: string;
   name: string;
   birthYear: string;
@@ -22,14 +30,20 @@ type MyInfoFormData = {
   melpickAddress: string;
 };
 
-const MyInfo: React.FC = () => {
+// Constants
+const BIRTH_YEARS = Array.from({ length: 100 }, (_, i) => 2023 - i);
+const REGIONS = ['서울특별시', '경기도'];
+const DISTRICTS = ['강남구', '서초구', '금천구'];
+
+export default function MyInfo() {
   const methods = useForm<MyInfoFormData>({
     resolver: yupResolver(schemaInfo),
     mode: 'all',
     defaultValues: {
       email: '',
-      password: '',
-      passwordConfirm: '',
+      currentPassword: '',
+      newPassword: '',
+      confirmNewPassword: '',
       nickname: '',
       name: '',
       birthYear: '',
@@ -39,416 +53,329 @@ const MyInfo: React.FC = () => {
       melpickAddress: '',
     },
   });
+
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = methods;
 
-  const [gender] = useState<string>('여성');
-  const [melpickAddress, setMelpickAddress] = useState<string>('');
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [prefixAddress, setPrefixAddress] = useState('');
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [profileUrl, setProfileUrl] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
 
-  const [profileImage, setProfileImage] = useState<string>('');
-
-  const handleImageChangeClick = () => {
-    document.getElementById('profile-image-input')?.click();
-  };
-
-  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const imageUrl = URL.createObjectURL(file);
-      setProfileImage(imageUrl);
+  const onSubmit: SubmitHandler<MyInfoFormData> = (data) => {
+    // 공통 비밀번호 검증 로직
+    if (isVerified) {
+      if (data.newPassword !== data.confirmNewPassword) {
+        setErrorMsg('새 비밀번호가 일치하지 않습니다.');
+        return;
+      }
     }
+    setErrorMsg(null);
+    // TODO: submit logic
   };
 
-  const handlePhoneNumberChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    const value = e.target.value
-      .replace(/[^0-9]/g, '')
-      .replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-    e.target.value = value;
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setProfileUrl(URL.createObjectURL(file));
   };
 
-  const handleNicknameCheck = (): void => {
-    console.log('닉네임 중복 확인 클릭');
-  };
-
-  const handleInstagramCheck = (): void => {
-    console.log('인스타그램 아이디 확인 클릭');
-  };
-
-  const handleVerification = (): void => {
-    console.log('본인 인증 클릭');
-  };
-
-  const handleMelpickAddressChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    setMelpickAddress(e.target.value);
-  };
-
-  const handleCheckClick = (): void => {
-    console.log('멜픽 주소 확인:', melpickAddress);
-  };
-
-  const onSubmit: SubmitHandler<MyInfoFormData> = async (data) => {
-    if (data.password !== data.passwordConfirm) {
-      setErrorMessage('비밀번호가 일치하지 않습니다.');
-      return;
-    }
-    setErrorMessage(null);
+  const handleVerifyCurrent = () => {
+    // TODO: 현재 비밀번호 인증 API 호출
+    setIsVerified(true);
   };
 
   return (
     <ThemeProvider theme={Theme}>
       <FormProvider {...methods}>
-        <Container>
-          <Form onSubmit={handleSubmit(onSubmit)}>
-            {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          {errorMsg && <ErrorMessage>{errorMsg}</ErrorMessage>}
 
+          {/* Email (read-only) */}
+          <Field>
             <InputField
               label='계정(이메일)'
               id='email'
-              type='text'
-              error={errors.email}
               placeholder='계정을 입력하세요'
-              isEmailField
-              {...register('email')}
-              required
-              maxLength={20}
-              onButtonClick={handleInstagramCheck}
               readOnly
+              {...register('email')}
+              error={errors.email}
             />
+          </Field>
 
-            <InputField
-              label='비밀번호 *(숫자, 문자를 조합하여 8자리 이상 입력하세요)'
-              id='password'
-              type='password'
-              placeholder='비밀번호를 입력하세요'
-              error={errors.password}
-              {...register('password')}
-              required
-              maxLength={20}
-              autoComplete='current-password'
-            />
-
-            <InputField
-              label='비밀번호 확인 *'
-              id='passwordConfirm'
-              type='password'
-              placeholder='비밀번호를 한번 더 입력하세요'
-              error={errors.passwordConfirm}
-              {...register('passwordConfirm')}
-              required
-              maxLength={20}
-            />
-
+          {/* Nickname (editable) */}
+          <Field>
             <InputField
               label='닉네임(8글자 이내)'
               id='nickname'
-              type='text'
               placeholder='닉네임을 입력하세요'
-              error={errors.nickname}
-              {...register('nickname')}
-              required
               maxLength={8}
-              buttonLabel='중복확인'
-              onButtonClick={handleNicknameCheck}
-              readOnly
+              {...register('nickname')}
+              error={errors.nickname}
             />
+          </Field>
 
-            <RowLabel>
+          {/* Password Section */}
+          <SectionLabel>비밀번호 변경</SectionLabel>
+          <Field>
+            <InputField
+              label='현재 비밀번호'
+              id='currentPassword'
+              type='password'
+              placeholder='현재 비밀번호를 입력하세요'
+              {...register('currentPassword')}
+              error={errors.currentPassword}
+              buttonLabel='인증'
+              onButtonClick={handleVerifyCurrent}
+            />
+          </Field>
+          {isVerified && (
+            <>
+              <Field>
+                <InputField
+                  label='새 비밀번호'
+                  id='newPassword'
+                  type='password'
+                  placeholder='새 비밀번호를 입력하세요'
+                  {...register('newPassword')}
+                  error={errors.newPassword}
+                />
+              </Field>
+              <Field>
+                <InputField
+                  label='새 비밀번호 확인'
+                  id='confirmNewPassword'
+                  type='password'
+                  placeholder='새 비밀번호를 다시 입력하세요'
+                  {...register('confirmNewPassword')}
+                  error={errors.confirmNewPassword}
+                />
+              </Field>
+            </>
+          )}
+
+          {/* Name & BirthYear (read-only) */}
+          <Row>
+            <Field>
               <InputField
                 label='이름'
                 id='name'
-                type='text'
                 placeholder='이름을 입력하세요'
-                error={errors.name}
-                {...register('name')}
-                required
                 maxLength={5}
                 readOnly
+                {...register('name')}
+                error={errors.name}
               />
-
+            </Field>
+            <Field>
               <InputField
                 label='태어난 해'
                 id='birthYear'
                 as={CustomSelect}
-                error={errors.birthYear}
-                required
-                {...register('birthYear')}
                 disabled
+                {...register('birthYear')}
+                error={errors.birthYear}
               >
-                <option value='' disabled selected>
-                  1990
+                <option value='' disabled>
+                  선택
                 </option>
-                {Array.from({ length: 100 }, (_, i) => 2023 - i).map((year) => (
+                {BIRTH_YEARS.map((year) => (
                   <option key={year} value={year}>
                     {year}년
                   </option>
                 ))}
               </InputField>
-            </RowLabel>
+            </Field>
+          </Row>
 
-            <GenderField>
-              <InputFieldLabel>성별</InputFieldLabel>
-              <GenderRow>
-                <GenderButton
-                  type='button'
-                  disabled
-                  selected={gender === '여성'}
-                  isSelected={gender === '여성'}
-                >
-                  여성
-                </GenderButton>
-                <GenderButton
-                  type='button'
-                  disabled
-                  selected={gender === '남성'}
-                  isSelected={gender === '남성'}
-                >
-                  남성
-                </GenderButton>
-              </GenderRow>
-            </GenderField>
+          {/* Phone (read-only) */}
+          <Field>
+            <InputField
+              label='전화번호'
+              id='phoneNumber'
+              placeholder='000-0000-0000'
+              readOnly
+              {...register('phoneNumber')}
+              error={errors.phoneNumber}
+            />
+          </Field>
 
-            <PhoneField>
-              <InputField
-                label='전화번호 *(11자를 입력하세요)'
-                id='phoneNumber'
-                type='text'
-                placeholder='전화번호를 입력하세요'
-                error={errors.phoneNumber}
-                {...register('phoneNumber')}
-                required
-                maxLength={11}
-                onInput={handlePhoneNumberChange}
-                buttonLabel='본인인증'
-                onButtonClick={handleVerification}
-              />
-            </PhoneField>
-
-            <RowLabel>
+          {/* Region & District (editable) */}
+          <Row>
+            <Field>
               <InputField
                 label='지역 *'
                 id='region'
                 as={CustomSelect}
-                error={errors.region}
-                required
                 {...register('region')}
+                error={errors.region}
               >
-                <option value='' disabled selected>
-                  지역을 선택하세요
+                <option value='' disabled>
+                  선택
                 </option>
-                <option value='서울특별시'>서울특별시</option>
-                <option value='경기도'>경기도</option>
+                {REGIONS.map((region) => (
+                  <option key={region} value={region}>
+                    {region}
+                  </option>
+                ))}
               </InputField>
-
+            </Field>
+            <Field>
               <InputField
                 label='구 *'
                 id='district'
                 as={CustomSelect}
-                error={errors.district}
-                required
                 {...register('district')}
+                error={errors.district}
               >
-                <option value='' disabled selected>
-                  구를 선택하세요
+                <option value='' disabled>
+                  선택
                 </option>
-                <option value='강남구'>강남구</option>
-                <option value='서초구'>서초구</option>
-                <option value='금천구'>금천구</option>
+                {DISTRICTS.map((district) => (
+                  <option key={district} value={district}>
+                    {district}
+                  </option>
+                ))}
               </InputField>
-            </RowLabel>
+            </Field>
+          </Row>
 
-            <InputField
-              label='멜픽 주소설정(영문, 숫자 12글자 이내)'
-              id='melpickAddress'
-              type='text'
-              placeholder='멜픽 주소를 입력하세요'
-              error={errors.melpickAddress}
-              {...register('melpickAddress')}
-              value={melpickAddress}
-              onChange={handleMelpickAddressChange}
-              buttonLabel='체크'
-              buttonColor='yellow'
-              required
-              maxLength={12}
-              onButtonClick={handleCheckClick}
-              prefix='melpick.com/'
-              readOnly
-            />
-
-            <ProfileImageLabel>프로필 이미지 수정</ProfileImageLabel>
-            <ProfileImageField>
-              {profileImage ? (
-                <ProfileImageDisplay src={profileImage} alt='프로필 이미지' />
-              ) : (
-                <PlaceholderText>이미지를 추가해 주세요</PlaceholderText>
+          {/* Melpick Address (editable) */}
+          <Field>
+            <Controller
+              name='melpickAddress'
+              control={control}
+              render={({ field }) => (
+                <InputField
+                  label='멜픽 주소'
+                  id='melpickAddress'
+                  placeholder='영문+숫자 12자 이내'
+                  prefix='melpick.com/'
+                  maxLength={12}
+                  buttonLabel='확인'
+                  buttonColor='yellow'
+                  onButtonClick={() => console.log('주소 확인:', prefixAddress)}
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setPrefixAddress(e.target.value);
+                  }}
+                  error={errors.melpickAddress}
+                />
               )}
-              <ChangeImageButton type='button' onClick={handleImageChangeClick}>
-                이미지 수정
-              </ChangeImageButton>
+            />
+          </Field>
 
-              <HiddenFileInput
-                id='profile-image-input'
-                type='file'
-                accept='image/*'
-                onChange={handleImageFileChange}
-                style={{ display: 'none' }}
-              />
-            </ProfileImageField>
+          {/* Profile Image (editable) */}
+          <ProfileSection>
+            <SectionLabel>프로필 이미지</SectionLabel>
+            <AvatarWrapper onClick={() => fileInputRef.current?.click()}>
+              {profileUrl ? (
+                <AvatarImage src={profileUrl} alt='프로필' />
+              ) : (
+                <AvatarPlaceholder>+</AvatarPlaceholder>
+              )}
+              <CameraOverlay>
+                <FaCamera />
+              </CameraOverlay>
+            </AvatarWrapper>
+            <input
+              ref={fileInputRef}
+              type='file'
+              accept='image/*'
+              hidden
+              onChange={handleFileChange}
+            />
+          </ProfileSection>
 
-            <BlackContainer />
+          <Footer>
             <BottomBar
               imageSrc={ResetButtonIcon}
               buttonText={isSubmitting ? '수정 중...' : '수정하기'}
               type='submit'
               disabled={isSubmitting}
             />
-          </Form>
-        </Container>
+          </Footer>
+        </Form>
       </FormProvider>
     </ThemeProvider>
   );
-};
+}
 
-export default MyInfo;
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
+// Styled components
+const Form = styled.form`
+  max-width: 480px;
   margin: 0 auto;
   padding: 1rem;
-`;
-const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  width: 100%;
+  gap: 1rem;
 `;
-const RowLabel = styled.div`
+const Row = styled.div`
   display: flex;
-  align-items: center;
-  gap: 20px;
-  width: 100%;
+  gap: 1rem;
 `;
-const GenderField = styled.div`
+const Field = styled.div`
   width: 100%;
-  height: 57px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
 `;
-const InputFieldLabel = styled.label`
-  margin-bottom: 10px;
-  color: ${({ theme }) => theme.colors.black};
-
-  font-weight: 700;
-  font-size: 11px;
-  line-height: 11px;
-  margin-top: 30px;
+const SectionLabel = styled.div`
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 1rem;
 `;
-const GenderRow = styled.div`
-  display: flex;
-  height: 100%;
-  justify-content: space-between;
+const ErrorMessage = styled.div`
+  color: #e74c3c;
+  text-align: center;
 `;
-const GenderButton = styled.button<{ selected: boolean; isSelected: boolean }>`
-  flex: 1;
-  padding: 10px;
-  border: ${({ isSelected }) => (isSelected ? '2px solid #f6ae24' : 'none')};
-  border-radius: 10px;
-  background-color: ${({ selected }) => (selected ? '#FFFFFF' : '#EEEEEE')};
-  color: ${({ selected }) => (selected ? '#000000' : '#999999')};
-  cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    border 0.3s ease,
-    color 0.3s ease;
-  &:hover {
-    border: 2px solid #f6ae24;
-  }
-  &:first-child {
-    border-radius: 10px 0 0 10px;
-  }
-  &:last-child {
-    border-radius: 0 10px 10px 0;
-  }
-  &:disabled {
-    background-color: #f0f0f0;
-    color: #999999;
-    cursor: not-allowed;
-  }
+const ProfileSection = styled.div`
+  margin-top: 1rem;
+  text-align: center;
 `;
-const PhoneField = styled.div`
-  display: flex;
-  align-items: center;
+const AvatarWrapper = styled.div`
   position: relative;
-  input {
-    flex: 1;
-    padding-right: 120px;
-  }
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  cursor: pointer;
 `;
-
-const ProfileImageLabel = styled.div`
-  font-size: 12px;
-  font-weight: bold;
-  margin-top: 30px;
-  text-align: left;
-`;
-
-const ProfileImageField = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 20px;
-  gap: 30px;
-
-  border: 1px solid #ccc;
-  justify-content: center;
-`;
-const ProfileImageDisplay = styled.img`
-  width: 60px;
-  height: 60px;
+const AvatarImage = styled.img`
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid #ccc;
+  border: 2px solid #ddd;
 `;
-const PlaceholderText = styled.div`
-  width: 60px;
-  height: 60px;
-  border: 1px dashed #ccc;
+const AvatarPlaceholder = styled.div`
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
+  background: #f0f0f0;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 32px;
   color: #999;
-  font-size: 10px;
-  text-align: center;
+  border: 2px dashed #ccc;
 `;
-const ChangeImageButton = styled.button`
-  padding: 8px 12px;
-  font-size: 12px;
-  background-color: #000;
+const CameraOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px;
+  border-radius: 50%;
   color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
-const BlackContainer = styled.div`
-  margin-bottom: 100px;
-`;
-const ErrorText = styled.div`
-  color: red;
+const Footer = styled.div`
+  margin-top: 2rem;
   text-align: center;
-`;
-const HiddenFileInput = styled.input`
-  display: none;
 `;
