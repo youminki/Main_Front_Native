@@ -513,7 +513,7 @@ const MyInfo: React.FC = () => {
               onChange={handleInputChange('email')}
               required
               maxLength={50}
-              onButtonClick={(e) => {
+              onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
                 handleEmailCheck();
               }}
@@ -558,7 +558,7 @@ const MyInfo: React.FC = () => {
               maxLength={8}
               buttonLabel={nicknameButtonText}
               buttonColor={nicknameButtonColor}
-              onButtonClick={(e) => {
+              onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
                 handleNicknameCheck();
               }}
@@ -635,7 +635,7 @@ const MyInfo: React.FC = () => {
                 onInput={handlePhoneNumberChange}
                 buttonLabel='본인인증'
                 buttonColor={phoneVerificationButtonColor}
-                onButtonClick={(e) => {
+                onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.preventDefault();
                   handleSendVerification();
                 }}
@@ -650,10 +650,12 @@ const MyInfo: React.FC = () => {
                   type='text'
                   placeholder='인증번호를 입력하세요'
                   value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setVerificationCode(e.target.value)
+                  }
                   buttonLabel={phoneVerificationButtonText}
                   buttonColor={phoneVerificationButtonColor}
-                  onButtonClick={(e) => {
+                  onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.preventDefault();
                     handleVerifyCode();
                   }}
@@ -734,7 +736,7 @@ const MyInfo: React.FC = () => {
               buttonColor={melpickAddressButtonColor}
               required
               maxLength={12}
-              onButtonClick={(e) => {
+              onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
                 handleMelpickAddressCheck();
               }}
@@ -838,7 +840,7 @@ const MyInfo: React.FC = () => {
                 value={selectedBrands.join(', ') || '브랜드 3가지를 선택하세요'}
                 buttonLabel={brandButtonLabel}
                 buttonColor={brandButtonColor}
-                onButtonClick={(e) => {
+                onButtonClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.preventDefault();
                   openModal();
                 }}
