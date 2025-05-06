@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import MypageBox from '../assets/MypageBox.svg';
 import MystyleBox from '../assets/MystyleBox.svg';
-import ReusableModal2 from '../components/ReusableModal2';
+import ReusableModal from '../components/ReusableModal';
 import { logoutUser } from '../api/user/userApi';
 import { Axios } from '../api/Axios';
 
@@ -116,24 +116,24 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
       </Overlay>
 
       {isLogoutModalOpen && (
-        <ReusableModal2
+        <ReusableModal
           isOpen={isLogoutModalOpen}
           onClose={() => setLogoutModalOpen(false)}
           onConfirm={handleLogoutConfirm}
           title='알림'
         >
           로그아웃을 하시겠습니까?
-        </ReusableModal2>
+        </ReusableModal>
       )}
 
       {isPlaceholderOpen && (
-        <ReusableModal2
+        <ReusableModal
           isOpen={isPlaceholderOpen}
           onClose={handlePlaceholderClose}
           title='준비 중입니다'
         >
           아직 구현 전인 기능이에요.
-        </ReusableModal2>
+        </ReusableModal>
       )}
     </>
   );

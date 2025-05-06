@@ -16,7 +16,7 @@ import HomeIcon from '../assets/Header/HomeIcon.svg';
 import SearchIcon from '../assets/Header/SearchIcon.svg';
 
 import MypageModal from '../components/MypageModal';
-import ReusableModal2 from '../components/ReusableModal';
+import ReusableModal from '../components/ReusableModal';
 import { getHeaderInfo } from '../api/user/userApi';
 
 interface HeaderContainerProps {
@@ -385,13 +385,13 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
           onClose={() => setMypageOpen(false)}
         />
 
-        <ReusableModal2
+        <ReusableModal
           isOpen={isFeatureModalOpen}
           onClose={() => setFeatureModalOpen(false)}
           title='준비 중입니다'
         >
           아직 구현 전인 기능이에요.
-        </ReusableModal2>
+        </ReusableModal>
       </>
     );
   }
@@ -456,13 +456,13 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
           </HeaderContainer>
         </HeaderWrapper>
 
-        <ReusableModal2
+        <ReusableModal
           isOpen={isFeatureModalOpen}
           onClose={() => setFeatureModalOpen(false)}
           title='준비 중입니다'
         >
           아직 구현 전인 기능이에요.
-        </ReusableModal2>
+        </ReusableModal>
       </>
     );
   }
@@ -493,13 +493,13 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
           </HeaderContainer>
         </HeaderWrapper>
 
-        <ReusableModal2
+        <ReusableModal
           isOpen={isFeatureModalOpen}
           onClose={() => setFeatureModalOpen(false)}
           title='준비 중입니다'
         >
           아직 구현 전인 기능이에요.
-        </ReusableModal2>
+        </ReusableModal>
       </>
     );
   }

@@ -11,7 +11,7 @@ import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
 import ShareIcon from '../../assets/Header/ShareIcon.svg';
 import HomeIcon from '../../assets/Header/HomeIcon.svg';
 import ArrowIconSvg from '../../assets/ArrowIcon.svg';
-import ReusableModal2 from '../../components/ReusableModal2';
+import ReusableModal from '../../components/ReusableModal';
 import FilterContainer from '../../components/Home/FilterContainer';
 import { FaTh } from 'react-icons/fa';
 
@@ -218,13 +218,13 @@ const Home: React.FC = () => {
               </ModalBody>
             </ModalBox>
           </ModalOverlay>
-          <ReusableModal2
+          <ReusableModal
             isOpen={isFeatureModalOpen}
             onClose={() => setFeatureModalOpen(false)}
             title='준비 중입니다'
           >
             아직 구현 전인 기능이에요.
-          </ReusableModal2>
+          </ReusableModal>
         </>
       )}
     </MainContainer>

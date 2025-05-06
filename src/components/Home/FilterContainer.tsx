@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import FilterIcon from '../../assets/FilterIcon.svg';
-import ReusableModal2 from '../../components/ReusableModal';
+import ReusableModal from '../../components/ReusableModal';
 
 const FilterContainer: React.FC = () => {
   const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
@@ -13,13 +13,13 @@ const FilterContainer: React.FC = () => {
         <img src={FilterIcon} alt='필터' />
       </FilterIconContainer>
 
-      <ReusableModal2
+      <ReusableModal
         isOpen={isFeatureModalOpen}
         onClose={() => setFeatureModalOpen(false)}
         title='준비 중입니다'
       >
         아직 구현 전인 기능이에요.
-      </ReusableModal2>
+      </ReusableModal>
     </Container>
   );
 };
