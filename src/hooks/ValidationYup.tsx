@@ -1,5 +1,19 @@
 import * as yup from 'yup';
 
+export const schemaMyStyle = yup.object({
+  height: yup.string().required('키를 선택해주세요.'),
+
+  size: yup.string().required('몸무게를 선택해주세요.'),
+
+  dress: yup.string().required('원피스 사이즈를 선택해주세요.'),
+
+  top: yup.string().required('상의 사이즈를 선택해주세요.'),
+
+  bottom: yup.string().required('하의 사이즈를 선택해주세요.'),
+
+  brand: yup.string().required('선호 브랜드를 선택해주세요.'),
+});
+
 export const schemaSignupContemporary = yup.object({
   height: yup.string().required('키를 선택해주세요.'),
   size: yup.string().required('사이즈를 선택해주세요.'),

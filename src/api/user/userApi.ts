@@ -1,4 +1,3 @@
-// src/api/user/userApi.ts
 import { Axios } from '../Axios';
 
 export interface SignupRequest {
@@ -180,5 +179,38 @@ export const getHeaderInfo = async (): Promise<HeaderInfoResponse> => {
 
 export const logoutUser = async (email: string): Promise<MessageResponse> => {
   const response = await Axios.post<MessageResponse>('/auth/logout', { email });
+  return response.data;
+};
+
+// 추가: 내 스타일 조회 및 수정 API
+export interface UserStyle {
+  height: number;
+  weight: number;
+  topSize: string;
+  dressSize: string;
+  bottomSize: string;
+  preferredBrands: string[];
+  shoulderWidth: number;
+  chestCircumference: number;
+  waistCircumference: number;
+  sleeveLength: number;
+}
+
+/**
+ * 내 스타일 조회
+ */
+export const getUserStyle = async (): Promise<UserStyle> => {
+  const response = await Axios.get<UserStyle>('/user/style');
+  return response.data;
+};
+
+/**
+ * 내 스타일 수정
+ * @param data 수정할 스타일 정보
+ */
+export const updateUserStyle = async (
+  data: Partial<UserStyle>
+): Promise<UserStyle> => {
+  const response = await Axios.patch<UserStyle>('/user/style', data);
   return response.data;
 };
