@@ -1,118 +1,194 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { FaUserCircle, FaChevronRight, FaCamera } from 'react-icons/fa';
+import { FaUserCircle, FaCamera, FaChevronRight } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import ReusableModal2 from '../components/ReusableModal2';
 
-// 모달 타입 정의
-type ModalType = 'profileImage' | 'nickname' | 'password' | null;
+type ModalType = 'profileImage' | 'nickname' | 'password' | 'melpick' | null;
+
+interface ListItemData {
+  label: string;
+  type?: ModalType;
+  grey?: boolean;
+  action?: () => void;
+}
 
 const MyinfoList: React.FC = () => {
   const navigate = useNavigate();
   const [modalType, setModalType] = useState<ModalType>(null);
-  const [inputValue, setInputValue] = useState<string>('');
-  const [previewUrl, setPreviewUrl] = useState<string>('');
+
+  // 프로필 이미지
+  const [profileFileName, setProfileFileName] = useState('');
+  const [previewUrl, setPreviewUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 모달 초기화
+  // 닉네임
+  const [newNickname, setNewNickname] = useState('');
+
+  // 비밀번호 변경
+  const [currentPw, setCurrentPw] = useState('');
+  const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+
+  // 멜픽 주소 변경
+  const currentMelpick = 'dbalsrl7648'; // TODO: API로 fetch
+  const [newMelpick, setNewMelpick] = useState('');
+
   useEffect(() => {
-    setInputValue('');
+    // 모달 열릴 때마다 초기화
+    setProfileFileName('');
     setPreviewUrl('');
+    setNewNickname('');
+    setCurrentPw('');
+    setNewPw('');
+    setConfirmPw('');
+    setNewMelpick('');
   }, [modalType]);
 
-  // 메뉴 목록
-  const items = [
+  const handleConfirm = () => {
+    if (modalType === 'profileImage') {
+      console.log('프로필 이미지 변경:', profileFileName);
+    } else if (modalType === 'nickname') {
+      console.log('닉네임 변경:', newNickname);
+    } else if (modalType === 'password') {
+      console.log('현재 비밀번호:', currentPw);
+      console.log('새 비밀번호:', newPw);
+      console.log('비밀번호 확인:', confirmPw);
+    } else if (modalType === 'melpick') {
+      console.log('새 멜픽 주소:', newMelpick);
+    }
+  };
+
+  const renderModalContent = () => {
+    switch (modalType) {
+      case 'profileImage':
+        return (
+          <ContentWrapper>
+            <FieldGroup>
+              <AvatarSection onClick={() => fileInputRef.current?.click()}>
+                {previewUrl ? (
+                  <AvatarImg src={previewUrl} alt='프리뷰' />
+                ) : (
+                  <AvatarPlaceholder>
+                    <FaUserCircle />
+                  </AvatarPlaceholder>
+                )}
+                <CameraBadge>
+                  <FaCamera />
+                </CameraBadge>
+              </AvatarSection>
+              <HiddenInput
+                ref={fileInputRef}
+                type='file'
+                accept='image/*'
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setProfileFileName(file.name);
+                    setPreviewUrl(URL.createObjectURL(file));
+                  }
+                }}
+              />
+            </FieldGroup>
+          </ContentWrapper>
+        );
+      case 'nickname':
+        return (
+          <ContentWrapper>
+            <FieldGroup>
+              <FieldLabel>새 닉네임</FieldLabel>
+              <TextInput
+                type='text'
+                value={newNickname}
+                placeholder='닉네임을 입력해주세요'
+                onChange={(e) => setNewNickname(e.target.value)}
+              />
+            </FieldGroup>
+          </ContentWrapper>
+        );
+      case 'password':
+        return (
+          <ContentWrapper>
+            <FieldGroup>
+              <FieldLabel>현재 비밀번호</FieldLabel>
+              <TextInput
+                type='password'
+                value={currentPw}
+                placeholder='현재 비밀번호를 입력해주세요'
+                onChange={(e) => setCurrentPw(e.target.value)}
+              />
+            </FieldGroup>
+            <FieldGroup>
+              <FieldLabel>새 비밀번호</FieldLabel>
+              <TextInput
+                type='password'
+                value={newPw}
+                placeholder='새 비밀번호를 입력해주세요'
+                onChange={(e) => setNewPw(e.target.value)}
+              />
+            </FieldGroup>
+            <FieldGroup>
+              <FieldLabel>비밀번호 확인</FieldLabel>
+              <TextInput
+                type='password'
+                value={confirmPw}
+                placeholder='새 비밀번호를 다시 입력해주세요'
+                onChange={(e) => setConfirmPw(e.target.value)}
+              />
+            </FieldGroup>
+          </ContentWrapper>
+        );
+      case 'melpick':
+        return (
+          <ContentWrapper>
+            <FieldGroup>
+              <FieldLabel>현재 멜픽 주소</FieldLabel>
+              <CurrentInfo>melpick.com/{currentMelpick}</CurrentInfo>
+            </FieldGroup>
+            <FieldGroup>
+              <FieldLabel>새 멜픽 주소</FieldLabel>
+              <PrefixRow>
+                <Prefix>melpick.com/</Prefix>
+                <TextInput
+                  type='text'
+                  value={newMelpick}
+                  placeholder='주소를 입력해주세요'
+                  onChange={(e) => setNewMelpick(e.target.value)}
+                />
+              </PrefixRow>
+            </FieldGroup>
+          </ContentWrapper>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const modalTitles: Record<Exclude<ModalType, null>, string> = {
+    profileImage: '프로필 이미지 변경',
+    nickname: '닉네임 변경',
+    password: '비밀번호 변경',
+    melpick: '멜픽 주소 변경',
+  };
+
+  const listItems: ListItemData[] = [
     {
       label: '회원정보 조회',
-      description: '',
-      path: '/Myinfo',
+      grey: false,
+      action: () => navigate('/Myinfo'),
     },
     {
       label: '비밀번호 변경',
-      description: '',
-      path: '/password-change',
+      type: 'password',
     },
     {
-      label: '멜픽주소 변경',
-      description: '',
-      path: '/password-change',
+      label: '멜픽 주소 변경',
+      type: 'melpick',
     },
-
     { label: '배송지 관리', grey: true },
     { label: '환불 계좌 관리', grey: true },
     { label: '알림 설정', grey: true },
   ];
-
-  const handleConfirm = () => {
-    if (modalType === 'profileImage')
-      console.log('프로필 이미지 변경:', inputValue);
-    if (modalType === 'nickname') console.log('닉네임 변경:', inputValue);
-    if (modalType === 'password') console.log('비밀번호 변경:', inputValue);
-    setModalType(null);
-  };
-
-  const renderModalContent = () => {
-    if (modalType === 'profileImage') {
-      return (
-        <ModalBody>
-          <AvatarSection onClick={() => fileInputRef.current?.click()}>
-            {previewUrl ? (
-              <AvatarImg src={previewUrl} alt='프리뷰' />
-            ) : (
-              <AvatarPlaceholder>
-                <FaUserCircle />
-              </AvatarPlaceholder>
-            )}
-            <CameraIcon>
-              <FaCamera />
-            </CameraIcon>
-          </AvatarSection>
-          <HiddenInput
-            ref={fileInputRef}
-            type='file'
-            accept='image/*'
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                setInputValue(file.name);
-                setPreviewUrl(URL.createObjectURL(file));
-              }
-            }}
-          />
-        </ModalBody>
-      );
-    }
-
-    if (modalType === 'nickname') {
-      return (
-        <ModalBody>
-          <FieldLabel>새 닉네임</FieldLabel>
-          <Input
-            type='text'
-            value={inputValue}
-            placeholder='닉네임을 입력해주세요'
-            onChange={(e) => setInputValue(e.target.value)}
-          />
-        </ModalBody>
-      );
-    }
-
-    if (modalType === 'password') {
-      return (
-        <ModalBody>
-          <FieldLabel>새 비밀번호</FieldLabel>
-          <Input
-            type='password'
-            value={inputValue}
-            placeholder='비밀번호를 입력해주세요'
-            onChange={(e) => setInputValue(e.target.value)}
-          />
-        </ModalBody>
-      );
-    }
-
-    return null;
-  };
 
   return (
     <>
@@ -129,7 +205,6 @@ const MyinfoList: React.FC = () => {
         </ProfileSection>
 
         <ButtonRow>
-          {/* 모달 그대로 쓰고 싶다면 남겨두세요 */}
           <ActionButton onClick={() => setModalType('profileImage')}>
             프로필 이미지 변경
           </ActionButton>
@@ -139,17 +214,18 @@ const MyinfoList: React.FC = () => {
         </ButtonRow>
 
         <List>
-          {items.map((item, idx) => (
+          {listItems.map((item, idx) => (
             <ListItem
               key={idx}
               grey={item.grey}
-              onClick={() => !item.grey && item.path && navigate(item.path)}
+              onClick={() => {
+                if (item.grey) return;
+                if (item.action) item.action();
+                else if (item.type) setModalType(item.type);
+              }}
             >
               <ItemBox>
-                <ItemText>
-                  <Title grey={item.grey}>{item.label}</Title>
-                  {item.description && <Desc>{item.description}</Desc>}
-                </ItemText>
+                <Label grey={item.grey}>{item.label}</Label>
                 {!item.grey && (
                   <Chevron>
                     <FaChevronRight />
@@ -165,13 +241,9 @@ const MyinfoList: React.FC = () => {
         isOpen={modalType !== null}
         onClose={() => setModalType(null)}
         onConfirm={handleConfirm}
-        title={
-          modalType === 'profileImage'
-            ? '프로필 이미지 변경'
-            : modalType === 'nickname'
-              ? '닉네임 변경'
-              : '비밀번호 변경'
-        }
+        title={modalType ? modalTitles[modalType] : ''}
+        width='90%'
+        height='auto'
       >
         {renderModalContent()}
       </ReusableModal2>
@@ -181,7 +253,7 @@ const MyinfoList: React.FC = () => {
 
 export default MyinfoList;
 
-// Styled Components (생략 없이 포함)
+// Styled Components
 const Container = styled.div`
   max-width: 480px;
   margin: 0 auto;
@@ -235,13 +307,13 @@ const ActionButton = styled.button`
 const List = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 `;
 const ListItem = styled.div<{ grey?: boolean }>`
   padding: 12px;
   border-radius: 6px;
-  background: ${({ grey }) => (grey ? '#f9f9f9' : '#fff')};
-  border: 1px solid ${({ grey }) => (grey ? '#eee' : '#ddd')};
+  background: ${({ grey }) => (grey ? '#f5f5f5' : '#fff')};
+  border: 1px solid ${({ grey }) => (grey ? '#ddd' : '#ccc')};
   cursor: ${({ grey }) => (grey ? 'default' : 'pointer')};
 `;
 const ItemBox = styled.div`
@@ -249,35 +321,41 @@ const ItemBox = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
-const ItemText = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-const Title = styled.span<{ grey?: boolean }>`
+const Label = styled.span<{ grey?: boolean }>`
   font-size: 16px;
   font-weight: 500;
   color: ${({ grey }) => (grey ? '#aaa' : '#333')};
-`;
-const Desc = styled.span`
-  font-size: 13px;
-  color: #888;
-  margin-top: 4px;
 `;
 const Chevron = styled.div`
   font-size: 16px;
   color: #bbb;
 `;
-const ModalBody = styled.div`
-  padding: 24px;
+
+const ContentWrapper = styled.div`
+  padding: 16px 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 24px;
 `;
+const FieldGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const CurrentInfo = styled.p`
+  font-size: 14px;
+  color: #555;
+  background: #f0f0f0;
+  padding: 8px;
+  border-radius: 4px;
+`;
+
 const AvatarSection = styled.div`
   position: relative;
   width: 120px;
   height: 120px;
-  margin-bottom: 16px;
+  margin: 0 auto;
   cursor: pointer;
 `;
 const AvatarPlaceholder = styled.div`
@@ -288,8 +366,8 @@ const AvatarPlaceholder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
   color: #999;
+  font-size: 48px;
   border: 2px dashed #ccc;
 `;
 const AvatarImg = styled.img`
@@ -299,7 +377,7 @@ const AvatarImg = styled.img`
   object-fit: cover;
   border: 2px solid #ddd;
 `;
-const CameraIcon = styled.div`
+const CameraBadge = styled.div`
   position: absolute;
   bottom: 0;
   right: 0;
@@ -313,14 +391,21 @@ const HiddenInput = styled.input`
 `;
 const FieldLabel = styled.label`
   font-size: 14px;
-  margin-bottom: 8px;
   color: #333;
   align-self: flex-start;
 `;
-const Input = styled.input`
-  width: 100%;
+const TextInput = styled.input`
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
+`;
+const PrefixRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+const Prefix = styled.span`
+  font-weight: 700;
+  color: #000;
 `;

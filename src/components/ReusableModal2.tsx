@@ -60,7 +60,6 @@ const StyledModal = styled.div`
   z-index: 9999;
   width: 100vw;
   height: 100vh;
-  max-width: 1000px;
 `;
 
 const ModalContent = styled.div<{ width: string; height: string }>`
@@ -71,8 +70,10 @@ const ModalContent = styled.div<{ width: string; height: string }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  max-width: none;
+  margin: 0 auto;
+  box-sizing: border-box;
   max-width: 300px;
-  margin: 0 auto 20px;
 `;
 
 const ModalHeader = styled.div`
@@ -86,13 +87,15 @@ const ModalTitle = styled.h2`
 `;
 
 const ModalBody = styled.div`
+  flex: 1;
+  padding: 0;
   font-size: 14px;
   font-weight: 400;
-  text-align: center;
+  text-align: left;
 
-  height: 100%;
-  display: flex;
-  justify-content: center;
+  box-sizing: border-box;
+
+  text-align: center;
   align-items: center;
   border-top: 2px solid #e0e0e0;
   border-bottom: 2px solid #e0e0e0;
