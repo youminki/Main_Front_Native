@@ -344,11 +344,10 @@ const Form = styled.form`
 const Row = styled.div`
   display: flex;
   gap: 1rem;
-  margin-bottom: 1rem;
 `;
 const Divider = styled.hr`
   border: none;
   width: 100%;
   border-top: 1px solid #eee;
-  margin: 1.5rem 0;
+  margin: 20px 0;
 `;
