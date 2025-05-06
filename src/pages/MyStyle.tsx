@@ -333,6 +333,8 @@ const Container = styled.div`
   align-items: center;
   background: #fff;
   padding: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
 `;
 const Form = styled.form`
   width: 100%;

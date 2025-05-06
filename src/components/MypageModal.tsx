@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
@@ -7,11 +7,6 @@ import MystyleBox from '../assets/MystyleBox.svg';
 import ReusableModal2 from '../components/ReusableModal2';
 import { logoutUser } from '../api/user/userApi';
 import { Axios } from '../api/Axios';
-
-type MypageModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-};
 
 const getEmailFromToken = (): string | null => {
   const token =
@@ -23,6 +18,11 @@ const getEmailFromToken = (): string | null => {
   } catch {
     return null;
   }
+};
+
+type MypageModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
 };
 
 const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
@@ -50,8 +50,8 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
   };
 
   const handleLogoutConfirm = async () => {
-    const email = getEmailFromToken();
     try {
+      const email = getEmailFromToken();
       if (email) {
         await logoutUser(email);
       }
@@ -68,12 +68,11 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
       setLogoutModalOpen(false);
       onClose();
       navigate('/login', { replace: true });
-
       window.location.reload();
     }
   };
 
-  const handlePlaceholderClick = (e: React.MouseEvent) => {
+  const handlePlaceholderOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPlaceholderOpen(true);
   };
@@ -99,12 +98,16 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
             <PlaceholderImage
               src={MypageBox}
               alt='마이페이지 이미지'
-              onClick={handlePlaceholderClick}
+              onClick={handlePlaceholderOpen}
             />
             <PlaceholderImage
               src={MystyleBox}
               alt='마이스타일 이미지'
-              onClick={handlePlaceholderClick}
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+                navigate('/Mystyle');
+              }}
             />
           </ModalContentArea>
           <Divider />
@@ -138,6 +141,7 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
 
 export default MypageModal;
 
+/* Styled Components */
 const slideUp = keyframes`
   from { transform: translateY(100%); }
   to   { transform: translateY(0); }
@@ -191,6 +195,7 @@ const ModalHandle = styled.div`
   justify-content: center;
   margin-top: 8px;
 `;
+
 const HandleBar = styled.div`
   position: fixed;
   top: 6px;
@@ -199,15 +204,18 @@ const HandleBar = styled.div`
   background: #ddd;
   border-radius: 2px;
 `;
+
 const ModalHeader = styled.div`
   margin: 16px;
 `;
+
 const Title = styled.h2`
   font-size: 16px;
   font-weight: 800;
   line-height: 18px;
   margin: 0;
 `;
+
 const Divider = styled.hr`
   width: 100%;
   height: 1px;
@@ -215,6 +223,7 @@ const Divider = styled.hr`
   border: none;
   margin: 0;
 `;
+
 const ModalContentArea = styled.div`
   flex: 1;
   display: flex;
@@ -222,10 +231,12 @@ const ModalContentArea = styled.div`
   align-items: center;
   gap: 20px;
 `;
+
 const PlaceholderImage = styled.img`
   cursor: pointer;
   object-fit: cover;
 `;
+
 const LogoutButton = styled.button`
   width: 100%;
   height: 56px;
