@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { schemaSignupContemporary } from '../hooks/ValidationYup';
 import InputField from '../components/InputField';
-
 import Theme from '../styles/Theme';
-
 import Modal from '../components/Melpik/CreateMelpik/Settings/Modal';
 import { CustomSelect } from '../components/CustomSelect';
 import FixedBottomBar from '../components/FixedBottomBar';
@@ -26,8 +24,18 @@ interface FormData {
   exposureFrequency: string;
 }
 
+// 140cm~190cm, 5cm 단위
+const HEIGHT_OPTIONS = Array.from(
+  { length: 190 - 140 + 1 },
+  (_, i) => `${140 + i}`
+);
+// 30kg~90kg, 1kg 단위
+const WEIGHT_RANGE = Array.from({ length: 90 - 30 + 1 }, (_, i) => `${30 + i}`);
+const SIZE_OPTIONS = ['44', '55', '66', '77'] as const;
+
 const ContemporarySettings: React.FC = () => {
   const {
+    control,
     register,
     handleSubmit,
     setValue,
@@ -37,7 +45,7 @@ const ContemporarySettings: React.FC = () => {
     mode: 'all',
   });
 
-  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [isModalOpen, setModalOpen] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
@@ -55,144 +63,170 @@ const ContemporarySettings: React.FC = () => {
     <ThemeProvider theme={Theme}>
       <Container>
         <Form onSubmit={handleSubmit(onSubmit)}>
+          {/* 키 / 몸무게 */}
           <Row>
             <InputField
-              label='기본정보'
+              label='키'
               id='height'
               as={CustomSelect}
               error={errors.height}
-              {...register('height', { required: true })}
+              {...register('height')}
             >
-              <option value='' disabled selected hidden>
+              <option value='' disabled hidden>
                 키 선택
               </option>
-              <option value='160'>160 cm</option>
-              <option value='165'>165 cm</option>
-              <option value='170'>170 cm</option>
-              <option value='175'>175 cm</option>
+              {HEIGHT_OPTIONS.map((h) => (
+                <option key={h} value={h}>
+                  {h} cm
+                </option>
+              ))}
             </InputField>
+
             <InputField
-              label=''
+              label='몸무게'
               id='size'
               as={CustomSelect}
               error={errors.size}
-              {...register('size', { required: true })}
+              {...register('size')}
             >
-              <option value='' disabled selected hidden>
+              <option value='' disabled hidden>
                 몸무게 선택
               </option>
-              {Array.from({ length: 100 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1}kg
+              {WEIGHT_RANGE.map((w) => (
+                <option key={w} value={w}>
+                  {w} kg
                 </option>
               ))}
             </InputField>
           </Row>
           <Divider />
 
+          {/* 제품 사이즈 */}
           <Row>
-            <InputField
-              label='착용 제품사이즈'
-              id='dress'
-              as={CustomSelect}
-              error={errors.dress}
-              {...register('dress', { required: true })}
-            >
-              <option value='' disabled selected hidden>
-                상의 사이즈 선택
-              </option>
-              <option value='44'>44 (S)</option>
-              <option value='55'>55 (M)</option>
-              <option value='66'>66 (L)</option>
-              <option value='77'>77 (XL)</option>
-            </InputField>
-            <InputField
-              label=''
-              id='top'
-              as={CustomSelect}
-              error={errors.top}
-              {...register('top', { required: true })}
-            >
-              <option value='' disabled selected hidden>
-                원피스 사이즈 선택
-              </option>
-              <option value='44'>44 (S)</option>
-              <option value='55'>55 (M)</option>
-              <option value='66'>66 (L)</option>
-              <option value='77'>77 (XL)</option>
-            </InputField>
-            <InputField
-              label=''
-              id='bottom'
-              as={CustomSelect}
-              error={errors.bottom}
-              {...register('bottom', { required: true })}
-            >
-              <option value='' disabled selected hidden>
-                하의 사이즈 선택
-              </option>
-              <option value='44'>44 (S)</option>
-              <option value='55'>55 (M)</option>
-              <option value='66'>66 (L)</option>
-              <option value='77'>77 (XL)</option>
-            </InputField>
+            {(['dress', 'top', 'bottom'] as const).map((id) => {
+              const labels = {
+                dress: '상의 사이즈',
+                top: '원피스 사이즈',
+                bottom: '하의 사이즈',
+              };
+              return (
+                <InputField
+                  key={id}
+                  label={labels[id]}
+                  id={id}
+                  as={CustomSelect}
+                  error={(errors as any)[id]}
+                  {...register(id)}
+                >
+                  <option value='' disabled hidden>
+                    {labels[id]} 선택
+                  </option>
+                  {SIZE_OPTIONS.map((size) => (
+                    <option key={size} value={size}>
+                      {size} (
+                      {['S', 'M', 'L', 'XL'][SIZE_OPTIONS.indexOf(size)]})
+                    </option>
+                  ))}
+                </InputField>
+              );
+            })}
           </Row>
           <Divider />
 
+          {/* 브랜드 */}
           <Row>
             <InputField
-              label='선호 브랜드 선택(최대 3가지)'
+              label='선호 브랜드 선택 (최대 3가지)'
               id='brand'
               type='text'
               placeholder='브랜드 3가지를 선택하세요'
               error={errors.brand}
               {...register('brand')}
-              value={selectedBrands.join(', ') || '브랜드 3가지를 선택하세요'}
+              value={selectedBrands.join(', ') || ''}
               buttonLabel='선택하기'
               onButtonClick={openModal}
             />
           </Row>
           <Divider />
 
+          {/* 어깨너비 / 가슴둘레 */}
           <Row>
-            <InputField
-              label='어깨너비 cm (선택)'
-              id='shoulder'
-              type='text'
-              placeholder='어깨너비를 입력하세요'
-              error={errors.shoulder}
-              {...register('shoulder')}
+            <Controller
+              name='shoulder'
+              control={control}
+              render={({ field }) => (
+                <InputField
+                  label='어깨너비 (선택)'
+                  id='shoulder'
+                  value={field.value ?? ''}
+                  placeholder='어깨너비(cm)'
+                  error={errors.shoulder}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    const num = e.target.value.replace(/\D/g, '');
+                    field.onChange(num ? `${num}cm` : '');
+                  }}
+                />
+              )}
             />
-            <InputField
-              label='가슴둘레 cm (선택)'
-              id='chest'
-              type='text'
-              placeholder='가슴둘레를 입력하세요'
-              error={errors.chest}
-              {...register('chest')}
+            <Controller
+              name='chest'
+              control={control}
+              render={({ field }) => (
+                <InputField
+                  label='가슴둘레 (선택)'
+                  id='chest'
+                  value={field.value ?? ''}
+                  placeholder='가슴둘레(cm)'
+                  error={errors.chest}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    const num = e.target.value.replace(/\D/g, '');
+                    field.onChange(num ? `${num}cm` : '');
+                  }}
+                />
+              )}
             />
           </Row>
 
+          {/* 허리둘레 / 소매길이 */}
           <Row>
-            <InputField
-              label='허리둘레 cm (선택)'
-              id='waist'
-              type='text'
-              placeholder='허리둘레를 입력하세요'
-              error={errors.waist}
-              {...register('waist')}
+            <Controller
+              name='waist'
+              control={control}
+              render={({ field }) => (
+                <InputField
+                  label='허리둘레 (선택)'
+                  id='waist'
+                  value={field.value ?? ''}
+                  placeholder='허리둘레(cm)'
+                  error={errors.waist}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    const num = e.target.value.replace(/\D/g, '');
+                    field.onChange(num ? `${num}cm` : '');
+                  }}
+                />
+              )}
             />
-            <InputField
-              label='소매길이 cm (선택)'
-              id='sleeve'
-              type='text'
-              placeholder='소매길이를 입력하세요'
-              error={errors.sleeve}
-              {...register('sleeve')}
+            <Controller
+              name='sleeve'
+              control={control}
+              render={({ field }) => (
+                <InputField
+                  label='소매길이 (선택)'
+                  id='sleeve'
+                  value={field.value ?? ''}
+                  placeholder='소매길이(cm)'
+                  error={errors.sleeve}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    const num = e.target.value.replace(/\D/g, '');
+                    field.onChange(num ? `${num}cm` : '');
+                  }}
+                />
+              )}
             />
           </Row>
         </Form>
 
+        {/* 모달 & 버튼 */}
         <Modal
           isOpen={isModalOpen}
           onClose={closeModal}
@@ -215,26 +249,22 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  background-color: #fff;
+  background: #fff;
   padding: 1rem;
 `;
-
 const Form = styled.form`
+  width: 100%;
   display: flex;
   flex-direction: column;
-
-  width: 100%;
 `;
-
 const Row = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 1rem;
+  margin-bottom: 1rem;
 `;
-
 const Divider = styled.hr`
   border: none;
   width: 100%;
-  border: 1px solid #eeeeee;
-  margin-top: 30px;
+  border-top: 1px solid #eee;
+  margin: 1.5rem 0;
 `;
