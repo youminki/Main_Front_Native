@@ -1,4 +1,3 @@
-// src/pages/MyStyle.tsx
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
@@ -9,6 +8,7 @@ import Theme from '../styles/Theme';
 import Modal from '../components/Melpik/CreateMelpik/Settings/Modal';
 import { CustomSelect } from '../components/CustomSelect';
 import FixedBottomBar from '../components/FixedBottomBar';
+import ReusableModal from '../components/ReusableModal';
 import { getUserStyle, updateUserStyle, UserStyle } from '../api/user/userApi';
 
 interface FormData {
@@ -74,6 +74,11 @@ const MyStyle: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
+  // ReusableModal 상태
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackTitle, setFeedbackTitle] = useState<string>();
+  const [feedbackMessage, setFeedbackMessage] = useState<string>();
+
   useEffect(() => {
     (async () => {
       try {
@@ -110,10 +115,18 @@ const MyStyle: React.FC = () => {
         sleeveLength: form.sleeve ? parseFloat(form.sleeve) : undefined,
       };
       await updateUserStyle(payload);
-      alert('스타일 정보가 업데이트되었습니다.');
+
+      // 성공 메시지
+      setFeedbackTitle('성공');
+      setFeedbackMessage('스타일 정보가 업데이트되었습니다.');
+      setFeedbackOpen(true);
     } catch (e) {
       console.error(e);
-      alert('업데이트 중 오류가 발생했습니다.');
+
+      // 에러 메시지
+      setFeedbackTitle('오류');
+      setFeedbackMessage('업데이트 중 오류가 발생했습니다.');
+      setFeedbackOpen(true);
     }
   };
 
@@ -136,7 +149,6 @@ const MyStyle: React.FC = () => {
   return (
     <ThemeProvider theme={Theme}>
       <Container>
-        {/* onSubmit 제거한 일반 div */}
         <FormWrapper>
           {/* 키, 몸무게 */}
           <Row>
@@ -321,6 +333,17 @@ const MyStyle: React.FC = () => {
           color='yellow'
           onClick={() => handleSubmit(onSubmit)()}
         />
+
+        {/* 성공/오류 피드백 모달 */}
+        <ReusableModal
+          isOpen={feedbackOpen}
+          onClose={() => setFeedbackOpen(false)}
+          title={feedbackTitle}
+          width='260px'
+          height='200px'
+        >
+          <p>{feedbackMessage}</p>
+        </ReusableModal>
       </Container>
     </ThemeProvider>
   );
@@ -338,7 +361,6 @@ const Container = styled.div`
   max-width: 600px;
   margin: 0 auto;
 `;
-// onSubmit 제거된 wrapper
 const FormWrapper = styled.div`
   width: 100%;
   display: flex;

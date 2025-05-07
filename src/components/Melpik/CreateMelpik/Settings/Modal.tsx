@@ -1,5 +1,5 @@
 // src/components/Melpik/CreateMelpik/Settings/Modal.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Theme from '../../../../styles/Theme';
 import ReusableModal2 from '../../../../components/ReusableModal2.tsx';
@@ -8,7 +8,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (brands: string[]) => void;
-  selectedBrands: string[];
+  selectedBrands: string[]; // 부모에서 내려오는 현재 저장된 brands
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -40,16 +40,22 @@ const Modal: React.FC<ModalProps> = ({
     '지컷 (G-cut)',
   ];
 
-  const [selectedBrands, setSelectedBrands] = useState<string[]>(
-    initialSelectedBrands
-  );
+  // 내부 선택 상태
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+
+  // 부모로부터 받은 값이 바뀔 때마다 내부 상태 동기화
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedBrands(initialSelectedBrands);
+    }
+  }, [initialSelectedBrands, isOpen]);
+
   const [warningModalVisible, setWarningModalVisible] = useState(false);
   const [cancelConfirmationVisible, setCancelConfirmationVisible] =
     useState(false);
 
   const handleBrandSelect = (brand: string) => {
-    const isSelected = selectedBrands.includes(brand);
-    if (isSelected) {
+    if (selectedBrands.includes(brand)) {
       setSelectedBrands((prev) => prev.filter((b) => b !== brand));
     } else if (selectedBrands.length < 3) {
       setSelectedBrands((prev) => [...prev, brand]);
@@ -106,6 +112,7 @@ const Modal: React.FC<ModalProps> = ({
         </ModalOverlay>
       )}
 
+      {/* 경고 모달 */}
       <ReusableModal2
         isOpen={warningModalVisible}
         onClose={() => setWarningModalVisible(false)}
@@ -114,6 +121,7 @@ const Modal: React.FC<ModalProps> = ({
         <p>3가지 브랜드를 선택해야 합니다.</p>
       </ReusableModal2>
 
+      {/* 취소 확인 모달 */}
       <ReusableModal2
         isOpen={cancelConfirmationVisible}
         onClose={() => setCancelConfirmationVisible(false)}
@@ -148,6 +156,7 @@ const ModalContent = styled.div`
   width: 100%;
   max-width: 500px;
 
+  /* 최대 높이 제한 및 내부 스크롤 */
   max-height: 60vh;
   display: flex;
   flex-direction: column;
