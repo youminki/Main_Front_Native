@@ -1,3 +1,4 @@
+// src/pages/Home.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
@@ -25,30 +26,43 @@ const ITEMS_PER_LOAD = 20;
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [viewCols, setViewCols] = useState<number>(3);
-  const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // 모바일/데스크탑 판단
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    const onResize = () => setIsMobileView(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // 기본 컬럼 수: 모바일 2열, 데스크탑 4열
+  const [viewCols, setViewCols] = useState<number>(isMobileView ? 2 : 4);
+  useEffect(() => {
+    setViewCols(isMobileView ? 2 : 4);
+  }, [isMobileView]);
+
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+
+  // 카테고리/검색 쿼리
   const [selectedCategory, setSelectedCategory] = useState<string>(
     searchParams.get('categori') || 'Entire'
   );
   const [searchQuery, setSearchQuery] = useState<string>(
     searchParams.get('search') || ''
   );
-  const [barPosition, setBarPosition] = useState<number>(0);
 
+  // 제품 목록 & 페이징
   const [products, setProducts] = useState<ProductListItem[]>([]);
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // 상세 모달 ID
   const modalId = searchParams.get('id');
   const isModalOpen = Boolean(modalId);
   const [isFeatureModalOpen, setFeatureModalOpen] = useState<boolean>(false);
 
-  const selectCols = (n: number) => {
-    setViewCols(n);
-    setMenuOpen(false);
-  };
-
+  // URL 파라미터 동기화
   useEffect(() => {
     const c = searchParams.get('categori') || 'Entire';
     const s = searchParams.get('search') || '';
@@ -56,6 +70,7 @@ const Home: React.FC = () => {
     setSearchQuery(s);
   }, [searchParams]);
 
+  // 제품 불러오기
   useEffect(() => {
     const categoryKey =
       selectedCategory === 'Entire' ? 'all' : selectedCategory;
@@ -78,16 +93,7 @@ const Home: React.FC = () => {
     })();
   }, [selectedCategory]);
 
-  useEffect(() => {
-    const el = document.querySelector(
-      `[data-category=\"${selectedCategory}\"]`
-    ) as HTMLElement;
-    if (el) {
-      const { offsetLeft, offsetWidth } = el;
-      setBarPosition(offsetLeft + offsetWidth / 2 - 25);
-    }
-  }, [selectedCategory]);
-
+  // 필터링 및 무한스크롤
   const filtered = products.filter(
     (item) =>
       item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -95,16 +101,6 @@ const Home: React.FC = () => {
   );
   const hasMore = page * ITEMS_PER_LOAD < filtered.length;
   const displayedProducts = filtered.slice(0, page * ITEMS_PER_LOAD);
-
-  const uiItems: UIItem[] = displayedProducts.map((p) => ({
-    id: p.id.toString(),
-    image: p.image,
-    brand: p.brand,
-    description: p.description,
-    price: p.price,
-    discount: p.discount,
-    isLiked: p.isLiked,
-  }));
 
   useEffect(() => {
     if (!hasMore) return;
@@ -120,8 +116,21 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, [hasMore]);
 
+  // UI 아이템 생성
+  const uiItems: UIItem[] = displayedProducts.map((p) => ({
+    id: p.id.toString(),
+    image: p.image,
+    brand: p.brand,
+    description: p.description,
+    price: p.price,
+    discount: p.discount,
+    isLiked: p.isLiked,
+  }));
+
+  // 스크롤 투 탑
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
+  // 상세 모달 open/close
   const handleOpenModal = (id: string) => {
     const params: any = {
       ...(searchParams.get('categori') && { categori: selectedCategory }),
@@ -130,13 +139,21 @@ const Home: React.FC = () => {
     };
     setSearchParams(params, { replace: true });
   };
-
   const handleCloseModal = () => {
     const params = Object.fromEntries(searchParams.entries());
     delete params.id;
     setSearchParams(params, { replace: true });
     setFeatureModalOpen(false);
   };
+
+  // 드롭다운 열 개수 선택
+  const selectCols = (n: number) => {
+    setViewCols(n);
+    setMenuOpen(false);
+  };
+
+  // 드롭다운 옵션: 모바일 1–3, 데스크탑 4–6
+  const colOptions = isMobileView ? [1, 2, 3] : [4, 5, 6];
 
   return (
     <MainContainer>
@@ -146,9 +163,10 @@ const Home: React.FC = () => {
           setSearchQuery('');
           setSearchParams({ categori: cat }, { replace: true });
         }}
-        barPosition={barPosition}
+        barPosition={0}
         onCategoryClick={() => setSearchQuery('')}
       />
+
       <ControlsContainer ref={menuRef}>
         <DropdownToggle onClick={() => setMenuOpen((o) => !o)}>
           <FaTh size={20} />
@@ -156,13 +174,10 @@ const Home: React.FC = () => {
         <FilterContainer />
         {menuOpen && (
           <DropdownMenu>
-            {[1, 2, 3, 4, 5, 6].map((n) => (
+            {colOptions.map((n) => (
               <DropdownItem
                 key={n}
                 active={viewCols === n}
-                className={
-                  n <= 2 ? 'hide-desktop' : n >= 4 ? 'hide-mobile' : ''
-                }
                 onClick={() => selectCols(n)}
               >
                 <OptionNumber>{n}</OptionNumber>
@@ -181,10 +196,13 @@ const Home: React.FC = () => {
         />
         {isLoading && <Spinner />}
       </ContentWrapper>
+
       <Footer />
+
       <ScrollToTopButton onClick={scrollToTop}>
         <ArrowIconImg src={ArrowIconSvg} alt='위로 이동' />
       </ScrollToTopButton>
+
       {isModalOpen && modalId && (
         <>
           <ModalOverlay>
@@ -233,7 +251,7 @@ const Home: React.FC = () => {
 
 export default Home;
 
-/* styled components */
+// styled components
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -247,7 +265,7 @@ const ControlsContainer = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
-  margin: 8px 0px;
+  margin: 8px 0;
   position: relative;
 `;
 
@@ -267,10 +285,6 @@ const ScrollToTopButton = styled.button`
   cursor: pointer;
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   background: #f6ae24;
   border-radius: 6px;
   transition:
@@ -297,6 +311,7 @@ const ModalOverlay = styled.div`
   justify-content: center;
   z-index: 2000;
 `;
+
 const ModalBox = styled.div`
   background: #fff;
   width: 100%;
@@ -310,6 +325,7 @@ const ModalBox = styled.div`
     display: none;
   }
 `;
+
 const ModalHeaderWrapper = styled.div`
   position: fixed;
   top: 0;
@@ -319,26 +335,33 @@ const ModalHeaderWrapper = styled.div`
   background: #fff;
   z-index: 2100;
 `;
+
 const ModalHeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
 `;
+
 const ModalBody = styled.div``;
+
 const LeftSection = styled.div`
   cursor: pointer;
 `;
+
 const CenterSection = styled.div`
   flex: 1;
 `;
+
 const RightSection = styled.div`
   display: flex;
   gap: 19px;
 `;
+
 const CancelIcon = styled.img`
   cursor: pointer;
 `;
+
 const Icon = styled.img`
   cursor: pointer;
 `;
@@ -360,7 +383,7 @@ const DropdownToggle = styled.button`
 
 const DropdownMenu = styled.ul`
   position: absolute;
-  right: calc(50px + 0px);
+  right: calc(50px + 0);
   top: calc(5px + 36px);
   background: #fff;
   border: 1px solid #ddd;
@@ -385,17 +408,6 @@ const DropdownItem = styled.li<{ active: boolean }>`
   &:hover {
     background: #f5f5f5;
   }
-
-  &.hide-mobile {
-    @media (max-width: 768px) {
-      display: none;
-    }
-  }
-  &.hide-desktop {
-    @media (min-width: 769px) {
-      display: none;
-    }
-  }
 `;
 
 const OptionNumber = styled.span`
@@ -410,5 +422,5 @@ const OptionNumber = styled.span`
 const OptionText = styled.span`
   display: flex;
   align-items: center;
-  margin-left: 0;
+  margin-left: 4px;
 `;
