@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import StatsSection from '../../components/Brand/StatsSection';
@@ -99,15 +99,10 @@ const items = [
 const BrandDetail: React.FC = () => {
   const { brandName } = useParams<{ brandName: string }>();
   const brand = brands.find((b) => b.name === brandName);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [barPosition, setBarPosition] = useState<number>(0);
 
-  useEffect(() => {
-    const el = document.querySelector(
-      `[data-category="${selectedCategory}"]`
-    ) as HTMLElement;
-    if (el) setBarPosition(el.offsetLeft + el.offsetWidth / 2 - 25);
-  }, [selectedCategory]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (!brand) {
     return (
@@ -118,12 +113,12 @@ const BrandDetail: React.FC = () => {
     );
   }
 
-  const filtered =
+  const filteredItems =
     selectedCategory === 'all'
       ? items
       : items.filter((it) => it.category === selectedCategory);
 
-  const uiItems: UIItem[] = filtered.map((it) => ({
+  const uiItems: UIItem[] = filteredItems.map((it) => ({
     id: it.id.toString(),
     image: it.image,
     brand: it.brand,
@@ -132,8 +127,6 @@ const BrandDetail: React.FC = () => {
     discount: it.discount,
     isLiked: false,
   }));
-
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   return (
     <Container>
@@ -152,15 +145,15 @@ const BrandDetail: React.FC = () => {
       <SubHeader
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
-        barPosition={barPosition}
         onCategoryClick={scrollToTop}
       />
+
       <Content>
         <ItemList items={uiItems} />
       </Content>
 
       <ScrollToTopButton onClick={scrollToTop}>
-        <ArrowIcon xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+        <ArrowIcon viewBox='0 0 24 24'>
           <path d='M12 4l-8 8h6v8h4v-8h6z' />
         </ArrowIcon>
       </ScrollToTopButton>
@@ -170,6 +163,7 @@ const BrandDetail: React.FC = () => {
 
 export default BrandDetail;
 
+// Styled Components
 const Container = styled.div`
   display: flex;
   flex-direction: column;

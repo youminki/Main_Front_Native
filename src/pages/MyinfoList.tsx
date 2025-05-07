@@ -4,13 +4,7 @@ import styled from 'styled-components';
 import userInfoIcon from '../assets/Myinfo/UserInfoChangeIcon.svg';
 import passwordIcon from '../assets/Myinfo/PasswordChangeIcon.svg';
 import deliveryIcon from '../assets/Myinfo/DeliveryAdminIcon.svg';
-import {
-  FaChevronLeft,
-  FaPlus,
-  FaUserCircle,
-  FaLongArrowAltRight,
-} from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { FaPlus, FaUserCircle, FaLongArrowAltRight } from 'react-icons/fa';
 import ReusableModal2 from '../components/ReusableModal2';
 
 type ModalType = 'info' | 'password' | 'address' | null;
@@ -37,7 +31,6 @@ const MENU_ITEMS = [
 ];
 
 const MyinfoList: React.FC = () => {
-  const navigate = useNavigate();
   const [modalType, setModalType] = useState<ModalType>(null);
   const [account] = useState('4532**-**-***544 (국민)');
   const [notifyOn, setNotifyOn] = useState(false);
@@ -306,7 +299,6 @@ const StatusText = styled.div`
   font-size: 13px;
   color: #000;
 `;
-// 알림 받기 강조용
 const StrongText = styled.span`
   font-weight: 800;
 `;

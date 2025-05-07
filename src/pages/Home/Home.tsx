@@ -28,7 +28,7 @@ const Home: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // 모바일/데스크탑 판단
+  // 뷰타입
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
   useEffect(() => {
     const onResize = () => setIsMobileView(window.innerWidth < 768);
@@ -36,33 +36,33 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // 기본 컬럼 수: 모바일 2열, 데스크탑 4열
-  const [viewCols, setViewCols] = useState<number>(isMobileView ? 2 : 4);
+  // 컬럼 수
+  const [viewCols, setViewCols] = useState(isMobileView ? 2 : 4);
   useEffect(() => {
     setViewCols(isMobileView ? 2 : 4);
   }, [isMobileView]);
 
-  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // 카테고리/검색 쿼리
-  const [selectedCategory, setSelectedCategory] = useState<string>(
+  // 카테고리/검색
+  const [selectedCategory, setSelectedCategory] = useState(
     searchParams.get('categori') || 'Entire'
   );
-  const [searchQuery, setSearchQuery] = useState<string>(
+  const [searchQuery, setSearchQuery] = useState(
     searchParams.get('search') || ''
   );
 
-  // 제품 목록 & 페이징
+  // 제품 & 페이징
   const [products, setProducts] = useState<ProductListItem[]>([]);
-  const [page, setPage] = useState<number>(1);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // 상세 모달 ID
+  // 상세 모달
   const modalId = searchParams.get('id');
   const isModalOpen = Boolean(modalId);
-  const [isFeatureModalOpen, setFeatureModalOpen] = useState<boolean>(false);
+  const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
 
-  // URL 파라미터 동기화
+  // URL 동기화
   useEffect(() => {
     const c = searchParams.get('categori') || 'Entire';
     const s = searchParams.get('search') || '';
@@ -70,7 +70,7 @@ const Home: React.FC = () => {
     setSearchQuery(s);
   }, [searchParams]);
 
-  // 제품 불러오기
+  // 제품 로드
   useEffect(() => {
     const categoryKey =
       selectedCategory === 'Entire' ? 'all' : selectedCategory;
@@ -93,7 +93,7 @@ const Home: React.FC = () => {
     })();
   }, [selectedCategory]);
 
-  // 필터링 및 무한스크롤
+  // 필터 & 무한스크롤
   const filtered = products.filter(
     (item) =>
       item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -116,7 +116,6 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, [hasMore]);
 
-  // UI 아이템 생성
   const uiItems: UIItem[] = displayedProducts.map((p) => ({
     id: p.id.toString(),
     image: p.image,
@@ -127,10 +126,9 @@ const Home: React.FC = () => {
     isLiked: p.isLiked,
   }));
 
-  // 스크롤 투 탑
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // 상세 모달 open/close
+  // 모달 핸들러
   const handleOpenModal = (id: string) => {
     const params: any = {
       ...(searchParams.get('categori') && { categori: selectedCategory }),
@@ -146,13 +144,11 @@ const Home: React.FC = () => {
     setFeatureModalOpen(false);
   };
 
-  // 드롭다운 열 개수 선택
   const selectCols = (n: number) => {
     setViewCols(n);
     setMenuOpen(false);
   };
 
-  // 드롭다운 옵션: 모바일 1–3, 데스크탑 4–6
   const colOptions = isMobileView ? [1, 2, 3] : [4, 5, 6];
 
   return (
@@ -163,7 +159,6 @@ const Home: React.FC = () => {
           setSearchQuery('');
           setSearchParams({ categori: cat }, { replace: true });
         }}
-        barPosition={0}
         onCategoryClick={() => setSearchQuery('')}
       />
 
@@ -250,6 +245,8 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
+// styled components...
 
 // styled components
 const MainContainer = styled.div`
