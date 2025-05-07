@@ -37,37 +37,35 @@ const PaypleTest: React.FC = () => {
   }, []);
 
   const payWithCard = useCallback(async () => {
-    setError(null);
-    setSuccessMessage(null);
-    try {
-      // TODO: 실제 authKey, payReqKey는 서버에서 DB 조회로 처리할 수 있도록 사용자 인증 기반으로 구성
-      const body = {
-        payerId: 'd292WFRocmJuYlJOWnAvbmtTamdJQT09',
-        authKey: '등록 시 받은 PCD_AUTH_KEY',
-        payReqKey: '등록 시 받은 PCD_PAY_REQKEY',
-        goods: '결제 상품명',
-        amount: 100,
-      };
+  setError(null);
+  setSuccessMessage(null);
+  try {
+    const body = {
+      payerId: 'd292WFRocmJuYlJOWnAvbmtTamdJQT09', // 실제 등록된 사용자 ID (DB에서 발급한 billing key)
+      goods: '결제 상품명',
+      amount: 100,
+    };
 
-      const res = await fetch('https://api.stylewh.com/payple/pay', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
+    const res = await fetch('https://api.stylewh.com/payple/pay', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
 
-      const result = await res.json();
+    const result = await res.json();
 
-      if (res.ok) {
-        console.log('[✅] 결제 성공:', result);
-        setSuccessMessage('결제가 성공적으로 완료되었습니다.');
-      } else {
-        throw new Error(result.message || '결제 실패');
-      }
-    } catch (e: any) {
-      console.error('[🔥] 결제 오류:', e);
-      setError('결제 중 오류 발생: ' + e.message);
+    if (res.ok) {
+      console.log('[✅] 결제 성공:', result);
+      setSuccessMessage('결제가 성공적으로 완료되었습니다.');
+    } else {
+      throw new Error(result.message || '결제 실패');
     }
-  }, []);
+  } catch (e: any) {
+    console.error('[🔥] 결제 오류:', e);
+    setError('결제 중 오류 발생: ' + e.message);
+  }
+}, []);
+
 
   return (
     <SContainer>
