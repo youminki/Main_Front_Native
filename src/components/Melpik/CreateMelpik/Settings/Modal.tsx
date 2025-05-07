@@ -1,3 +1,4 @@
+// src/components/Melpik/CreateMelpik/Settings/Modal.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Theme from '../../../../styles/Theme';
@@ -144,11 +145,13 @@ const ModalOverlay = styled.div`
 const ModalContent = styled.div`
   background-color: ${Theme.colors.white};
   padding: 20px;
-  max-width: 500px;
   width: 100%;
-  height: 670px;
+  max-width: 500px;
+
+  max-height: 60vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 `;
 
 const ModalHeader = styled.div`
@@ -169,11 +172,11 @@ const GrayLine = styled.hr`
   border: none;
   width: 100%;
   border: 1px solid ${Theme.colors.gray0};
-  margin: 20px 0;
 `;
 
 const ModalBody = styled.div`
-  flex-grow: 1;
+  flex: 1;
+  overflow-y: auto;
 `;
 
 const BrandSelectionGrid = styled.div`
@@ -193,21 +196,19 @@ const BrandOption = styled.div<{ selected: boolean }>`
       : `1px solid ${Theme.colors.gray1}`};
   text-align: center;
   cursor: pointer;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   font-weight: 800;
   font-size: 12px;
   line-height: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ButtonRow = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  margin-top: auto;
+  margin-top: 10px;
 `;
 
 const CancelButton = styled.button`
@@ -218,7 +219,6 @@ const CancelButton = styled.button`
   border: none;
   border-radius: 6px;
   cursor: pointer;
-
   font-weight: 800;
   font-size: 16px;
 `;

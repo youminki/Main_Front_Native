@@ -136,7 +136,8 @@ const MyStyle: React.FC = () => {
   return (
     <ThemeProvider theme={Theme}>
       <Container>
-        <Form onSubmit={handleSubmit(onSubmit)}>
+        {/* onSubmit 제거한 일반 div */}
+        <FormWrapper>
           {/* 키, 몸무게 */}
           <Row>
             <InputField
@@ -174,7 +175,7 @@ const MyStyle: React.FC = () => {
 
           <Divider />
 
-          {/* 🚀원피스·상의·하의 (Controller 적용) */}
+          {/* 원피스·상의·하의 */}
           <Row>
             {(['dress', 'top', 'bottom'] as const).map((field) => {
               const labels = {
@@ -306,7 +307,7 @@ const MyStyle: React.FC = () => {
               )}
             />
           </Row>
-        </Form>
+        </FormWrapper>
 
         <Modal
           isOpen={isModalOpen}
@@ -327,6 +328,7 @@ const MyStyle: React.FC = () => {
 
 export default MyStyle;
 
+// Form 대신 div로 감싸기
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -336,7 +338,8 @@ const Container = styled.div`
   max-width: 600px;
   margin: 0 auto;
 `;
-const Form = styled.form`
+// onSubmit 제거된 wrapper
+const FormWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
