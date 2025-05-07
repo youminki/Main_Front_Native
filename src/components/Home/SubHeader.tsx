@@ -1,5 +1,5 @@
 // src/components/Header/SubHeader.tsx
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSearchParams } from 'react-router-dom';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
@@ -13,14 +13,12 @@ import JumpSuit from '../../assets/SubHeader/JumpSuit.svg';
 import Blouse from '../../assets/SubHeader/Blouse.svg';
 import KnitTop from '../../assets/SubHeader/KnitTop.svg';
 import ShirtTop from '../../assets/SubHeader/ShirtTop.svg';
-
 import MiniSkirt from '../../assets/SubHeader/MiniSkirt.svg';
 import MidiSkirt from '../../assets/SubHeader/MidiSkirt.svg';
 import LongSkirt from '../../assets/SubHeader/LongSkirt.svg';
 import Pants from '../../assets/SubHeader/Pants.svg';
 import Jacket from '../../assets/SubHeader/Jacket.svg';
 import Coat from '../../assets/SubHeader/Coat.svg';
-
 import Top from '../../assets/SubHeader/Top.svg';
 import Tshirt from '../../assets/SubHeader/Tshirt.svg';
 import Cardigan from '../../assets/SubHeader/Cardigan.svg';
@@ -33,19 +31,16 @@ const homeIcons = [
   { src: MidiDress, alt: '미디원피스', category: 'MidiDress' },
   { src: LongDress, alt: '롱 원피스', category: 'LongDress' },
   { src: TowDress, alt: '투피스', category: 'TowDress' },
-
   { src: JumpSuit, alt: '점프수트', category: 'JumpSuit' },
   { src: Blouse, alt: '블라우스', category: 'Blouse' },
   { src: KnitTop, alt: '니트 상의', category: 'KnitTop' },
   { src: ShirtTop, alt: '셔츠 상의', category: 'ShirtTop' },
   { src: MiniSkirt, alt: '미니 스커트', category: 'MiniSkirt' },
-
   { src: MidiSkirt, alt: '미디 스커트', category: 'MidiSkirt' },
   { src: LongSkirt, alt: '롱 스커트', category: 'LongSkirt' },
   { src: Pants, alt: '팬츠', category: 'Pants' },
   { src: Jacket, alt: '자켓', category: 'Jacket' },
   { src: Coat, alt: '코트', category: 'Coat' },
-
   { src: Top, alt: '탑', category: 'Top' },
   { src: Tshirt, alt: '티셔츠', category: 'Tshirt' },
   { src: Cardigan, alt: '가디건', category: 'Cardigan' },
@@ -57,7 +52,6 @@ interface SubHeaderProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
   onCategoryClick: () => void;
-  barPosition: number;
 }
 
 const ICON_WIDTH = 80;
@@ -67,10 +61,10 @@ const SubHeader: React.FC<SubHeaderProps> = ({
   selectedCategory,
   setSelectedCategory,
   onCategoryClick,
-  barPosition,
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const iconsRef = useRef<HTMLDivElement>(null);
+  const [indicatorPos, setIndicatorPos] = useState(0);
 
   const handleClick = (category: string) => {
     const newParams = new URLSearchParams(searchParams.toString());
@@ -90,6 +84,20 @@ const SubHeader: React.FC<SubHeaderProps> = ({
       behavior: 'smooth',
     });
   };
+
+  // 선택된 카테고리가 바뀔 때마다 Indicator 위치 계산
+  useEffect(() => {
+    if (!iconsRef.current) return;
+    const container = iconsRef.current;
+    const selectedEl = container.querySelector<HTMLDivElement>(
+      `[data-category="${selectedCategory}"]`
+    );
+    if (selectedEl) {
+      const offsetLeft = selectedEl.offsetLeft;
+      const centerOffset = (ICON_WIDTH - INDICATOR_WIDTH) / 2;
+      setIndicatorPos(offsetLeft + centerOffset);
+    }
+  }, [selectedCategory]);
 
   return (
     <SubHeaderWrapper>
@@ -113,7 +121,7 @@ const SubHeader: React.FC<SubHeaderProps> = ({
               </IconContainer>
             );
           })}
-          <Indicator position={barPosition} />
+          <Indicator position={indicatorPos} />
         </IconsWrapper>
 
         <ArrowButtonWrapper onClick={() => scroll('right')}>
@@ -132,10 +140,9 @@ const SubHeaderWrapper = styled.div`
   top: 50px;
   left: 0;
   right: 0;
-  height: 130px; /* 실제 헤더 높이로 조정하세요 */
+  height: 130px;
   z-index: 1000;
   background: #fff;
-
   display: flex;
   justify-content: center;
 `;
