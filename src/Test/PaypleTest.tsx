@@ -11,15 +11,44 @@ declare global {
 const PaypleTest: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [userInfo, setUserInfo] = useState<{ userId: string; userName: string; userEmail: string } | null>(null);
+
+  // ✅ 로그인 유저 정보 로딩
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const res = await fetch('https://api.stylewh.com/users/me', {
+          credentials: 'include', // 쿠키 인증 필요 시
+        });
+        const data = await res.json();
+        setUserInfo({
+          userId: String(data.id),
+          userName: data.name,
+          userEmail: data.email,
+        });
+      } catch (e) {
+        console.error('[🔥] 유저 정보 로딩 실패', e);
+        setError('로그인 정보를 불러오는 데 실패했습니다.');
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const registerCard = useCallback(async () => {
     setError(null);
     setSuccessMessage(null);
+
+    if (!userInfo) {
+      setError('로그인 정보를 불러올 수 없습니다.');
+      return;
+    }
+
     try {
       const params = new URLSearchParams({
-        userId: '70',
-        userName: '황민서',
-        userEmail: 'seehm1541@gmail.com',
+        userId: userInfo.userId,
+        userName: userInfo.userName,
+        userEmail: userInfo.userEmail,
       });
 
       const url = `https://api.stylewh.com/payple/card-register-data?${params}`;
@@ -32,7 +61,7 @@ const PaypleTest: React.FC = () => {
 
       window.PaypleCpayAuthCheck({
         ...data,
-        PCD_PAY_WORK: 'CERT', // ✅ 카드 등록만
+        PCD_PAY_WORK: 'CERT',
         PCD_SIMPLE_FLAG: 'Y',
         PCD_PAYER_AUTHTYPE: 'pwd',
       });
@@ -40,18 +69,23 @@ const PaypleTest: React.FC = () => {
       console.error('[🔥] 카드 등록 오류:', e);
       setError('카드 등록 중 오류 발생');
     }
-  }, []);
+  }, [userInfo]);
 
   useEffect(() => {
     window.PCD_PAY_CALLBACK = async (result: any) => {
       console.log('[✅ Payple 결과 수신]', JSON.stringify(result, null, 2));
+
+      if (!userInfo) {
+        setError('로그인 정보를 찾을 수 없습니다.');
+        return;
+      }
 
       try {
         const res = await fetch('https://api.stylewh.com/payple/simple-pay-result', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            userId: '70',
+            userId: userInfo.userId,
             payerId: result.PCD_PAYER_ID,
             payReqKey: result.PCD_PAY_REQKEY,
             authKey: result.PCD_AUTH_KEY,
@@ -74,12 +108,12 @@ const PaypleTest: React.FC = () => {
         setError('백엔드 처리 중 오류: ' + e.message);
       }
     };
-  }, []);
+  }, [userInfo]);
 
   return (
     <SContainer>
       <STitle>Payple 카드 등록</STitle>
-      <SButton onClick={registerCard}>카드 등록하기</SButton>
+      <SButton onClick={registerCard} disabled={!userInfo}>카드 등록하기</SButton>
       {error && <SMessage type="error">{error}</SMessage>}
       {successMessage && <SMessage>{successMessage}</SMessage>}
     </SContainer>
@@ -87,32 +121,3 @@ const PaypleTest: React.FC = () => {
 };
 
 export default PaypleTest;
-
-// 스타일
-const SContainer = styled.div`
-  max-width: 480px;
-  margin: 40px auto;
-  padding: 24px;
-  text-align: center;
-`;
-
-const STitle = styled.h1`
-  margin-bottom: 24px;
-  font-size: 1.5rem;
-`;
-
-const SButton = styled.button`
-  margin: 8px;
-  padding: 12px 24px;
-  font-size: 1rem;
-  color: white;
-  background: #fa9a00;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-`;
-
-const SMessage = styled.p<{ type?: 'error' }>`
-  margin-top: 16px;
-  color: ${({ type }) => (type === 'error' ? '#d32f2f' : '#2e7d32')};
-`;
