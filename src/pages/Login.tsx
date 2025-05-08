@@ -33,7 +33,7 @@ const Login: React.FC = () => {
       const response = await LoginPost(data.email, data.password);
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
-      navigate('/home');
+      navigate('/home', { replace: true, state: { showNotice: true } });
     } catch (error: any) {
       setModalMessage(error?.message || '로그인 실패. 다시 시도해주세요.');
       setIsModalOpen(true);

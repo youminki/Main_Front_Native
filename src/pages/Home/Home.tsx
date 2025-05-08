@@ -1,6 +1,6 @@
 // src/pages/Home.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import Spinner from '../../components/Spinner';
 import ItemList, { UIItem } from '../../components/Home/ItemList';
@@ -25,10 +25,23 @@ const ITEMS_PER_LOAD = 20;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation<{ showNotice?: boolean }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // 뷰타입
+  // --- 알림 공지 모달: 로그인→홈 이동 시에만 띄우기 ---
+  const noticeMessage = `
+금일 오전에 카드등록 및 결제가 PG사 연결 지연으로 오후에 진행하게 되었습니다.
+중요한 결제이니 만큼 신중하게 처리 후 좋은 서비스로 보답 드리겠습니다.
+계속 기다리게 해드려서 죄송합니다. 조금만 더 기다려 주세요 :)
+  `;
+  // location.state.showNotice 가 true 면 모달 열기
+  const [isNoticeOpen, setNoticeOpen] = useState<boolean>(
+    Boolean(location.state?.showNotice)
+  );
+
+  // --- 이하 기존 로직 동일 ---
+  // 모바일 뷰 여부
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
   useEffect(() => {
     const onResize = () => setIsMobileView(window.innerWidth < 768);
@@ -42,6 +55,7 @@ const Home: React.FC = () => {
     setViewCols(isMobileView ? 2 : 4);
   }, [isMobileView]);
 
+  // 메뉴 열림 토글
   const [menuOpen, setMenuOpen] = useState(false);
 
   // 카테고리/검색
@@ -128,7 +142,7 @@ const Home: React.FC = () => {
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // 모달 핸들러
+  // 상세 모달 핸들러
   const handleOpenModal = (id: string) => {
     const params: any = {
       ...(searchParams.get('categori') && { categori: selectedCategory }),
@@ -144,15 +158,38 @@ const Home: React.FC = () => {
     setFeatureModalOpen(false);
   };
 
+  // 컬럼 옵션 선택
   const selectCols = (n: number) => {
     setViewCols(n);
     setMenuOpen(false);
   };
-
   const colOptions = isMobileView ? [1, 2, 3] : [4, 5, 6];
 
   return (
     <MainContainer>
+      {/* 알림 공지 모달: 로그인→홈 이동 시에만 뜸 */}
+      <ReusableModal
+        isOpen={isNoticeOpen}
+        onClose={() => setNoticeOpen(false)}
+        title='알림 공지'
+      >
+        <ModalContent>
+          <NoticeTitle>PG사 결제 지연 안내</NoticeTitle>
+          <NoticeParagraph>
+            금일 오전에 카드등록 및 결제가 PG사 연결 지연으로 오후에 진행하게
+            되었습니다.
+          </NoticeParagraph>
+          <NoticeParagraph>
+            중요한 결제이니만큼 신중하게 처리 후 좋은 서비스로 보답
+            드리겠습니다.
+          </NoticeParagraph>
+          <NoticeParagraph>
+            계속 기다리게 해드려서 죄송합니다. 조금만 더 기다려 주세요 :)
+          </NoticeParagraph>
+        </ModalContent>
+      </ReusableModal>
+
+      {/* 이하 기존 UI */}
       <SubHeader
         selectedCategory={selectedCategory}
         setSelectedCategory={(cat) => {
@@ -247,8 +284,6 @@ const Home: React.FC = () => {
 export default Home;
 
 // styled components...
-
-// styled components
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -420,4 +455,24 @@ const OptionText = styled.span`
   display: flex;
   align-items: center;
   margin-left: 4px;
+`;
+
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  line-height: 1.6;
+  color: #333;
+  font-size: 14px;
+`;
+
+const NoticeTitle = styled.h3`
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+`;
+
+const NoticeParagraph = styled.p`
+  margin: 0;
 `;
