@@ -121,3 +121,51 @@ const PaypleTest: React.FC = () => {
 };
 
 export default PaypleTest;
+
+
+// 스타일
+const SContainer = styled.div`
+  max-width: 480px;
+  margin: 60px auto;
+  padding: 32px;
+  border-radius: 12px;
+  background-color: #fff8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+`;
+
+const STitle = styled.h1`
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 24px;
+`;
+
+const SButton = styled.button`
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 500;
+  background-color: #fa9a00;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background-color: #e08800;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
+const SMessage = styled.p<{ type?: 'error' }>`
+  margin-top: 20px;
+  font-size: 0.95rem;
+  color: ${({ type }) => (type === 'error' ? '#d32f2f' : '#2e7d32')};
+  font-weight: 500;
+`;
+
