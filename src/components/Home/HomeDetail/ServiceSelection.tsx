@@ -20,7 +20,9 @@ const ServiceSelection: React.FC<ServiceSelectionProps> = ({
       >
         <option value=''>서비스 선택 (대여 or 구매)</option>
         <option value='rental'>대여</option>
-        <option value='purchase'>구매</option>
+        <option value='purchase' disabled>
+          구매 (준비중)
+        </option>
       </Select>
     </ServiceContainer>
   );
@@ -55,5 +57,10 @@ const Select = styled.select`
   &:focus {
     outline: none;
     border-color: ${Theme.colors.black};
+  }
+
+  // disabled 상태 스타일링 (선택사항)
+  option:disabled {
+    color: ${Theme.colors.gray};
   }
 `;
