@@ -45,35 +45,38 @@ const PaypleTest: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    window.PCD_PAY_CALLBACK = async (result: any) => {
-      console.log('[✅ Payple 결과 수신]', result);
+  window.PCD_PAY_CALLBACK = async (result: any) => {
+    console.log('[✅ Payple 결과 수신]', result);
 
-      try {
-        const res = await fetch('https://api.stylewh.com/payple/simple-pay-result', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            payerId: result.PCD_PAYER_ID,
-            payReqKey: result.PCD_PAY_REQKEY,
-            authKey: result.PCD_AUTH_KEY,
-            goods: result.PCD_PAY_GOODS,
-            amount: Number(result.PCD_PAY_TOTAL),
-          }),
-        });
+    try {
+      const res = await fetch('https://api.stylewh.com/payple/simple-pay-result', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          payerId: result.PCD_PAYER_ID,
+          payReqKey: result.PCD_PAY_REQKEY,
+          authKey: result.PCD_AUTH_KEY,
+          goods: result.PCD_PAY_GOODS,
+          amount: Number(result.PCD_PAY_TOTAL),
+          cardName: result.PCD_PAY_CARDNAME,       // ✅ 카드 이름 추가
+          cardNumber: result.PCD_PAY_CARDNUM,      // ✅ 카드 번호 추가
+        }),
+      });
 
-        const data = await res.json();
+      const data = await res.json();
 
-        if (res.ok) {
-          setSuccessMessage(data.message || '카드 등록 및 결제 성공');
-        } else {
-          throw new Error(data.message || '결제 처리 실패');
-        }
-      } catch (e: any) {
-        console.error('[🔥] 서버 전송 오류:', e);
-        setError('백엔드 처리 중 오류: ' + e.message);
+      if (res.ok) {
+        setSuccessMessage(data.message || '카드 등록 및 결제 성공');
+      } else {
+        throw new Error(data.message || '결제 처리 실패');
       }
-    };
-  }, []);
+    } catch (e: any) {
+      console.error('[🔥] 서버 전송 오류:', e);
+      setError('백엔드 처리 중 오류: ' + e.message);
+    }
+  };
+}, []);
+
 
   return (
     <SContainer>
