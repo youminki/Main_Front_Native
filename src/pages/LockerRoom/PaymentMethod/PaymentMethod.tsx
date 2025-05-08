@@ -1,8 +1,8 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import StatsSection from '../../../components/StatsSection';
-import PeriodSection from '../../../components/PeriodSection';
+
 import CardIcon from '../../../assets/LockerRoom/CardIcon.svg';
 
 const visitLabel = '결제등록 카드';
@@ -18,17 +18,8 @@ interface CardData {
   isOrange?: boolean;
 }
 
-interface PaymentData {
-  date: string;
-  detail: string;
-  detailColor?: string;
-  price: string;
-}
-
 const PaymentMethod: React.FC = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState(6);
-  const [currentCard, setCurrentCard] = useState(0);
-  const cardsWrapperRef = useRef<HTMLDivElement>(null);
+  const [currentCard] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,33 +35,6 @@ const PaymentMethod: React.FC = () => {
     },
   ]);
 
-  const payments: PaymentData[] = [
-    {
-      date: '2025-03-10 / 이용권 결제',
-      detail: '정기결제',
-      detailColor: '#F6AE24',
-      price: '120,000',
-    },
-    {
-      date: '2025-03-08 / 제품구매',
-      detail: '일반결제',
-      detailColor: '#EF4523',
-      price: '260,000',
-    },
-    {
-      date: '2025-03-07 / 지연반납 결제',
-      detail: '일반결제',
-      detailColor: '#EF4523',
-      price: '10,000',
-    },
-    {
-      date: '2025-02-10 / 이용권 결제',
-      detail: '정기결제',
-      detailColor: '#F6AE24',
-      price: '120,000',
-    },
-  ];
-  
   useEffect(() => {
     const { state } = location;
     if (
@@ -78,23 +42,11 @@ const PaymentMethod: React.FC = () => {
       state.updatedCard !== undefined &&
       state.cardIndex !== undefined
     ) {
-      const { updatedCard, cardIndex } = state;
-
       const newCards = [...cards];
-      newCards[cardIndex] = updatedCard;
+      newCards[state.cardIndex] = state.updatedCard;
       setCards(newCards);
     }
-  }, [location.state, cards]);
-
-  const handleScroll = () => {
-    if (!cardsWrapperRef.current) return;
-    const scrollLeft = cardsWrapperRef.current.scrollLeft;
-    if (scrollLeft < 150) {
-      setCurrentCard(0);
-    } else {
-      setCurrentCard(1);
-    }
-  };
+  }, [location.state]);
 
   return (
     <PaymentMethodContainer>
@@ -112,87 +64,58 @@ const PaymentMethod: React.FC = () => {
       />
       <Divider />
 
-      <ScrollContainer>
-        <CardsWrapper ref={cardsWrapperRef} onScroll={handleScroll}>
-          {cards.map((card, idx) =>
-            card.isOrange ? (
-              <CardOrange
-                key={idx}
-                onClick={() =>
-                  navigate('/payment-method/cardDetail', {
-                    state: {
-                      cardIndex: idx,
-                      cardData: card,
-                    },
-                  })
-                }
-              >
-                <CardTop>
-                  <CardRegisterDate>{card.registerDate}</CardRegisterDate>
-                </CardTop>
-                <CardBody>
-                  <CardBrandRow>
-                    <CardIconImg src={CardIcon} alt='card icon' />
-                    <CardBrandText>{card.brand}</CardBrandText>
-                  </CardBrandRow>
-                  <CardNumber>{card.cardNumber}</CardNumber>
-                </CardBody>
-              </CardOrange>
-            ) : (
-              <CardWhite key={idx} onClick={() => navigate('/test/payple')}>
-                <PlusWrapper>
-                  <PlusBox>
-                    <PlusLineVert />
-                    <PlusLineHorz />
-                  </PlusBox>
-                  <CardAddText>카드 추가</CardAddText>
-                </PlusWrapper>
-              </CardWhite>
-            )
-          )}
-        </CardsWrapper>
+      <CardsContainer>
+        {cards.map((card, idx) =>
+          card.isOrange ? (
+            <CardOrange
+              key={idx}
+              onClick={() =>
+                navigate('/payment-method/cardDetail', {
+                  state: { cardIndex: idx, cardData: card },
+                })
+              }
+            >
+              <CardTop>
+                <CardRegisterDate>{card.registerDate}</CardRegisterDate>
+              </CardTop>
+              <CardBody>
+                <CardBrandRow>
+                  <CardIconImg src={CardIcon} alt='card icon' />
+                  <CardBrandText>{card.brand}</CardBrandText>
+                </CardBrandRow>
+                <CardNumber>{card.cardNumber}</CardNumber>
+              </CardBody>
+            </CardOrange>
+          ) : (
+            <CardWhite key={idx} onClick={() => navigate('/test/payple')}>
+              <PlusWrapper>
+                <PlusBox>
+                  <PlusLineVert />
+                  <PlusLineHorz />
+                </PlusBox>
+                <CardAddText>카드 추가</CardAddText>
+              </PlusWrapper>
+            </CardWhite>
+          )
+        )}
+      </CardsContainer>
 
-        <DotsContainer>
-          {cards.map((_, idx) => (
-            <Dot key={idx} active={currentCard === idx} />
-          ))}
-        </DotsContainer>
-
-        <PaymentList>
-          <PeriodSection
-            selectedPeriod={selectedPeriod}
-            setSelectedPeriod={setSelectedPeriod}
-          />
-
-          <TableHeader>
-            <LeftHeader>결제일자 / 결제내역</LeftHeader>
-            <RightHeader>변동 / 누적 (포인트)</RightHeader>
-          </TableHeader>
-
-          {payments.map((pay, idx) => (
-            <PaymentItem key={idx}>
-              <PaymentInfo>
-                <PaymentMainText>{pay.date}</PaymentMainText>
-                <PaymentSubText color={pay.detailColor}>
-                  {pay.detail}
-                </PaymentSubText>
-              </PaymentInfo>
-              <PaymentPrice>{pay.price}</PaymentPrice>
-            </PaymentItem>
-          ))}
-        </PaymentList>
-      </ScrollContainer>
+      <DotsContainer>
+        {cards.map((_, idx) => (
+          <Dot key={idx} active={currentCard === idx} />
+        ))}
+      </DotsContainer>
     </PaymentMethodContainer>
   );
 };
 
 export default PaymentMethod;
 
+// Styled Components
 const PaymentMethodContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
   background-color: #fff;
   padding: 1rem;
   max-width: 1000px;
@@ -210,8 +133,8 @@ const Title = styled.h1`
   font-weight: 800;
   font-size: 24px;
   line-height: 27px;
-  color: #000000;
-  margin-bottom: 0px;
+  color: #000;
+  margin-bottom: 0;
 `;
 
 const Subtitle = styled.p`
@@ -223,38 +146,35 @@ const Subtitle = styled.p`
 const Divider = styled.div`
   width: 100%;
   height: 1px;
-  background: #dddddd;
-  margin-top: 30px;
+  background: #ddd;
+  margin: 20px 0;
 `;
 
-const ScrollContainer = styled.div`
+const CardsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
-  background: #ffffff;
-  margin-top: 20px;
-  position: relative;
-`;
-
-const CardsWrapper = styled.div`
-  display: flex;
   gap: 20px;
-  overflow-x: scroll;
-  scroll-behavior: smooth;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  margin-bottom: 10px;
+  width: 100%;
+  max-width: 280px;
 `;
 
 const CardOrange = styled.div`
-  min-width: 280px;
   height: 180px;
   background: #f6ae24;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  position: relative;
+  cursor: pointer;
+`;
+
+const CardWhite = styled.div`
+  height: 180px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 `;
 
@@ -267,8 +187,7 @@ const CardTop = styled.div`
 const CardRegisterDate = styled.span`
   font-weight: 700;
   font-size: 10px;
-  line-height: 9px;
-  color: #ffffff;
+  color: #fff;
 `;
 
 const CardBody = styled.div`
@@ -277,7 +196,6 @@ const CardBody = styled.div`
   flex-direction: column;
   justify-content: center;
   margin-left: 20px;
-  margin-top: 30px;
 `;
 
 const CardBrandRow = styled.div`
@@ -295,28 +213,13 @@ const CardIconImg = styled.img`
 const CardBrandText = styled.span`
   font-weight: 700;
   font-size: 10px;
-  line-height: 9px;
-  color: #ffffff;
+  color: #fff;
 `;
 
 const CardNumber = styled.span`
   font-weight: 800;
   font-size: 14px;
-  line-height: 13px;
-  color: #ffffff;
-`;
-
-const CardWhite = styled.div`
-  min-width: 280px;
-  height: 180px;
-  background: #ffffff;
-  border: 1px solid #dddddd;
-  border-radius: 10px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  color: #fff;
 `;
 
 const PlusWrapper = styled.div`
@@ -330,8 +233,8 @@ const PlusBox = styled.div`
   width: 20px;
   height: 20px;
   position: relative;
-  background: #ffffff;
-  border: 1px solid #dddddd;
+  background: #fff;
+  border: 1px solid #ddd;
 `;
 
 const PlusLineVert = styled.div`
@@ -355,9 +258,7 @@ const PlusLineHorz = styled.div`
 const CardAddText = styled.span`
   font-weight: 800;
   font-size: 14px;
-  line-height: 15px;
-  text-align: center;
-  color: #dddddd;
+  color: #ddd;
 `;
 
 const DotsContainer = styled.div`
@@ -365,7 +266,7 @@ const DotsContainer = styled.div`
   justify-content: center;
   align-items: center;
   gap: 8px;
-  margin-bottom: 20px;
+  margin: 20px 0;
 `;
 
 const Dot = styled.div<{ active: boolean }>`
@@ -373,76 +274,4 @@ const Dot = styled.div<{ active: boolean }>`
   height: 10px;
   border-radius: 50%;
   background: ${({ active }) => (active ? '#F6AE24' : '#D9D9D9')};
-`;
-
-const PaymentList = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const TableHeader = styled.div`
-  display: flex;
-  align-items: center;
-  background: rgba(221, 221, 221, 0.96);
-  border: 1px solid #dddddd;
-  height: 40px;
-  margin-top: 10px;
-  padding: 0 20px;
-  justify-content: space-between;
-`;
-
-const LeftHeader = styled.span`
-  font-weight: 800;
-  font-size: 12px;
-  line-height: 11px;
-  color: #000000;
-`;
-
-const RightHeader = styled.span`
-  font-weight: 800;
-  font-size: 12px;
-  line-height: 11px;
-  color: #000000;
-  text-align: right;
-`;
-
-const PaymentItem = styled.div`
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid #dddddd;
-  height: 76px;
-  margin-top: 10px;
-  padding: 10px 20px;
-  justify-content: space-between;
-`;
-
-const PaymentInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-`;
-
-const PaymentMainText = styled.span`
-  font-weight: 800;
-  font-size: 14px;
-  line-height: 13px;
-  color: #000000;
-`;
-
-const PaymentSubText = styled.span<{ color?: string }>`
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 13px;
-  color: ${({ color }) => color || '#000000'};
-
-  margin-top: 5px;
-`;
-
-const PaymentPrice = styled.span`
-  font-weight: 800;
-  font-size: 16px;
-  line-height: 15px;
-  color: #000000;
-  text-align: right;
 `;
