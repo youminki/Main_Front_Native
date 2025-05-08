@@ -62,6 +62,8 @@ const PaypleTest: React.FC = () => {
           cardNumber: result.PCD_PAY_CARDNUM,      // ✅ 카드 번호 추가
         }),
       });
+      
+      console.log('[✅ Payple 결과 수신]', JSON.stringify(result, null, 2));
 
       const data = await res.json();
 
