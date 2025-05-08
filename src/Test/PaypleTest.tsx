@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 
 declare global {
   interface Window {
@@ -17,35 +16,35 @@ const PaypleTest: React.FC = () => {
     userName: string;
     userEmail: string;
   } | null>(null);
-  const navigate = useNavigate();
 
   // 로그인 유저 정보 로딩
-  useEffect(() => {
-    (async () => {
-      try {
-        const token = localStorage.getItem('accessToken'); // 또는 sessionStorage 등
-        if (!token) throw new Error('토큰이 없습니다.');
+useEffect(() => {
+  (async () => {
+    try {
+      const token = localStorage.getItem('accessToken'); // 또는 sessionStorage 등
+      if (!token) throw new Error('토큰이 없습니다.');
 
-        const res = await fetch('https://api.stylewh.com/user/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      const res = await fetch('https://api.stylewh.com/user/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-        if (!res.ok) throw new Error('로그인 정보 요청 실패');
-        const data = await res.json();
+      if (!res.ok) throw new Error('로그인 정보 요청 실패');
+      const data = await res.json();
 
-        setUserInfo({
-          userId: String(data.id),
-          userName: data.name,
-          userEmail: data.email,
-        });
-      } catch (e: any) {
-        console.error('[🔥] 유저 정보 로딩 실패', e);
-        setError('로그인 정보를 불러오는 데 실패했습니다.');
-      }
-    })();
-  }, []);
+      setUserInfo({
+        userId: String(data.id),
+        userName: data.name,
+        userEmail: data.email,
+      });
+    } catch (e: any) {
+      console.error('[🔥] 유저 정보 로딩 실패', e);
+      setError('로그인 정보를 불러오는 데 실패했습니다.');
+    }
+  })();
+}, []);
+
 
   // 카드 등록 요청
   const registerCard = useCallback(async () => {
@@ -106,7 +105,7 @@ const PaypleTest: React.FC = () => {
         if (!res.ok) throw new Error(data.message || '카드 등록 실패');
         setSuccessMessage(data.message || '카드 등록 완료');
         // 등록 완료 후 리다이렉트 및 새로고침
-        navigate('/payment-method', { replace: true });
+        window.location.href = 'https://me1pik.com/payment-method';
       } catch (e: any) {
         console.error('[🔥] 서버 전송 오류:', e);
         setError('백엔드 처리 중 오류: ' + e.message);
