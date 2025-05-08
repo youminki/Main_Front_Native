@@ -18,25 +18,33 @@ const PaypleTest: React.FC = () => {
   } | null>(null);
 
   // 로그인 유저 정보 로딩
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch('https://api.stylewh.com/user/me', {
-          credentials: 'include',
-        });
-        if (!res.ok) throw new Error('로그인 정보 요청 실패');
-        const data = await res.json();
-        setUserInfo({
-          userId: String(data.id),
-          userName: data.name,
-          userEmail: data.email,
-        });
-      } catch (e: any) {
-        console.error('[🔥] 유저 정보 로딩 실패', e);
-        setError('로그인 정보를 불러오는 데 실패했습니다.');
-      }
-    })();
-  }, []);
+useEffect(() => {
+  (async () => {
+    try {
+      const token = localStorage.getItem('accessToken'); // 또는 sessionStorage 등
+      if (!token) throw new Error('토큰이 없습니다.');
+
+      const res = await fetch('https://api.stylewh.com/user/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error('로그인 정보 요청 실패');
+      const data = await res.json();
+
+      setUserInfo({
+        userId: String(data.id),
+        userName: data.name,
+        userEmail: data.email,
+      });
+    } catch (e: any) {
+      console.error('[🔥] 유저 정보 로딩 실패', e);
+      setError('로그인 정보를 불러오는 데 실패했습니다.');
+    }
+  })();
+}, []);
+
 
   // 카드 등록 요청
   const registerCard = useCallback(async () => {
