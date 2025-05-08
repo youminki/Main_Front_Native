@@ -4,6 +4,8 @@ import styled from 'styled-components';
 export interface SizeInfoProps {
   productSizes: { size: string; measurements: Record<string, any> }[];
   size_picture: string;
+  /** key → label 매핑(서버에서 내려오는 값) */
+  labelGuide?: Record<string, string>;
 }
 
 const SIZE_PLACEHOLDER = '/images/size-placeholder.png';
@@ -15,7 +17,11 @@ const SIZE_LABELS: Record<string, string> = {
   '77': 'XL',
 };
 
-const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
+const SizeInfo: React.FC<SizeInfoProps> = ({
+  productSizes,
+  size_picture,
+  labelGuide,
+}) => {
   const [imgSrc, setImgSrc] = useState(size_picture);
   const handleImageError = () => setImgSrc(SIZE_PLACEHOLDER);
 
@@ -25,7 +31,13 @@ const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
 
   const measurementKeys = Object.keys(productSizes[0].measurements || {});
   const sortedKeys = measurementKeys.sort((a, b) => a.localeCompare(b));
-  const alphaLabels = sortedKeys.map((_, idx) => String.fromCharCode(65 + idx));
+
+  // 서버에서 labelGuide가 내려오면 그 값을, 아니면 알파벳 순서 기본 라벨
+  const columnLabels = sortedKeys.map((key, idx) =>
+    labelGuide && labelGuide[key]
+      ? labelGuide[key]
+      : String.fromCharCode(65 + idx)
+  );
 
   const formatSize = (raw: string) => {
     if (/free/i.test(raw)) return 'Free';
@@ -60,8 +72,8 @@ const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
           <thead>
             <Row>
               <Header>사이즈</Header>
-              {alphaLabels.map((label) => (
-                <Header key={label}>{label}</Header>
+              {columnLabels.map((lbl, i) => (
+                <Header key={i}>{lbl}</Header>
               ))}
             </Row>
           </thead>
@@ -86,6 +98,7 @@ const SizeInfo: React.FC<SizeInfoProps> = ({ productSizes, size_picture }) => {
 
 export default SizeInfo;
 
+/* Styled Components */
 const Container = styled.div`
   width: 100%;
   display: flex;

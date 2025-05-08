@@ -13,10 +13,8 @@ import PaymentMethod from '../../components/Home/HomeDetail/PaymentMethod';
 import SizeInfo from '../../components/Home/HomeDetail/SizeInfo';
 import MaterialInfo from '../../components/Home/HomeDetail/MaterialInfo';
 import ProductDetails from '../../components/Home/HomeDetail/ProductDetails';
-// import BottomBar from '../../components/Home/HomeDetail/BottomBar';
 import ServiceSelection from '../../components/Home/HomeDetail/ServiceSelection';
 import RentalOptions from '../../components/Home/HomeDetail/RentalOptions';
-// import ShoppingBasket from '../../assets/Home/HomeDetail/ShoppingBasket.svg';
 
 interface ProductDetail {
   id: number;
@@ -42,6 +40,8 @@ interface ProductDetail {
   fit: string;
   color: string;
   product_url: string;
+  /** 서버에서 내려오는 수정된 사이즈 라벨 가이드 */
+  size_label_guide?: Record<string, string>;
 }
 
 type HomeDetailProps = { id?: string };
@@ -98,9 +98,10 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     getProductInfo(Number(id))
       .then((res) => {
         const api = res.product as APIProductDetail & Record<string, any>;
+
+        // fabricComposition 처리
         const rawFabric = api.fabricComposition;
         let mappedFabric: Record<'겉감' | '안감' | '배색' | '부속', string>;
-
         if (Array.isArray(rawFabric)) {
           const [겉감 = '', 안감 = '', 배색 = '', 부속 = ''] = rawFabric;
           mappedFabric = { 겉감, 안감, 배색, 부속 };
@@ -113,8 +114,18 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           };
         }
 
-        const { fabricComposition: _f, ...rest } = api;
-        setProduct({ ...rest, fabricComposition: mappedFabric });
+        // size_label_guide 받기
+        const labelGuide = api.size_label_guide as
+          | Record<string, string>
+          | undefined;
+
+        const { fabricComposition: _f, size_label_guide: _l, ...rest } = api;
+
+        setProduct({
+          ...rest,
+          fabricComposition: mappedFabric,
+          size_label_guide: labelGuide,
+        });
       })
       .catch((e) => console.error(e))
       .finally(() => setLoading(false));
@@ -155,7 +166,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         <ConditionalContainer>
           {selectedService === 'rental' && <RentalOptions />}
           {selectedService === 'purchase' && <PaymentMethod />}
-
           {selectedService === '' && <Message>서비스를 선택하세요</Message>}
         </ConditionalContainer>
 
@@ -175,6 +185,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         <SizeInfo
           productSizes={product.sizes}
           size_picture={product.size_picture}
+          labelGuide={product.size_label_guide}
         />
 
         <Separator />
@@ -200,18 +211,13 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           }}
         />
       </ContentContainer>
-
-      {/* <BottomBar
-        cartIconSrc={ShoppingBasket}
-        orderButtonLabel='제품 주문하기'
-        onOrderClick={() => console.log('🛒 주문하기')}
-      /> */}
     </DetailContainer>
   );
 };
 
 export default HomeDetail;
 
+/* Styled Components */
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -221,22 +227,27 @@ const DetailContainer = styled.div`
   margin: 0 auto 20px;
   box-sizing: border-box;
 `;
+
 const ContentContainer = styled.div`
   padding: 1rem;
 `;
+
 const ServiceSelectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
   margin-bottom: 20px;
 `;
+
 const ConditionalContainer = styled.div`
   margin-top: 20px;
 `;
+
 const Separator = styled.div`
   border: 1px solid #ccc;
   margin: 30px 0;
 `;
+
 const Message = styled.p`
   text-align: center;
   font-size: 16px;
