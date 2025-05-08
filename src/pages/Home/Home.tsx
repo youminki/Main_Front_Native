@@ -25,22 +25,16 @@ const ITEMS_PER_LOAD = 20;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation<{ showNotice?: boolean }>();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // --- 알림 공지 모달: 로그인→홈 이동 시에만 띄우기 ---
-  const noticeMessage = `
-금일 오전에 카드등록 및 결제가 PG사 연결 지연으로 오후에 진행하게 되었습니다.
-중요한 결제이니 만큼 신중하게 처리 후 좋은 서비스로 보답 드리겠습니다.
-계속 기다리게 해드려서 죄송합니다. 조금만 더 기다려 주세요 :)
-  `;
-  // location.state.showNotice 가 true 면 모달 열기
+  // 로그인→홈 이동 시에만 전달된 showNotice 플래그로 모달 열기
+  const showNoticeFlag = (location.state as any)?.showNotice;
   const [isNoticeOpen, setNoticeOpen] = useState<boolean>(
-    Boolean(location.state?.showNotice)
+    Boolean(showNoticeFlag)
   );
 
-  // --- 이하 기존 로직 동일 ---
   // 모바일 뷰 여부
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
   useEffect(() => {
@@ -184,7 +178,8 @@ const Home: React.FC = () => {
             드리겠습니다.
           </NoticeParagraph>
           <NoticeParagraph>
-            계속 기다리게 해드려서 죄송합니다. 조금만 더 기다려 주세요 :)
+            계속 기다리게 해드려서 죄송합니다. <br />
+            조금만 더 기다려 주세요 :)
           </NoticeParagraph>
         </ModalContent>
       </ReusableModal>
@@ -325,8 +320,6 @@ const ScrollToTopButton = styled.button`
     opacity 0.3s;
   &:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    opacity: 1;
   }
   @media (min-width: 1000px) {
     right: calc((100vw - 1000px) / 2 + 20px);
@@ -351,8 +344,6 @@ const ModalBox = styled.div`
   height: 100%;
   overflow-y: auto;
   position: relative;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -375,16 +366,16 @@ const ModalHeaderContainer = styled.header`
   padding: 1rem;
 `;
 
-const ModalBody = styled.div``;
+const ModalBody = styled.div`
+  padding-top: 70px;
+`;
 
 const LeftSection = styled.div`
   cursor: pointer;
 `;
-
 const CenterSection = styled.div`
   flex: 1;
 `;
-
 const RightSection = styled.div`
   display: flex;
   gap: 19px;
@@ -393,7 +384,6 @@ const RightSection = styled.div`
 const CancelIcon = styled.img`
   cursor: pointer;
 `;
-
 const Icon = styled.img`
   cursor: pointer;
 `;
@@ -443,17 +433,11 @@ const DropdownItem = styled.li<{ active: boolean }>`
 `;
 
 const OptionNumber = styled.span`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: auto;
   padding: 0 4px;
   font-weight: 700;
 `;
 
 const OptionText = styled.span`
-  display: flex;
-  align-items: center;
   margin-left: 4px;
 `;
 
@@ -461,7 +445,7 @@ const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 1rem;
+
   line-height: 1.6;
   color: #333;
   font-size: 14px;

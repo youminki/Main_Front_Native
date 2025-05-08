@@ -85,7 +85,7 @@ const ModalTitle = styled.h2`
 const ModalBody = styled.div`
   font-size: 14px;
   font-weight: 400;
-  text-align: center;
+  /* text-align: center; */
   max-height: 70%;
   flex: 1;
   overflow-y: auto;
