@@ -51,6 +51,7 @@ const PaypleTest: React.FC = () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            userId: '70',
             payerId: result.PCD_PAYER_ID,
             payReqKey: result.PCD_PAY_REQKEY,
             authKey: result.PCD_AUTH_KEY,
