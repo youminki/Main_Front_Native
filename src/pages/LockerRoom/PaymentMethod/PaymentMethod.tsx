@@ -70,51 +70,6 @@ const PaymentMethod: React.FC = () => {
       price: '120,000',
     },
   ];
-
-  useEffect(() => {
-  window.PCD_PAY_CALLBACK = async (result: any) => {
-    console.log('[✅ PaymentMethod 페이지에서 Payple 결과 수신]', result);
-
-    const token = localStorage.getItem('accessToken');
-    if (!token) return;
-
-    try {
-      const res = await fetch('https://api.stylewh.com/user/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error();
-      const user = await res.json();
-
-      const payRes = await fetch('https://api.stylewh.com/payple/simple-pay-result', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
-          payerId: result.PCD_PAYER_ID,
-          payReqKey: result.PCD_PAY_REQKEY,
-          authKey: result.PCD_AUTH_KEY,
-          cardName: result.PCD_PAY_CARDNAME ?? '',
-          cardNumber: result.PCD_PAY_CARDNUM ?? '',
-          goods: '카드 등록',
-          amount: 0,
-        }),
-      });
-
-      const data = await payRes.json();
-      if (!payRes.ok) throw new Error(data.message || '카드 등록 실패');
-      alert('카드가 등록되었습니다 ✅');
-      window.location.reload(); // 카드 목록 새로고침
-    } catch (e: any) {
-      console.error('[🔥 카드 등록 처리 중 오류]', e);
-      alert('카드 등록 처리에 실패했습니다.');
-    }
-  };
-
-  return () => {
-    delete window.PCD_PAY_CALLBACK;
-  };
-}, []);
-
   
   useEffect(() => {
     const { state } = location;
