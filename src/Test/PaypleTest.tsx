@@ -11,13 +11,17 @@ declare global {
 const PaypleTest: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [userInfo, setUserInfo] = useState<{ userId: string; userName: string; userEmail: string } | null>(null);
+  const [userInfo, setUserInfo] = useState<{
+    userId: string;
+    userName: string;
+    userEmail: string;
+  } | null>(null);
 
   // ✅ 로그인 유저 정보 로딩
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const res = await fetch('https://api.stylewh.com/users/me', {
+        const res = await fetch('https://api.stylewh.com/user/me', {
           credentials: 'include', // 쿠키 인증 필요 시
         });
         const data = await res.json();
@@ -56,7 +60,9 @@ const PaypleTest: React.FC = () => {
       const data = await res.json();
 
       if (typeof window.PaypleCpayAuthCheck !== 'function') {
-        throw new Error('Payple SDK 준비 오류: PaypleCpayAuthCheck 함수가 없음');
+        throw new Error(
+          'Payple SDK 준비 오류: PaypleCpayAuthCheck 함수가 없음'
+        );
       }
 
       window.PaypleCpayAuthCheck({
@@ -81,20 +87,23 @@ const PaypleTest: React.FC = () => {
       }
 
       try {
-        const res = await fetch('https://api.stylewh.com/payple/simple-pay-result', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: userInfo.userId,
-            payerId: result.PCD_PAYER_ID,
-            payReqKey: result.PCD_PAY_REQKEY,
-            authKey: result.PCD_AUTH_KEY,
-            cardName: result.PCD_PAY_CARDNAME ?? '',
-            cardNumber: result.PCD_PAY_CARDNUM ?? '',
-            goods: '카드 등록',
-            amount: 0,
-          }),
-        });
+        const res = await fetch(
+          'https://api.stylewh.com/payple/simple-pay-result',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: userInfo.userId,
+              payerId: result.PCD_PAYER_ID,
+              payReqKey: result.PCD_PAY_REQKEY,
+              authKey: result.PCD_AUTH_KEY,
+              cardName: result.PCD_PAY_CARDNAME ?? '',
+              cardNumber: result.PCD_PAY_CARDNUM ?? '',
+              goods: '카드 등록',
+              amount: 0,
+            }),
+          }
+        );
 
         const data = await res.json();
 
@@ -113,15 +122,16 @@ const PaypleTest: React.FC = () => {
   return (
     <SContainer>
       <STitle>Payple 카드 등록</STitle>
-      <SButton onClick={registerCard} disabled={!userInfo}>카드 등록하기</SButton>
-      {error && <SMessage type="error">{error}</SMessage>}
+      <SButton onClick={registerCard} disabled={!userInfo}>
+        카드 등록하기
+      </SButton>
+      {error && <SMessage type='error'>{error}</SMessage>}
       {successMessage && <SMessage>{successMessage}</SMessage>}
     </SContainer>
   );
 };
 
 export default PaypleTest;
-
 
 // 스타일
 const SContainer = styled.div`
@@ -168,4 +178,3 @@ const SMessage = styled.p<{ type?: 'error' }>`
   color: ${({ type }) => (type === 'error' ? '#d32f2f' : '#2e7d32')};
   font-weight: 500;
 `;
-
