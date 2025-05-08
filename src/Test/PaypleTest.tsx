@@ -1,6 +1,6 @@
+// src/Test/PaypleTest.tsx
 import React, { useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 
 declare global {
   interface Window {
@@ -17,16 +17,14 @@ const PaypleTest: React.FC = () => {
     userName: string;
     userEmail: string;
   } | null>(null);
-  const navigate = useNavigate();
 
   // 로그인 유저 정보 로딩
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch('https://api.stylewh.com/user/me', {
-          credentials: 'include',
-        });
-        if (!res.ok) throw new Error('로그인 정보 요청 실패');
+        const res = await fetch('/user/me', { credentials: 'include' });
+        if (res.status === 401) throw new Error('로그인이 필요합니다.');
+        if (!res.ok) throw new Error('유저 정보 요청 실패');
         const data = await res.json();
         setUserInfo({
           userId: String(data.id),
@@ -35,7 +33,7 @@ const PaypleTest: React.FC = () => {
         });
       } catch (e: any) {
         console.error('[🔥] 유저 정보 로딩 실패', e);
-        setError('로그인 정보를 불러오는 데 실패했습니다.');
+        setError(e.message || '로그인 정보를 불러오는 데 실패했습니다.');
       }
     })();
   }, []);
@@ -52,13 +50,11 @@ const PaypleTest: React.FC = () => {
         userName: userInfo.userName,
         userEmail: userInfo.userEmail,
       });
-      const res = await fetch(
-        `https://api.stylewh.com/payple/card-register-data?${params}`
-      );
+      const res = await fetch(`/payple/card-register-data?${params}`);
       if (!res.ok) throw new Error('카드 등록 데이터 요청 실패');
       const data = await res.json();
       if (typeof window.PaypleCpayAuthCheck !== 'function')
-        throw new Error('Payple SDK 준비 오류');
+        throw new Error('결제 SDK가 준비되지 않았습니다.');
       window.PaypleCpayAuthCheck({
         ...data,
         PCD_PAY_WORK: 'CERT',
@@ -67,42 +63,38 @@ const PaypleTest: React.FC = () => {
       });
     } catch (e: any) {
       console.error('[🔥] 카드 등록 오류:', e);
-      setError('카드 등록 중 오류 발생');
+      setError(e.message || '카드 등록 중 오류 발생');
     }
   }, [userInfo]);
 
   // Payple 콜백 처리
   useEffect(() => {
     window.PCD_PAY_CALLBACK = async (result: any) => {
-      console.log('[✅ Payple 결과 수신]', result);
+      console.log('[✅ Payple 결과]', result);
       if (!userInfo) return setError('로그인 정보를 찾을 수 없습니다.');
 
       try {
-        const res = await fetch(
-          'https://api.stylewh.com/payple/simple-pay-result',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: userInfo.userId,
-              payerId: result.PCD_PAYER_ID,
-              payReqKey: result.PCD_PAY_REQKEY,
-              authKey: result.PCD_AUTH_KEY,
-              cardName: result.PCD_PAY_CARDNAME ?? '',
-              cardNumber: result.PCD_PAY_CARDNUM ?? '',
-              goods: '카드 등록',
-              amount: 0,
-            }),
-          }
-        );
+        const res = await fetch('/payple/simple-pay-result', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: userInfo.userId,
+            payerId: result.PCD_PAYER_ID,
+            payReqKey: result.PCD_PAY_REQKEY,
+            authKey: result.PCD_AUTH_KEY,
+            cardName: result.PCD_PAY_CARDNAME || '',
+            cardNumber: result.PCD_PAY_CARDNUM || '',
+            goods: '카드 등록',
+            amount: 0,
+          }),
+        });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || '카드 등록 실패');
-        setSuccessMessage(data.message || '카드 등록 완료');
-        // 등록 완료 후 리다이렉트 및 새로고침
-        window.location.href = 'https://me1pik.com/payment-method';
+        setSuccessMessage(data.message || '카드 등록이 완료되었습니다.');
+        window.location.href = '/payment-method';
       } catch (e: any) {
         console.error('[🔥] 서버 전송 오류:', e);
-        setError('백엔드 처리 중 오류: ' + e.message);
+        setError(e.message || '서버 처리 중 오류 발생');
       }
     };
     return () => {
@@ -111,56 +103,64 @@ const PaypleTest: React.FC = () => {
   }, [userInfo]);
 
   return (
-    <Container>
-      <Title>Payple 카드 등록</Title>
-      <Button disabled={!userInfo} onClick={registerCard}>
-        카드 등록하기
-      </Button>
-      {error && <Message type='error'>{error}</Message>}
-      {successMessage && <Message>{successMessage}</Message>}
-    </Container>
+    <Wrapper>
+      <Card>
+        <Heading>카드 등록</Heading>
+        <SubText>카드를 등록하고 더 편리하게 이용하세요.</SubText>
+        <Button onClick={registerCard} disabled={!userInfo}>
+          카드 등록하기
+        </Button>
+        {error && <Message type='error'>{error}</Message>}
+        {successMessage && <Message>{successMessage}</Message>}
+      </Card>
+    </Wrapper>
   );
 };
 
 export default PaypleTest;
 
 // Styled Components
-const Container = styled.div`
-  max-width: 480px;
-  margin: 60px auto;
-  padding: 32px;
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f5f5f5;
+`;
+const Card = styled.div`
+  width: 360px;
+  padding: 24px;
+  background: #ffffff;
   border-radius: 12px;
-  background: #fff8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
 `;
-const Title = styled.h1`
-  font-size: 1.8rem;
-  font-weight: 600;
+const Heading = styled.h2`
+  margin-bottom: 16px;
+  font-size: 1.5rem;
   color: #333;
+`;
+const SubText = styled.p`
   margin-bottom: 24px;
+  font-size: 0.9rem;
+  color: #666;
 `;
 const Button = styled.button<{ disabled?: boolean }>`
-  padding: 14px 28px;
+  width: 100%;
+  padding: 12px;
   font-size: 1rem;
-  font-weight: 500;
-  background: #fa9a00;
   color: #fff;
+  background: ${({ disabled }) => (disabled ? '#ccc' : '#007aff')};
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 6px;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   transition: background 0.2s;
   &:hover {
-    background: #e08800;
-  }
-  &:disabled {
-    background: #ccc;
-    cursor: not-allowed;
+    background: ${({ disabled }) => (disabled ? '#ccc' : '#0051a8')};
   }
 `;
 const Message = styled.p<{ type?: 'error' }>`
-  margin-top: 20px;
-  font-size: 0.95rem;
-  color: ${({ type }) => (type === 'error' ? '#d32f2f' : '#2e7d32')};
-  font-weight: 500;
+  margin-top: 16px;
+  font-size: 0.875rem;
+  color: ${({ type }) => (type === 'error' ? '#e53935' : '#43a047')};
 `;
