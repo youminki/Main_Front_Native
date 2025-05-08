@@ -139,10 +139,7 @@ const PaymentMethod: React.FC = () => {
                 </CardBody>
               </CardOrange>
             ) : (
-              <CardWhite
-                key={idx}
-                onClick={() => navigate('/payment-method/AddCard')}
-              >
+              <CardWhite key={idx} onClick={() => navigate('/test/payple')}>
                 <PlusWrapper>
                   <PlusBox>
                     <PlusLineVert />
