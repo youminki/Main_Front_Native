@@ -1,5 +1,5 @@
 [build]
-  publish = "dist"  # 빌드된 파일이 있는 경로
+  publish = "dist"
   command = "yarn build"
   environment = { NODE_VERSION = "20" }
 
@@ -7,4 +7,3 @@
   from = "/*"
   to = "/index.html"
   status = 200
-  force = true
