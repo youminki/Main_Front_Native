@@ -116,7 +116,7 @@ const Dropdown = styled.ul`
   margin: 4px 0 0;
   padding: 0;
   overflow-y: auto;
-  z-index: 1100;
+  z-index: 9999;
 `;
 const Item = styled.li`
   display: flex;

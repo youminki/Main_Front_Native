@@ -141,7 +141,7 @@ const SubHeaderWrapper = styled.div`
   left: 0;
   right: 0;
   height: 130px;
-  z-index: 1000;
+  z-index: 100;
   background: #fff;
   display: flex;
   justify-content: center;
