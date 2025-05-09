@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Melpik</title>
     <link rel="icon" type="image/svg+xml" href="/src/assets/favicon.svg" />
-    
+
     <!-- Google tag (gtag.js) -->
     <script
       async
@@ -26,7 +26,11 @@
   <body>
     <div id="root"></div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    window.$ = window.jQuery; // ✅ 명시적 바인딩 (중요)
+    </script>
     <script src="https://democpay.payple.kr/js/cpay.payple.1.0.1.js"></script>
+    <script src="https://cpay.payple.kr/js/v1/payment.js"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
