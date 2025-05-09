@@ -1,4 +1,3 @@
-// src/components/Home/HomeDetail/SizeInfo.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
@@ -30,15 +29,15 @@ const SizeInfo: React.FC<SizeInfoProps> = ({
     return <Message>사이즈 정보가 없습니다.</Message>;
   }
 
-  // 측정 키 목록 & 정렬
   const measurementKeys = Object.keys(productSizes[0].measurements || {});
   const sortedKeys = measurementKeys.sort((a, b) => a.localeCompare(b));
 
-  // 이미지 옆에 표시할 전체 라벨(전체 문자열)
-  const sideLabels = sortedKeys;
-
-  // 테이블 헤더에 표시할 라벨(앞 글자만)
-  const columnLabels = sortedKeys.map((fullKey) => fullKey.split(' ')[0]);
+  // 서버에서 labelGuide가 내려오면 그 값을, 아니면 알파벳 순서 기본 라벨
+  const columnLabels = sortedKeys.map((key, idx) =>
+    labelGuide && labelGuide[key]
+      ? labelGuide[key]
+      : String.fromCharCode(65 + idx)
+  );
 
   const formatSize = (raw: string) => {
     if (/free/i.test(raw)) return 'Free';
@@ -55,14 +54,15 @@ const SizeInfo: React.FC<SizeInfoProps> = ({
         <PictureWrapper>
           <StyledImg
             src={imgSrc}
+            srcSet={`${imgSrc} 1x, ${imgSrc} 2x`}
             alt='사이즈 안내 이미지'
             onError={handleImageError}
           />
         </PictureWrapper>
 
         <LabelList>
-          {sideLabels.map((lbl) => (
-            <LabelItem key={lbl}>{lbl}</LabelItem>
+          {sortedKeys.map((key) => (
+            <LabelItem key={key}>{key}</LabelItem>
           ))}
         </LabelList>
       </InfoWrapper>
@@ -72,8 +72,8 @@ const SizeInfo: React.FC<SizeInfoProps> = ({
           <thead>
             <Row>
               <Header>사이즈</Header>
-              {columnLabels.map((ltr) => (
-                <Header key={ltr}>{ltr}</Header>
+              {columnLabels.map((lbl, i) => (
+                <Header key={i}>{lbl}</Header>
               ))}
             </Row>
           </thead>
@@ -81,11 +81,11 @@ const SizeInfo: React.FC<SizeInfoProps> = ({
             {productSizes.map(({ size, measurements }) => (
               <Row key={size}>
                 <Cell>{formatSize(size)}</Cell>
-                {sortedKeys.map((fullKey) => {
-                  const raw = measurements[fullKey];
-                  const display =
+                {sortedKeys.map((key) => {
+                  const raw = measurements[key];
+                  const displayVal =
                     typeof raw === 'number' ? Math.round(raw) : (raw ?? '-');
-                  return <Cell key={fullKey}>{display}</Cell>;
+                  return <Cell key={key}>{displayVal}</Cell>;
                 })}
               </Row>
             ))}
@@ -117,19 +117,24 @@ const Title = styled.h3`
 
 const InfoWrapper = styled.div`
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto 120px;
   align-items: center;
   justify-content: center;
   gap: 12px;
   width: 100%;
   max-width: 1000px;
   margin-bottom: 16px;
+  overflow-x: auto;
 `;
 
 const PictureWrapper = styled.div`
+  flex: none;
   overflow: hidden;
   border-radius: 4px;
   background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const StyledImg = styled.img`
@@ -137,20 +142,33 @@ const StyledImg = styled.img`
   width: 100%;
   height: auto;
   object-fit: contain;
+  image-rendering: crisp-edges;
 `;
 
-const LabelList = styled.div`
+const LabelList = styled.ul`
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 10px;
+  width: 100%;
 `;
 
-const LabelItem = styled.div`
+const LabelItem = styled.li`
   font-size: 14px;
   font-weight: 500;
   color: #333;
-  padding: 4px 8px;
+  padding: 6px 10px;
   border-radius: 4px;
+
+  @media (min-width: 1024px) {
+    font-size: 16px;
+    padding: 10px 14px;
+  }
 `;
 
 const TableWrapper = styled.div`
