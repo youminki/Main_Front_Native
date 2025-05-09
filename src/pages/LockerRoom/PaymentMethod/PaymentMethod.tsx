@@ -24,7 +24,7 @@ const PaymentMethod: React.FC = () => {
 
   const [cards, setCards] = useState<CardData[]>([
     {
-      registerDate: '등록일 2025.02.01',
+      registerDate: '등록일 2025.02.01.',
       brand: '신한카드',
       cardNumber: '4567-●●●●-●●●●-1234',
       isOrange: true,
