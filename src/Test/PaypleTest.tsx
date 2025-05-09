@@ -120,7 +120,7 @@ useEffect(() => {
     <Container>
       <Title>Payple 카드 등록</Title>
       <Button disabled={!userInfo} onClick={registerCard}>
-        카드 등록하기
+        카드 등록
       </Button>
       {error && <Message type='error'>{error}</Message>}
       {successMessage && <Message>{successMessage}</Message>}
