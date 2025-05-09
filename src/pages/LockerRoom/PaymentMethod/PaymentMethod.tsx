@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import StatsSection from '../../../components/StatsSection';
-
 import CardIcon from '../../../assets/LockerRoom/CardIcon.svg';
 
 const visitLabel = '결제등록 카드';
@@ -48,6 +47,33 @@ const PaymentMethod: React.FC = () => {
     }
   }, [location.state]);
 
+  // ✅ 카드 등록 요청 함수
+  const handleCardRegisterClick = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const res = await fetch('https://api.stylewh.com/payple/card-register-data', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      console.log('[✅ 카드 등록 데이터]', data);
+
+      if (!window.cpay || typeof window.cpay.request !== 'function') {
+        alert('Payple SDK 로딩 실패');
+        return;
+      }
+
+      // ✅ Payple 결제창 호출
+      window.cpay.request(data);
+    } catch (error) {
+      console.error('카드 등록 중 오류 발생:', error);
+      alert('카드 등록 요청 중 오류가 발생했습니다.');
+    }
+  };
+
   return (
     <PaymentMethodContainer>
       <Header>
@@ -87,7 +113,7 @@ const PaymentMethod: React.FC = () => {
               </CardBody>
             </CardOrange>
           ) : (
-            <CardWhite key={idx} onClick={() => navigate('/test/payple')}>
+            <CardWhite key={idx} onClick={handleCardRegisterClick}>
               <PlusWrapper>
                 <PlusBox>
                   <PlusLineVert />
