@@ -105,7 +105,7 @@ const PaypleTest: React.FC = () => {
         PCD_SIMPLE_FLAG: 'Y',
         PCD_PAYER_AUTHTYPE: 'pwd',
         PCD_PAY_GOODS: '카드 등록 테스트',
-        PCD_PAY_TOTAL: 1000,
+        PCD_PAY_TOTAL: 101,
       });
     } catch (e: any) {
       console.error('[🔥] 카드 등록 오류:', e);
@@ -122,7 +122,7 @@ const PaypleTest: React.FC = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ payerId, goods: '테스트 상품', amount: 1000 }),
+        body: JSON.stringify({ payerId, goods: '테스트 상품', amount: 102 }),
       });
 
       const data = await res.json();
