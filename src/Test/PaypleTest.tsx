@@ -46,38 +46,11 @@ useEffect(() => {
 }, []);
 
 
-  // 카드 등록 요청
   const registerCard = useCallback(async () => {
-    setError(null);
-    setSuccessMessage(null);
-    if (!userInfo) return setError('로그인 정보를 불러올 수 없습니다.');
- const registerCard = useCallback(async () => {
   setError(null);
   setSuccessMessage(null);
   if (!userInfo) return setError('로그인 정보를 불러올 수 없습니다.');
 
-    try {
-      const params = new URLSearchParams({
-        userId: userInfo.userId,
-        userName: userInfo.userName,
-        userEmail: userInfo.userEmail,
-      });
-      const res = await fetch(
-        `https://api.stylewh.com/payple/card-register-data?${params}`
-      );
-      if (!res.ok) throw new Error('카드 등록 데이터 요청 실패');
-      const data = await res.json();
-      if (typeof window.PaypleCpayAuthCheck !== 'function')
-        throw new Error('Payple SDK 준비 오류');
-      window.PaypleCpayAuthCheck({
-        ...data,
-        PCD_PAY_WORK: 'CERT',
-        PCD_SIMPLE_FLAG: 'Y',
-        PCD_PAYER_AUTHTYPE: 'pwd',
-      });
-    } catch (e: any) {
-      console.error('[🔥] 카드 등록 오류:', e);
-      setError('카드 등록 중 오류 발생');
   try {
     const params = new URLSearchParams({
       userId: userInfo.userId,
@@ -103,7 +76,21 @@ useEffect(() => {
       console.error('[❌ Payple SDK 로딩 실패]');
       throw new Error('Payple SDK 준비 오류');
     }
-  }, [userInfo]);
+
+    window.PaypleCpayAuthCheck({
+      ...data,
+      PCD_PAY_WORK: 'CERT',
+      PCD_SIMPLE_FLAG: 'Y',
+      PCD_PAYER_AUTHTYPE: 'pwd',
+      PCD_PAY_GOODS: '카드 등록 테스트',
+      PCD_PAY_TOTAL: 1000,
+    });
+  } catch (e: any) {
+    console.error('[🔥] 카드 등록 오류:', e);
+    setError('카드 등록 중 오류 발생: ' + e.message);
+  }
+}, [userInfo]);
+
 
     // ✅ 프론트에서 누락된 필드 보강 (HTML 방식과 동일하게 구성)
     window.PaypleCpayAuthCheck({
