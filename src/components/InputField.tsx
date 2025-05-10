@@ -228,7 +228,6 @@ const Input = styled.input`
   color: #000000;
 
   &:disabled {
-    background-color: #f0f0f0;
     color: #999999;
     cursor: not-allowed;
   }
