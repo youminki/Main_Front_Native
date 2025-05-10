@@ -162,9 +162,9 @@ useEffect(() => {
 
   return (
     <Container>
-      <Title>Payple 카드 등록</Title>
+      <Title>Payple 카드 등록하기</Title>
       <Button disabled={!userInfo} onClick={registerCard}>
-        카드 등록
+        카드 등록하기
       </Button>
       {error && <Message type='error'>{error}</Message>}
       {successMessage && <Message>{successMessage}</Message>}
