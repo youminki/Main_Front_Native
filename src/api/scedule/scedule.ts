@@ -1,46 +1,64 @@
-// src/api/schedule.ts
 import axios from 'axios';
 
-export interface ScheduleCreateRequest {
-  month: string; // "YYYY-MM" 형식
-  productIds: number[];
+// 예약 스케줄 생성 요청 타입
+export interface RentalScheduleCreateRequest {
+  productId: number;
+  sizeLabel: string;
+  color: string;
+  startDate: string; // "YYYY-MM-DD"
+  endDate: string; // "YYYY-MM-DD"
+  quantity: number;
 }
 
-export interface ScheduleResponse {
+// 예약 스케줄 응답 타입
+export interface RentalScheduleResponse {
+  product_id: number;
+  product_size_stock_id: number;
+  start_date: string;
+  end_date: string;
+  quantity: number;
   id: number;
-  influencer: string;
-  month: string;
-  products: string[];
+  createdAt: string;
 }
 
-/** 스케줄 생성 */
-export const createSchedule = async (
-  data: ScheduleCreateRequest
-): Promise<ScheduleResponse> => {
-  const response = await axios.post<ScheduleResponse>('/schedule', data);
-  return response.data;
+// 서버가 반환하는 비활성 날짜 항목 타입
+interface UnavailableEntry {
+  sizeLabel: string;
+  color?: string;
+  unavailableDates: string[];
+}
+
+// 파라미터 타입
+export interface UnavailableParams {
+  productId: number;
+  sizeLabel: string;
+  color: string;
+}
+
+export const getUnavailableDates = async (
+  params: UnavailableParams
+): Promise<string[]> => {
+  const resp = await axios.get<UnavailableEntry[]>('/rental-schedule', {
+    params,
+  });
+  // resp.data가 배열이 아닐 수 있으니 방어 처리
+  const data = resp.data;
+  const list: UnavailableEntry[] = Array.isArray(data) ? data : [];
+  const entry = list.find(
+    (e) =>
+      e.sizeLabel === params.sizeLabel &&
+      (params.color ? e.color === params.color : true)
+  );
+  return entry ? entry.unavailableDates : [];
 };
 
-/** 본인 스케줄 전체 조회 */
-export const getMySchedules = async (): Promise<ScheduleResponse[]> => {
-  const response = await axios.get<ScheduleResponse[]>('/schedule');
-  return response.data;
-};
-
-/** 특정 스케줄 상세 조회 */
-export const getScheduleById = async (
-  scheduleId: number
-): Promise<ScheduleResponse> => {
-  const response = await axios.get<ScheduleResponse>(`/schedule/${scheduleId}`);
-  return response.data;
-};
-
-/** 스케줄 삭제 */
-export const deleteSchedule = async (
-  scheduleId: number
-): Promise<{ message: string }> => {
-  const response = await axios.delete<{ message: string }>(
-    `/schedule/${scheduleId}`
+/** POST /rental-schedule */
+export const createRentalSchedule = async (
+  data: RentalScheduleCreateRequest
+): Promise<RentalScheduleResponse> => {
+  const response = await axios.post<RentalScheduleResponse>(
+    '/rental-schedule',
+    data
   );
   return response.data;
 };

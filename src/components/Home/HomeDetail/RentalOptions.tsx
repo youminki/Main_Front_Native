@@ -1,4 +1,3 @@
-// src/components/Home/HomeDetail/RentalOptions.tsx
 import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import DatePicker, { registerLocale } from 'react-datepicker';
@@ -9,14 +8,18 @@ import Holidays from 'date-holidays';
 import ReusableModal2 from '../../../components/Home/HomeDetail/HomeDetailModal';
 import ReusableModal from '../../../components/ReusableModal';
 import RentalSelectDateIcon from '../../../assets/Home/HomeDetail/RentalSelectDateIcon.svg';
-import { getMySchedules, createSchedule } from '../../../api/scedule/scedule';
+import {
+  getUnavailableDates,
+  createRentalSchedule,
+  RentalScheduleCreateRequest,
+} from '../../../api/scedule/scedule';
 import 'react-datepicker/dist/react-datepicker.css';
 
 // 한국 로케일 & 공휴일 설정
 registerLocale('ko', ko);
 const hd = new Holidays('KR');
 
-// 전역 스타일 정의 (예약된 날짜(day-reserved) 스타일 추가)
+// 전역 스타일: 휴일·일요일·예약불가 날짜 표시
 const GlobalStyle = createGlobalStyle`
   .day-today {
     background-color: #FFA726 !important;
@@ -24,6 +27,8 @@ const GlobalStyle = createGlobalStyle`
   }
   .day-holiday { color: red !important; }
   .day-sunday  { color: red !important; }
+  .day-reserved { color: red !important; }   /* 예약 불가 날짜도 빨간색으로 표시 */
+
   .day-start,
   .day-end {
     background-color: #ffffff !important;
@@ -40,20 +45,18 @@ const GlobalStyle = createGlobalStyle`
   .day-blue {
     color: #007bff !important;
   }
-  .day-reserved {
-    background-color: #ddd !important;
-    color: #999 !important;
-  }
 `;
 
 interface RentalOptionsProps {
   productId: number;
   selectedSize: string;
+  selectedColor: string;
 }
 
 const RentalOptions: React.FC<RentalOptionsProps> = ({
   productId,
   selectedSize,
+  selectedColor,
 }) => {
   const [selectedPeriod, setSelectedPeriod] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -65,10 +68,12 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [reservedDates, setReservedDates] = useState<Date[]>([]);
 
+  // 최소/최대 대여일 수
   const minDays =
     selectedPeriod === '3박4일' ? 4 : selectedPeriod === '5박6일' ? 6 : 0;
   const maxDays = 10;
 
+  // 날짜 계산 유틸
   const addDays = (d: Date, n: number) => {
     const r = new Date(d);
     r.setDate(r.getDate() + n);
@@ -84,29 +89,28 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
     Math.floor((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
   const formatDate = (d: Date) =>
-    `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+    `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(
+      d.getDate()
+    ).padStart(2, '0')}`;
 
-  // 예약된 날짜 불러오기
+  // 예약 불가 날짜 조회
   useEffect(() => {
-    if (!productId) return;
+    if (!productId || !selectedSize || !selectedColor) return;
     (async () => {
       try {
-        const schedules = await getMySchedules();
-        const dates: Date[] = [];
-        schedules.forEach((sch) => {
-          sch.products.forEach((dateStr) => {
-            const dt = new Date(dateStr);
-            if (!isNaN(dt.getTime())) dates.push(dt);
-          });
+        const dates = await getUnavailableDates({
+          productId,
+          sizeLabel: selectedSize,
+          color: selectedColor,
         });
-        setReservedDates(dates);
+        setReservedDates(dates.map((d) => new Date(d)));
       } catch (e) {
-        console.error('스케줄 조회 실패:', e);
+        console.error('예약 불가 날짜 조회 실패:', e);
       }
     })();
-  }, [productId]);
+  }, [productId, selectedSize, selectedColor]);
 
-  // 날짜 변경 처리
+  // 날짜 선택/변경 처리
   const handleDateChange = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
     if (start) {
@@ -175,7 +179,7 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
     }
   };
 
-  // 캘린더 클릭 인터셉트
+  // 비활성 날짜 직접 클릭 시 경고
   const handleDayClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     if (!target.classList.contains('react-datepicker__day')) return;
@@ -190,7 +194,7 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
     setErrorModalOpen(true);
   };
 
-  // 선택일 범위 조절 버튼
+  // 선택 범위 +/- 조절
   const adjustEnd = (delta: number) => {
     if (!selectedRange.start || !selectedRange.end) return;
     const total = getTotalDays(selectedRange.start, selectedRange.end);
@@ -201,7 +205,7 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
     });
   };
 
-  // 선택 완료 시 스케줄 생성
+  // 선택 완료 시 API 생성
   const handleConfirm = async () => {
     const { start, end } = selectedRange;
     if (!start || !end) {
@@ -230,14 +234,21 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
       return;
     }
 
-    // 달 단위로 API 호출
-    const months = getMonthsInRange(start, end);
+    const req: RentalScheduleCreateRequest = {
+      productId,
+      sizeLabel: selectedSize,
+      color: selectedColor,
+      startDate: `${start.getFullYear()}-${String(
+        start.getMonth() + 1
+      ).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`,
+      endDate: `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(
+        2,
+        '0'
+      )}-${String(end.getDate()).padStart(2, '0')}`,
+      quantity: 1,
+    };
     try {
-      await Promise.all(
-        months.map((month) =>
-          createSchedule({ month, productIds: [productId] })
-        )
-      );
+      await createRentalSchedule(req);
       setIsModalOpen(false);
     } catch (e) {
       setErrorMessage('스케줄 생성에 실패했습니다.');
@@ -298,9 +309,9 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
                   <RangeBox>
                     {selectedRange.start && selectedRange.end ? (
                       <RangeText>
-                        {`${formatDate(selectedRange.start)} ~ ${formatDate(
-                          selectedRange.end
-                        )}`}
+                        {`${formatDate(
+                          selectedRange.start
+                        )} ~ ${formatDate(selectedRange.end)}`}
                       </RangeText>
                     ) : (
                       <Placeholder>날짜를 선택해주세요</Placeholder>
@@ -370,13 +381,10 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
                     <Dot color='#007bff' /> 대여 가능 날짜
                   </LegendItem>
                   <LegendItem>
-                    <Dot color='red' /> 일요일·공휴일 (대여 불가)
+                    <Dot color='red' /> 일요일·공휴일·예약불가 날짜
                   </LegendItem>
                   <LegendItem>
-                    <Dot color='#FFA726' /> 오늘 날짜 3일 이후부터 선택 가능
-                  </LegendItem>
-                  <LegendItem>
-                    <Dot color='#ddd' /> 이미 예약된 날짜
+                    <Dot color='#FFA726' /> 오늘 기준 3일 이후부터 선택 가능
                   </LegendItem>
                 </Legend>
 
@@ -414,6 +422,7 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
     </>
   );
 };
+
 export default RentalOptions;
 
 // 달 범위 계산 유틸
