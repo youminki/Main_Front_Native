@@ -18,7 +18,6 @@ const PaypleTest: React.FC = () => {
   } | null>(null);
   const [cards, setCards] = useState<any[]>([]);
 
-  // 로그인 유저 정보 로딩
   useEffect(() => {
     (async () => {
       try {
@@ -46,7 +45,6 @@ const PaypleTest: React.FC = () => {
     })();
   }, []);
 
-  // 카드 목록 조회
   useEffect(() => {
     const fetchCards = async () => {
       try {
@@ -70,7 +68,6 @@ const PaypleTest: React.FC = () => {
     fetchCards();
   }, []);
 
-  // 카드 등록 요청
   const registerCard = useCallback(async () => {
     setError(null);
     setSuccessMessage(null);
@@ -116,38 +113,28 @@ const PaypleTest: React.FC = () => {
     }
   }, [userInfo]);
 
-  // 결제 요청
-  const payWithCard = async (payerId: string) => {
+  const requestPayPasswordPopup = async (payerId: string) => {
     try {
       const token = localStorage.getItem('accessToken');
-      if (!token) return alert('로그인이 필요합니다');
-
-      const res = await fetch('https://api.stylewh.com/payple/pay-with-registered-card', {
+      const res = await fetch('https://api.stylewh.com/payple/init-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          payerId,
-          goods: '테스트 상품',
-          amount: 1000,
-        }),
+        body: JSON.stringify({ payerId, goods: '테스트 상품', amount: 1000 }),
       });
 
       const data = await res.json();
-      if (res.ok && data.PCD_PAY_RST === 'success') {
-        alert(`✅ 결제 성공: 승인번호 ${data.PCD_PAY_OID}`);
-      } else {
-        alert(`❌ 결제 실패: ${data.PCD_PAY_MSG || '알 수 없는 오류'}`);
-      }
+      if (typeof window.PaypleCpayAuthCheck !== 'function')
+        throw new Error('Payple SDK 준비 오류');
+      window.PaypleCpayAuthCheck(data);
     } catch (e) {
-      console.error('[🔥] 결제 요청 실패:', e);
-      alert('결제 요청 중 오류 발생');
+      console.error('[🔥] 결제창 호출 실패', e);
+      alert('결제창 호출 중 오류 발생');
     }
   };
 
-  // 콜백 처리
   useEffect(() => {
     window.PCD_PAY_CALLBACK = async (result: any) => {
       console.log('[✅ Payple 결과 수신]', result);
@@ -155,29 +142,27 @@ const PaypleTest: React.FC = () => {
 
       try {
         const res = await fetch(
-          'https://api.stylewh.com/payple/simple-pay-result',
+          'https://api.stylewh.com/payple/confirm-payment',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              userId: userInfo.userId,
-              payerId: result.PCD_PAYER_ID,
-              payReqKey: result.PCD_PAY_REQKEY,
-              authKey: result.PCD_AUTH_KEY,
-              cardName: result.PCD_PAY_CARDNAME ?? '',
-              cardNumber: result.PCD_PAY_CARDNUM ?? '',
-              goods: '카드 등록',
-              amount: 0,
+              PCD_AUTH_KEY: result.PCD_AUTH_KEY,
+              PCD_PAY_REQKEY: result.PCD_PAY_REQKEY,
+              PCD_PAYER_ID: result.PCD_PAYER_ID,
+              PCD_PAY_GOODS: result.PCD_PAY_GOODS,
+              PCD_PAY_TOTAL: result.PCD_PAY_TOTAL,
             }),
           }
         );
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || '카드 등록 실패');
-        setSuccessMessage(data.message || '카드 등록 완료');
-        window.location.href = 'https://me1pik.com/payment-method';
+        if (!res.ok || data.PCD_PAY_RST !== 'success') {
+          throw new Error(data.PCD_PAY_MSG || '결제 실패');
+        }
+        setSuccessMessage('✅ 결제 성공: ' + data.PCD_PAY_OID);
       } catch (e: any) {
-        console.error('[🔥] 서버 전송 오류:', e);
-        setError('백엔드 처리 중 오류: ' + e.message);
+        console.error('[🔥] 결제 승인 오류:', e);
+        setError('결제 승인 실패: ' + e.message);
       }
     };
     return () => {
@@ -198,7 +183,7 @@ const PaypleTest: React.FC = () => {
           {cards.map((card) => (
             <CardBox key={card.cardId}>
               <div>{card.cardName} - {card.cardNumber}</div>
-              <CardButton onClick={() => payWithCard(card.payerId)}>
+              <CardButton onClick={() => requestPayPasswordPopup(card.payerId)}>
                 이 카드로 결제
               </CardButton>
             </CardBox>
