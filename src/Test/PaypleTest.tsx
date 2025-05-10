@@ -115,6 +115,13 @@ const PaypleTest: React.FC = () => {
 
   const requestPayPasswordPopup = async (payerId: string) => {
     try {
+
+      console.log('🧾 PAYER_ID to use:', payerId);
+      if (!payerId || typeof payerId !== 'string' || payerId.trim() === '') {
+        alert('유효한 카드가 없습니다.');
+        return;
+      }
+
       const token = localStorage.getItem('accessToken');
       const res = await fetch('https://api.stylewh.com/payple/init-payment', {
         method: 'POST',
