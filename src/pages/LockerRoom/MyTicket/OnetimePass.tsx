@@ -31,7 +31,7 @@ const OnetimePass: React.FC = () => {
             <HalfSection>
               <SectionTitle>이용권(매달) 결제금액</SectionTitle>
               <ReadOnlyBox>
-                <PriceText>120,000</PriceText>
+                <PriceText>50,000</PriceText>
               </ReadOnlyBox>
             </HalfSection>
             <HalfSection>
@@ -86,7 +86,7 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   padding: 1rem;
-  max-width: 1000px;
+  max-width: 600px;
 `;
 
 const ContentArea = styled.div`

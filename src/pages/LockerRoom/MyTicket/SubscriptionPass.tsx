@@ -278,7 +278,7 @@ const Container = styled.div`
   margin: 0 auto;
   display: flex;
   justify-content: center;
-  max-width: 1000px;
+  max-width: 600px;
 `;
 
 const ContentArea = styled.div`
