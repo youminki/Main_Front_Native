@@ -18,40 +18,6 @@ interface CardData {
   isOrange?: boolean;
 }
 
-const handlePayment = async () => {
-  const token = localStorage.getItem('accessToken');
-  if (!token) {
-    alert('로그인이 필요합니다.');
-    return;
-  }
-
-  try {
-    const res = await fetch('https://api.stylewh.com/payple/pay-with-registered-card', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        payerId: 'PAYER_ID_여기에', // 🔁 실제 저장된 billingKey로 바꾸세요
-        goods: '테스트 상품',
-        amount: 1000,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.PCD_PAY_RST === 'success') {
-      alert(`✅ 결제 성공!\n승인번호: ${data.PCD_PAY_OID}`);
-    } else {
-      alert(`❌ 결제 실패: ${data.PCD_PAY_MSG || '오류 발생'}`);
-    }
-  } catch (e) {
-    console.error('[🔥 결제 오류]', e);
-    alert('결제 요청 중 오류 발생');
-  }
-};
-
 const PaymentMethod: React.FC = () => {
   const [currentCard] = useState(0);
   const navigate = useNavigate();
@@ -139,7 +105,6 @@ const PaymentMethod: React.FC = () => {
           <Dot key={idx} active={currentCard === idx} />
         ))}
       </DotsContainer>
-      <Button onClick={handlePayment}>💳 결제하기 테스트</Button>
     </PaymentMethodContainer>
   );
 };
@@ -309,21 +274,4 @@ const Dot = styled.div<{ active: boolean }>`
   height: 10px;
   border-radius: 50%;
   background: ${({ active }) => (active ? '#F6AE24' : '#D9D9D9')};
-`;
-
-const Button = styled.button`
-  margin-top: 20px;
-  padding: 12px 24px;
-  background-color: #f6ae24;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.2s;
-
-  &:hover {
-    background-color: #e3991d;
-  }
 `;
