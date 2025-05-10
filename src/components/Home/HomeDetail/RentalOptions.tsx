@@ -1,4 +1,3 @@
-// src/components/Home/HomeDetail/RentalOptions.tsx
 import React, { useState } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import DatePicker, { registerLocale } from 'react-datepicker';
@@ -11,24 +10,47 @@ import ReusableModal from '../../../components/ReusableModal';
 import RentalSelectDateIcon from '../../../assets/Home/HomeDetail/RentalSelectDateIcon.svg';
 import 'react-datepicker/dist/react-datepicker.css';
 
-// 한글 로케일 & 공휴일 설정
+// — 한국 로케일 & 공휴일 설정
 registerLocale('ko', ko);
 const hd = new Holidays('KR');
 
-// 공휴일·주말·선택일 스타일 지정
+// — global 스타일 정의
 const GlobalStyle = createGlobalStyle`
+  /* 오늘 날짜 강조 */
+  .day-today {
+    background-color: #FFA726 !important;
+    color: #000000 !important;
+  }
+
   .day-holiday { color: red !important; }
   .day-sunday  { color: red !important; }
-  
-  .day-start, .day-end {
+
+  .day-start,
+  .day-end {
     background-color: #ffffff !important;
     color: #000000 !important;
     border: 1px solid #F6AE24 !important;
+
     
+    display: inline-block !important;
+    box-sizing: border-box;
+    border-radius: 0.25rem !important;
   }
   .day-between {
     background-color: #F6AE24 !important;
     color: #000000 !important;
+  }
+
+  /* 선택 가능(파란색) 날짜 */
+  .day-blue {
+    color: #007bff !important;
+  }
+
+  /* 전체 캘린더 반응형 가로 채우기 + 패딩 */
+  .react-datepicker__month-container {
+    width: calc(100% - 2rem) !important;
+    margin: 0 !important;
+    padding: 0 1rem !important;
   }
 `;
 
@@ -52,6 +74,11 @@ const RentalOptions: React.FC = () => {
     return r;
   };
 
+  // 오늘 기준 3일 이후부터 선택 가능
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const minSelectableDate = addDays(today, 3);
+
   const getTotalDays = (s: Date, e: Date) =>
     Math.floor((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
@@ -60,30 +87,47 @@ const RentalOptions: React.FC = () => {
       d.getDate()
     ).padStart(2, '0')}`;
 
+  // 날짜 변경 처리
   const handleDateChange = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
-    if (start && (start.getDay() === 0 || hd.isHoliday(start))) {
-      setErrorMessage('시작일로 일요일과 공휴일은 선택할 수 없습니다!');
-      setErrorModalOpen(true);
-      return;
+    if (start) {
+      if (isBefore(start, minSelectableDate)) {
+        setErrorMessage(
+          '대여 시작일은 오늘 기준 3일 이후부터 선택 가능합니다.'
+        );
+        setErrorModalOpen(true);
+        return;
+      }
+      if (start.getDay() === 0 || hd.isHoliday(start)) {
+        setErrorMessage('시작일로 일요일과 공휴일은 선택할 수 없습니다!');
+        setErrorModalOpen(true);
+        return;
+      }
     }
     if (start && !end && minDays > 0) {
       const autoEnd = addDays(start, minDays - 1);
       setSelectedRange({ start, end: autoEnd });
       return;
     }
-    if (end && (end.getDay() === 0 || hd.isHoliday(end))) {
-      setErrorMessage('일요일과 공휴일은 종료일로 선택할 수 없습니다!');
-      setErrorModalOpen(true);
-      return;
+    if (end) {
+      if (isBefore(end, minSelectableDate)) {
+        setErrorMessage('종료일은 오늘 기준 3일 이후부터 선택 가능합니다.');
+        setErrorModalOpen(true);
+        return;
+      }
+      if (end.getDay() === 0 || hd.isHoliday(end)) {
+        setErrorMessage('일요일과 공휴일은 종료일로 선택할 수 없습니다!');
+        setErrorModalOpen(true);
+        return;
+      }
     }
     if (start && end) {
       const total = getTotalDays(start, end);
       if (minDays && total < minDays) {
         setErrorMessage(
           selectedPeriod === '3박4일'
-            ? '최소일정은 3박4일입니다.'
-            : '최소일정은 5박6일입니다.'
+            ? '최소 일정은 3박4일입니다.'
+            : '최소 일정은 5박6일입니다.'
         );
         setErrorModalOpen(true);
         return;
@@ -97,6 +141,22 @@ const RentalOptions: React.FC = () => {
     }
   };
 
+  // 캘린더 클릭 인터셉트
+  const handleDayClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (!target.classList.contains('react-datepicker__day')) return;
+    if (
+      target.classList.contains('day-blue') ||
+      target.classList.contains('day-today')
+    )
+      return;
+    e.stopPropagation();
+    setErrorMessage(
+      '오늘 기준 3일 이후, 일요일·공휴일 제외한 날짜만 선택 가능합니다.'
+    );
+    setErrorModalOpen(true);
+  };
+
   const handleConfirm = () => {
     const end = selectedRange.end;
     if (end && (end.getDay() === 0 || hd.isHoliday(end))) {
@@ -107,6 +167,23 @@ const RentalOptions: React.FC = () => {
     console.log('선택된 날짜:', selectedRange.start, selectedRange.end);
     setIsModalOpen(false);
   };
+
+  // 날짜 범위 조절 버튼
+  const adjustEnd = (delta: number) => {
+    if (!selectedRange.start || !selectedRange.end) return;
+    const total = getTotalDays(selectedRange.start, selectedRange.end);
+    if (total + delta < minDays || total + delta > maxDays) return;
+    setSelectedRange({
+      start: selectedRange.start,
+      end: addDays(selectedRange.end, delta),
+    });
+  };
+
+  // 현재 총 일수
+  const currentTotal =
+    selectedRange.start && selectedRange.end
+      ? getTotalDays(selectedRange.start, selectedRange.end)
+      : 0;
 
   return (
     <>
@@ -146,7 +223,7 @@ const RentalOptions: React.FC = () => {
                 <ModalTitle>
                   대여일정 -{' '}
                   {selectedRange.start && selectedRange.end
-                    ? `${getTotalDays(selectedRange.start, selectedRange.end)}일`
+                    ? `${currentTotal}일`
                     : '선택해주세요'}
                 </ModalTitle>
               </ModalHeader>
@@ -155,34 +232,22 @@ const RentalOptions: React.FC = () => {
                 <SelectedBlock>
                   <RangeBox>
                     {selectedRange.start && selectedRange.end ? (
-                      <RangeText>
-                        {`${formatDate(selectedRange.start)} ~ ${formatDate(selectedRange.end)}`}
-                      </RangeText>
+                      <RangeText>{`${formatDate(selectedRange.start)} ~ ${formatDate(
+                        selectedRange.end
+                      )}`}</RangeText>
                     ) : (
                       <Placeholder>날짜를 선택해주세요</Placeholder>
                     )}
                     <IconWrapper>
                       <SquareIcon
-                        onClick={() =>
-                          selectedRange.start &&
-                          selectedRange.end &&
-                          setSelectedRange({
-                            start: selectedRange.start,
-                            end: addDays(selectedRange.end, -1),
-                          })
-                        }
+                        disabled={currentTotal <= minDays}
+                        onClick={() => adjustEnd(-1)}
                       >
                         <FaMinus />
                       </SquareIcon>
                       <SquareIcon
-                        onClick={() =>
-                          selectedRange.start &&
-                          selectedRange.end &&
-                          setSelectedRange({
-                            start: selectedRange.start,
-                            end: addDays(selectedRange.end, 1),
-                          })
-                        }
+                        disabled={currentTotal >= maxDays}
+                        onClick={() => adjustEnd(1)}
                       >
                         <FaPlus />
                       </SquareIcon>
@@ -190,7 +255,7 @@ const RentalOptions: React.FC = () => {
                   </RangeBox>
                 </SelectedBlock>
 
-                <CalendarContainer>
+                <CalendarContainer onClick={handleDayClick}>
                   <DatePicker
                     locale='ko'
                     inline
@@ -200,6 +265,7 @@ const RentalOptions: React.FC = () => {
                     endDate={selectedRange.end}
                     onChange={handleDateChange}
                     dayClassName={(date) => {
+                      if (isSameDay(date, today)) return 'day-today';
                       if (
                         selectedRange.start &&
                         isSameDay(date, selectedRange.start)
@@ -217,13 +283,31 @@ const RentalOptions: React.FC = () => {
                         isBefore(date, selectedRange.end)
                       )
                         return 'day-between';
+                      if (
+                        isAfter(date, addDays(minSelectableDate, -1)) &&
+                        date.getDay() !== 0 &&
+                        !hd.isHoliday(date)
+                      )
+                        return 'day-blue';
                       if (hd.isHoliday(date)) return 'day-holiday';
                       if (date.getDay() === 0) return 'day-sunday';
-                      if (date.getDay() === 6) return 'day-saturday';
                       return '';
                     }}
                   />
                 </CalendarContainer>
+
+                {/* 전설(legend) */}
+                <Legend>
+                  <LegendItem>
+                    <Dot color='#007bff' /> 대여 가능 날짜
+                  </LegendItem>
+                  <LegendItem>
+                    <Dot color='red' /> 일요일·공휴일 (대여 불가)
+                  </LegendItem>
+                  <LegendItem>
+                    <Dot color='#FFA726' /> 오늘 날짜 3일 이후부터 선택 가능
+                  </LegendItem>
+                </Legend>
 
                 <Notice>
                   ※ 서비스 시작일 전에 받아보실 수 있게 발송해 드립니다.
@@ -262,7 +346,7 @@ const RentalOptions: React.FC = () => {
 
 export default RentalOptions;
 
-// Styled Components
+// — Styled Components
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -322,6 +406,7 @@ const ModalHeader = styled.div`
   background: #fff;
   z-index: 10;
 `;
+
 const ModalTitle = styled.h2`
   margin: 0;
   font-weight: 800;
@@ -381,16 +466,17 @@ const SquareIcon = styled.div`
 `;
 
 const CalendarContainer = styled.div`
+  width: 100%;
+
   display: flex;
   justify-content: center;
-
   margin-bottom: 20px;
 
   @media (min-width: 768px) {
     .react-datepicker__month-container {
       display: inline-block !important;
       float: none !important;
-      margin: 0 8px;
+
       vertical-align: top;
     }
   }
@@ -399,7 +485,6 @@ const CalendarContainer = styled.div`
     .react-datepicker__month-container {
       display: block !important;
       float: none !important;
-      margin: 0 auto 8px;
     }
   }
 
@@ -408,6 +493,31 @@ const CalendarContainer = styled.div`
     font-weight: 700;
     margin-bottom: 8px;
   }
+`;
+
+// 전설(legend) 스타일
+const Legend = styled.div`
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 20px;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+`;
+
+const LegendItem = styled.div`
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const Dot = styled.span<{ color: string }>`
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: ${({ color }) => color};
+  display: inline-block;
 `;
 
 const Notice = styled.p`
