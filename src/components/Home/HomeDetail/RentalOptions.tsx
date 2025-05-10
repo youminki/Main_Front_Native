@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// src/components/Home/HomeDetail/RentalOptions.tsx
+import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import { ko } from 'date-fns/locale';
@@ -8,30 +9,26 @@ import Holidays from 'date-holidays';
 import ReusableModal2 from '../../../components/Home/HomeDetail/HomeDetailModal';
 import ReusableModal from '../../../components/ReusableModal';
 import RentalSelectDateIcon from '../../../assets/Home/HomeDetail/RentalSelectDateIcon.svg';
+import { getMySchedules, createSchedule } from '../../../api/scedule/scedule';
 import 'react-datepicker/dist/react-datepicker.css';
 
-// — 한국 로케일 & 공휴일 설정
+// 한국 로케일 & 공휴일 설정
 registerLocale('ko', ko);
 const hd = new Holidays('KR');
 
-// — global 스타일 정의
+// 전역 스타일 정의 (예약된 날짜(day-reserved) 스타일 추가)
 const GlobalStyle = createGlobalStyle`
-  /* 오늘 날짜 강조 */
   .day-today {
     background-color: #FFA726 !important;
     color: #000000 !important;
   }
-
   .day-holiday { color: red !important; }
   .day-sunday  { color: red !important; }
-
   .day-start,
   .day-end {
     background-color: #ffffff !important;
     color: #000000 !important;
     border: 1px solid #F6AE24 !important;
-
-    
     display: inline-block !important;
     box-sizing: border-box;
     border-radius: 0.25rem !important;
@@ -40,16 +37,24 @@ const GlobalStyle = createGlobalStyle`
     background-color: #F6AE24 !important;
     color: #000000 !important;
   }
-
-  /* 선택 가능(파란색) 날짜 */
   .day-blue {
     color: #007bff !important;
   }
-
-
+  .day-reserved {
+    background-color: #ddd !important;
+    color: #999 !important;
+  }
 `;
 
-const RentalOptions: React.FC = () => {
+interface RentalOptionsProps {
+  productId: number;
+  selectedSize: string;
+}
+
+const RentalOptions: React.FC<RentalOptionsProps> = ({
+  productId,
+  selectedSize,
+}) => {
   const [selectedPeriod, setSelectedPeriod] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedRange, setSelectedRange] = useState<{
@@ -58,6 +63,7 @@ const RentalOptions: React.FC = () => {
   }>({ start: null, end: null });
   const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [reservedDates, setReservedDates] = useState<Date[]>([]);
 
   const minDays =
     selectedPeriod === '3박4일' ? 4 : selectedPeriod === '5박6일' ? 6 : 0;
@@ -78,9 +84,27 @@ const RentalOptions: React.FC = () => {
     Math.floor((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
   const formatDate = (d: Date) =>
-    `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(
-      d.getDate()
-    ).padStart(2, '0')}`;
+    `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+
+  // 예약된 날짜 불러오기
+  useEffect(() => {
+    if (!productId) return;
+    (async () => {
+      try {
+        const schedules = await getMySchedules();
+        const dates: Date[] = [];
+        schedules.forEach((sch) => {
+          sch.products.forEach((dateStr) => {
+            const dt = new Date(dateStr);
+            if (!isNaN(dt.getTime())) dates.push(dt);
+          });
+        });
+        setReservedDates(dates);
+      } catch (e) {
+        console.error('스케줄 조회 실패:', e);
+      }
+    })();
+  }, [productId]);
 
   // 날짜 변경 처리
   const handleDateChange = (dates: [Date | null, Date | null]) => {
@@ -98,9 +122,19 @@ const RentalOptions: React.FC = () => {
         setErrorModalOpen(true);
         return;
       }
+      if (reservedDates.some((d) => isSameDay(d, start))) {
+        setErrorMessage('이미 예약된 날짜입니다.');
+        setErrorModalOpen(true);
+        return;
+      }
     }
     if (start && !end && minDays > 0) {
       const autoEnd = addDays(start, minDays - 1);
+      if (reservedDates.some((d) => isSameDay(d, autoEnd))) {
+        setErrorMessage('자동 설정된 종료일이 예약된 날짜와 겹칩니다.');
+        setErrorModalOpen(true);
+        return;
+      }
       setSelectedRange({ start, end: autoEnd });
       return;
     }
@@ -112,6 +146,11 @@ const RentalOptions: React.FC = () => {
       }
       if (end.getDay() === 0 || hd.isHoliday(end)) {
         setErrorMessage('일요일과 공휴일은 종료일로 선택할 수 없습니다!');
+        setErrorModalOpen(true);
+        return;
+      }
+      if (reservedDates.some((d) => isSameDay(d, end))) {
+        setErrorMessage('이미 예약된 날짜입니다.');
         setErrorModalOpen(true);
         return;
       }
@@ -142,28 +181,16 @@ const RentalOptions: React.FC = () => {
     if (!target.classList.contains('react-datepicker__day')) return;
     if (
       target.classList.contains('day-blue') ||
-      target.classList.contains('day-today')
+      target.classList.contains('day-today') ||
+      target.classList.contains('day-reserved')
     )
       return;
     e.stopPropagation();
-    setErrorMessage(
-      '오늘 기준 3일 이후, 일요일·공휴일 제외한 날짜만 선택 가능합니다.'
-    );
+    setErrorMessage('선택할 수 없는 날짜입니다.');
     setErrorModalOpen(true);
   };
 
-  const handleConfirm = () => {
-    const end = selectedRange.end;
-    if (end && (end.getDay() === 0 || hd.isHoliday(end))) {
-      setErrorMessage('종료일이 일요일 또는 공휴일일 수 없습니다!');
-      setErrorModalOpen(true);
-      return;
-    }
-    console.log('선택된 날짜:', selectedRange.start, selectedRange.end);
-    setIsModalOpen(false);
-  };
-
-  // 날짜 범위 조절 버튼
+  // 선택일 범위 조절 버튼
   const adjustEnd = (delta: number) => {
     if (!selectedRange.start || !selectedRange.end) return;
     const total = getTotalDays(selectedRange.start, selectedRange.end);
@@ -174,7 +201,50 @@ const RentalOptions: React.FC = () => {
     });
   };
 
-  // 현재 총 일수
+  // 선택 완료 시 스케줄 생성
+  const handleConfirm = async () => {
+    const { start, end } = selectedRange;
+    if (!start || !end) {
+      setErrorMessage('날짜를 모두 선택해주세요.');
+      setErrorModalOpen(true);
+      return;
+    }
+    if (end.getDay() === 0 || hd.isHoliday(end)) {
+      setErrorMessage('종료일이 일요일 또는 공휴일일 수 없습니다!');
+      setErrorModalOpen(true);
+      return;
+    }
+    const total = getTotalDays(start, end);
+    if (minDays && total < minDays) {
+      setErrorMessage(
+        selectedPeriod === '3박4일'
+          ? '최소 일정은 3박4일입니다.'
+          : '최소 일정은 5박6일입니다.'
+      );
+      setErrorModalOpen(true);
+      return;
+    }
+    if (total > maxDays) {
+      setErrorMessage('최대 10일까지 추가 가능합니다.');
+      setErrorModalOpen(true);
+      return;
+    }
+
+    // 달 단위로 API 호출
+    const months = getMonthsInRange(start, end);
+    try {
+      await Promise.all(
+        months.map((month) =>
+          createSchedule({ month, productIds: [productId] })
+        )
+      );
+      setIsModalOpen(false);
+    } catch (e) {
+      setErrorMessage('스케줄 생성에 실패했습니다.');
+      setErrorModalOpen(true);
+    }
+  };
+
   const currentTotal =
     selectedRange.start && selectedRange.end
       ? getTotalDays(selectedRange.start, selectedRange.end)
@@ -227,9 +297,11 @@ const RentalOptions: React.FC = () => {
                 <SelectedBlock>
                   <RangeBox>
                     {selectedRange.start && selectedRange.end ? (
-                      <RangeText>{`${formatDate(selectedRange.start)} ~ ${formatDate(
-                        selectedRange.end
-                      )}`}</RangeText>
+                      <RangeText>
+                        {`${formatDate(selectedRange.start)} ~ ${formatDate(
+                          selectedRange.end
+                        )}`}
+                      </RangeText>
                     ) : (
                       <Placeholder>날짜를 선택해주세요</Placeholder>
                     )}
@@ -278,6 +350,8 @@ const RentalOptions: React.FC = () => {
                         isBefore(date, selectedRange.end)
                       )
                         return 'day-between';
+                      if (reservedDates.some((d) => isSameDay(d, date)))
+                        return 'day-reserved';
                       if (
                         isAfter(date, addDays(minSelectableDate, -1)) &&
                         date.getDay() !== 0 &&
@@ -291,7 +365,6 @@ const RentalOptions: React.FC = () => {
                   />
                 </CalendarContainer>
 
-                {/* 전설(legend) */}
                 <Legend>
                   <LegendItem>
                     <Dot color='#007bff' /> 대여 가능 날짜
@@ -301,6 +374,9 @@ const RentalOptions: React.FC = () => {
                   </LegendItem>
                   <LegendItem>
                     <Dot color='#FFA726' /> 오늘 날짜 3일 이후부터 선택 가능
+                  </LegendItem>
+                  <LegendItem>
+                    <Dot color='#ddd' /> 이미 예약된 날짜
                   </LegendItem>
                 </Legend>
 
@@ -338,28 +414,38 @@ const RentalOptions: React.FC = () => {
     </>
   );
 };
-
 export default RentalOptions;
 
-// — Styled Components
+// 달 범위 계산 유틸
+function getMonthsInRange(start: Date, end: Date): string[] {
+  const months: string[] = [];
+  const date = new Date(start.getFullYear(), start.getMonth(), 1);
+  const last = new Date(end.getFullYear(), end.getMonth(), 1);
+  while (date <= last) {
+    months.push(
+      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+    );
+    date.setMonth(date.getMonth() + 1);
+  }
+  return months;
+}
+
+// Styled Components
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 20px;
   width: 100%;
 `;
-
 const Label = styled.label`
   font-weight: 700;
   font-size: 12px;
   margin-bottom: 10px;
 `;
-
 const Wrapper = styled.div`
   display: flex;
   gap: 10px;
 `;
-
 const Select = styled.select`
   flex: 1;
   padding: 20px 10px;
@@ -367,7 +453,6 @@ const Select = styled.select`
   border-radius: 5px;
   font-size: 16px;
 `;
-
 const Button = styled.button<{ disabled?: boolean }>`
   flex: 1;
   display: flex;
@@ -381,18 +466,15 @@ const Button = styled.button<{ disabled?: boolean }>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   color: ${({ disabled }) => (disabled ? '#aaa' : '#000')};
 `;
-
 const Icon = styled.img`
   width: 24px;
   height: 24px;
 `;
-
 const ModalWrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 80vh;
 `;
-
 const ModalHeader = styled.div`
   padding: 20px;
   border-bottom: 1px solid #ddd;
@@ -401,7 +483,6 @@ const ModalHeader = styled.div`
   background: #fff;
   z-index: 10;
 `;
-
 const ModalTitle = styled.h2`
   margin: 0;
   font-weight: 800;
@@ -410,17 +491,14 @@ const ModalTitle = styled.h2`
     font-size: 16px;
   }
 `;
-
 const ModalContent = styled.div`
   flex: 1;
   overflow-y: auto;
 `;
-
 const SelectedBlock = styled.div`
   padding: 0 20px;
   margin: 20px 0;
 `;
-
 const RangeBox = styled.div`
   display: flex;
   align-items: center;
@@ -429,7 +507,6 @@ const RangeBox = styled.div`
   border-radius: 8px;
   padding: 16px;
 `;
-
 const RangeText = styled.span`
   font-size: 16px;
   font-weight: 700;
@@ -437,17 +514,14 @@ const RangeText = styled.span`
     font-size: 13px;
   }
 `;
-
 const Placeholder = styled.span`
   font-size: 16px;
   color: #aaa;
 `;
-
 const IconWrapper = styled.div`
   display: flex;
   gap: 8px;
 `;
-
 const SquareIcon = styled.div`
   width: 32px;
   height: 32px;
@@ -459,38 +533,30 @@ const SquareIcon = styled.div`
   border-radius: 4px;
   cursor: pointer;
 `;
-
 const CalendarContainer = styled.div`
   width: 100%;
-
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
-
   @media (min-width: 768px) {
     .react-datepicker__month-container {
       display: inline-block !important;
       float: none !important;
-
       vertical-align: top;
     }
   }
-
   @media (max-width: 480px) {
     .react-datepicker__month-container {
       display: block !important;
       float: none !important;
     }
   }
-
   .react-datepicker__current-month {
     text-align: center;
     font-weight: 700;
     margin-bottom: 8px;
   }
 `;
-
-// 전설(legend) 스타일
 const Legend = styled.div`
   display: flex;
   justify-content: space-around;
@@ -499,14 +565,12 @@ const Legend = styled.div`
   gap: 10px;
   margin-bottom: 20px;
 `;
-
 const LegendItem = styled.div`
   font-size: 12px;
   display: flex;
   align-items: center;
   gap: 4px;
 `;
-
 const Dot = styled.span<{ color: string }>`
   width: 12px;
   height: 12px;
@@ -514,13 +578,11 @@ const Dot = styled.span<{ color: string }>`
   background-color: ${({ color }) => color};
   display: inline-block;
 `;
-
 const Notice = styled.p`
   margin: 0 20px 8px;
   font-size: 12px;
   color: #666;
 `;
-
 const ButtonRow = styled.div`
   display: flex;
   gap: 10px;
@@ -530,7 +592,6 @@ const ButtonRow = styled.div`
   background: #fff;
   z-index: 10;
 `;
-
 const CancelButton = styled.button`
   flex: 1;
   height: 48px;
@@ -541,7 +602,6 @@ const CancelButton = styled.button`
   font-weight: 700;
   font-size: 16px;
 `;
-
 const ConfirmButton = styled.button`
   flex: 1;
   height: 48px;
@@ -552,7 +612,6 @@ const ConfirmButton = styled.button`
   font-weight: 700;
   font-size: 16px;
 `;
-
 const ErrorMsg = styled.div`
   font-size: 14px;
   font-weight: 700;

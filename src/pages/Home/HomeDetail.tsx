@@ -1,3 +1,4 @@
+// src/pages/HomeDetail.tsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -40,7 +41,6 @@ interface ProductDetail {
   fit: string;
   color: string;
   product_url: string;
-  /** 서버에서 내려오는 수정된 사이즈 라벨 가이드 */
   size_label_guide?: Record<string, string>;
 }
 
@@ -63,12 +63,15 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   }, [product]);
 
   const handleSwipeLeft = useCallback(() => {
-    if (images.length) setCurrentImageIndex((i) => (i + 1) % images.length);
+    if (images.length) {
+      setCurrentImageIndex((i) => (i + 1) % images.length);
+    }
   }, [images.length]);
 
   const handleSwipeRight = useCallback(() => {
-    if (images.length)
+    if (images.length) {
       setCurrentImageIndex((i) => (i === 0 ? images.length - 1 : i - 1));
+    }
   }, [images.length]);
 
   const handleMouseDown = useCallback(
@@ -98,8 +101,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     getProductInfo(Number(id))
       .then((res) => {
         const api = res.product as APIProductDetail & Record<string, any>;
-
-        // fabricComposition 처리
         const rawFabric = api.fabricComposition;
         let mappedFabric: Record<'겉감' | '안감' | '배색' | '부속', string>;
         if (Array.isArray(rawFabric)) {
@@ -113,14 +114,10 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
             부속: rawFabric['부속'] || '',
           };
         }
-
-        // size_label_guide 받기
         const labelGuide = api.size_label_guide as
           | Record<string, string>
           | undefined;
-
         const { fabricComposition: _f, size_label_guide: _l, ...rest } = api;
-
         setProduct({
           ...rest,
           fabricComposition: mappedFabric,
@@ -164,7 +161,9 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         </ServiceSelectionWrapper>
 
         <ConditionalContainer>
-          {selectedService === 'rental' && <RentalOptions />}
+          {selectedService === 'rental' && (
+            <RentalOptions productId={product.id} selectedSize={selectedSize} />
+          )}
           {selectedService === 'purchase' && <PaymentMethod />}
           {selectedService === '' && <Message>서비스를 선택하세요</Message>}
         </ConditionalContainer>
@@ -217,7 +216,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
 
 export default HomeDetail;
 
-/* Styled Components */
+/* Styled Components for HomeDetail */
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -227,27 +226,22 @@ const DetailContainer = styled.div`
   margin: 0 auto 20px;
   box-sizing: border-box;
 `;
-
 const ContentContainer = styled.div`
   padding: 1rem;
 `;
-
 const ServiceSelectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
   margin-bottom: 20px;
 `;
-
 const ConditionalContainer = styled.div`
   margin-top: 20px;
 `;
-
 const Separator = styled.div`
   border: 1px solid #ccc;
   margin: 30px 0;
 `;
-
 const Message = styled.p`
   text-align: center;
   font-size: 16px;
