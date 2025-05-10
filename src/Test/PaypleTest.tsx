@@ -252,3 +252,19 @@ const Message = styled.p<{ type?: 'error' }>`
   color: ${({ type }) => (type === 'error' ? '#d32f2f' : '#2e7d32')};
   font-weight: 500;
 `;
+
+const CardBlock = styled.div`
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  text-align: left;
+`;
+
+const CardText = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+`;
+
