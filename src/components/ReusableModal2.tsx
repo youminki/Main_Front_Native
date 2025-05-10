@@ -85,18 +85,14 @@ const ModalTitle = styled.h2`
   font-size: 16px;
   font-weight: bold;
 `;
-
 const ModalBody = styled.div`
-  flex: 1;
-  padding: 0;
   font-size: 14px;
   font-weight: 400;
-  text-align: left;
-
-  box-sizing: border-box;
-
-  text-align: center;
-  align-items: center;
+  /* text-align: center; */
+  max-height: 70%;
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
   border-top: 2px solid #e0e0e0;
   border-bottom: 2px solid #e0e0e0;
 `;
