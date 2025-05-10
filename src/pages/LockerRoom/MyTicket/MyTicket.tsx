@@ -52,35 +52,28 @@ const MyTicket: React.FC = () => {
 export default MyTicket;
 
 const MyTicketContainer = styled.div`
-  display: grid;
-  /* 상단 헤더+스탯은 auto, Divider는 1px, 나머지는 1fr */
-  grid-template-rows: auto auto 1px 1fr;
-  height: 100vh; /* 화면 전체 높이를 사용 */
-  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
   padding: 1rem;
+  max-width: 1000px;
 `;
 
 const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   width: 100%;
   margin-bottom: 6px;
 `;
 
 const Title = styled.h1`
-  font-weight: 800;
   font-size: 24px;
-  line-height: 27px;
+  font-weight: 800;
   color: #000;
-  margin: 0;
 `;
 
 const Subtitle = styled.p`
   font-size: 12px;
-  font-weight: 400;
   color: #ccc;
-  margin: 0;
 `;
 
 const Divider = styled.div`
@@ -91,13 +84,11 @@ const Divider = styled.div`
 `;
 
 const TicketWrapper = styled.div`
-  margin-top: 40px;
   display: flex;
   flex-direction: column;
   gap: 20px;
   cursor: pointer;
 
-  /* 남은 공간을 채우고, 넘칠 땐 스크롤 */
   overflow-y: auto;
   padding-right: 4px; /* 스크롤바 여유 */
 `;
