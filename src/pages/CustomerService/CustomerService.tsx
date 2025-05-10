@@ -129,9 +129,6 @@ const Divider = styled.div`
   height: 1px;
   background: #ddd;
   margin: 20px 0;
-  @media (min-width: 1024px) {
-    margin: 50px 0;
-  }
 `;
 
 const GridMenu = styled.div`
@@ -170,19 +167,16 @@ const IconLabelRow = styled.div`
 
 const IconImage = styled.img`
   object-fit: contain;
-
-  @media (min-width: 1024px) {
-    width: 150px;
-    height: 150px;
-  }
 `;
 
 const Label = styled.div`
   font-weight: 700;
   font-size: 14px;
+
   color: #000;
   @media (min-width: 1024px) {
-    font-size: 24px;
+    font-size: 18px;
+    margin-left: 1rem;
   }
 `;
 
@@ -196,8 +190,8 @@ const PickButton = styled.div`
   font-size: 12px;
   font-weight: 600;
   @media (min-width: 1024px) {
-    padding: 12px 24px;
-    font-size: 16px;
+    padding: 10px 16px;
+    font-size: 14px;
   }
 `;
 

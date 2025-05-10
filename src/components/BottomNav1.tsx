@@ -163,6 +163,7 @@ const IconWrapper = styled.div<{ isActive: boolean; disabled: boolean }>`
   position: relative;
   width: 48px;
   height: 48px;
+
   background: ${({ isActive }) =>
     isActive ? '#fff' : 'rgba(255,255,255,0.1)'};
   border-radius: 50%;

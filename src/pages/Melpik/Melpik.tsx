@@ -135,10 +135,6 @@ const Divider = styled.div`
   height: 1px;
   background: #ddd;
   margin: 20px 0;
-
-  @media (min-width: 1024px) {
-    margin: 50px 0;
-  }
 `;
 
 const GridMenu = styled.div`
@@ -146,7 +142,7 @@ const GridMenu = styled.div`
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
   width: 100%;
-
+  /* 데스크탑: 3열, 셀 높이는 콘텐츠 기준으로 늘어남 */
   @media (min-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -163,6 +159,7 @@ const GridItem = styled.div`
   background: #fff;
   cursor: pointer;
 
+  /* 셀을 꽉 채우기 위해 높이를 자동으로 늘림 */
   width: 100%;
   height: 100%;
 `;
@@ -176,19 +173,16 @@ const IconLabelRow = styled.div`
 
 const IconImage = styled.img`
   object-fit: contain;
-
-  @media (min-width: 1024px) {
-    width: 150px;
-    height: 150px;
-  }
 `;
 
 const Label = styled.div`
   font-weight: 700;
   font-size: 14px;
+
   color: #000;
   @media (min-width: 1024px) {
-    font-size: 24px;
+    font-size: 18px;
+    margin-left: 1rem;
   }
 `;
 
@@ -202,8 +196,8 @@ const PickButton = styled.div`
   font-size: 12px;
   font-weight: 600;
   @media (min-width: 1024px) {
-    padding: 12px 24px;
-    font-size: 16px;
+    padding: 10px 16px;
+    font-size: 14px;
   }
 `;
 
