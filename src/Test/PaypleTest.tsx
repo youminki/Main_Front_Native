@@ -8,9 +8,19 @@ declare global {
   }
 }
 
+interface CardData {
+  cardId: number;
+  payerId: string;
+  cardName: string;
+  cardNumber: string;
+  createdAt: string;
+} // minseo
+
 const PaypleTest: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [cards, setCards] = useState<CardData[]>([]); // minseo
+
   const [userInfo, setUserInfo] = useState<{
     userId: string;
     userName: string;
@@ -45,7 +55,49 @@ useEffect(() => {
   })();
 }, []);
 
+useEffect(() => { // minseo
+  const fetchCards = async () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
 
+    const res = await fetch('https://api.stylewh.com/card/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await res.json();
+    setCards(result.items);
+  };
+
+  fetchCards();
+}, []);
+
+
+  const pay = async (payerId: string) => { // minseo
+  const token = localStorage.getItem('accessToken');
+  const res = await fetch('https://api.stylewh.com/payple/pay-with-registered-card', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      payerId,
+      goods: '테스트 상품',
+      amount: 1000,
+    }),
+  });
+
+  const result = await res.json();
+  if (res.ok && result.PCD_PAY_RST === 'success') {
+    alert(`✅ 결제 성공: ${result.PCD_PAY_OID}`);
+  } else {
+    alert(`❌ 결제 실패: ${result.PCD_PAY_MSG || '오류 발생'}`);
+  }
+};
+
+  
   // 카드 등록 요청
  const registerCard = useCallback(async () => {
   setError(null);
@@ -133,17 +185,30 @@ useEffect(() => {
     };
   }, [userInfo]);
 
-  return (
-    <Container>
-      <Title>Payple 카드 등록</Title>
-      <Button disabled={!userInfo} onClick={registerCard}>
-        카드 등록
-      </Button>
-      {error && <Message type='error'>{error}</Message>}
-      {successMessage && <Message>{successMessage}</Message>}
-    </Container>
-  );
-};
+return (
+  <Container>
+    <Title>Payple 카드 등록</Title>
+    <Button disabled={!userInfo} onClick={registerCard}>
+      카드 등록
+    </Button>
+
+    {/* 등록된 카드 목록 + 결제 버튼 */}
+    {cards.map((card) => (
+      <CardBlock key={card.cardId}>
+        <CardText>
+          {card.cardName} - {card.cardNumber}
+          <br />
+          등록일: {new Date(card.createdAt).toLocaleDateString()}
+        </CardText>
+        <Button onClick={() => pay(card.payerId)}>이 카드로 결제</Button>
+      </CardBlock>
+    ))}
+
+    {error && <Message type='error'>{error}</Message>}
+    {successMessage && <Message>{successMessage}</Message>}
+  </Container>
+);
+
 
 export default PaypleTest;
 
