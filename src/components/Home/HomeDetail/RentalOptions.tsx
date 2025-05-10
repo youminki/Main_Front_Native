@@ -46,12 +46,7 @@ const GlobalStyle = createGlobalStyle`
     color: #007bff !important;
   }
 
-  /* 전체 캘린더 반응형 가로 채우기 + 패딩 */
-  .react-datepicker__month-container {
-    width: calc(100% - 2rem) !important;
-    margin: 0 !important;
-    padding: 0 1rem !important;
-  }
+
 `;
 
 const RentalOptions: React.FC = () => {
