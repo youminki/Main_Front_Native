@@ -46,7 +46,9 @@ const GlobalStyle = createGlobalStyle`
     color: #007bff !important;
   }
 `;
-
+interface SquareIconProps {
+  disabled?: boolean;
+}
 interface RentalOptionsProps {
   productId: number;
   selectedSize: string;
@@ -425,20 +427,6 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
 
 export default RentalOptions;
 
-// 달 범위 계산 유틸
-function getMonthsInRange(start: Date, end: Date): string[] {
-  const months: string[] = [];
-  const date = new Date(start.getFullYear(), start.getMonth(), 1);
-  const last = new Date(end.getFullYear(), end.getMonth(), 1);
-  while (date <= last) {
-    months.push(
-      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-    );
-    date.setMonth(date.getMonth() + 1);
-  }
-  return months;
-}
-
 // Styled Components
 const Container = styled.div`
   display: flex;
@@ -531,17 +519,20 @@ const IconWrapper = styled.div`
   display: flex;
   gap: 8px;
 `;
-const SquareIcon = styled.div`
+
+const SquareIcon = styled.div<SquareIconProps>`
   width: 32px;
   height: 32px;
-  background: #000;
+  background: ${({ disabled }) => (disabled ? '#ccc' : '#000')};
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
 `;
+
 const CalendarContainer = styled.div`
   width: 100%;
   display: flex;
