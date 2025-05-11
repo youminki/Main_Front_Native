@@ -19,15 +19,20 @@ import 'react-datepicker/dist/react-datepicker.css';
 registerLocale('ko', ko);
 const hd = new Holidays('KR');
 
-// 전역 스타일: 휴일·일요일·예약불가 날짜 표시
+// 전역 스타일: 휴일·일요일·예약불가 날짜 표시 및 외부 달력 날짜 숨김
 const GlobalStyle = createGlobalStyle`
+  /* 다른 달의 날짜(이전/다음 달) 숨기기 */
+  .react-datepicker__day--outside-month {
+    visibility: hidden !important;
+  }
+
   .day-today {
     background-color: #FFA726 !important;
     color: #000000 !important;
   }
   .day-holiday { color: red !important; }
   .day-sunday  { color: red !important; }
-  .day-reserved { color: red !important; }   /* 예약 불가 날짜도 빨간색으로 표시 */
+  .day-reserved { color: red !important; }
 
   .day-start,
   .day-end {
@@ -46,6 +51,7 @@ const GlobalStyle = createGlobalStyle`
     color: #007bff !important;
   }
 `;
+
 interface SquareIconProps {
   disabled?: boolean;
 }
@@ -181,19 +187,18 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
     }
   };
 
-  // 비활성 날짜 직접 클릭 시 경고
+  // 비활성 날짜(예약불가/일요일/공휴일) 클릭 시 경고
   const handleDayClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     if (!target.classList.contains('react-datepicker__day')) return;
     if (
-      target.classList.contains('day-blue') ||
-      target.classList.contains('day-today') ||
-      target.classList.contains('day-reserved')
-    )
-      return;
-    e.stopPropagation();
-    setErrorMessage('선택할 수 없는 날짜입니다.');
-    setErrorModalOpen(true);
+      target.classList.contains('day-reserved') ||
+      target.classList.contains('day-holiday') ||
+      target.classList.contains('day-sunday')
+    ) {
+      setErrorMessage('선택할 수 없는 날짜입니다.');
+      setErrorModalOpen(true);
+    }
   };
 
   // 선택 범위 +/- 조절
@@ -427,7 +432,7 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
 
 export default RentalOptions;
 
-// Styled Components
+// Styled Components (하단 생략 없이 모두 포함)
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -519,7 +524,6 @@ const IconWrapper = styled.div`
   display: flex;
   gap: 8px;
 `;
-
 const SquareIcon = styled.div<SquareIconProps>`
   width: 32px;
   height: 32px;
@@ -532,7 +536,6 @@ const SquareIcon = styled.div<SquareIconProps>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
 `;
-
 const CalendarContainer = styled.div`
   width: 100%;
   display: flex;
