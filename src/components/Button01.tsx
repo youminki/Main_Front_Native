@@ -13,7 +13,6 @@ export default Button01;
 
 const StyledButton = styled.button`
   width: 100%;
-
   height: 56px;
   padding: 15px;
 
@@ -24,8 +23,9 @@ const StyledButton = styled.button`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
 
-  color: ${({ theme }) => theme.colors.white};
-  background-color: ${({ theme }) => theme.colors.yellow};
+  /* 색상 하드코딩 */
+  color: #ffffff; /* white */
+  background-color: #f6ae24; /* yellow */
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -34,17 +34,17 @@ const StyledButton = styled.button`
     transform 0.2s ease;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.yellow1};
+    background-color: #ffc947; /* hover yellow (원하는 값으로 조정) */
     transform: translateY(-2px);
   }
 
   &:active {
-    background-color: ${({ theme }) => theme.colors.yellow2};
+    background-color: #d99a1e; /* active yellow (원하는 값으로 조정) */
     transform: translateY(0);
   }
 
   &:disabled {
-    background-color: ${({ theme }) => theme.colors.gray2};
+    background-color: #cccccc; /* gray2 */
     cursor: not-allowed;
     transform: none;
   }

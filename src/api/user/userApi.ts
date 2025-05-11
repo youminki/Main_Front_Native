@@ -214,3 +214,45 @@ export const updateUserStyle = async (
   const response = await Axios.patch<UserStyle>('/user/style', data);
   return response.data;
 };
+
+// 추가: 이메일 찾기 API
+export interface FindEmailResponse {
+  email: string;
+}
+
+/**
+ * 이름, 출생년도, 전화번호로 이메일을 찾습니다.
+ * @param params 검색할 사용자 정보
+ */
+export const findEmail = async (params: {
+  name: string;
+  birthYear: string;
+  phoneNumber: string;
+}): Promise<FindEmailResponse> => {
+  const response = await Axios.get<FindEmailResponse>('/user/find-email', {
+    params,
+  });
+  return response.data;
+};
+
+// 추가: 비밀번호 재설정 API
+export interface ResetPasswordRequest {
+  email: string;
+  name: string;
+  phoneNumber: string;
+  newPassword: string;
+}
+
+/**
+ * 이메일, 이름, 전화번호로 사용자를 확인한 후 비밀번호를 재설정합니다.
+ * @param data 재설정할 비밀번호 정보
+ */
+export const resetPassword = async (
+  data: ResetPasswordRequest
+): Promise<MessageResponse> => {
+  const response = await Axios.patch<MessageResponse>(
+    '/user/reset-password',
+    data
+  );
+  return response.data;
+};
