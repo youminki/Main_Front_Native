@@ -5,7 +5,6 @@ import { Axios } from '../Axios'; // Named import
 export interface RentalScheduleCreateRequest {
   productId: number;
   sizeLabel: string;
-  color: string;
   startDate: string; // "YYYY-MM-DD"
   endDate: string; // "YYYY-MM-DD"
   quantity: number;
@@ -25,7 +24,6 @@ export interface RentalScheduleResponse {
 // 서버가 반환하는 비활성 날짜 항목 타입
 interface UnavailableEntry {
   sizeLabel: string;
-  color?: string;
   unavailableDates: string[];
 }
 
@@ -33,26 +31,20 @@ interface UnavailableEntry {
 export interface UnavailableParams {
   productId: number;
   sizeLabel: string;
-  color: string;
 }
 
 /**
- * GET /rental-schedule
- * 서버로부터 해당 상품/사이즈/컬러의 예약 불가 날짜 목록을 가져옵니다.
+ * GET /rental-schedule/{productId}
+ * 서버로부터 해당 상품의 사이즈별 예약 불가 날짜 목록을 가져옵니다.
  */
 export const getUnavailableDates = async (
   params: UnavailableParams
 ): Promise<string[]> => {
-  const resp = await Axios.get<UnavailableEntry[]>('/rental-schedule', {
-    params,
-  });
-  const data = resp.data;
-  const list: UnavailableEntry[] = Array.isArray(data) ? data : [];
-  const entry = list.find(
-    (e) =>
-      e.sizeLabel === params.sizeLabel &&
-      (params.color ? e.color === params.color : true)
+  const resp = await Axios.get<UnavailableEntry[]>(
+    `/rental-schedule/${params.productId}`
   );
+  const list = Array.isArray(resp.data) ? resp.data : [];
+  const entry = list.find((e) => e.sizeLabel === params.sizeLabel);
   return entry ? entry.unavailableDates : [];
 };
 

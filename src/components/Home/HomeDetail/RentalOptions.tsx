@@ -24,13 +24,14 @@ const hd = new Holidays('KR');
 const GlobalStyle = createGlobalStyle`
   .react-datepicker__day--outside-month { visibility: hidden !important; }
   .day-today { background-color: #FFA726 !important; color: #000 !important; }
-  .day-holiday, .day-sunday, .day-reserved { color: red !important; }
+  .day-holiday, .day-sunday { color: red !important; }
+  .day-reserved { color: #ccc !important; }  /* 예약불가일을 회색(#ccc)으로 표시 */
   .day-start, .day-end {
     background: #fff !important; color: #000 !important;
     border: 1px solid #F6AE24 !important; border-radius: .25rem !important;
   }
   .day-between { background: #F6AE24 !important; color: #000 !important; }
-  .day-blue { color: #007bff !important; }
+  .day-blue { color: #000000 !important; }
 `;
 
 interface SquareIconProps {
@@ -69,7 +70,7 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
   const formatDate = (d: Date) =>
     `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 
-  // 서버에서 기존 예약 불가일 로드
+  // 서버에서 기존 예약 불가일 로드 (마지막 날짜에 +3일 추가)
   useEffect(() => {
     if (!productId || !selectedSize || !selectedColor) return;
     getUnavailableDates({
@@ -77,7 +78,21 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
       sizeLabel: selectedSize,
       color: selectedColor,
     })
-      .then((list) => setReservedDates(list.map((d) => new Date(d))))
+      .then((list) => {
+        // 기본 예약불가일
+        const baseDates = list.map((d) => new Date(d));
+        // 마지막 날짜 계산
+        let extendedDates: Date[] = [];
+        if (baseDates.length > 0) {
+          const maxTime = Math.max(...baseDates.map((d) => d.getTime()));
+          const maxDate = new Date(maxTime);
+          // 마지막날 +1, +2, +3일 추가
+          for (let i = 1; i <= 3; i++) {
+            extendedDates.push(_addDays(maxDate, i));
+          }
+        }
+        setReservedDates([...baseDates, ...extendedDates]);
+      })
       .catch(console.error);
   }, [productId, selectedSize, selectedColor]);
 
@@ -322,7 +337,10 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
                     <Dot color='#007bff' /> 대여 가능 날짜
                   </LegendItem>
                   <LegendItem>
-                    <Dot color='red' /> 일요일·공휴일·예약불가 날짜
+                    <Dot color='red' /> 일요일·공휴일
+                  </LegendItem>
+                  <LegendItem>
+                    <Dot color='#ccc' /> 예약 불가 날짜 (기존+마지막일+3일)
                   </LegendItem>
                   <LegendItem>
                     <Dot color='#FFA726' /> 오늘 기준 3일 이후부터 선택 가능
