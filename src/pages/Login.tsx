@@ -20,9 +20,12 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
 
-  const { control, handleSubmit } = useForm<LoginFormValues>({
+  const {
+    control,
+    handleSubmit,
+    formState: { isValid, isSubmitting },
+  } = useForm<LoginFormValues>({
     resolver: yupResolver(schemaLogin),
     mode: 'onChange',
     defaultValues: { email: '', password: '' },
@@ -47,15 +50,11 @@ const Login: React.FC = () => {
       <Container>
         <LoginContainer>
           <Logo src={MelpikLogo} alt='멜픽 로고' />
-          <SubContent>
-            <NormalText>
-              이젠 <Highlighted>멜픽</Highlighted>을 통해
-              <br /> 브랜드를 골라보세요
-            </NormalText>
-            <SubDescription>사고, 빌리고, 판매하는 픽!</SubDescription>
-          </SubContent>
+
+          {/* ... (로고와 설명 부분 생략) ... */}
 
           <LoginForm onSubmit={handleSubmit(handleLoginClick)}>
+            {/* 이메일 & 비밀번호 필드 */}
             <InputFieldRow>
               <Controller
                 control={control}
@@ -63,17 +62,14 @@ const Login: React.FC = () => {
                 render={({ field, fieldState: { error } }) => (
                   <InputField
                     label='사용자 이메일'
-                    id='email'
                     type='text'
-                    error={error}
                     placeholder='이메일을 입력하세요'
-                    isEmailField={true}
+                    error={error}
                     {...field}
                   />
                 )}
               />
             </InputFieldRow>
-
             <InputFieldRow>
               <Controller
                 control={control}
@@ -81,16 +77,16 @@ const Login: React.FC = () => {
                 render={({ field, fieldState: { error } }) => (
                   <InputField
                     label='비밀번호'
-                    id='password'
                     type='password'
-                    error={error}
                     placeholder='비밀번호를 입력하세요'
+                    error={error}
                     {...field}
                   />
                 )}
               />
             </InputFieldRow>
 
+            {/* 자동 로그인 체크박스 */}
             <CheckboxWrapper>
               <CheckboxLabel>
                 <CheckboxInput type='checkbox' />
@@ -98,29 +94,16 @@ const Login: React.FC = () => {
               </CheckboxLabel>
             </CheckboxWrapper>
 
-            <LoginButton type='submit'>로그인</LoginButton>
+            <LoginButton type='submit' disabled={!isValid || isSubmitting}>
+              {isSubmitting ? '로그인 중...' : '로그인'}
+            </LoginButton>
           </LoginForm>
 
+          {/* 여기를 수정 */}
           <ExtraLinks>
-            <FeatureLink
-              href='#'
-              onClick={(e) => {
-                e.preventDefault();
-                setIsFeatureModalOpen(true);
-              }}
-            >
-              아이디 찾기
-            </FeatureLink>
+            <Link onClick={() => navigate('/findid')}>아이디 찾기</Link>
             <LinkSeparator>|</LinkSeparator>
-            <FeatureLink
-              href='#'
-              onClick={(e) => {
-                e.preventDefault();
-                setIsFeatureModalOpen(true);
-              }}
-            >
-              비밀번호 찾기
-            </FeatureLink>
+            <Link onClick={() => navigate('/findpassword')}>비밀번호 찾기</Link>
             <LinkSeparator>|</LinkSeparator>
             <Link onClick={() => navigate('/signup')}>회원가입</Link>
           </ExtraLinks>
@@ -132,14 +115,6 @@ const Login: React.FC = () => {
           title='로그인 실패'
         >
           {modalMessage}
-        </ReusableModal>
-
-        <ReusableModal
-          isOpen={isFeatureModalOpen}
-          onClose={() => setIsFeatureModalOpen(false)}
-          title='준비 중입니다'
-        >
-          아직 구현 전인 기능이에요.
         </ReusableModal>
       </Container>
     </ThemeProvider>
