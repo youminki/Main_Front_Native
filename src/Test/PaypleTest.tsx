@@ -113,41 +113,42 @@ const PaypleTest: React.FC = () => {
     }
   }, [userInfo]);
 
-  const requestPayPasswordPopup = async (payerId: string) => {
-    try {
-
-      console.log('🧾 PAYER_ID to use:', payerId);
-      if (!payerId || typeof payerId !== 'string' || payerId.trim() === '') {
-        alert('유효한 카드가 없습니다.');
-        return;
-      }
-
-      const token = localStorage.getItem('accessToken');
-      const res = await fetch('https://api.stylewh.com/payple/init-payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ payerId, goods: '테스트 상품', amount: 102 }),
-      });
-
-      const data = await res.json();
-      if (typeof window.PaypleCpayAuthCheck !== 'function')
-        throw new Error('Payple SDK 준비 오류');
-      window.PaypleCpayAuthCheck(data);
-    } catch (e) {
-      console.error('[🔥] 결제창 호출 실패', e);
-      alert('결제창 호출 중 오류 발생');
+const requestPayPasswordPopup = async (payerId: string) => {
+  try {
+    console.log('🧾 PAYER_ID to use:', payerId);
+    if (!payerId || typeof payerId !== 'string' || payerId.trim() === '') {
+      alert('유효한 카드가 없습니다.');
+      return;
     }
-  };
 
-  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    const res = await fetch('https://api.stylewh.com/payple/init-payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ payerId, goods: '테스트 상품', amount: 102 }),
+    });
+
+    const data = await res.json();
+    if (typeof window.PaypleCpayAuthCheck !== 'function') {
+      throw new Error('Payple SDK 준비 오류');
+    }
+
+    window.PaypleCpayAuthCheck(data);
+  } catch (e) {
+    console.error('[🔥] 결제창 호출 실패', e);
+    alert('결제창 호출 중 오류 발생');
+  }
+};
+
+useEffect(() => {
+  // 인증 결과 콜백은 이제 서버에서 처리하므로 안내만
   window.PCD_PAY_CALLBACK = (result: any) => {
-    console.log('[✅ Payple 결과 수신 - 단순 안내용]', result);
-
+    console.log('[✅ Payple 인증 결과 수신 안내]', result);
     if (result?.PCD_PAY_RST === 'success') {
-      setSuccessMessage('✅ 결제가 완료되었습니다. 영수증은 마이페이지에서 확인 가능합니다.');
+      setSuccessMessage('✅ 결제가 완료되었습니다. 서버에서 처리 중입니다.');
     } else if (result?.PCD_PAY_RST === 'close') {
       setError('결제가 취소되었습니다.');
     } else {
@@ -159,6 +160,7 @@ const PaypleTest: React.FC = () => {
     delete window.PCD_PAY_CALLBACK;
   };
 }, []);
+
 
   return (
     <Container>
