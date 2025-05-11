@@ -181,30 +181,8 @@ const PaypleTest: React.FC = () => {
     <Container>
       <Title>Payple 카드 등록 및 결제</Title>
       <Button disabled={!userInfo} onClick={registerCard}>
-        카드 등록
+        카드 등록하기
       </Button>
-
-      <Button onClick={() => {
-      const payerId = cards[0]?.payerId;
-      if (!payerId) return alert('카드 없음');
-    
-      fetch('https://api.stylewh.com/payple/recurring-payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          payerId,
-          goods: '정기결제 테스트 상품',
-          amount: 500, // 500원
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => alert('정기결제 성공! 주문번호: ' + data.PCD_PAY_OID))
-        .catch((err) => alert('정기결제 실패: ' + err.message));
-    }}>
-      정기결제 테스트
-    </Button>
 
       {cards.length > 0 && (
         <CardSection>
