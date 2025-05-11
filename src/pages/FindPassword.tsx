@@ -1,117 +1,215 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { schemaFindPassword } from '../hooks/ValidationYup';
-import styled, { ThemeProvider } from 'styled-components';
-
+import * as yup from 'yup';
+import styled from 'styled-components';
 import Button from '../components/Button01';
 import InputField from '../components/InputField';
-import Theme from '../styles/Theme';
-// import ReusableModal from '../components/ReusableModal';
+import ReusableModal from '../components/ReusableModal';
+import { resetPassword } from '../api/user/userApi';
 
-type FormValues = {
-  email: string;
-  nickname: string;
-  birthdate?: string;
-};
+// Validation schema: 이름, 이메일, 전화번호, 새 비밀번호, 비밀번호 확인
+const schemaFindPassword = yup.object().shape({
+  name: yup
+    .string()
+    .required('이름을 입력해주세요.')
+    .max(10, '이름은 최대 10자까지 입력 가능합니다.')
+    .matches(/^[가-힣]+$/, '이름은 한글만 입력 가능합니다.'),
+  email: yup
+    .string()
+    .required('이메일을 입력해주세요.')
+    .email('유효한 이메일 형식이어야 합니다.'),
+  phone: yup
+    .string()
+    .required('전화번호를 입력해주세요.')
+    .matches(
+      /^\d{3}-\d{4}-\d{4}$/,
+      '유효한 전화번호 형식(010-1234-5678)이어야 합니다.'
+    ),
+  newPassword: yup
+    .string()
+    .required('새 비밀번호를 입력해주세요.')
+    .min(8, '새 비밀번호는 최소 8자 이상이어야 합니다.'),
+  confirmPassword: yup
+    .string()
+    .required('비밀번호 확인을 입력해주세요.')
+    .oneOf([yup.ref('newPassword')], '비밀번호가 일치하지 않습니다.'),
+});
+
+type FormValues = yup.InferType<typeof schemaFindPassword>;
 
 const FindPassword: React.FC = () => {
-  // const [setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
   const {
     control,
-    formState: { errors },
+    handleSubmit,
+    formState: { errors, isValid, isSubmitting },
   } = useForm<FormValues>({
     resolver: yupResolver(schemaFindPassword),
     mode: 'onChange',
     defaultValues: {
+      name: '',
       email: '',
-      nickname: '',
-      birthdate: '',
+      phone: '',
+      newPassword: '',
+      confirmPassword: '',
     },
   });
 
-  // const openModal = () => {
-  //   setIsModalOpen(true);
-  // };
+  const onSubmit = async (data: FormValues) => {
+    setErrorMessage('');
+    try {
+      await resetPassword({
+        name: data.name,
+        email: data.email,
+        phoneNumber: data.phone,
+        newPassword: data.newPassword,
+      });
+      setSuccessMessage('새 비밀번호가 성공적으로 설정되었습니다.');
+      setIsModalOpen(true);
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        setErrorMessage('입력하신 정보와 일치하는 계정을 찾을 수 없습니다.');
+      } else {
+        setErrorMessage('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      }
+    }
+  };
 
-  // const closeModal = () => {
-  //   setIsModalOpen(false);
-  // };
+  const closeModal = () => setIsModalOpen(false);
 
   return (
-    <ThemeProvider theme={Theme}>
-      <Container>
-        <ContentWrapper>
-          <FormWrapper>
-            <Controller
-              control={control}
-              name='email'
-              render={({ field }) => (
-                <InputField
-                  label='계정(이메일)'
-                  id='email'
-                  type='text'
-                  error={errors.email?.message}
-                  placeholder='계정을 입력하세요'
-                  isEmailField
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name='nickname'
-              render={({ field }) => (
-                <InputField
-                  label='닉네임'
-                  id='nickname'
-                  type='text'
-                  error={errors.nickname?.message}
-                  {...field}
-                />
-              )}
-            />
-            <Button type='button'>비밀번호 찾기</Button>
-          </FormWrapper>
-        </ContentWrapper>
+    <Container>
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <Row>
+          <Controller
+            name='name'
+            control={control}
+            render={({ field }) => (
+              <InputField
+                label='이름'
+                placeholder='홍길동'
+                error={errors.name?.message}
+                {...field}
+                onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                  const onlyKorean = e.currentTarget.value.replace(
+                    /[^가-힣]/g,
+                    ''
+                  );
+                  field.onChange(onlyKorean);
+                }}
+              />
+            )}
+          />
+          <Controller
+            name='email'
+            control={control}
+            render={({ field }) => (
+              <InputField
+                label='이메일'
+                placeholder='user@example.com'
+                error={errors.email?.message}
+                {...field}
+              />
+            )}
+          />
+        </Row>
 
-        {/* <ReusableModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          title='비밀번호 찾기 - 조회결과'
-        >
-          등록하신 계정으로{' '}
-          <span className='highlighted-text'>메일이 발송</span> 되었습니다.
-        </ReusableModal> */}
-      </Container>
-    </ThemeProvider>
+        <Controller
+          name='phone'
+          control={control}
+          render={({ field }) => (
+            <InputField
+              label='전화번호'
+              placeholder='010-1234-5678'
+              error={errors.phone?.message}
+              value={field.value}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+                const part1 = digits.slice(0, 3);
+                const part2 = digits.length > 3 ? digits.slice(3, 7) : '';
+                const part3 = digits.length > 7 ? digits.slice(7, 11) : '';
+                const formatted = [part1, part2, part3]
+                  .filter(Boolean)
+                  .join('-');
+                field.onChange(formatted);
+              }}
+            />
+          )}
+        />
+
+        <Controller
+          name='newPassword'
+          control={control}
+          render={({ field }) => (
+            <InputField
+              label='새 비밀번호'
+              type='password'
+              placeholder='새 비밀번호를 입력하세요'
+              error={errors.newPassword?.message}
+              {...field}
+            />
+          )}
+        />
+
+        <Controller
+          name='confirmPassword'
+          control={control}
+          render={({ field }) => (
+            <InputField
+              label='비밀번호 확인'
+              type='password'
+              placeholder='비밀번호를 다시 입력하세요'
+              error={errors.confirmPassword?.message}
+              {...field}
+            />
+          )}
+        />
+
+        {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+
+        <Button type='submit' disabled={!isValid || isSubmitting}>
+          {isSubmitting ? '조회 중...' : '비밀번호 찾기'}
+        </Button>
+      </Form>
+
+      <ReusableModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title='비밀번호 찾기 결과'
+      >
+        <p>{successMessage}</p>
+      </ReusableModal>
+    </Container>
   );
 };
 
 export default FindPassword;
 
+// 스타일 정의
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-  margin: 0 auto;
   max-width: 600px;
-  height: 75vh;
+  margin: 0 auto;
+  padding: 1rem;
+  background: #ffffff;
+  border-radius: 8px;
 `;
 
-const ContentWrapper = styled.div`
-  border-radius: 10px;
-  background-color: ${({ theme }) => theme.white};
+const Form = styled.form`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
 `;
 
-const FormWrapper = styled.div`
+const Row = styled.div`
   display: flex;
-  flex-direction: column;
-  width: 100%;
+  gap: 1rem;
+`;
+
+const ErrorText = styled.div`
+  color: #e74c3c;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
 `;
