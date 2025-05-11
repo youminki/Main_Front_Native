@@ -1,4 +1,5 @@
-import axios from 'axios';
+// src/api/scedule/scedule.ts
+import { Axios } from '../Axios'; // Named import
 
 // 예약 스케줄 생성 요청 타입
 export interface RentalScheduleCreateRequest {
@@ -35,13 +36,16 @@ export interface UnavailableParams {
   color: string;
 }
 
+/**
+ * GET /rental-schedule
+ * 서버로부터 해당 상품/사이즈/컬러의 예약 불가 날짜 목록을 가져옵니다.
+ */
 export const getUnavailableDates = async (
   params: UnavailableParams
 ): Promise<string[]> => {
-  const resp = await axios.get<UnavailableEntry[]>('/rental-schedule', {
+  const resp = await Axios.get<UnavailableEntry[]>('/rental-schedule', {
     params,
   });
-  // resp.data가 배열이 아닐 수 있으니 방어 처리
   const data = resp.data;
   const list: UnavailableEntry[] = Array.isArray(data) ? data : [];
   const entry = list.find(
@@ -52,11 +56,14 @@ export const getUnavailableDates = async (
   return entry ? entry.unavailableDates : [];
 };
 
-/** POST /rental-schedule */
+/**
+ * POST /rental-schedule
+ * 새로운 예약 일정을 생성합니다.
+ */
 export const createRentalSchedule = async (
   data: RentalScheduleCreateRequest
 ): Promise<RentalScheduleResponse> => {
-  const response = await axios.post<RentalScheduleResponse>(
+  const response = await Axios.post<RentalScheduleResponse>(
     '/rental-schedule',
     data
   );
