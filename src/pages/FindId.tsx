@@ -9,14 +9,8 @@ import Theme from '../styles/Theme';
 import ReusableModal from '../components/ReusableModal';
 import { CustomSelect } from '../components/CustomSelect';
 
+// Validation schema: 이름, 태어난 해, 전화번호
 export const schemaFindId = yup.object({
-  nickname: yup
-    .string()
-    .required('닉네임을 입력해주세요.')
-    .matches(
-      /^[가-힣a-zA-Z0-9]{2,16}$/,
-      '닉네임은 2~16자 사이로 입력해주세요.'
-    ),
   name: yup
     .string()
     .required('이름을 입력해주세요.')
@@ -25,17 +19,23 @@ export const schemaFindId = yup.object({
     .string()
     .required('태어난 해를 선택해주세요.')
     .matches(/^\d{4}$/, '태어난 해는 4자리 숫자로 입력해주세요.'),
+  phone: yup
+    .string()
+    .required('전화번호를 입력해주세요.')
+    .matches(
+      /^01[016789]-?\d{3,4}-?\d{4}$/,
+      '유효한 전화번호 형식이 아닙니다.'
+    ),
 });
 
 type FormValues = {
   name: string;
-  nickname: string;
   birthYear: string;
+  phone: string;
 };
 
-const years = Array.from({ length: 100 }, (_, i) =>
-  String(new Date().getFullYear() - i)
-);
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: 100 }, (_, i) => String(currentYear - i));
 
 const FindId: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,8 +50,8 @@ const FindId: React.FC = () => {
     mode: 'onChange',
     defaultValues: {
       name: '',
-      nickname: '',
       birthYear: '',
+      phone: '',
     },
   });
 
@@ -64,6 +64,7 @@ const FindId: React.FC = () => {
   const handleFindAccount = (data: FormValues) => {
     console.log('입력된 데이터:', data);
 
+    // TODO: API 호출로 email 조회
     const foundEmail = 'goexample21@gmail.com';
     setUserEmail(maskEmail(foundEmail));
     setIsModalOpen(true);
@@ -78,20 +79,7 @@ const FindId: React.FC = () => {
       <Container>
         <ContentWrapper>
           <FormWrapper onSubmit={handleSubmit(handleFindAccount)}>
-            <Controller
-              control={control}
-              name='nickname'
-              render={({ field }) => (
-                <InputField
-                  label='닉네임'
-                  id='nickname'
-                  type='text'
-                  error={errors.nickname?.message}
-                  placeholder='닉네임을 입력하세요'
-                  {...field}
-                />
-              )}
-            />
+            {/* 이름과 태어난 해를 한 줄로 묶기 */}
             <Row>
               <Controller
                 control={control}
@@ -128,6 +116,23 @@ const FindId: React.FC = () => {
                 )}
               />
             </Row>
+
+            {/* 전화번호 */}
+            <Controller
+              control={control}
+              name='phone'
+              render={({ field }) => (
+                <InputField
+                  label='전화번호'
+                  id='phone'
+                  type='text'
+                  error={errors.phone?.message}
+                  placeholder='010-1234-5678'
+                  {...field}
+                />
+              )}
+            />
+
             <Button type='submit'>아이디 찾기</Button>
           </FormWrapper>
         </ContentWrapper>
@@ -155,10 +160,7 @@ const Container = styled.div`
   align-items: center;
   padding: 1rem;
   margin: 0 auto;
-
   max-width: 600px;
-
-  height: 75vh;
 `;
 
 const ContentWrapper = styled.div`
