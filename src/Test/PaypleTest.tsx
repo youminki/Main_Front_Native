@@ -143,39 +143,22 @@ const PaypleTest: React.FC = () => {
   };
 
   useEffect(() => {
-    window.PCD_PAY_CALLBACK = async (result: any) => {
-      console.log('[✅ Payple 결과 수신]', result);
-      if (!userInfo) return setError('로그인 정보를 찾을 수 없습니다.');
+  window.PCD_PAY_CALLBACK = (result: any) => {
+    console.log('[✅ Payple 결과 수신 - 단순 안내용]', result);
 
-      try {
-        const res = await fetch(
-          'https://api.stylewh.com/payple/confirm-payment',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              PCD_AUTH_KEY: result.PCD_AUTH_KEY,
-              PCD_PAY_REQKEY: result.PCD_PAY_REQKEY,
-              PCD_PAYER_ID: result.PCD_PAYER_ID,
-              PCD_PAY_GOODS: result.PCD_PAY_GOODS,
-              PCD_PAY_TOTAL: result.PCD_PAY_TOTAL,
-            }),
-          }
-        );
-        const data = await res.json();
-        if (!res.ok || data.PCD_PAY_RST !== 'success') {
-          throw new Error(data.PCD_PAY_MSG || '결제 실패');
-        }
-        setSuccessMessage('✅ 결제 성공: ' + data.PCD_PAY_OID);
-      } catch (e: any) {
-        console.error('[🔥] 결제 승인 오류:', e);
-        setError('결제 승인 실패: ' + e.message);
-      }
-    };
-    return () => {
-      delete window.PCD_PAY_CALLBACK;
-    };
-  }, [userInfo]);
+    if (result?.PCD_PAY_RST === 'success') {
+      setSuccessMessage('✅ 결제가 완료되었습니다. 영수증은 마이페이지에서 확인 가능합니다.');
+    } else if (result?.PCD_PAY_RST === 'close') {
+      setError('결제가 취소되었습니다.');
+    } else {
+      setError(result?.PCD_PAY_MSG || '결제 중 문제가 발생했습니다.');
+    }
+  };
+
+  return () => {
+    delete window.PCD_PAY_CALLBACK;
+  };
+}, []);
 
   return (
     <Container>
