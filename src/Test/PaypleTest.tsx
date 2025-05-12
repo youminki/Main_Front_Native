@@ -128,7 +128,7 @@ const requestPayPasswordPopup = async (payerId: string) => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ payerId, goods: '테스트 상품', amount: 102, ticketListId: 2, }),
+      body: JSON.stringify({ payerId, goods: '테스트 상품', amount: 102, }),
     });
 
     const data = await res.json();
@@ -182,7 +182,6 @@ useEffect(() => {
           payerId,
           goods: '정기결제 테스트 상품',
           amount: 500, // 500원,
-          ticketListId: 3,
         }),
       })
         .then((res) => res.json())
