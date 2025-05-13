@@ -30,8 +30,13 @@ const PurchaseOfPasses: React.FC = () => {
 
   const handlePaymentClick = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
-  const handleConfirmPayment = () =>
-    navigate('/my-ticket/PurchaseOfPasses/SubscriptionPassTicketPayment');
+  const handleConfirmPayment = () => {
+    if (isOneTime) {
+      navigate('/my-ticket/PurchaseOfPasses/onetimePassTicketPayment');
+    } else {
+      navigate('/my-ticket/PurchaseOfPasses/SubscriptionPassTicketPayment');
+    }
+  };
 
   return (
     <ThemeProvider theme={Theme}>
