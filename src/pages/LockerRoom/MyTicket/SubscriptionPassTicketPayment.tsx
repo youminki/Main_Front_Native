@@ -1,10 +1,11 @@
 // src/pages/LockerRoom/TicketPayment.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import InputField from '../../../components/InputField';
 import FixedBottomBar from '../../../components/FixedBottomBar';
-import { getMyCards } from '../../../api/default/payment'; // API 함수 경로에 맞게 수정
+import ReusableModal from '../../../components/ReusableModal';
+import { getMyCards } from '../../../api/default/payment';
 
 import PaymentAmountIcon from '../../../assets/LockerRoom/PaymentAmount.svg';
 import TicketPaymentSeaSonIcon from '../../../assets/LockerRoom/TicketPaymentSeaSon.svg';
@@ -20,9 +21,12 @@ export interface CardItem {
 
 const SubscriptionPassTicketPayment: React.FC = () => {
   const navigate = useNavigate();
+  const [cards, setCards] = useState<CardItem[]>([]);
   const [options, setOptions] = useState<string[]>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>('');
+  const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+  const [resultMessage, setResultMessage] = useState('');
 
   // 1) 카드 목록 로드
   useEffect(() => {
@@ -30,15 +34,13 @@ const SubscriptionPassTicketPayment: React.FC = () => {
       try {
         const res = await getMyCards();
         const items: CardItem[] = res.data.items;
+        setCards(items);
 
-        // options 생성
-        let opts: string[];
-        if (items.length === 0) {
-          opts = ['등록된 카드가 없습니다', '카드 추가하기'];
-        } else {
-          opts = items.map((c) => `카드 결제 / ${c.cardName} ${c.cardNumber}`);
-          opts.push('카드 추가하기');
-        }
+        const opts = items.length
+          ? items
+              .map((c) => `카드 결제 / ${c.cardName} ${c.cardNumber}`)
+              .concat('카드 추가하기')
+          : ['등록된 카드가 없습니다', '카드 추가하기'];
 
         setOptions(opts);
         setSelectedPaymentMethod(opts[0]);
@@ -50,13 +52,51 @@ const SubscriptionPassTicketPayment: React.FC = () => {
     })();
   }, []);
 
-  const handleSelectChange = (val: string) => {
-    if (val === '카드 추가하기') {
-      navigate('/payment-method');
+  const handleSelectChange = useCallback(
+    (val: string) => {
+      if (val === '카드 추가하기') {
+        navigate('/payment-method');
+        return;
+      }
+      setSelectedPaymentMethod(val);
+    },
+    [navigate]
+  );
+
+  // 2) 정기결제 API 호출
+  const handlePayment = useCallback(async () => {
+    // 선택된 카드 인덱스 찾기
+    const idx = options.indexOf(selectedPaymentMethod);
+    if (idx < 0 || idx >= cards.length) {
+      setResultMessage('❌ 결제할 카드가 없습니다.');
+      setIsResultModalOpen(true);
       return;
     }
-    setSelectedPaymentMethod(val);
-  };
+    const payerId = cards[idx].payerId;
+    const amount = 120000;
+    const goods = '정기 구독권';
+
+    try {
+      const res = await fetch(
+        'https://api.stylewh.com/payple/recurring-payment',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ payerId, amount, goods }),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok || !data.PCD_PAY_OID) {
+        throw new Error(data.message || '정기결제 실패');
+      }
+      setResultMessage(`✅ 정기결제 성공! 주문번호: ${data.PCD_PAY_OID}`);
+    } catch (e: any) {
+      console.error('[🔥] 정기결제 실패:', e);
+      setResultMessage(`❌ 정기결제 실패: ${e.message}`);
+    } finally {
+      setIsResultModalOpen(true);
+    }
+  }, [cards, options, selectedPaymentMethod]);
 
   return (
     <Container>
@@ -125,7 +165,15 @@ const SubscriptionPassTicketPayment: React.FC = () => {
         </PaymentAmountWrapper>
       </Section>
 
-      <FixedBottomBar text='결제하기' color='yellow' />
+      <FixedBottomBar text='결제하기' color='yellow' onClick={handlePayment} />
+
+      <ReusableModal
+        isOpen={isResultModalOpen}
+        onClose={() => setIsResultModalOpen(false)}
+        title='결제 결과'
+      >
+        {resultMessage}
+      </ReusableModal>
     </Container>
   );
 };
