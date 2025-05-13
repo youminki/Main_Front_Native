@@ -113,54 +113,69 @@ const PaypleTest: React.FC = () => {
     }
   }, [userInfo]);
 
-const requestPayPasswordPopup = async (payerId: string) => {
-  try {
-    console.log('🧾 PAYER_ID to use:', payerId);
-    if (!payerId || typeof payerId !== 'string' || payerId.trim() === '') {
-      alert('유효한 카드가 없습니다.');
-      return;
-    }
+  const requestPayPasswordPopup = async (payerId: string) => {
+    try {
 
-    const token = localStorage.getItem('accessToken');
-    const res = await fetch('https://api.stylewh.com/payple/init-payment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ payerId, goods: '테스트 상품', amount: 102, }),
-    });
+      console.log('🧾 PAYER_ID to use:', payerId);
+      if (!payerId || typeof payerId !== 'string' || payerId.trim() === '') {
+        alert('유효한 카드가 없습니다.');
+        return;
+      }
 
-    const data = await res.json();
-    if (typeof window.PaypleCpayAuthCheck !== 'function') {
-      throw new Error('Payple SDK 준비 오류');
-    }
+      const token = localStorage.getItem('accessToken');
+      const res = await fetch('https://api.stylewh.com/payple/init-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ payerId, goods: '테스트 상품', amount: 102 }),
+      });
 
-    window.PaypleCpayAuthCheck(data);
-  } catch (e) {
-    console.error('[🔥] 결제창 호출 실패', e);
-    alert('결제창 호출 중 오류 발생');
-  }
-};
-
-useEffect(() => {
-  // 인증 결과 콜백은 이제 서버에서 처리하므로 안내만
-  window.PCD_PAY_CALLBACK = (result: any) => {
-    console.log('[✅ Payple 인증 결과 수신 안내]', result);
-    if (result?.PCD_PAY_RST === 'success') {
-      setSuccessMessage('✅ 결제가 완료되었습니다. 서버에서 처리 중입니다.');
-    } else if (result?.PCD_PAY_RST === 'close') {
-      setError('결제가 취소되었습니다.');
-    } else {
-      setError(result?.PCD_PAY_MSG || '결제 중 문제가 발생했습니다.');
+      const data = await res.json();
+      if (typeof window.PaypleCpayAuthCheck !== 'function')
+        throw new Error('Payple SDK 준비 오류');
+      window.PaypleCpayAuthCheck(data);
+    } catch (e) {
+      console.error('[🔥] 결제창 호출 실패', e);
+      alert('결제창 호출 중 오류 발생');
     }
   };
 
-  return () => {
-    delete window.PCD_PAY_CALLBACK;
-  };
-}, []);
+  useEffect(() => {
+    window.PCD_PAY_CALLBACK = async (result: any) => {
+      console.log('[✅ Payple 결과 수신]', result);
+      if (!userInfo) return setError('로그인 정보를 찾을 수 없습니다.');
 
+      try {
+        const res = await fetch(
+          'https://api.stylewh.com/payple/confirm-payment',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              PCD_AUTH_KEY: result.PCD_AUTH_KEY,
+              PCD_PAY_REQKEY: result.PCD_PAY_REQKEY,
+              PCD_PAYER_ID: result.PCD_PAYER_ID,
+              PCD_PAY_GOODS: result.PCD_PAY_GOODS,
+              PCD_PAY_TOTAL: result.PCD_PAY_TOTAL,
+            }),
+          }
+        );
+        const data = await res.json();
+        if (!res.ok || data.PCD_PAY_RST !== 'success') {
+          throw new Error(data.PCD_PAY_MSG || '결제 실패');
+        }
+        setSuccessMessage('✅ 결제 성공: ' + data.PCD_PAY_OID);
+      } catch (e: any) {
+        console.error('[🔥] 결제 승인 오류:', e);
+        setError('결제 승인 실패: ' + e.message);
+      }
+    };
+    return () => {
+      delete window.PCD_PAY_CALLBACK;
+    };
+  }, [userInfo]);
 
   return (
     <Container>
@@ -181,7 +196,7 @@ useEffect(() => {
         body: JSON.stringify({
           payerId,
           goods: '정기결제 테스트 상품',
-          amount: 500, // 500원,
+          amount: 500, // 500원
         }),
       })
         .then((res) => res.json())
