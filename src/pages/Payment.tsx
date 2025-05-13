@@ -650,12 +650,11 @@ const PaymentAndCouponContainer = styled.div`
   border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
   padding: 30px 0;
-  margin: 30px 0;
 `;
 
 const ReturnSection = styled(Section)`
   border-top: 1px solid #ddd;
-  margin: 30px 0;
+
   padding-top: 30px;
 `;
 
@@ -668,12 +667,12 @@ const PaymentSection = styled.section`
 const CouponSection = styled.section`
   display: flex;
   flex-direction: column;
-  margin-bottom: 16px;
 `;
 
 const TotalPaymentSection = styled.section`
   display: flex;
   flex-direction: column;
+  padding-top: 30px;
 `;
 
 const TotalAmount = styled.div`
