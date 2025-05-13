@@ -77,7 +77,6 @@ const PurchaseOfPasses: React.FC = () => {
               ) : (
                 <>
                   <option value='월 4회권'>월 4회권</option>
-                  <option value='월 8회권'>월 8회권</option>
                   <option value='무제한'>무제한</option>
                 </>
               )}
