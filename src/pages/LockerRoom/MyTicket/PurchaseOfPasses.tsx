@@ -141,6 +141,7 @@ const PurchaseOfPasses: React.FC = () => {
         />
 
         <ReusableModal2
+          title={'이용권 구매'}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           onConfirm={handleConfirmPayment}
