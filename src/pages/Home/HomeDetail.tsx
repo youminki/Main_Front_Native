@@ -1,6 +1,6 @@
 // src/pages/HomeDetail.tsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Spinner from '../../components/Spinner';
 import {
@@ -50,6 +50,7 @@ interface ProductDetail {
 type HomeDetailProps = { id?: string };
 
 const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
+  const navigate = useNavigate();
   const params = useParams<{ id: string }>();
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -249,7 +250,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       <BottomBar
         cartIconSrc={ShoppingBasket}
         orderButtonLabel='제품 주문하기'
-        onOrderClick={() => console.log('🛒 주문하기')}
+        onOrderClick={() => navigate(`/payment/${product.id}`)}
       />
     </DetailContainer>
   );
