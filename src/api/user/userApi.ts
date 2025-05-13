@@ -256,3 +256,18 @@ export const resetPassword = async (
   );
   return response.data;
 };
+
+// 추가: 로그인 유저의 멤버십 정보 조회 API
+export interface MembershipInfo {
+  id: number;
+  name: string; //유저 등급
+  discount_rate: number; //할인율
+}
+
+/**
+ * 현재 로그인한 사용자의 멤버십 정보를 조회합니다.
+ */
+export const getMembershipInfo = async (): Promise<MembershipInfo> => {
+  const response = await Axios.get<MembershipInfo>('/user/me/membership');
+  return response.data;
+};

@@ -134,7 +134,7 @@ const PurchaseOfPasses: React.FC = () => {
 
 export default PurchaseOfPasses;
 
-// Styled Components (Signup.tsx에서 가져온 그대로)
+// Styled Components
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -143,7 +143,6 @@ const Container = styled.div`
   padding: 1rem;
   max-width: 600px;
   background-color: #ffffff;
-  justify-content: center;
 `;
 
 const RowLabel = styled.div`
@@ -166,7 +165,10 @@ const Divider = styled.hr`
 const NoticeArea = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 6px;
+  width: 100%;
+  margin: 16px 0;
 `;
 
 const NoticeText = styled.p`

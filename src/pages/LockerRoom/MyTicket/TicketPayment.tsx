@@ -1,92 +1,120 @@
-import React, { useState } from 'react';
+// src/pages/LockerRoom/TicketPayment.tsx
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import InputField from '../../../components/InputField';
+import FixedBottomBar from '../../../components/FixedBottomBar';
+import { getMyCards } from '../../../api/default/payment'; // API 함수 경로에 맞게 수정
 
 import PaymentAmountIcon from '../../../assets/LockerRoom/PaymentAmount.svg';
 import TicketPaymentSeaSonIcon from '../../../assets/LockerRoom/TicketPaymentSeaSon.svg';
 import TicketPaymentRightIcon from '../../../assets/LockerRoom/TicketPaymentRightIcon.svg';
-import FixedBottomBar from '../../../components/FixedBottomBar';
 
-const ProductInfo: React.FC = () => {
-  return (
-    <ProductInfoContainer>
-      <Title>결제할 이용권</Title>
-      <Divider />
-
-      <ProductHeader>
-        <LeftSide>
-          <SubscriptionLabel>정기결제</SubscriptionLabel>
-
-          <ProductTitle>
-            <MainTitle>정기 구독권</MainTitle>
-            <SubTitle>/ 월 4회권</SubTitle>
-          </ProductTitle>
-
-          <Row>
-            <IconImg src={TicketPaymentSeaSonIcon} alt='시즌 아이콘' />
-            <RowTextContainer>
-              <RowLabel>
-                시즌 -<RowValue> 2025 SPRING</RowValue>
-              </RowLabel>
-
-              <RowPeriod>2025.03.01 ~ 03.31</RowPeriod>
-            </RowTextContainer>
-          </Row>
-
-          <Row>
-            <IconImg src={PaymentAmountIcon} alt='결제금액 아이콘' />
-            <RowTextContainer>
-              <RowLabel>
-                결제금액 -<RowValue>120,000원</RowValue>
-              </RowLabel>
-
-              <RowPeriod>매월 1일 (자동결제)</RowPeriod>
-            </RowTextContainer>
-          </Row>
-        </LeftSide>
-
-        <RightSideImage>
-          <img
-            src={TicketPaymentRightIcon}
-            alt='정기 구독권 예시 이미지'
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        </RightSideImage>
-      </ProductHeader>
-    </ProductInfoContainer>
-  );
-};
+export interface CardItem {
+  cardId: number;
+  payerId: string;
+  cardName: string;
+  cardNumber: string;
+  createdAt: string;
+}
 
 const TicketPayment: React.FC = () => {
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
-    '카드 결제 / 신한카드 1212-****-****-0121'
-  );
-  const [selectedCoupon, setSelectedCoupon] = useState('보유 쿠폰 없음');
+  const navigate = useNavigate();
+  const [cards, setCards] = useState<CardItem[]>([]);
+  const [options, setOptions] = useState<string[]>([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<string>('');
+
+  // 1) 카드 목록 로드
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getMyCards();
+        const items: CardItem[] = res.data.items;
+        setCards(items);
+
+        let opts: string[];
+        if (items.length === 0) {
+          opts = [' 등록된 카드가 없습니다', '카드 추가하기'];
+        } else {
+          opts = items.map((c) => `카드 결제 / ${c.cardName} ${c.cardNumber}`);
+          opts.push('카드 추가하기');
+        }
+        setOptions(opts);
+        setSelectedPaymentMethod(opts[0]);
+      } catch (e) {
+        console.error('[🔥] 카드 목록 조회 실패', e);
+        setOptions(['등록된 카드가 없습니다', '카드 추가하기']);
+        setSelectedPaymentMethod('등록된 카드가 없습니다');
+      }
+    })();
+  }, []);
+
+  const handleSelectChange = (val: string) => {
+    if (val === '카드 추가하기') {
+      navigate('/payment-method');
+      return;
+    }
+    setSelectedPaymentMethod(val);
+  };
 
   return (
     <Container>
-      <ProductInfo />
+      <ProductInfo>
+        <Title>결제할 이용권</Title>
+        <Divider />
+
+        <ProductHeader>
+          <LeftSide>
+            <SubscriptionLabel>정기결제</SubscriptionLabel>
+
+            <ProductTitle>
+              <MainTitle>정기 구독권</MainTitle>
+              <SubTitle>/ 월 4회권</SubTitle>
+            </ProductTitle>
+
+            <Row>
+              <IconImg src={TicketPaymentSeaSonIcon} alt='시즌 아이콘' />
+              <RowTextContainer>
+                <RowLabel>
+                  시즌 -<RowValue> 2025 SPRING</RowValue>
+                </RowLabel>
+                <RowPeriod>2025.03.01 ~ 03.31</RowPeriod>
+              </RowTextContainer>
+            </Row>
+
+            <Row>
+              <IconImg src={PaymentAmountIcon} alt='결제금액 아이콘' />
+              <RowTextContainer>
+                <RowLabel>
+                  결제금액 -<RowValue>120,000원</RowValue>
+                </RowLabel>
+                <RowPeriod>매월 1일 (자동결제)</RowPeriod>
+              </RowTextContainer>
+            </Row>
+          </LeftSide>
+
+          <RightSideImage>
+            <img
+              src={TicketPaymentRightIcon}
+              alt='정기 구독권 예시 이미지'
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </RightSideImage>
+        </ProductHeader>
+      </ProductInfo>
+
       <Divider />
 
-      <InputField
-        label='결제방식 *'
-        id='paymentMethod'
-        options={[
-          '카드 결제 / 신한카드 1212-****-****-0121',
-          '무통장 결제 / 기업 065-143111-01-015, (주)리프트콤마',
-          '이용권 / 정기 구독권 ( 2025년 3월분 )',
-        ]}
-        value={selectedPaymentMethod}
-        onSelectChange={(val: string) => setSelectedPaymentMethod(val)}
-      />
-
-      <InputField
-        label='추가 쿠폰 (선택)'
-        id='couponSelect'
-        options={['보유 쿠폰 없음', '20% 할인 쿠폰 / 26NJ-D6WW-NELY-5GB0']}
-        value={selectedCoupon}
-        onSelectChange={(val: string) => setSelectedCoupon(val)}
-      />
+      <Section>
+        <InputField
+          label='결제방식 *'
+          id='paymentMethod'
+          options={options}
+          value={selectedPaymentMethod}
+          onSelectChange={handleSelectChange}
+        />
+      </Section>
 
       <Divider />
 
@@ -96,6 +124,7 @@ const TicketPayment: React.FC = () => {
           <PaymentAmount>120,000원</PaymentAmount>
         </PaymentAmountWrapper>
       </Section>
+
       <FixedBottomBar text='결제하기' color='yellow' />
     </Container>
   );
@@ -103,17 +132,16 @@ const TicketPayment: React.FC = () => {
 
 export default TicketPayment;
 
+// --- styled-components ---
 const Container = styled.div`
   position: relative;
-
-  height: 932px;
   background: #ffffff;
   margin: 0 auto;
-
   display: flex;
   flex-direction: column;
   padding: 1rem;
   max-width: 1000px;
+  min-height: 100vh;
 `;
 
 const Divider = styled.div`
@@ -125,13 +153,12 @@ const Divider = styled.div`
 const Section = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin: 30px 0;
 `;
 
 const CustomLabel = styled.div`
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 11px;
   color: #000000;
   margin-bottom: 8px;
@@ -158,10 +185,11 @@ const PaymentAmount = styled.span`
   color: #000000;
 `;
 
-const ProductInfoContainer = styled.div`
+const ProductInfo = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  padding-bottom: 20px;
 `;
 
 const Title = styled.div`
@@ -176,8 +204,7 @@ const ProductHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-
-  padding: 20px 0;
+  padding-top: 20px;
 `;
 
 const LeftSide = styled.div`

@@ -7,6 +7,7 @@ import LoginButton from '../components/Button01';
 import InputField from '../components/InputField';
 import Theme from '../styles/Theme';
 import { LoginPost } from '../api/auth/LoginPost';
+import { getMembershipInfo, MembershipInfo } from '../api/user/userApi';
 import MelpikLogo from '../assets/LoginLogo.svg';
 import { schemaLogin } from '../hooks/ValidationYup';
 import ReusableModal from '../components/ReusableModal';
@@ -14,6 +15,11 @@ import ReusableModal from '../components/ReusableModal';
 type LoginFormValues = {
   email: string;
   password: string;
+};
+
+type LoginResponse = {
+  accessToken: string;
+  refreshToken: string;
 };
 
 const Login: React.FC = () => {
@@ -31,19 +37,36 @@ const Login: React.FC = () => {
     defaultValues: { email: '', password: '' },
   });
 
+  const handleModalClose = () => setIsModalOpen(false);
+
   const handleLoginClick = async (data: LoginFormValues) => {
     try {
-      const response = await LoginPost(data.email, data.password);
-      localStorage.setItem('accessToken', response.accessToken);
-      localStorage.setItem('refreshToken', response.refreshToken);
-      navigate('/home', { replace: true, state: { showNotice: true } });
+      // 1) 로그인 요청
+      const response = (await LoginPost(
+        data.email,
+        data.password
+      )) as LoginResponse;
+      const { accessToken, refreshToken } = response;
+
+      // 2) 토큰 로컬 저장
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+
+      // 3) 멤버십 정보 조회
+      const membership: MembershipInfo = await getMembershipInfo();
+
+      navigate('/home', {
+        replace: true,
+        state: {
+          showNotice: true,
+          membership,
+        },
+      });
     } catch (error: any) {
       setModalMessage(error?.message || '로그인 실패. 다시 시도해주세요.');
       setIsModalOpen(true);
     }
   };
-
-  const handleModalClose = () => setIsModalOpen(false);
 
   return (
     <ThemeProvider theme={Theme}>
@@ -51,10 +74,9 @@ const Login: React.FC = () => {
         <LoginContainer>
           <Logo src={MelpikLogo} alt='멜픽 로고' />
 
-          {/* ... (로고와 설명 부분 생략) ... */}
+          {/* ... 로고 아래 설명 영역 생략 ... */}
 
           <LoginForm onSubmit={handleSubmit(handleLoginClick)}>
-            {/* 이메일 & 비밀번호 필드 */}
             <InputFieldRow>
               <Controller
                 control={control}
@@ -86,7 +108,6 @@ const Login: React.FC = () => {
               />
             </InputFieldRow>
 
-            {/* 자동 로그인 체크박스 */}
             <CheckboxWrapper>
               <CheckboxLabel>
                 <CheckboxInput type='checkbox' />
@@ -99,7 +120,6 @@ const Login: React.FC = () => {
             </LoginButton>
           </LoginForm>
 
-          {/* 여기를 수정 */}
           <ExtraLinks>
             <Link onClick={() => navigate('/findid')}>아이디 찾기</Link>
             <LinkSeparator>|</LinkSeparator>
@@ -123,6 +143,7 @@ const Login: React.FC = () => {
 
 export default Login;
 
+// --- styled-components ---
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -132,7 +153,6 @@ const Container = styled.div`
   max-width: 600px;
   padding: 1rem;
 `;
-
 const LoginContainer = styled.div`
   border-radius: 10px;
   display: flex;
@@ -140,61 +160,29 @@ const LoginContainer = styled.div`
   align-items: center;
   width: 100%;
 `;
-
 const Logo = styled.img`
   width: 150px;
   margin: 50px 0 21px;
 `;
-
-// const SubContent = styled.div`
-//   text-align: center;
-//   margin-bottom: 54px;
-// `;
-
-// const Highlighted = styled.span`
-//   color: ${({ theme }) => theme.colors.yellow};
-//   font-size: 16px;
-//   font-weight: 700;
-//   line-height: 24px;
-// `;
-
-// const NormalText = styled.span`
-//   font-size: 16px;
-//   font-weight: 700;
-//   line-height: 24px;
-//   text-decoration-skip-ink: none;
-// `;
-
-// const SubDescription = styled.div`
-//   font-weight: 700;
-//   font-size: 12px;
-//   line-height: 28px;
-//   color: #cccccc;
-// `;
-
 const LoginForm = styled.form`
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
-
 const InputFieldRow = styled.div`
   width: 100%;
 `;
-
 const CheckboxWrapper = styled.div`
   width: 100%;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
 `;
-
 const CheckboxLabel = styled.label`
   display: flex;
   align-items: center;
 `;
-
 const CheckboxInput = styled.input`
   width: 20px;
   height: 20px;
@@ -215,13 +203,11 @@ const CheckboxInput = styled.input`
     transform: rotate(-45deg);
   }
 `;
-
 const CheckboxText = styled.div`
   font-size: 12px;
   font-weight: 700;
   margin-left: 8px;
 `;
-
 const ExtraLinks = styled.div`
   display: flex;
   justify-content: space-around;
@@ -229,32 +215,16 @@ const ExtraLinks = styled.div`
   min-width: 264px;
   margin-top: 30px;
 `;
-
-// const FeatureLink = styled.a`
-//   color: ${({ theme }) => theme.colors.gray2};
-//   padding: 5px;
-//   font-size: 12px;
-//   font-weight: 700;
-//   text-decoration: none;
-//   cursor: pointer;
-
-//   &:hover {
-//     text-decoration: none;
-//   }
-// `;
-
 const Link = styled.a`
   color: ${({ theme }) => theme.colors.black};
   padding: 5px;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-
   &:hover {
     text-decoration: underline;
   }
 `;
-
 const LinkSeparator = styled.span`
   color: ${({ theme }) => theme.colors.gray2};
   font-size: 15px;

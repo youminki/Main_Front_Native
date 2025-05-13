@@ -481,13 +481,6 @@ const PaymentPage: React.FC = () => {
             ]}
           />
         </PaymentSection>
-        <CouponSection>
-          <InputField
-            id='coupon'
-            label='추가 쿠폰 (선택)'
-            options={['20% 할인 쿠폰', '보유 쿠폰 없음']}
-          />
-        </CouponSection>
       </PaymentAndCouponContainer>
 
       {/* 총 결제금액 */}

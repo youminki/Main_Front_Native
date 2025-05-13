@@ -42,15 +42,6 @@ const OnetimePass: React.FC = () => {
         </Section>
 
         <Section>
-          <SectionTitle>이용권 코드</SectionTitle>
-          <InFieldBox>
-            <CodeLabel>Code</CodeLabel>
-            <Pipe> | </Pipe>
-            <CodeValue>PASSI3Y8OTXFXTSG</CodeValue>
-          </InFieldBox>
-        </Section>
-
-        <Section>
           <SectionTitle>시즌 자동연장</SectionTitle>
           <InFieldBoxGray>
             <Row>
@@ -159,17 +150,6 @@ const PassName = styled.span`
   color: #000000;
 `;
 
-const InFieldBox = styled.div`
-  box-sizing: border-box;
-  width: 100%;
-  height: 57px;
-  border: 1px solid #dddddd;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-`;
-
 const InFieldBoxGray = styled.div`
   box-sizing: border-box;
   width: 100%;
@@ -182,28 +162,12 @@ const InFieldBoxGray = styled.div`
   padding: 0 16px;
 `;
 
-const CodeLabel = styled.span`
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 14px;
-  color: #999999;
-  margin-right: 4px;
-`;
-
 const Pipe = styled.span`
   font-weight: 400;
   font-size: 13px;
   line-height: 14px;
   color: #cccccc;
   margin: 0 4px;
-`;
-
-const CodeValue = styled.span`
-  font-weight: 800;
-  font-size: 13px;
-  line-height: 14px;
-  color: #999999;
-  margin-left: 4px;
 `;
 
 const SeasonLabel = styled.span`
