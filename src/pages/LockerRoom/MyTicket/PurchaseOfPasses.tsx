@@ -31,7 +31,7 @@ const PurchaseOfPasses: React.FC = () => {
   const handlePaymentClick = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
   const handleConfirmPayment = () =>
-    navigate('/my-ticket/PurchaseOfPasses/TicketPayment');
+    navigate('/my-ticket/PurchaseOfPasses/SubscriptionPassTicketPayment');
 
   return (
     <ThemeProvider theme={Theme}>

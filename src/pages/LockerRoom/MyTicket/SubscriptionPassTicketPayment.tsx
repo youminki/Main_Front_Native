@@ -18,7 +18,7 @@ export interface CardItem {
   createdAt: string;
 }
 
-const TicketPayment: React.FC = () => {
+const SubscriptionPassTicketPayment: React.FC = () => {
   const navigate = useNavigate();
   const [options, setOptions] = useState<string[]>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
@@ -130,7 +130,7 @@ const TicketPayment: React.FC = () => {
   );
 };
 
-export default TicketPayment;
+export default SubscriptionPassTicketPayment;
 
 // --- styled-components ---
 const Container = styled.div`
