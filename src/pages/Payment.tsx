@@ -60,6 +60,15 @@ interface BasketItem {
 const PaymentPage: React.FC = () => {
   const [recipient, setRecipient] = useState<string>('');
   const [navigateHome, setNavigateHome] = useState(false);
+  const [selectedListAddress, setSelectedListAddress] = useState<string>('');
+  const handleListConfirm = () => {
+    if (modalField === 'delivery') {
+      setDeliveryInfo((info) => ({ ...info, address: selectedListAddress }));
+    } else {
+      setReturnInfo((info) => ({ ...info, address: selectedListAddress }));
+    }
+    setListModalOpen(false);
+  };
   const [modalField, setModalField] = useState<'delivery' | 'return'>(
     'delivery'
   );
@@ -432,16 +441,28 @@ const PaymentPage: React.FC = () => {
         <ReusableModal
           isOpen
           onClose={() => setListModalOpen(false)}
+          onConfirm={handleListConfirm}
           title='배송목록 추가'
           width='80%'
           height='320px'
         >
           <ModalBodyContent>
             <DeliveryListLabel>배송목록 (1/3)</DeliveryListLabel>
-            <DeliverySelect>
-              <option>서울 금천구 디지털로9길 41, 1008호</option>
-              <option>서울 금천구 가산디지털1로 168</option>
-              <option>경기도 성남시 분당구 판교역로 235</option>
+
+            <DeliverySelect
+              value={selectedListAddress}
+              onChange={(e) => setSelectedListAddress(e.target.value)}
+            >
+              <option value=''>배송목록을 선택하세요</option>
+              <option value='서울 금천구 디지털로9길 41, 1008호'>
+                서울 금천구 디지털로9길 41, 1008호
+              </option>
+              <option value='서울 금천구 가산디지털1로 168'>
+                서울 금천구 가산디지털1로 168
+              </option>
+              <option value='경기도 성남시 분당구 판교역로 235'>
+                경기도 성남시 분당구 판교역로 235
+              </option>
             </DeliverySelect>
           </ModalBodyContent>
         </ReusableModal>

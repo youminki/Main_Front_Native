@@ -1,6 +1,7 @@
 import React, { useState, forwardRef } from 'react';
 import styled from 'styled-components';
 import Button02 from './Button02';
+import { CustomSelect } from './CustomSelect';
 
 type InputFieldProps = {
   label: string;
@@ -99,7 +100,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             {prefixcontent && renderPrefixContent()}
 
             {options ? (
-              <Select
+              <CustomSelect
                 id={id}
                 value={selectedOption}
                 onChange={handleSelectChange}
@@ -111,7 +112,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                     {option}
                   </option>
                 ))}
-              </Select>
+              </CustomSelect>
             ) : (
               <Input
                 as={as}
@@ -228,28 +229,6 @@ const Input = styled.input`
   color: #000000;
 
   &:disabled {
-    color: #999999;
-    cursor: not-allowed;
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const Select = styled.select`
-  flex: 1;
-  height: 100%;
-  border: none;
-  padding: 0 16px;
-  font-weight: 800;
-  font-size: 13px;
-  appearance: none;
-  background-color: white;
-  color: #000000;
-
-  &:disabled {
-    background-color: #f0f0f0;
     color: #999999;
     cursor: not-allowed;
   }

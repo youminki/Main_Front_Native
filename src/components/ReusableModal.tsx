@@ -15,7 +15,7 @@ type ModalProps = {
 const ReusableModal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
-
+  onConfirm,
   title,
   children,
   width = '100%',
@@ -23,6 +23,14 @@ const ReusableModal: React.FC<ModalProps> = ({
   actions,
 }) => {
   if (!isOpen) return null;
+
+  const handleConfirmClick = () => {
+    if (onConfirm) {
+      onConfirm();
+    } else {
+      onClose();
+    }
+  };
 
   return (
     <StyledModal>
@@ -35,7 +43,7 @@ const ReusableModal: React.FC<ModalProps> = ({
         <ModalBody>{children}</ModalBody>
         {actions && <ModalActions>{actions}</ModalActions>}
         <CloseButtonWrapper>
-          <CloseButton onClick={onClose}>확인</CloseButton>
+          <CloseButton onClick={handleConfirmClick}>확인</CloseButton>
         </CloseButtonWrapper>
       </ModalContent>
     </StyledModal>
