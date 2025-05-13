@@ -24,6 +24,10 @@ const PurchaseOfPasses: React.FC = () => {
   const formattedOneMonthLater = format(oneMonthLater, 'yyyy.MM.dd');
   const paymentDay = today.getDate();
 
+  // 결제금액 동적 계산
+  const price = isOneTime ? 50000 : 120000;
+  const formattedPrice = price.toLocaleString();
+
   const handlePaymentClick = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
   const handleConfirmPayment = () =>
@@ -66,7 +70,7 @@ const PurchaseOfPasses: React.FC = () => {
               name='paymentAmount'
               label='이용권 결제금액'
               id='paymentAmount'
-              prefixcontent='120,000'
+              prefixcontent={formattedPrice}
               readOnly
             />
           </HalfBox>

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { Axios } from '../Axios';
 
 /**
  * 이용권 템플릿 정보
@@ -17,7 +17,7 @@ export interface TicketList {
  * 모든 이용권 템플릿 조회
  */
 export const getTicketTemplates = async (): Promise<TicketList[]> => {
-  const res = await axios.get<TicketList[]>('/ticket/templates');
+  const res = await Axios.get<TicketList[]>('/ticket/templates');
   return res.data;
 };
 
@@ -39,7 +39,7 @@ export interface UserTicket {
 }
 
 export const getUserTickets = async (): Promise<UserTicket[]> => {
-  const response = await axios.get<UserTicket[]>('/ticket/user');
+  const response = await Axios.get<UserTicket[]>('/ticket/user');
   return response.data;
 };
 
@@ -47,7 +47,7 @@ export const getUserTicketsByDateRange = async (
   startDate: string,
   endDate: string
 ): Promise<UserTicket[]> => {
-  const response = await axios.get<UserTicket[]>('/ticket/user/date-range', {
+  const response = await Axios.get<UserTicket[]>('/ticket/user/date-range', {
     params: { startDate, endDate },
   });
   return response.data;
