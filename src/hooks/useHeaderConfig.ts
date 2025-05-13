@@ -58,7 +58,7 @@ const headerRules: {
       '/customerService/NoticeDetail',
       '/customerService/PersonalInformationProcessingPolicyDetail',
       '/customerService/TermsAndConditionsOfUseDetail',
-      '/payment',
+      '/payment/:id',
     ],
     variant: 'twoDepth',
     getTitle: getTwoDepthTitle,
@@ -135,7 +135,7 @@ function getTwoDepthTitle(path: string): string {
     matchPath('/my-ticket/OnetimePass', path)
   )
     return '이용권 상세';
-  if (matchPath('/payment', path)) return '결제하기';
+  if (matchPath('/payment/:id', path)) return '결제하기';
   return '';
 }
 
