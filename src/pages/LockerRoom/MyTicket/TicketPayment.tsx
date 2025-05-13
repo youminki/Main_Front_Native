@@ -20,7 +20,6 @@ export interface CardItem {
 
 const TicketPayment: React.FC = () => {
   const navigate = useNavigate();
-  const [cards, setCards] = useState<CardItem[]>([]);
   const [options, setOptions] = useState<string[]>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>('');
@@ -31,15 +30,16 @@ const TicketPayment: React.FC = () => {
       try {
         const res = await getMyCards();
         const items: CardItem[] = res.data.items;
-        setCards(items);
 
+        // options 생성
         let opts: string[];
         if (items.length === 0) {
-          opts = [' 등록된 카드가 없습니다', '카드 추가하기'];
+          opts = ['등록된 카드가 없습니다', '카드 추가하기'];
         } else {
           opts = items.map((c) => `카드 결제 / ${c.cardName} ${c.cardNumber}`);
           opts.push('카드 추가하기');
         }
+
         setOptions(opts);
         setSelectedPaymentMethod(opts[0]);
       } catch (e) {

@@ -657,10 +657,10 @@ const PaymentSection = styled.section`
   margin-bottom: 16px;
 `;
 
-const CouponSection = styled.section`
-  display: flex;
-  flex-direction: column;
-`;
+// const CouponSection = styled.section`
+//   display: flex;
+//   flex-direction: column;
+// `;
 
 const TotalPaymentSection = styled.section`
   display: flex;
