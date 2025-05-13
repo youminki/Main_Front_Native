@@ -265,7 +265,7 @@ const DetailContainer = styled.div`
   justify-content: space-between;
 
   max-width: 1000px;
-  margin: 0 auto 20px;
+  margin: 0 auto 100px;
   box-sizing: border-box;
 `;
 const ContentContainer = styled.div`
