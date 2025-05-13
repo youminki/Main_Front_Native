@@ -59,6 +59,7 @@ const AppLayout: React.FC = () => {
     '/melpik',
     '/lockerroom',
     '/customerService',
+  ];
 
   return (
     <AppContainer>
