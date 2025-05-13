@@ -43,6 +43,8 @@ import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
 import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
 import PurchaseOfPasses from './pages/LockerRoom/MyTicket/PurchaseOfPasses';
 import SubscriptionPassTicketPayment from './pages/LockerRoom/MyTicket/SubscriptionPassTicketPayment';
+import OnetimePassTicketPayment from './pages/LockerRoom/MyTicket/OnetimePassTicketPayment';
+
 import SubscriptionPass from './pages/LockerRoom/MyTicket/SubscriptionPass';
 import OnetimePass from './pages/LockerRoom/MyTicket/OnetimePass';
 
@@ -151,6 +153,11 @@ const App: React.FC = () => (
           path='/my-ticket/PurchaseOfPasses/SubscriptionPassTicketPayment'
           element={<SubscriptionPassTicketPayment />}
         />
+        <Route
+          path='/my-ticket/PurchaseOfPasses/OnetimePassTicketPayment'
+          element={<OnetimePassTicketPayment />}
+        />
+
         <Route
           path='/my-ticket/SubscriptionPass'
           element={<SubscriptionPass />}

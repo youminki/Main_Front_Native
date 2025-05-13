@@ -53,6 +53,7 @@ const headerRules: {
       '/payment-method/cardDetail',
       '/my-ticket/PurchaseOfPasses',
       '/my-ticket/PurchaseOfPasses/SubscriptionPassTicketPayment',
+      '/my-ticket/PurchaseOfPasses/OnetimePassTicketPayment',
       '/my-ticket/SubscriptionPass',
       '/my-ticket/OnetimePass',
       '/customerService/NoticeDetail',
