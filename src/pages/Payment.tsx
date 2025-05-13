@@ -10,7 +10,15 @@ import InputField from '../components/InputField';
 import { YellowButton, BlackButton } from '../components/ButtonWrapper';
 import ReusableModal from '../components/ReusableModal';
 import ReusableModal2 from '../components/ReusableModal2';
+import AddressSearchModal from '../components/AddressSearchModal';
 
+declare global {
+  interface Window {
+    daum: any;
+  }
+}
+
+// 결제 전화번호 검증 스키마
 const paymentSchema = yup.object().shape({
   deliveryContact: yup
     .string()
@@ -22,17 +30,16 @@ const paymentSchema = yup.object().shape({
   isSameAsDelivery: yup.boolean(),
   returnContact: yup
     .string()
-    .when('isSameAsDelivery', (isSameAsDelivery, schema) => {
-      if (!isSameAsDelivery) {
-        return schema
-          .required('반납 전화번호를 입력해주세요.')
-          .matches(
-            /^010\d{8}$/,
-            '전화번호는 010으로 시작하는 11자리 숫자여야 합니다.'
-          );
-      }
-      return schema;
-    }),
+    .when('isSameAsDelivery', (same, schema) =>
+      !same
+        ? schema
+            .required('반납 전화번호를 입력해주세요.')
+            .matches(
+              /^010\d{8}$/,
+              '전화번호는 010으로 시작하는 11자리 숫자여야 합니다.'
+            )
+        : schema
+    ),
 });
 
 interface BasketItem {
@@ -52,8 +59,14 @@ interface BasketItem {
 
 const PaymentPage: React.FC = () => {
   const [recipient, setRecipient] = useState<string>('');
-
   const [navigateHome, setNavigateHome] = useState(false);
+  const [modalField, setModalField] = useState<'delivery' | 'return'>(
+    'delivery'
+  );
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [listModalOpen, setListModalOpen] = useState(false);
+  const [modalAlert, setModalAlert] = useState({ isOpen: false, message: '' });
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
   const [items] = useState<BasketItem[]>([
     {
@@ -70,91 +83,71 @@ const PaymentPage: React.FC = () => {
       isSelected: true,
     },
   ]);
-
-  const [selectedMethod, setSelectedMethod] = useState('매니저 배송');
-
+  const [selectedMethod, setSelectedMethod] = useState<
+    '매니저 배송' | '택배 배송'
+  >('매니저 배송');
   const [deliveryInfo, setDeliveryInfo] = useState({
     address: '',
     detailAddress: '',
     contact: '010',
   });
-
   const [returnInfo, setReturnInfo] = useState({
     address: '',
     detailAddress: '',
     contact: '010',
   });
-
   const [isSameAsDelivery, setIsSameAsDelivery] = useState(false);
 
-  const [modalType, setModalType] = useState<'none' | 'search' | 'list'>(
-    'none'
-  );
-  const [modalAlert, setModalAlert] = useState<{
-    isOpen: boolean;
-    message: string;
-  }>({
-    isOpen: false,
-    message: '',
-  });
   const closeAlertModal = () => {
     setModalAlert({ isOpen: false, message: '' });
-    if (navigateHome) {
-      window.location.href = '/home';
-    }
+    if (navigateHome) window.location.href = '/home';
     setNavigateHome(false);
   };
-  const handleCloseModalCommon = () => setModalType('none');
 
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  // 모달 내 임베드 방식 우편번호 검색
+  const handleAddressSearch = (field: 'delivery' | 'return') => {
+    setModalField(field);
+    setSearchModalOpen(true);
+  };
 
   const handleDeliveryContactChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    let value = e.target.value.replace(/[^0-9]/g, '');
-    if (!value.startsWith('010')) {
-      value = '010' + value;
-    }
-    value = value.slice(0, 11);
-    if (value.length === 11) {
-      value = value.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-    }
-    setDeliveryInfo({ ...deliveryInfo, contact: value });
+    let v = e.target.value.replace(/[^0-9]/g, '');
+    if (!v.startsWith('010')) v = '010' + v;
+    v = v.slice(0, 11);
+    if (v.length === 11) v = v.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+    setDeliveryInfo((info) => ({ ...info, contact: v }));
   };
 
   const handleReturnContactChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    let value = e.target.value.replace(/[^0-9]/g, '');
-    if (!value.startsWith('010')) {
-      value = '010' + value;
-    }
-    value = value.slice(0, 11);
-    if (value.length === 11) {
-      value = value.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-    }
-    setReturnInfo({ ...returnInfo, contact: value });
+    let v = e.target.value.replace(/[^0-9]/g, '');
+    if (!v.startsWith('010')) v = '010' + v;
+    v = v.slice(0, 11);
+    if (v.length === 11) v = v.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+    setReturnInfo((info) => ({ ...info, contact: v }));
   };
 
-  const handleUseSameAddressConditional = () => {
+  const handleUseSame = () => {
     setReturnInfo({ ...deliveryInfo });
     setIsSameAsDelivery(true);
   };
-
-  const handleNewAddress = () => {
+  const handleNewReturn = () => {
     setReturnInfo({ address: '', detailAddress: '', contact: '010' });
     setIsSameAsDelivery(false);
   };
 
-  const baseTotal = items.reduce((acc, item) => acc + item.price, 0);
-  const additionalCost = selectedMethod === '매니저 배송' ? 15000 : 0;
-  const finalAmount = baseTotal + additionalCost;
+  const baseTotal = items.reduce((sum, x) => sum + x.price, 0);
+  const extra = selectedMethod === '매니저 배송' ? 15000 : 0;
+  const finalAmount = baseTotal + extra;
 
   const handlePaymentSubmit = async () => {
     if (
-      recipient.trim() === '' ||
-      deliveryInfo.address.trim() === '' ||
-      deliveryInfo.detailAddress.trim() === ''
+      !recipient.trim() ||
+      !deliveryInfo.address.trim() ||
+      !deliveryInfo.detailAddress.trim()
     ) {
       setModalAlert({
         isOpen: true,
@@ -163,18 +156,15 @@ const PaymentPage: React.FC = () => {
       return;
     }
     try {
-      const validatedData = await paymentSchema.validate({
+      await paymentSchema.validate({
         deliveryContact: deliveryInfo.contact.replace(/-/g, ''),
         returnContact: returnInfo.contact.replace(/-/g, ''),
         isSameAsDelivery,
       });
-      console.log('검증 성공:', validatedData);
       setConfirmModalOpen(true);
-    } catch (error: unknown) {
-      if (error instanceof yup.ValidationError) {
-        setModalAlert({ isOpen: true, message: error.message });
-      } else {
-        console.error(error);
+    } catch (e) {
+      if (e instanceof yup.ValidationError) {
+        setModalAlert({ isOpen: true, message: e.message });
       }
     }
   };
@@ -187,9 +177,10 @@ const PaymentPage: React.FC = () => {
 
   return (
     <Container>
+      {/* Alert */}
       {modalAlert.isOpen && (
         <ReusableModal
-          isOpen={modalAlert.isOpen}
+          isOpen
           onClose={closeAlertModal}
           title='알림'
           height='200px'
@@ -197,9 +188,11 @@ const PaymentPage: React.FC = () => {
           <ModalBody>{modalAlert.message}</ModalBody>
         </ReusableModal>
       )}
+
+      {/* Confirm */}
       {confirmModalOpen && (
         <ReusableModal2
-          isOpen={confirmModalOpen}
+          isOpen
           onClose={() => setConfirmModalOpen(false)}
           onConfirm={handleConfirmPayment}
           title='결제 확인'
@@ -209,6 +202,8 @@ const PaymentPage: React.FC = () => {
           <ModalBody>결제를 진행하시겠습니까?</ModalBody>
         </ReusableModal2>
       )}
+
+      {/* 신청제품 */}
       <LabelDetailText>신청제품</LabelDetailText>
       {items.map((item) => (
         <Item key={item.id}>
@@ -220,43 +215,27 @@ const PaymentPage: React.FC = () => {
                 <Slash>/</Slash>
                 <ItemType>{item.nameType}</ItemType>
               </ItemName>
-              {item.type === 'rental' ? (
-                <InfoRowFlex>
-                  <IconArea>
-                    <Icon src={ServiceInfoIcon} alt='Service Info' />
-                  </IconArea>
-                  <TextContainer>
-                    <RowText>
-                      <LabelDetailText>진행 서비스 - </LabelDetailText>
-                      <DetailHighlight>대여(3일)</DetailHighlight>
-                    </RowText>
-                    {item.servicePeriod && (
-                      <AdditionalText>
-                        <DetailText>{item.servicePeriod}</DetailText>
-                      </AdditionalText>
-                    )}
-                  </TextContainer>
-                </InfoRowFlex>
-              ) : (
-                <InfoRowFlex>
-                  <IconArea>
-                    <Icon src={ServiceInfoIcon} alt='Service Info' />
-                  </IconArea>
-                  <TextContainer>
-                    <RowText>
-                      <DetailText>진행 서비스 - 구매</DetailText>
-                    </RowText>
-                    {item.deliveryDate && (
-                      <AdditionalText>
-                        <DetailText>{item.deliveryDate}</DetailText>
-                      </AdditionalText>
-                    )}
-                  </TextContainer>
-                </InfoRowFlex>
-              )}
               <InfoRowFlex>
                 <IconArea>
-                  <Icon src={ProductInfoIcon} alt='Product Info' />
+                  <Icon src={ServiceInfoIcon} />
+                </IconArea>
+                <TextContainer>
+                  <RowText>
+                    <LabelDetailText>진행 서비스 - </LabelDetailText>
+                    <DetailHighlight>
+                      {item.type === 'rental' ? '대여(3일)' : '구매'}
+                    </DetailHighlight>
+                  </RowText>
+                  {item.servicePeriod && (
+                    <AdditionalText>
+                      <DetailText>{item.servicePeriod}</DetailText>
+                    </AdditionalText>
+                  )}
+                </TextContainer>
+              </InfoRowFlex>
+              <InfoRowFlex>
+                <IconArea>
+                  <Icon src={ProductInfoIcon} />
                 </IconArea>
                 <TextContainer>
                   <RowText>
@@ -273,7 +252,7 @@ const PaymentPage: React.FC = () => {
               </InfoRowFlex>
               <InfoRowFlex>
                 <IconArea>
-                  <Icon src={PriceIcon} alt='Price' />
+                  <Icon src={PriceIcon} />
                 </IconArea>
                 <TextContainer>
                   <RowText>
@@ -287,20 +266,21 @@ const PaymentPage: React.FC = () => {
             </ItemDetails>
             <RightSection>
               <ItemImageContainer>
-                <ItemImage src={item.imageUrl} alt={item.nameCode} />
+                <ItemImage src={item.imageUrl} />
               </ItemImageContainer>
             </RightSection>
           </ContentWrapper>
         </Item>
       ))}
 
+      {/* 수령인 & 배송방법 */}
       <Section>
         <Row>
           <InputGroup>
             <InputField
               id='recipient'
-              placeholder='이름을 입력 하세요'
               label='수령인 *'
+              placeholder='이름을 입력 하세요'
               value={recipient}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setRecipient(e.target.value)
@@ -310,9 +290,11 @@ const PaymentPage: React.FC = () => {
           <InputGroup>
             <InputField
               id='delivery-method'
-              options={['매니저 배송', '택배 배송']}
               label='배송방법 *'
-              onSelectChange={(value: string) => setSelectedMethod(value)}
+              options={['매니저 배송', '택배 배송']}
+              onSelectChange={(v: string) =>
+                setSelectedMethod(v as '매니저 배송' | '택배 배송')
+              }
             />
           </InputGroup>
         </Row>
@@ -326,78 +308,62 @@ const PaymentPage: React.FC = () => {
           </NoticeText>
           <ServiceArea>
             서비스 지역 <Highlight>[ 서울 / 경기 일부 ]</Highlight>
-            <SmallText> (결제 시 추가 비용 발생)</SmallText>
+            <SmallText>(결제 시 추가 비용 발생)</SmallText>
           </ServiceArea>
         </DeliveryNotice>
       )}
 
+      {/* 배송지 입력 */}
       <Section>
         <SectionTitle>배송지 입력 *</SectionTitle>
         <Row style={{ marginBottom: '10px' }}>
           <AddressInputWrapper>
             <AddressInput
-              type='text'
-              placeholder='주소를 검색 하세요'
+              readOnly
               value={deliveryInfo.address}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setDeliveryInfo({ ...deliveryInfo, address: e.target.value })
-              }
+              placeholder='주소를 검색 하세요'
             />
-            <SearchButton onClick={() => setModalType('search')}>
+            <SearchBtn onClick={() => handleAddressSearch('delivery')}>
               검색
-            </SearchButton>
+            </SearchBtn>
           </AddressInputWrapper>
-          <DeliveryListButton onClick={() => setModalType('list')}>
+          <DeliveryListButton onClick={() => setListModalOpen(true)}>
             배송목록
           </DeliveryListButton>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
           <DetailAddressInput
-            type='text'
             placeholder='상세주소를 입력 하세요'
             value={deliveryInfo.detailAddress}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setDeliveryInfo({
-                ...deliveryInfo,
+            onChange={(e) =>
+              setDeliveryInfo((info) => ({
+                ...info,
                 detailAddress: e.target.value,
-              })
+              }))
             }
           />
         </Row>
         <Row>
-          <InputGroup style={{ flex: 1 }}>
-            <InputField
-              id='contact'
-              placeholder='나머지 8자리 입력'
-              label='연락처'
-              value={deliveryInfo.contact}
-              onChange={handleDeliveryContactChange}
-            />
-          </InputGroup>
-        </Row>
-        <Row>
-          <InputGroup style={{ flex: 1 }}>
-            <InputField
-              id='delivery-message'
-              placeholder='배송 시 전달할 내용을 입력하세요'
-              label='배송 메시지 (선택)'
-            />
-          </InputGroup>
+          <InputField
+            id='contact'
+            label='연락처'
+            placeholder='나머지 8자리 입력'
+            value={deliveryInfo.contact}
+            onChange={handleDeliveryContactChange}
+          />
         </Row>
       </Section>
 
+      {/* 반납지 입력 */}
       <ReturnSection>
         <SectionTitle>반납지 입력 *</SectionTitle>
         <ReturnOption>
-          <OptionButtonRight
-            $active={isSameAsDelivery}
-            onClick={handleUseSameAddressConditional}
-          >
+          <OptionButtonRight $active={isSameAsDelivery} onClick={handleUseSame}>
             배송지와 동일
           </OptionButtonRight>
           <OptionButtonLeft
             $active={!isSameAsDelivery}
-            onClick={handleNewAddress}
+            onClick={handleNewReturn}
           >
             새로 입력
           </OptionButtonLeft>
@@ -405,103 +371,67 @@ const PaymentPage: React.FC = () => {
         <Row style={{ marginBottom: '10px' }}>
           <AddressInputWrapper>
             <AddressInput
-              type='text'
-              placeholder='주소를 입력 하세요'
-              value={returnInfo.address}
+              readOnly
               disabled={isSameAsDelivery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setReturnInfo({ ...returnInfo, address: e.target.value })
+              value={
+                isSameAsDelivery ? deliveryInfo.address : returnInfo.address
               }
+              placeholder='주소를 검색 하세요'
             />
-            <SearchButton onClick={() => setModalType('search')}>
+            <SearchBtn
+              disabled={isSameAsDelivery}
+              onClick={() => handleAddressSearch('return')}
+            >
               검색
-            </SearchButton>
+            </SearchBtn>
           </AddressInputWrapper>
-          <DeliveryListButton onClick={() => setModalType('list')}>
+          <DeliveryListButton onClick={() => setListModalOpen(true)}>
             배송목록
           </DeliveryListButton>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
           <DetailAddressInput
-            type='text'
+            disabled={isSameAsDelivery}
             placeholder='상세주소를 입력 하세요'
             value={returnInfo.detailAddress}
-            disabled={isSameAsDelivery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setReturnInfo({ ...returnInfo, detailAddress: e.target.value })
+            onChange={(e) =>
+              setReturnInfo((info) => ({
+                ...info,
+                detailAddress: e.target.value,
+              }))
             }
           />
         </Row>
         <Row>
-          <InputGroup style={{ flex: 1 }}>
-            <InputField
-              id='return-contact'
-              placeholder='나머지 8자리 입력'
-              label='연락처'
-              value={returnInfo.contact}
-              disabled={isSameAsDelivery}
-              onChange={handleReturnContactChange}
-            />
-          </InputGroup>
+          <InputField
+            id='return-contact'
+            label='연락처'
+            placeholder='나머지 8자리 입력'
+            disabled={isSameAsDelivery}
+            value={returnInfo.contact}
+            onChange={handleReturnContactChange}
+          />
         </Row>
       </ReturnSection>
 
-      <PaymentAndCouponContainer>
-        <PaymentSection>
-          <InputField
-            id='payment-method'
-            options={[
-              '이용권 / 정기 구독권 ( 2025년 3월분 )',
-              '무통장 결제 ',
-              '카드 결제 ',
-            ]}
-            label='결제방식 *'
-            placeholder=''
-          />
-        </PaymentSection>
-        <CouponSection>
-          <InputField
-            id='coupon'
-            options={['20% 할인 쿠폰 ', '보유 쿠폰 없음']}
-            label='추가 쿠폰 (선택)'
-            placeholder=''
-          />
-        </CouponSection>
-      </PaymentAndCouponContainer>
-
-      <TotalPaymentSection>
-        <SectionTitle>총 결제금액 (VAT 포함)</SectionTitle>
-        <TotalAmount>
-          {selectedMethod === '매니저 배송' && (
-            <AdditionalCost>+ 추가비용 (15,000)</AdditionalCost>
-          )}
-          <Amount>{finalAmount.toLocaleString()}원</Amount>
-        </TotalAmount>
-      </TotalPaymentSection>
-
-      <FixedBottomBar
-        text='결제하기'
-        color='yellow'
-        onClick={handlePaymentSubmit}
+      {/* 주소 검색 모달 */}
+      <AddressSearchModal
+        isOpen={searchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+        onSelect={(addr) => {
+          if (modalField === 'delivery') {
+            setDeliveryInfo((info) => ({ ...info, address: addr }));
+          } else {
+            setReturnInfo((info) => ({ ...info, address: addr }));
+          }
+        }}
       />
 
-      {modalType === 'search' && (
+      {/* 배송목록 모달 */}
+      {listModalOpen && (
         <ReusableModal
-          isOpen={modalType === 'search'}
-          onClose={handleCloseModalCommon}
-          title='지도'
-          height='500px'
-        >
-          <MapBody>
-            <p>카카오 지도가 들어갈 자리</p>
-          </MapBody>
-        </ReusableModal>
-      )}
-
-      {modalType === 'list' && (
-        <ReusableModal
-          isOpen={modalType === 'list'}
-          onClose={handleCloseModalCommon}
+          isOpen
+          onClose={() => setListModalOpen(false)}
           title='배송목록 추가'
           width='80%'
           height='320px'
@@ -517,18 +447,47 @@ const PaymentPage: React.FC = () => {
         </ReusableModal>
       )}
 
-      {confirmModalOpen && (
-        <ReusableModal2
-          isOpen={confirmModalOpen}
-          onClose={() => setConfirmModalOpen(false)}
-          onConfirm={handleConfirmPayment}
-          title='결제 확인'
-          width='376px'
-          height='360px'
-        >
-          <ModalBody>결제를 진행하시겠습니까?</ModalBody>
-        </ReusableModal2>
-      )}
+      {/* 결제방식 / 쿠폰 */}
+      <PaymentAndCouponContainer>
+        <PaymentSection>
+          <InputField
+            id='payment-method'
+            label='결제방식 *'
+            options={[
+              '이용권 / 정기 구독권 (2025년 3월분)',
+              '무통장 결제',
+              '카드 결제',
+            ]}
+          />
+        </PaymentSection>
+        <CouponSection>
+          <InputField
+            id='coupon'
+            label='추가 쿠폰 (선택)'
+            options={['20% 할인 쿠폰', '보유 쿠폰 없음']}
+          />
+        </CouponSection>
+      </PaymentAndCouponContainer>
+
+      {/* 총 결제금액 */}
+      <TotalPaymentSection>
+        <SectionTitle>총 결제금액 (VAT 포함)</SectionTitle>
+        <TotalAmount>
+          {extra > 0 && (
+            <AdditionalCost>
+              + 추가비용 ({extra.toLocaleString()})
+            </AdditionalCost>
+          )}
+          <Amount>{finalAmount.toLocaleString()}원</Amount>
+        </TotalAmount>
+      </TotalPaymentSection>
+
+      {/* 결제하기 버튼 */}
+      <FixedBottomBar
+        text='결제하기'
+        color='yellow'
+        onClick={handlePaymentSubmit}
+      />
     </Container>
   );
 };
@@ -538,10 +497,11 @@ export default PaymentPage;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-
   margin: 0 auto;
   background: #ffffff;
   padding: 1rem;
+  max-width: 600px;
+  margin-bottom: 100px;
 `;
 
 const Section = styled.div`
@@ -594,7 +554,7 @@ const AddressInput = styled.input`
   }
 `;
 
-const SearchButton = styled(YellowButton)`
+const SearchBtn = styled(YellowButton)<{ disabled?: boolean }>`
   height: 57px;
   border: none;
   border-radius: 0;
@@ -611,7 +571,6 @@ const DetailAddressInput = styled.input`
   border: 1px solid #dddddd;
   border-radius: 4px;
   padding: 0 10px;
-
   font-weight: 400;
   font-size: 13px;
   line-height: 14px;
@@ -627,7 +586,6 @@ const ReturnOption = styled.div`
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 30px;
-
   font-weight: 800;
   font-size: 13px;
   text-align: center;
@@ -716,7 +674,6 @@ const AdditionalCost = styled.div`
 
 const Amount = styled.div`
   margin-left: auto;
-
   font-weight: 900;
   font-size: 16px;
   color: #000000;
@@ -887,14 +844,6 @@ const SmallText = styled.span`
   font-size: 11px;
   color: #666;
   margin-left: 4px;
-`;
-
-const MapBody = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  background-color: #f5f5f5;
 `;
 
 const ModalBodyContent = styled.div`

@@ -146,31 +146,31 @@ const Logo = styled.img`
   margin: 50px 0 21px;
 `;
 
-const SubContent = styled.div`
-  text-align: center;
-  margin-bottom: 54px;
-`;
+// const SubContent = styled.div`
+//   text-align: center;
+//   margin-bottom: 54px;
+// `;
 
-const Highlighted = styled.span`
-  color: ${({ theme }) => theme.colors.yellow};
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 24px;
-`;
+// const Highlighted = styled.span`
+//   color: ${({ theme }) => theme.colors.yellow};
+//   font-size: 16px;
+//   font-weight: 700;
+//   line-height: 24px;
+// `;
 
-const NormalText = styled.span`
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 24px;
-  text-decoration-skip-ink: none;
-`;
+// const NormalText = styled.span`
+//   font-size: 16px;
+//   font-weight: 700;
+//   line-height: 24px;
+//   text-decoration-skip-ink: none;
+// `;
 
-const SubDescription = styled.div`
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 28px;
-  color: #cccccc;
-`;
+// const SubDescription = styled.div`
+//   font-weight: 700;
+//   font-size: 12px;
+//   line-height: 28px;
+//   color: #cccccc;
+// `;
 
 const LoginForm = styled.form`
   width: 100%;
@@ -230,18 +230,18 @@ const ExtraLinks = styled.div`
   margin-top: 30px;
 `;
 
-const FeatureLink = styled.a`
-  color: ${({ theme }) => theme.colors.gray2};
-  padding: 5px;
-  font-size: 12px;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
+// const FeatureLink = styled.a`
+//   color: ${({ theme }) => theme.colors.gray2};
+//   padding: 5px;
+//   font-size: 12px;
+//   font-weight: 700;
+//   text-decoration: none;
+//   cursor: pointer;
 
-  &:hover {
-    text-decoration: none;
-  }
-`;
+//   &:hover {
+//     text-decoration: none;
+//   }
+// `;
 
 const Link = styled.a`
   color: ${({ theme }) => theme.colors.black};

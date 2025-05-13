@@ -1,10 +1,32 @@
-import React from 'react';
+// src/components/AddressSearchModal.tsx
+
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
+
+declare global {
+  interface Window {
+    daum: any;
+  }
+}
+
+// Daum 우편번호 스크립트 로드
+const loadDaumPostcode = (): Promise<void> =>
+  new Promise((resolve, reject) => {
+    if (window.daum && window.daum.Postcode) {
+      resolve();
+      return;
+    }
+    const script = document.createElement('script');
+    script.src =
+      '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('다음 우편번호 로드 실패'));
+    document.head.appendChild(script);
+  });
 
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm?: () => void;
   title?: string;
   children: React.ReactNode;
   width?: string;
@@ -15,7 +37,6 @@ type ModalProps = {
 const ReusableModal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
-
   title,
   children,
   width = '100%',
@@ -42,7 +63,57 @@ const ReusableModal: React.FC<ModalProps> = ({
   );
 };
 
-export default ReusableModal;
+interface AddressSearchModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSelect: (address: string, lat?: number, lng?: number) => void;
+}
+
+const AddressSearchModal: React.FC<AddressSearchModalProps> = ({
+  isOpen,
+  onClose,
+  onSelect,
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    loadDaumPostcode()
+      .then(() => {
+        if (!containerRef.current) return;
+        containerRef.current.innerHTML = '';
+        new window.daum.Postcode({
+          width: '100%',
+          height: '100%',
+          oncomplete: (data: any) => {
+            const addr = data.roadAddress || data.jibunAddress;
+            onSelect(addr, parseFloat(data.y), parseFloat(data.x));
+            onClose();
+          },
+        }).embed(containerRef.current);
+      })
+      .catch(console.error);
+    return () => {
+      if (containerRef.current) containerRef.current.innerHTML = '';
+    };
+  }, [isOpen, onClose, onSelect]);
+
+  return (
+    <ReusableModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title='주소 검색'
+      width='600px'
+      height='600px'
+    >
+      <MapContainer ref={containerRef} />
+    </ReusableModal>
+  );
+};
+
+export default AddressSearchModal;
+
+// — styled-components 모두 생략 없이 아래 그대로 유지 —
 
 const StyledModal = styled.div`
   position: fixed;
@@ -67,7 +138,7 @@ const ModalContent = styled.div<{ width: string; height: string }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-width: 300px;
+  max-width: 600px;
   margin: 0 auto;
 `;
 
@@ -84,8 +155,6 @@ const ModalTitle = styled.h2`
 const ModalBody = styled.div`
   font-size: 14px;
   font-weight: 400;
-  /* text-align: center; */
-  max-height: 70%;
   flex: 1;
   overflow-y: auto;
   padding: 10px;
@@ -116,4 +185,10 @@ const ModalActions = styled.div`
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
+`;
+
+const MapContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  margin: auto;
 `;
