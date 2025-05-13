@@ -52,6 +52,14 @@ const AppLayout: React.FC = () => {
     );
   }
 
+  // BottomNav 표시 대상 경로
+  const bottomNavPaths = [
+    '/home',
+    '/brand',
+    '/melpik',
+    '/lockerroom',
+    '/customerService',
+
   return (
     <AppContainer>
       {includeHeader1 && <UnifiedHeader variant='default' />}
@@ -81,7 +89,9 @@ const AppLayout: React.FC = () => {
         <Outlet />
       </ContentContainer>
 
-      {includeBottomNav && <BottomNav />}
+      {includeBottomNav && bottomNavPaths.includes(location.pathname) && (
+        <BottomNav />
+      )}
     </AppContainer>
   );
 };
