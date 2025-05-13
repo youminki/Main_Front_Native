@@ -7,6 +7,7 @@ import FixedBottomBar from '../../../components/FixedBottomBar';
 import ReusableModal2 from '../../../components/ReusableModal2';
 import { useNavigate } from 'react-router-dom';
 import Theme from '../../../styles/Theme';
+import { format, addMonths } from 'date-fns';
 
 const PurchaseOfPasses: React.FC = () => {
   const [purchaseOption, setPurchaseOption] = useState('정기 구독권');
@@ -15,6 +16,13 @@ const PurchaseOfPasses: React.FC = () => {
   const navigate = useNavigate();
 
   const isOneTime = purchaseOption === '1회 이용권';
+
+  // 오늘 날짜 및 결제일 설정
+  const today = new Date();
+  const formattedToday = format(today, 'yyyy.MM.dd');
+  const oneMonthLater = addMonths(today, 1);
+  const formattedOneMonthLater = format(oneMonthLater, 'yyyy.MM.dd');
+  const paymentDay = today.getDate();
 
   const handlePaymentClick = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
@@ -26,6 +34,7 @@ const PurchaseOfPasses: React.FC = () => {
       <Container>
         {/* 구매할 이용권 */}
         <InputField
+          name='purchaseOption'
           label='구매할 이용권 *'
           id='purchaseOption'
           as={CustomSelect}
@@ -41,11 +50,12 @@ const PurchaseOfPasses: React.FC = () => {
           <option value='1회 이용권'>1회 이용권</option>
         </InputField>
 
-        {/* 이용권 사용기간 (읽기전용) */}
+        {/* 이용권 사용기간 (오늘부터 한 달) */}
         <InputField
+          name='usagePeriod'
           label='이용권 사용기간'
           id='usagePeriod'
-          prefixcontent='2025.03.01 ~ 2025.03.31 (1개월)'
+          prefixcontent={`${formattedToday} ~ ${formattedOneMonthLater} (1개월)`}
           readOnly
         />
 
@@ -53,6 +63,7 @@ const PurchaseOfPasses: React.FC = () => {
           {/* 이용권 결제금액 (읽기전용) */}
           <HalfBox>
             <InputField
+              name='paymentAmount'
               label='이용권 결제금액'
               id='paymentAmount'
               prefixcontent='120,000'
@@ -63,6 +74,7 @@ const PurchaseOfPasses: React.FC = () => {
           {/* 이용권 설정 */}
           <HalfBox>
             <InputField
+              name='ticketSetting'
               label='이용권 설정 *'
               id='ticketSetting'
               as={CustomSelect}
@@ -86,17 +98,22 @@ const PurchaseOfPasses: React.FC = () => {
 
         {/* 진행 중인 시즌 표시 */}
         <InputField
+          name='currentSeason'
           label='진행 중인 시즌 표시'
           id='currentSeason'
-          prefixcontent='2025 SPRING | 2025.03 ~ 2025.05'
+          prefixcontent='2025 SPRING | 2025.05 ~ 2025.07'
           readOnly
         />
 
         {/* 자동결제 일자 */}
         <InputField
+          name='autoPaymentDate'
           label='자동결제 일자'
           id='autoPaymentDate'
-          prefixcontent={isOneTime ? '해당없음' : '매달 1일 (진행예정)'}
+          prefixcontent={formattedToday}
+          suffixcontent={
+            !isOneTime ? `매달 ${paymentDay}일마다 결제` : undefined
+          }
           readOnly
         />
 

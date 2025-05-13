@@ -1,3 +1,4 @@
+// src/components/InputField.tsx
 import React, { useState, forwardRef } from 'react';
 import styled from 'styled-components';
 import Button02 from './Button02';
@@ -13,6 +14,7 @@ type InputFieldProps = {
   onButtonClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   prefix?: string;
   prefixcontent?: string | React.ReactNode;
+  suffixcontent?: string | React.ReactNode; // suffixcontent prop 추가
   as?: React.ElementType;
   useToggle?: boolean;
   options?: string[];
@@ -54,6 +56,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       onButtonClick,
       prefix,
       prefixcontent,
+      suffixcontent, // 비구조화
       as,
       useToggle = false,
       options,
@@ -83,6 +86,11 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         );
       }
       return <PrefixContentText>{prefixcontent}</PrefixContentText>;
+    };
+
+    const renderSuffixContent = () => {
+      if (!suffixcontent) return null;
+      return <SuffixContentText>{suffixcontent}</SuffixContentText>;
     };
 
     return (
@@ -123,6 +131,8 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                 {...rest}
               />
             )}
+
+            {suffixcontent && renderSuffixContent()}
 
             {buttonLabel && onButtonClick && (
               <ButtonWrapper>
@@ -187,6 +197,13 @@ const PrefixContentText = styled.span`
   font-weight: 800;
   font-size: 13px;
   color: #000000;
+`;
+
+const SuffixContentText = styled.span`
+  margin-left: auto; /* 우측 정렬 */
+  margin-right: 10px;
+  font-size: 13px;
+  color: #999999; /* 회색 */
 `;
 
 const GraySpan = styled.span`
