@@ -17,6 +17,8 @@ import ProductDetails from '../../components/Home/HomeDetail/ProductDetails';
 import ServiceSelection from '../../components/Home/HomeDetail/ServiceSelection';
 import RentalOptions from '../../components/Home/HomeDetail/RentalOptions';
 import ReusableModal from '../../components/ReusableModal';
+import BottomBar from '../../components/Home/HomeDetail/BottomBar';
+import ShoppingBasket from '../../assets/Home/HomeDetail/ShoppingBasket.svg';
 
 interface ProductDetail {
   id: number;
@@ -243,6 +245,12 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           <ErrorMsg>{warnMessage}</ErrorMsg>
         </ReusableModal>
       )}
+
+      <BottomBar
+        cartIconSrc={ShoppingBasket}
+        orderButtonLabel='제품 주문하기'
+        onOrderClick={() => console.log('🛒 주문하기')}
+      />
     </DetailContainer>
   );
 };
