@@ -82,7 +82,7 @@ const PurchaseOfPasses: React.FC = () => {
   const handlePaymentClick = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
   const handleConfirmPayment = () => {
-    navigate('/my-ticket/PurchaseOfPasses/onetimePassTicketPayment', {
+    navigate('/my-ticket/PurchaseOfPasses/TicketPayment', {
       state: {
         name: selectedTemplate?.name,
         discountedPrice,
@@ -90,6 +90,14 @@ const PurchaseOfPasses: React.FC = () => {
       },
     });
   };
+
+  // onChange 이벤트 타입 명시
+  const handlePurchaseOptionChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => setPurchaseOption(e.target.value);
+
+  const handleTicketSettingChange = (e: React.ChangeEvent<HTMLSelectElement>) =>
+    setTicketSetting(e.target.value);
 
   return (
     <ThemeProvider theme={Theme}>
@@ -101,7 +109,7 @@ const PurchaseOfPasses: React.FC = () => {
           id='purchaseOption'
           as={CustomSelect}
           value={purchaseOption}
-          onChange={(e) => setPurchaseOption(e.target.value)}
+          onChange={handlePurchaseOptionChange}
         >
           {templates.map((tpl) => (
             <option key={tpl.id} value={tpl.name}>
@@ -137,7 +145,7 @@ const PurchaseOfPasses: React.FC = () => {
               id='ticketSetting'
               as={CustomSelect}
               value={ticketSetting}
-              onChange={(e) => setTicketSetting(e.target.value)}
+              onChange={handleTicketSettingChange}
               disabled={isOneTime}
             >
               {isOneTime ? (

@@ -5,6 +5,7 @@ import { format, addMonths } from 'date-fns';
 import InputField from '../../../components/InputField';
 import FixedBottomBar from '../../../components/FixedBottomBar';
 import { getMyCards } from '../../../api/default/payment'; // API 함수 경로에 맞게 수정
+import { initPayment, recurringPayment } from '../../../api/payple/payple'; // API 호출 함수
 
 import PaymentAmountIcon from '../../../assets/LockerRoom/PaymentAmount.svg';
 import TicketPaymentSeaSonIcon from '../../../assets/LockerRoom/TicketPaymentSeaSon.svg';
@@ -18,10 +19,10 @@ export interface CardItem {
   createdAt: string;
 }
 
-const OnetimePassTicketPayment: React.FC = () => {
+const TicketPayment: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { name, discountedPrice } = location.state || {}; // state에서 name과 discountedPrice 받기
+  const { name, discountedPrice, isOneTime } = location.state || {}; // state에서 name, discountedPrice, isOneTime 받기
 
   const formattedDiscountedPrice = discountedPrice
     ? discountedPrice.toLocaleString()
@@ -68,6 +69,40 @@ const OnetimePassTicketPayment: React.FC = () => {
       return;
     }
     setSelectedPaymentMethod(val);
+  };
+
+  const handlePaymentClick = async () => {
+    if (isOneTime) {
+      // 1회 이용권 결제
+      const requestData = {
+        payerId: selectedPaymentMethod, // 선택된 결제 방법 (예: 카드 결제)
+        amount: discountedPrice,
+        goods: name,
+      };
+      try {
+        const response = await initPayment(requestData);
+        console.log('1회 이용권 결제 초기화 응답:', response);
+        // 결제 결과 처리
+        navigate('/payple/payment-result', { state: response });
+      } catch (error) {
+        console.error('1회 이용권 결제 실패:', error);
+      }
+    } else {
+      // 정기 결제
+      const requestData = {
+        payerId: selectedPaymentMethod, // 선택된 결제 방법 (예: 카드 결제)
+        amount: discountedPrice,
+        goods: name,
+      };
+      try {
+        const response = await recurringPayment(requestData);
+        console.log('정기 결제 응답:', response);
+        // 결제 결과 처리
+        navigate('/payple/payment-result', { state: response });
+      } catch (error) {
+        console.error('정기 결제 실패:', error);
+      }
+    }
   };
 
   return (
@@ -139,12 +174,16 @@ const OnetimePassTicketPayment: React.FC = () => {
         </PaymentAmountWrapper>
       </Section>
 
-      <FixedBottomBar text='결제하기' color='yellow' />
+      <FixedBottomBar
+        text='결제하기'
+        color='yellow'
+        onClick={handlePaymentClick}
+      />
     </Container>
   );
 };
 
-export default OnetimePassTicketPayment;
+export default TicketPayment;
 
 // --- styled-components ---
 const Container = styled.div`

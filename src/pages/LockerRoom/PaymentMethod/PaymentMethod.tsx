@@ -1,7 +1,7 @@
 // src/pages/LockerRoom/PaymentMethod.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import StatsSection from '../../../components/StatsSection';
 import ReusableModal2 from '../../../components/ReusableModal2';
 import CardIcon from '../../../assets/LockerRoom/CardIcon.svg';
@@ -26,7 +26,7 @@ const PaymentMethod: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
 
   // 카드 목록 API 호출
