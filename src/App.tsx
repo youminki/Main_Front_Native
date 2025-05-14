@@ -42,7 +42,7 @@ import Point from './pages/LockerRoom/Point/Point';
 import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
 import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
 import PurchaseOfPasses from './pages/LockerRoom/MyTicket/PurchaseOfPasses';
-import SubscriptionPassTicketPayment from './pages/LockerRoom/MyTicket/SubscriptionPassTicketPayment';
+
 import TicketPayment from './pages/LockerRoom/MyTicket/TicketPayment.tsx';
 
 import SubscriptionPass from './pages/LockerRoom/MyTicket/SubscriptionPass';
@@ -149,10 +149,7 @@ const App: React.FC = () => (
           path='/my-ticket/PurchaseOfPasses'
           element={<PurchaseOfPasses />}
         />
-        <Route
-          path='/my-ticket/PurchaseOfPasses/SubscriptionPassTicketPayment'
-          element={<SubscriptionPassTicketPayment />}
-        />
+
         <Route
           path='/my-ticket/PurchaseOfPasses/TicketPayment'
           element={<TicketPayment />}
