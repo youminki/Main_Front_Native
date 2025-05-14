@@ -11,6 +11,7 @@ import { YellowButton, BlackButton } from '../components/ButtonWrapper';
 import ReusableModal from '../components/ReusableModal';
 import ReusableModal2 from '../components/ReusableModal2';
 import AddressSearchModal from '../components/AddressSearchModal';
+import { useLocation } from 'react-router-dom';
 
 declare global {
   interface Window {
@@ -58,6 +59,7 @@ interface BasketItem {
 }
 
 const PaymentPage: React.FC = () => {
+  const { state } = useLocation<{ servicePeriod?: string }>();
   const [recipient, setRecipient] = useState<string>('');
   const [navigateHome, setNavigateHome] = useState(false);
   const [selectedListAddress, setSelectedListAddress] = useState<string>('');
@@ -84,7 +86,7 @@ const PaymentPage: React.FC = () => {
       nameCode: 'SF25S3FRD7699',
       nameType: '원피스',
       type: 'rental',
-      servicePeriod: '2025.03.02 (일) ~ 03.05 (수)',
+      servicePeriod: state?.servicePeriod,
       size: 'M (55)',
       color: '블랙',
       price: 50000,

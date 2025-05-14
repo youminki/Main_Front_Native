@@ -47,12 +47,14 @@ interface RentalOptionsProps {
   productId: number;
   selectedSize: string;
   selectedColor: string;
+  onSelectPeriod?: (formatted: string) => void;
 }
 
 const RentalOptions: React.FC<RentalOptionsProps> = ({
   productId,
   selectedSize,
   selectedColor,
+  onSelectPeriod,
 }) => {
   const [selectedPeriod, setSelectedPeriod] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -207,6 +209,10 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
 
     try {
       await createRentalSchedule(req);
+      if (onSelectPeriod && start && end) {
+        const formatted = `${formatDate(start)} ~ ${formatDate(end)}`;
+        onSelectPeriod(formatted);
+      }
       // 방금 생성된 일정도 disabled 처리
       const newReserved: Date[] = [];
       for (let d = new Date(start); d <= end; d = _addDays(d, 1)) {
@@ -246,7 +252,11 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
             disabled={!selectedPeriod}
             onClick={() => setIsModalOpen(true)}
           >
-            <span>대여일정 선택</span>
+            <span>
+              {selectedRange.start && selectedRange.end
+                ? `${formatDate(selectedRange.start)} ~ ${formatDate(selectedRange.end)}`
+                : '대여일정 선택'}
+            </span>
             <Icon src={RentalSelectDateIcon} alt='달력 아이콘' />
           </Button>
         </Wrapper>

@@ -60,6 +60,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   const [selectedService, setSelectedService] = useState('');
   const [warnModalOpen, setWarnModalOpen] = useState(false);
   const [warnMessage, setWarnMessage] = useState('');
+  const [servicePeriod, setServicePeriod] = useState<string>('');
 
   // 이미지 슬라이드용
   const images = useMemo<string[]>(() => {
@@ -196,6 +197,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
               productId={product.id}
               selectedSize={selectedSize}
               selectedColor={selectedColor}
+              onSelectPeriod={(formatted) => setServicePeriod(formatted)}
             />
           )}
           {selectedService === 'purchase' && <PaymentMethod />}
@@ -250,7 +252,11 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       <BottomBar
         cartIconSrc={ShoppingBasket}
         orderButtonLabel='제품 주문하기'
-        onOrderClick={() => navigate(`/payment/${product.id}`)}
+        onOrderClick={() =>
+          navigate(`/payment/${product.id}`, {
+            state: { servicePeriod },
+          })
+        }
       />
     </DetailContainer>
   );
