@@ -354,7 +354,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                   <Icon
                     src={BasketIcon}
                     alt='장바구니'
-                    onClick={() => setFeatureModalOpen(true)}
+                    onClick={() => navigate('/basket')}
                   />
                   <Icon
                     src={AlarmIcon}
@@ -430,7 +430,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                   <Icon
                     src={BasketIcon}
                     alt='장바구니'
-                    onClick={() => setFeatureModalOpen(true)}
+                    onClick={() => navigate('/basket')}
                   />
                   <Icon
                     src={AlarmIcon}
