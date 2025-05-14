@@ -163,12 +163,18 @@ const Divider = styled.div`
   margin: 20px 0;
 `;
 
+// --- 중략 ---
 const CardsList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 100%;
   max-width: 280px;
+
+  @media (min-width: 1024px) {
+    max-width: 400px; /* 데스크탑에서 최대 너비를 600px로 확장 */
+    margin: 0 auto; /* 가운데 정렬 */
+  }
 `;
 
 const CardItemBox = styled.div`
@@ -178,7 +184,13 @@ const CardItemBox = styled.div`
   display: flex;
   flex-direction: column;
   cursor: pointer;
+
+  @media (min-width: 1024px) {
+    height: 250px; /* 데스크탑에서 높이를 좀 더 크게 */
+  }
 `;
+
+/* 나머지 Styled Components는 그대로 사용 */
 
 const AddCardBox = styled.div`
   height: 180px;
@@ -189,6 +201,10 @@ const AddCardBox = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
+  @media (min-width: 1024px) {
+    height: 250px; /* 데스크탑에서 높이를 좀 더 크게 */
+  }
 `;
 
 const CardTop = styled.div`
@@ -207,8 +223,13 @@ const CardBody = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-bottom: 50px; /* 하단 여유 공간 */
   padding-left: 20px;
+
+  @media (min-width: 1024px) {
+    padding-bottom: 70px; /* 하단 여유 공간 */
+  }
 `;
 
 const BrandRow = styled.div`

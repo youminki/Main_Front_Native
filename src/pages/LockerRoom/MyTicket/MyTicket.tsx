@@ -97,7 +97,7 @@ const TicketCard = styled.div`
   position: relative;
   img {
     display: block;
-    max-width: 350px;
+    max-width: 550px;
     height: auto;
     margin: 0 auto;
     object-fit: contain;
