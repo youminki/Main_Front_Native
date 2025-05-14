@@ -1,9 +1,12 @@
+// src/pages/LockerRoom/PaymentMethod.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import StatsSection from '../../../components/StatsSection';
+import ReusableModal2 from '../../../components/ReusableModal2';
 import CardIcon from '../../../assets/LockerRoom/CardIcon.svg';
 import { getMyCards, CardItem } from '../../../api/default/payment';
+import { Trash2 as DeleteIconSVG } from 'lucide-react';
 
 const visitLabel = '결제등록 카드';
 const salesLabel = '시즌';
@@ -18,8 +21,11 @@ interface CardData {
 }
 
 const PaymentMethod: React.FC = () => {
-  const [currentCard, setCurrentCard] = useState(0);
+  const [currentCard] = useState(0);
   const [cards, setCards] = useState<CardData[]>([]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -30,7 +36,6 @@ const PaymentMethod: React.FC = () => {
         const response = await getMyCards();
         const items: CardItem[] = response.data.items;
         const mapped: CardData[] = items.map((item) => {
-          // createAt 예: "2025-05-10T11:40:27.317Z"
           let date = '알 수 없음';
           if ((item as any).createAt) {
             const dt = new Date((item as any).createAt);
@@ -65,6 +70,36 @@ const PaymentMethod: React.FC = () => {
     }
   }, [location.state, cards]);
 
+  const handleDelete = (index: number) => {
+    setCards((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const openDeleteModal = (index: number) => {
+    setSelectedIdx(index);
+    setIsDeleteModalOpen(true);
+  };
+  const confirmDelete = () => {
+    if (selectedIdx !== null) handleDelete(selectedIdx);
+    setIsDeleteModalOpen(false);
+    setSelectedIdx(null);
+  };
+
+  const openAddModal = () => {
+    setIsAddModalOpen(true);
+  };
+  const confirmAdd = () => {
+    const w = 360;
+    const h = 600;
+    const left = (window.screen.availWidth - w) / 2;
+    const top = (window.screen.availHeight - h) / 2;
+    window.open(
+      '/test/payple',
+      'cardAddPopup',
+      `width=${w},height=${h},left=${left},top=${top},resizable,scrollbars`
+    );
+    setIsAddModalOpen(false);
+  };
+
   return (
     <Container>
       <Header>
@@ -84,17 +119,12 @@ const PaymentMethod: React.FC = () => {
 
       <CardsList>
         {cards.map((card, idx) => (
-          <CardItemBox
-            key={idx}
-            onClick={() => {
-              setCurrentCard(idx);
-              navigate('/payment-method/cardDetail', {
-                state: { cardIndex: idx, cardData: card },
-              });
-            }}
-          >
+          <CardItemBox key={idx}>
             <CardTop>
               <DateLabel>{card.registerDate}</DateLabel>
+              <DeleteButton onClick={() => openDeleteModal(idx)}>
+                <DeleteIconSVG size={16} />
+              </DeleteButton>
             </CardTop>
             <CardBody>
               <BrandRow>
@@ -106,7 +136,7 @@ const PaymentMethod: React.FC = () => {
           </CardItemBox>
         ))}
 
-        <AddCardBox onClick={() => navigate('/test/payple')}>
+        <AddCardBox onClick={openAddModal}>
           <PlusWrapper>
             <PlusBox>
               <PlusLineVert />
@@ -124,6 +154,26 @@ const PaymentMethod: React.FC = () => {
             <Dot key={idx} $active={idx === currentCard} />
           ))}
       </DotsWrapper>
+
+      {/* 삭제 모달 */}
+      <ReusableModal2
+        isOpen={isDeleteModalOpen}
+        title='카드 삭제'
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+      >
+        카드를 삭제하시겠습니까?
+      </ReusableModal2>
+
+      {/* 추가 모달 */}
+      <ReusableModal2
+        isOpen={isAddModalOpen}
+        title='카드 추가'
+        onClose={() => setIsAddModalOpen(false)}
+        onConfirm={confirmAdd}
+      >
+        카드를 추가하시겠습니까?
+      </ReusableModal2>
     </Container>
   );
 };
@@ -163,7 +213,6 @@ const Divider = styled.div`
   margin: 20px 0;
 `;
 
-// --- 중략 ---
 const CardsList = styled.div`
   display: flex;
   flex-direction: column;
@@ -172,12 +221,13 @@ const CardsList = styled.div`
   max-width: 280px;
 
   @media (min-width: 1024px) {
-    max-width: 400px; /* 데스크탑에서 최대 너비를 600px로 확장 */
-    margin: 0 auto; /* 가운데 정렬 */
+    max-width: 400px;
+    margin: 0 auto;
   }
 `;
 
 const CardItemBox = styled.div`
+  position: relative;
   height: 180px;
   background: #f6ae24;
   border-radius: 10px;
@@ -186,31 +236,28 @@ const CardItemBox = styled.div`
   cursor: pointer;
 
   @media (min-width: 1024px) {
-    height: 250px; /* 데스크탑에서 높이를 좀 더 크게 */
-  }
-`;
-
-/* 나머지 Styled Components는 그대로 사용 */
-
-const AddCardBox = styled.div`
-  height: 180px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-
-  @media (min-width: 1024px) {
-    height: 250px; /* 데스크탑에서 높이를 좀 더 크게 */
+    height: 250px;
   }
 `;
 
 const CardTop = styled.div`
-  padding: 20px;
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 8px;
+  padding: 16px;
+`;
+
+const DeleteButton = styled.button`
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+
+  svg {
+    color: #fff;
+  }
 `;
 
 const DateLabel = styled.span`
@@ -224,11 +271,11 @@ const CardBody = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding-bottom: 50px; /* 하단 여유 공간 */
+  padding-bottom: 50px;
   padding-left: 20px;
 
   @media (min-width: 1024px) {
-    padding-bottom: 70px; /* 하단 여유 공간 */
+    padding-bottom: 70px;
   }
 `;
 
@@ -254,6 +301,21 @@ const NumberText = styled.span`
   font-size: 14px;
   font-weight: 800;
   color: #fff;
+`;
+
+const AddCardBox = styled.div`
+  height: 180px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  @media (min-width: 1024px) {
+    height: 250px;
+  }
 `;
 
 const PlusWrapper = styled.div`
