@@ -1,17 +1,32 @@
+// src/components/Button01.tsx
 import React from 'react';
 import styled from 'styled-components';
 
 interface Button01Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
+  /** 흰색 텍스트/배경 사용 */
+  white?: boolean;
+  /** 회색 텍스트/배경 사용 */
+  gray?: boolean;
 }
 
-const Button01: React.FC<Button01Props> = ({ children, ...props }) => (
-  <StyledButton {...props}>{children}</StyledButton>
+const Button01: React.FC<Button01Props> = ({
+  children,
+  white,
+  gray,
+  ...props
+}) => (
+  <StyledButton $white={white} $gray={gray} {...props}>
+    {children}
+  </StyledButton>
 );
 
 export default Button01;
 
-const StyledButton = styled.button`
+const StyledButton = styled.button<{
+  $white?: boolean;
+  $gray?: boolean;
+}>`
   width: 100%;
   height: 56px;
   padding: 15px;
@@ -23,9 +38,11 @@ const StyledButton = styled.button`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
 
-  /* 색상 하드코딩 */
-  color: #ffffff; /* white */
-  background-color: #f6ae24; /* yellow */
+  /* 색상: white > gray > 기본 */
+  color: ${({ $white, $gray }) =>
+    $white ? '#ffffff' : $gray ? '#666666' : '#ffffff'};
+  background-color: ${({ $white, $gray }) =>
+    $white ? '#ffffff' : $gray ? '#cccccc' : '#f6ae24'};
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -34,17 +51,20 @@ const StyledButton = styled.button`
     transform 0.2s ease;
 
   &:hover {
-    background-color: #ffc947; /* hover yellow (원하는 값으로 조정) */
+    background-color: ${({ $white, $gray }) =>
+      $white ? '#f0f0f0' : $gray ? '#dddddd' : '#ffc947'};
     transform: translateY(-2px);
   }
 
   &:active {
-    background-color: #d99a1e; /* active yellow (원하는 값으로 조정) */
+    background-color: ${({ $white, $gray }) =>
+      $white ? '#e0e0e0' : $gray ? '#bbbbbb' : '#d99a1e'};
     transform: translateY(0);
   }
 
   &:disabled {
-    background-color: #cccccc; /* gray2 */
+    background-color: #eeeeee;
+    color: #aaaaaa;
     cursor: not-allowed;
     transform: none;
   }

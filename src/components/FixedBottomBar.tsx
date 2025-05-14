@@ -1,3 +1,4 @@
+// src/components/FixedBottomBar.tsx
 import React from 'react';
 import styled from 'styled-components';
 
@@ -14,7 +15,7 @@ const FixedBottomBar: React.FC<FixedBottomBarProps> = ({
 }) => {
   return (
     <BottomBar>
-      <SettleButton color={color} {...buttonProps}>
+      <SettleButton $color={color} {...buttonProps}>
         {text}
       </SettleButton>
     </BottomBar>
@@ -37,15 +38,17 @@ const BottomBar = styled.div`
   text-align: center;
 `;
 
-const SettleButton = styled.button<{ color: 'yellow' | 'black' }>`
+// transient prop "$color" 사용
+const SettleButton = styled.button<{ $color: 'yellow' | 'black' }>`
   width: 90%;
   padding: 20px;
   font-size: 16px;
   border-radius: 6px;
   cursor: pointer;
-  background-color: ${({ color }) =>
-    color === 'yellow' ? '#F6AE24' : 'black'};
-  color: white;
+
+  background-color: ${({ $color }) =>
+    $color === 'yellow' ? '#F6AE24' : '#000000'};
+  color: #ffffff;
   border: none;
   font-weight: 800;
   line-height: 18px;

@@ -1,3 +1,4 @@
+// src/components/ItemCard.tsx
 import React, { useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { HeartIcon } from '../../assets/library/HeartIcon';
@@ -103,7 +104,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
       <Card onClick={handleCardClick}>
         <ImageWrapper>
           <Image src={image.split('#')[0] || '/default.jpg'} alt={brand} />
-          <LikeButton onClick={handleLikeClick} animating={animating}>
+          <LikeButton $animating={animating} onClick={handleLikeClick}>
             <HeartIcon filled={liked} />
           </LikeButton>
         </ImageWrapper>
@@ -162,7 +163,7 @@ const Image = styled.img`
   object-fit: cover;
 `;
 
-const LikeButton = styled.div<{ animating: boolean }>`
+const LikeButton = styled.div<{ $animating: boolean }>`
   position: absolute;
   bottom: 6px;
   right: 6px;
@@ -176,11 +177,13 @@ const LikeButton = styled.div<{ animating: boolean }>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  ${({ animating }) =>
-    animating &&
+
+  ${({ $animating }) =>
+    $animating &&
     css`
       animation: ${heartbeat} 0.3s ease-out;
     `}
+
   & svg {
     width: 16px;
     height: 16px;

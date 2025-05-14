@@ -34,7 +34,7 @@ const ImageSlider: React.FC<ImageSliderProps> = memo(
           <FiChevronLeft />
         </ArrowLeft>
 
-        <SlidesWrapper currentIndex={currentImageIndex}>
+        <SlidesWrapper $currentIndex={currentImageIndex}>
           {images.map((src, idx) => (
             <Slide key={idx}>
               <Image src={src} alt={`Slide ${idx + 1}`} loading='lazy' />
@@ -48,7 +48,7 @@ const ImageSlider: React.FC<ImageSliderProps> = memo(
 
         <Indicators>
           {images.map((_, idx) => (
-            <Dot key={idx} active={idx === currentImageIndex} />
+            <Dot key={idx} $active={idx === currentImageIndex} />
           ))}
         </Indicators>
       </Container>
@@ -71,7 +71,7 @@ const arrowStyles = `
   z-index: 10;
   cursor: pointer;
   opacity: 0.7;
-  font-size: 48px;      /* 아이콘 크기를 48px로 확대 */
+  font-size: 48px;
   &:hover { opacity: 1; }
 
   @media (max-width: 768px) {
@@ -89,9 +89,9 @@ const ArrowRight = styled.div`
   right: 8px;
 `;
 
-const SlidesWrapper = styled.div<{ currentIndex: number }>`
+const SlidesWrapper = styled.div<{ $currentIndex: number }>`
   display: flex;
-  transform: translateX(-${(p) => p.currentIndex * 100}%);
+  transform: translateX(-${(p) => p.$currentIndex * 100}%);
   transition: transform 0.4s ease;
 `;
 
@@ -116,11 +116,11 @@ const Indicators = styled.div`
   display: flex;
 `;
 
-const Dot = styled.div<{ active: boolean }>`
+const Dot = styled.div<{ $active: boolean }>`
   width: 12px;
   height: 12px;
   margin: 0 4px;
   border-radius: 50%;
-  background-color: ${(p) => (p.active ? '#FFD700' : '#FFF')};
+  background-color: ${(p) => (p.$active ? '#FFD700' : '#FFF')};
   border: 1px solid #ccc;
 `;

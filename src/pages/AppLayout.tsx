@@ -1,3 +1,4 @@
+// src/layouts/AppLayout.tsx
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
@@ -14,7 +15,6 @@ const AppLayout: React.FC = () => {
 
   useEffect(() => {
     const token = Cookies.get('accessToken');
-
     const publicPaths = [
       '/signup',
       '/findid',
@@ -39,7 +39,7 @@ const AppLayout: React.FC = () => {
     disablePadding,
   } = useHeaderConfig(location.pathname);
 
-  const { loading, exit, handleBackWithExit } = useImageLoader(
+  const { loading, handleBackWithExit } = useImageLoader(
     navigate,
     location.pathname
   );
@@ -64,13 +64,12 @@ const AppLayout: React.FC = () => {
   return (
     <AppContainer>
       {includeHeader1 && <UnifiedHeader variant='default' />}
-      {includeHeader2 && <UnifiedHeader variant='oneDepth' exit={exit} />}
+      {includeHeader2 && <UnifiedHeader variant='oneDepth' />}
       {includeHeader3 && (
         <UnifiedHeader
           variant='twoDepth'
           title={headerTitle}
           onBack={handleBackWithExit}
-          exit={exit}
         />
       )}
       {includeHeader4 && (
@@ -78,15 +77,11 @@ const AppLayout: React.FC = () => {
           variant='threeDepth'
           title={headerTitle}
           onBack={handleBackWithExit}
-          exit={exit}
         />
       )}
 
-      <ContentContainer
-        disablePadding={disablePadding}
-        animate={includeHeader3 || includeHeader4}
-        exit={exit}
-      >
+      {/* transient prop으로 변경 */}
+      <ContentContainer $disablePadding={disablePadding}>
         <Outlet />
       </ContentContainer>
 
@@ -99,6 +94,8 @@ const AppLayout: React.FC = () => {
 
 export default AppLayout;
 
+// --- Styled Components ---
+
 const spin = keyframes`
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -110,12 +107,10 @@ const AppContainer = styled.div`
 `;
 
 const ContentContainer = styled.div<{
-  disablePadding?: boolean;
-  animate: boolean;
-  exit: boolean;
+  $disablePadding?: boolean;
 }>`
   flex: 1;
-  padding: ${({ disablePadding }) => (disablePadding ? '0' : '70px 0')};
+  padding: ${({ $disablePadding }) => ($disablePadding ? '0' : '70px 0')};
   overflow: auto;
 `;
 

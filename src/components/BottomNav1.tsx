@@ -1,3 +1,4 @@
+// src/components/BottomNav.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled, { css } from 'styled-components';
@@ -88,7 +89,7 @@ const BottomNav: React.FC = () => {
   };
 
   return (
-    <DockContainer visible={visible}>
+    <DockContainer $visible={visible}>
       <Dock ref={navRef}>
         {TABS.map((tab) => {
           const isActive = tab.key === activeKey && glow;
@@ -97,13 +98,13 @@ const BottomNav: React.FC = () => {
             <NavItem
               key={tab.key}
               data-key={tab.key}
-              disabled={!enabled}
+              $disabled={!enabled}
               onClick={() => handleClick(tab, enabled)}
             >
-              <IconWrapper isActive={isActive} disabled={!enabled}>
+              <IconWrapper $isActive={isActive} $disabled={!enabled}>
                 <Icon src={tab.icon} alt={tab.label} />
               </IconWrapper>
-              <Label isActive={isActive} disabled={!enabled}>
+              <Label $isActive={isActive} $disabled={!enabled}>
                 {tab.label}
               </Label>
             </NavItem>
@@ -117,12 +118,12 @@ const BottomNav: React.FC = () => {
 
 export default BottomNav;
 
-const DockContainer = styled.nav<{ visible: boolean }>`
+const DockContainer = styled.nav<{ $visible: boolean }>`
   position: fixed;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%)
-    translateY(${({ visible }) => (visible ? '0' : '100%')});
+    translateY(${({ $visible }) => ($visible ? '0' : '100%')});
   transition: transform 0.3s ease;
   width: 100%;
   max-width: 400px;
@@ -149,46 +150,46 @@ const Dock = styled.div`
   }
 `;
 
-const NavItem = styled.div<{ disabled: boolean }>`
+const NavItem = styled.div<{ $disabled: boolean }>`
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
+  cursor: ${({ $disabled }) => ($disabled ? 'default' : 'pointer')};
+  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
 `;
 
-const IconWrapper = styled.div<{ isActive: boolean; disabled: boolean }>`
+const IconWrapper = styled.div<{ $isActive: boolean; $disabled: boolean }>`
   position: relative;
   width: 48px;
   height: 48px;
 
-  background: ${({ isActive }) =>
-    isActive ? '#fff' : 'rgba(255,255,255,0.1)'};
+  background: ${({ $isActive }) =>
+    $isActive ? '#fff' : 'rgba(255,255,255,0.1)'};
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.2s ease;
 
-  ${({ disabled }) =>
-    disabled &&
+  ${({ $disabled }) =>
+    $disabled &&
     css`
       background: rgba(255, 255, 255, 0.05);
     `}
 
-  ${({ disabled, isActive }) =>
-    !disabled &&
+  ${({ $disabled, $isActive }) =>
+    !$disabled &&
     css`
       &:hover {
-        background: ${isActive ? '#fff' : 'rgba(255,255,255,0.2)'};
+        background: ${$isActive ? '#fff' : 'rgba(255,255,255,0.2)'};
       }
     `}
 
   img {
-    filter: ${({ isActive }) =>
-      isActive ? 'none' : 'brightness(0) invert(1)'};
+    filter: ${({ $isActive }) =>
+      $isActive ? 'none' : 'brightness(0) invert(1)'};
   }
 
   &::before {
@@ -202,7 +203,7 @@ const IconWrapper = styled.div<{ isActive: boolean; disabled: boolean }>`
     background: rgba(250, 234, 6, 0.4);
     filter: blur(16px);
     clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
-    opacity: ${({ isActive }) => (isActive ? 1 : 0)};
+    opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
     transition: opacity 0.3s ease;
     pointer-events: none;
   }
@@ -213,13 +214,13 @@ const Icon = styled.img`
   height: 24px;
 `;
 
-const Label = styled.span<{ isActive: boolean; disabled: boolean }>`
+const Label = styled.span<{ $isActive: boolean; $disabled: boolean }>`
   margin-top: 6px;
   font-size: 11px;
-  color: ${({ isActive, disabled }) =>
-    disabled
+  color: ${({ $isActive, $disabled }) =>
+    $disabled
       ? 'rgba(255,255,255,0.5)'
-      : isActive
+      : $isActive
         ? '#fff'
         : 'rgba(255,255,255,0.7)'};
   transition: color 0.2s ease;

@@ -37,9 +37,9 @@ const LandingPage7: React.FC = () => {
       </Subtitle>
 
       <DotGroup>
-        <Dot isActive={currentIndex === 0} />
-        <Dot isActive={currentIndex === 1} />
-        <Dot isActive={currentIndex === 2} />
+        <Dot $isActive={currentIndex === 0} />
+        <Dot $isActive={currentIndex === 1} />
+        <Dot $isActive={currentIndex === 2} />
       </DotGroup>
 
       <PhoneWrapper ref={scrollRef}>
@@ -100,11 +100,11 @@ const DotGroup = styled.div`
   margin-bottom: 25px;
 `;
 
-const Dot = styled.div<{ isActive: boolean }>`
-  width: ${({ isActive }) => (isActive ? '20px' : '10px')};
+const Dot = styled.div<{ $isActive: boolean }>`
+  width: ${({ $isActive }) => ($isActive ? '20px' : '10px')};
   height: 10px;
   border-radius: 100px;
-  background: ${({ isActive }) => (isActive ? '#F5AB35' : '#D9D9D9')};
+  background: ${({ $isActive }) => ($isActive ? '#F5AB35' : '#D9D9D9')};
   transition: all 0.2s ease;
 `;
 
