@@ -1,10 +1,29 @@
-// src/components/FilterModal.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 
-// const seasonData = ['봄', '여름', '가을', '겨울'];
+/* helper component */
+const ParenText = styled.span`
+  font-weight: 400;
+  font-size: 12px;
+  color: #999;
+`;
+const SectionTitleWithParen: React.FC<{ text: string }> = ({ text }) => {
+  const parts = text.split(/(\(.*?\))/g);
+  return (
+    <SectionTitle>
+      {parts.map((p, i) =>
+        p.startsWith('(') && p.endsWith(')') ? (
+          <ParenText key={i}>{p}</ParenText>
+        ) : (
+          <span key={i}>{p}</span>
+        )
+      )}
+    </SectionTitle>
+  );
+};
+
 const sizeData = ['44(S)', '55(M)', '66(L)', '77(XL)'];
-const colorMap = {
+const colorMap: Record<string, string> = {
   화이트: '#FFFFFF',
   블랙: '#000000',
   그레이: '#808080',
@@ -62,7 +81,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <Overlay onClick={handleClose}>
-      <Container onClick={(e) => e.stopPropagation()} isClosing={isClosing}>
+      <Container onClick={(e) => e.stopPropagation()} $isClosing={isClosing}>
         <ModalHandle>
           <HandleBar />
         </ModalHandle>
@@ -75,24 +94,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
         </FixedHeader>
 
         <ScrollContent>
-          {/* <Section>
-            <SectionTitleWithParen text='계절 (셋팅 : 없음)' />
-            <ButtonRow>
-              {seasonData.map((season) => (
-                <FilterButton
-                  key={season}
-                  selected={selectedSeason.includes(season)}
-                  onClick={() =>
-                    toggleSelected(selectedSeason, season, setSelectedSeason)
-                  }
-                >
-                  {season}
-                </FilterButton>
-              ))}
-            </ButtonRow>
-          </Section>
-          <DashedDivider /> */}
-
           <Section>
             <SectionTitleWithParen text='사이즈 (셋팅 : 없음)' />
             <ButtonRow>
@@ -143,27 +144,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
 
 export default FilterModal;
 
-/* helper component */
-const ParenText = styled.span`
-  font-weight: 400;
-  font-size: 12px;
-  color: #999;
-`;
-const SectionTitleWithParen: React.FC<{ text: string }> = ({ text }) => {
-  const parts = text.split(/(\(.*?\))/g);
-  return (
-    <SectionTitle>
-      {parts.map((p, i) =>
-        p.startsWith('(') && p.endsWith(')') ? (
-          <ParenText key={i}>{p}</ParenText>
-        ) : (
-          <span key={i}>{p}</span>
-        )
-      )}
-    </SectionTitle>
-  );
-};
-
 /* animations */
 const slideUp = keyframes`
   0% { transform: translateY(100%); }
@@ -178,26 +158,8 @@ const slideDown = keyframes`
 
 /* styled components */
 interface ContainerProps {
-  isClosing: boolean;
+  $isClosing: boolean;
 }
-const Container = styled.div<ContainerProps>`
-  width: 100%;
-  max-width: 1000px;
-  height: 60%;
-  background: #fff;
-  border-radius: 20px 20px 0 0;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  animation: ${({ isClosing }) =>
-    isClosing
-      ? css`
-          ${slideDown} 0.4s ease-out forwards
-        `
-      : css`
-          ${slideUp} 0.4s ease-out forwards
-        `};
-`;
 
 const Overlay = styled.div`
   position: fixed;
@@ -207,6 +169,25 @@ const Overlay = styled.div`
   justify-content: center;
   align-items: flex-end;
   z-index: 10000;
+`;
+
+const Container = styled.div<ContainerProps>`
+  width: 100%;
+  max-width: 1000px;
+  height: 60%;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  animation: ${({ $isClosing }) =>
+    $isClosing
+      ? css`
+          ${slideDown} 0.4s ease-out forwards
+        `
+      : css`
+          ${slideUp} 0.4s ease-out forwards
+        `};
 `;
 
 const ModalHandle = styled.div`

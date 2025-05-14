@@ -87,7 +87,7 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
   return (
     <>
       <Overlay onClick={handleOverlayClick}>
-        <ModalContainer onClick={handleModalClick} isClosing={isClosing}>
+        <ModalContainer onClick={handleModalClick} $isClosing={isClosing}>
           <ModalHandle>
             <HandleBar />
           </ModalHandle>
@@ -153,8 +153,8 @@ const slideDown = keyframes`
   to   { transform: translateY(100%); }
 `;
 
-interface ModalProps {
-  isClosing: boolean;
+interface ModalContainerProps {
+  $isClosing: boolean;
 }
 
 const Overlay = styled.div`
@@ -170,7 +170,7 @@ const Overlay = styled.div`
   z-index: 9999;
 `;
 
-const ModalContainer = styled.div<ModalProps>`
+const ModalContainer = styled.div<ModalContainerProps>`
   max-width: 600px;
   width: 100%;
   min-height: 400px;
@@ -180,8 +180,8 @@ const ModalContainer = styled.div<ModalProps>`
   display: flex;
   flex-direction: column;
   position: relative;
-  animation: ${({ isClosing }) =>
-    isClosing
+  animation: ${({ $isClosing }) =>
+    $isClosing
       ? css`
           ${slideDown} 0.4s ease-out forwards
         `

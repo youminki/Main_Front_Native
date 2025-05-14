@@ -83,17 +83,34 @@ const MyStyle: React.FC = () => {
     (async () => {
       try {
         const data = await getUserStyle();
-        setValue('height', data.height.toString());
-        setValue('size', data.weight.toString());
-        setValue('dress', data.dressSize);
-        setValue('top', data.topSize);
-        setValue('bottom', data.bottomSize);
-        setSelectedBrands(data.preferredBrands);
-        setValue('brand', data.preferredBrands.join(', '));
-        setValue('shoulder', data.shoulderWidth?.toString() ?? '');
-        setValue('chest', data.chestCircumference?.toString() ?? '');
-        setValue('waist', data.waistCircumference?.toString() ?? '');
-        setValue('sleeve', data.sleeveLength?.toString() ?? '');
+        if (!data) return;
+        setValue('height', data.height != null ? data.height.toString() : '');
+        setValue('size', data.weight != null ? data.weight.toString() : '');
+        setValue('dress', data.dressSize ?? '');
+        setValue('top', data.topSize ?? '');
+        setValue('bottom', data.bottomSize ?? '');
+        setSelectedBrands(data.preferredBrands ?? []);
+        setValue('brand', (data.preferredBrands ?? []).join(', '));
+        setValue(
+          'shoulder',
+          data.shoulderWidth != null ? data.shoulderWidth.toString() : ''
+        );
+        setValue(
+          'chest',
+          data.chestCircumference != null
+            ? data.chestCircumference.toString()
+            : ''
+        );
+        setValue(
+          'waist',
+          data.waistCircumference != null
+            ? data.waistCircumference.toString()
+            : ''
+        );
+        setValue(
+          'sleeve',
+          data.sleeveLength != null ? data.sleeveLength.toString() : ''
+        );
       } catch (e) {
         console.error('Failed to load user style', e);
       }
@@ -103,8 +120,8 @@ const MyStyle: React.FC = () => {
   const onSubmit: SubmitHandler<FormData> = async (form) => {
     try {
       const payload: Partial<UserStyle> = {
-        height: parseFloat(form.height),
-        weight: parseFloat(form.size),
+        height: form.height ? parseFloat(form.height) : undefined,
+        weight: form.size ? parseFloat(form.size) : undefined,
         dressSize: form.dress,
         topSize: form.top,
         bottomSize: form.bottom,
