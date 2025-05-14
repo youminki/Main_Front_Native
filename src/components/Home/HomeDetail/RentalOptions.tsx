@@ -1,3 +1,4 @@
+// src/components/RentalOptions.tsx
 import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import DatePicker, { registerLocale } from 'react-datepicker';
@@ -41,6 +42,7 @@ const GlobalStyle = createGlobalStyle`
 interface SquareIconProps {
   disabled?: boolean;
 }
+
 interface RentalOptionsProps {
   productId: number;
   selectedSize: string;
@@ -69,32 +71,52 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const minSelectableDate = _addDays(today, 3);
+
   const getTotalDays = (s: Date, e: Date) =>
     Math.floor((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1;
   const formatDate = (d: Date) =>
     `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 
-  // 기존 예약 불가일 + 마지막날+3일
+  // ───────────────────────────────────────────────────────────────
+  // 예약 불가 범위 → 날짜 하나하나로 풀어서 reservedDates 세팅
+  // 각 범위의 end 날짜마다 +1, +2, +3일까지 추가
+  // ───────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!productId || !selectedSize || !selectedColor) return;
+    if (!productId || !selectedSize) return;
+
     getUnavailableDates({ productId, sizeLabel: selectedSize })
-      .then((list) => {
-        const baseDates = list.map((d) => new Date(d));
-        let extendedDates: Date[] = [];
-        if (baseDates.length) {
-          const maxTime = Math.max(...baseDates.map((d) => d.getTime()));
-          const maxDate = new Date(maxTime);
-          for (let i = 1; i <= 3; i++) extendedDates.push(_addDays(maxDate, i));
-        }
-        setReservedDates([...baseDates, ...extendedDates]);
+      .then((ranges) => {
+        const allTimeNumbers: number[] = [];
+
+        ranges.forEach(([startStr, endStr]) => {
+          const start = new Date(startStr);
+          const end = new Date(endStr);
+
+          // 1) 각 범위 내 날짜 풀어쓰기
+          for (let d = new Date(start); d <= end; d = _addDays(d, 1)) {
+            allTimeNumbers.push(d.getTime());
+          }
+
+          // 2) 각 end 날짜에 +1, +2, +3일 추가
+          for (let i = 1; i <= 3; i++) {
+            allTimeNumbers.push(_addDays(end, i).getTime());
+          }
+        });
+
+        // 중복 제거 후 Date 객체로 변환
+        const uniqueDates = Array.from(new Set(allTimeNumbers)).map(
+          (t) => new Date(t)
+        );
+        setReservedDates(uniqueDates);
       })
       .catch(console.error);
-  }, [productId, selectedSize, selectedColor]);
+  }, [productId, selectedSize]);
+
+  // ───────────────────────────────────────────────────────────────
 
   // 날짜 선택 핸들러
   const handleDateChange = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
-
     if (start) {
       if (isBefore(start, minSelectableDate)) {
         setErrorMessage(
@@ -111,7 +133,6 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
         return setErrorModalOpen(true);
       }
     }
-
     if (start && !end && minDays > 0) {
       const autoEnd = _addDays(start, minDays - 1);
       if (reservedDates.some((d) => isSameDay(d, autoEnd))) {
@@ -120,10 +141,8 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
       }
       return setSelectedRange({ start, end: autoEnd });
     }
-
     if (start && end) {
       let newEnd = end;
-      // 이제 일요일·공휴일은 마지막(end)로 허용, 기존 예약일만 스킵
       while (reservedDates.some((d) => isSameDay(d, newEnd))) {
         newEnd = _addDays(newEnd, 1);
       }
@@ -140,7 +159,7 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
     }
   };
 
-  // 클릭 차단: 예약불가, 과거만
+  // 클릭 차단 (비활성 날짜, 과거)
   const handleDayClick = (e: React.MouseEvent) => {
     const t = e.target as HTMLElement;
     if (!t.classList.contains('react-datepicker__day')) return;
@@ -161,7 +180,7 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
     setSelectedRange({ start, end: _addDays(end, delta) });
   };
 
-  // 선택완료: 일요일·공휴일 종료 허용하도록 검사 제거
+  // 확정 버튼
   const handleConfirm = async () => {
     const { start, end } = selectedRange;
     if (!start || !end) {
@@ -188,6 +207,7 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
 
     try {
       await createRentalSchedule(req);
+      // 방금 생성된 일정도 disabled 처리
       const newReserved: Date[] = [];
       for (let d = new Date(start); d <= end; d = _addDays(d, 1)) {
         newReserved.push(new Date(d));
@@ -247,7 +267,6 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
                     : '선택해주세요'}
                 </ModalTitle>
               </ModalHeader>
-
               <ModalContent>
                 <SelectedBlock>
                   <RangeBox>
@@ -284,12 +303,12 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
                     onChange={handleDateChange}
                     excludeDates={reservedDates}
                     dayClassName={(date) => {
-                      if (isBefore(date, today)) return 'day-past'; // 오늘 이전
+                      if (isBefore(date, today)) return 'day-past';
                       if (
                         isAfter(date, today) &&
                         isBefore(date, minSelectableDate)
                       )
-                        return 'day-past'; // 오늘 이후 3일
+                        return 'day-past';
                       if (isSameDay(date, today)) return 'day-today';
                       if (reservedDates.some((d) => isSameDay(d, date)))
                         return 'day-reserved';
