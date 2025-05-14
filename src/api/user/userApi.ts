@@ -259,9 +259,8 @@ export const resetPassword = async (
 
 // 추가: 로그인 유저의 멤버십 정보 조회 API
 export interface MembershipInfo {
-  id: number;
   name: string; //유저 등급
-  discount_rate: number; //할인율
+  discountRate: number; //할인율
 }
 
 /**

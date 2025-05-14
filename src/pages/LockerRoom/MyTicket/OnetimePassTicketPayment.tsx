@@ -1,6 +1,5 @@
-// src/pages/LockerRoom/TicketPayment.tsx
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { format, addMonths } from 'date-fns';
 import InputField from '../../../components/InputField';
@@ -21,6 +20,13 @@ export interface CardItem {
 
 const OnetimePassTicketPayment: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { name, discountedPrice } = location.state || {}; // state에서 name과 discountedPrice 받기
+
+  const formattedDiscountedPrice = discountedPrice
+    ? discountedPrice.toLocaleString()
+    : '0';
+
   const [options, setOptions] = useState<string[]>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>('');
@@ -75,7 +81,7 @@ const OnetimePassTicketPayment: React.FC = () => {
             <SubscriptionLabel>이용권 결제</SubscriptionLabel>
 
             <ProductTitle>
-              <MainTitle>1회 이용권</MainTitle>
+              <MainTitle>{name}</MainTitle> {/* 이름을 여기서 표시 */}
             </ProductTitle>
 
             <Row>
@@ -94,7 +100,8 @@ const OnetimePassTicketPayment: React.FC = () => {
               <IconImg src={PaymentAmountIcon} alt='결제금액 아이콘' />
               <RowTextContainer>
                 <RowLabel>
-                  결제금액 -<RowValue>50,000원</RowValue>
+                  결제금액 -<RowValue>{formattedDiscountedPrice}원</RowValue>{' '}
+                  {/* 할인된 가격 표시 */}
                 </RowLabel>
               </RowTextContainer>
             </Row>
@@ -127,7 +134,8 @@ const OnetimePassTicketPayment: React.FC = () => {
       <Section>
         <CustomLabel>총 결제금액 (VAT 포함)</CustomLabel>
         <PaymentAmountWrapper>
-          <PaymentAmount>50,000원</PaymentAmount>
+          <PaymentAmount>{formattedDiscountedPrice}원</PaymentAmount>{' '}
+          {/* 할인된 가격 표시 */}
         </PaymentAmountWrapper>
       </Section>
 

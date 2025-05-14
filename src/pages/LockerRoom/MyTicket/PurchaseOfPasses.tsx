@@ -7,95 +7,105 @@ import ReusableModal2 from '../../../components/ReusableModal2';
 import { useNavigate } from 'react-router-dom';
 import Theme from '../../../styles/Theme';
 import { format, addMonths } from 'date-fns';
-import { getMembershipInfo } from '../../../api/user/userApi';
-import {
-  getUserTicketsByDateRange,
-  UserTicket,
-} from '../../../api/ticket/ticket';
+import { getAllTicketTemplates, TicketList } from '../../../api/ticket/ticket';
+import { getMembershipInfo, MembershipInfo } from '../../../api/user/userApi';
 
-const ticketSettingsOptions = ['월 4회권', '무제한'] as const;
-
-type PurchaseOfPassesProps = {};
-
-const PurchaseOfPasses: React.FC<PurchaseOfPassesProps> = () => {
-  const [ticketNames, setTicketNames] = useState<string[]>([]);
+const PurchaseOfPasses: React.FC = () => {
+  const [templates, setTemplates] = useState<TicketList[]>([]);
   const [purchaseOption, setPurchaseOption] = useState<string>('');
   const [ticketSetting, setTicketSetting] = useState<string>('');
-  const [discountRate, setDiscountRate] = useState<number>(0);
+  const [discountRate, setDiscountRate] = useState<number>(0); // 할인율을 숫자로 설정
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  const today = new Date();
-  const startDate = format(today, 'yyyy-MM-dd');
-  const endDate = format(addMonths(today, 1), 'yyyy-MM-dd');
+  // 현재 선택된 템플릿 객체
+  const selectedTemplate = templates.find((t) => t.name === purchaseOption);
+  const isOneTime = selectedTemplate?.name === '1회 이용권';
 
-  // 로그인한 사용자의 이용권 이름 조회 (기간 조회 사용)
+  // 템플릿 목록 조회
   useEffect(() => {
     (async () => {
       try {
-        const tickets: UserTicket[] = await getUserTicketsByDateRange(
-          startDate,
-          endDate
-        );
-        const names = tickets.map((t) => t.ticketList.name);
-        setTicketNames(names);
-        if (names.length > 0) setPurchaseOption(names[0]);
-      } catch (error) {
-        console.error('티켓 조회 실패:', error);
+        const res = await getAllTicketTemplates();
+        setTemplates(res.items);
+        if (res.items.length > 0) {
+          setPurchaseOption(res.items[0].name);
+        }
+      } catch (err) {
+        console.error(err);
       }
     })();
-  }, [startDate, endDate]);
+  }, []);
 
   // 멤버십 할인율 조회
   useEffect(() => {
     (async () => {
       try {
-        const info = await getMembershipInfo();
-        setDiscountRate(info.discount_rate);
-      } catch (error) {
-        console.error('멤버십 정보 조회 실패:', error);
+        const info: MembershipInfo = await getMembershipInfo();
+        // 할인율을 문자열에서 숫자로 변환
+        const discount = info.discountRate
+          ? parseFloat(info.discountRate.toString()) // 10.00 -> 10.00 숫자형으로 변환
+          : 0;
+
+        // discountRate가 NaN이 아닌지 확인하고 유효한 값만 설정
+        if (!isNaN(discount) && discount >= 0) {
+          setDiscountRate(discount);
+        } else {
+          setDiscountRate(0); // Invalid discount rate일 경우 0으로 설정
+        }
+      } catch (err) {
+        console.error('Error fetching discount rate:', err);
+        setDiscountRate(0); // 에러가 발생하면 기본값 0으로 설정
       }
     })();
   }, []);
 
-  // 날짜 및 가격 세팅
+  // 날짜 세팅
+  const today = new Date();
   const formattedToday = format(today, 'yyyy.MM.dd');
-  const formattedOneMonthLater = format(addMonths(today, 1), 'yyyy.MM.dd');
+  const oneMonthLater = addMonths(today, 1);
+  const formattedOneMonthLater = format(oneMonthLater, 'yyyy.MM.dd');
   const paymentDay = today.getDate();
 
-  const isOneTime = purchaseOption === '1회 이용권';
-  const basePrice = isOneTime ? 50000 : 120000;
-  const discountedPrice = Math.round((basePrice * (100 - discountRate)) / 100);
-  const formattedBasePrice = basePrice.toLocaleString();
-  const formattedDiscountedPrice = discountedPrice.toLocaleString();
+  // 가격 계산
+  const basePrice = selectedTemplate ? selectedTemplate.price : 0;
+
+  // 할인율을 반영하여 가격 계산 (percentage discount)
+  const discountedPrice =
+    basePrice > 0 && !isNaN(discountRate) && discountRate > 0 // 할인율이 0보다 클 때만 할인 적용
+      ? basePrice * (1 - discountRate / 100) // 할인율 적용: price * (1 - discountRate / 100)
+      : basePrice; // 할인율이 0일 경우 원래 가격을 그대로 사용
+
+  const formattedDiscountedPrice =
+    discountedPrice > 0 ? discountedPrice.toLocaleString() : '0'; // 원 단위로 표시
 
   const handlePaymentClick = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
   const handleConfirmPayment = () => {
-    const path = isOneTime
-      ? '/my-ticket/PurchaseOfPasses/onetimePassTicketPayment'
-      : '/my-ticket/PurchaseOfPasses/SubscriptionPassTicketPayment';
-    navigate(path);
+    navigate('/my-ticket/PurchaseOfPasses/onetimePassTicketPayment', {
+      state: {
+        name: selectedTemplate?.name,
+        discountedPrice,
+        isOneTime: selectedTemplate?.name === '1회 이용권', // 1회 이용권 여부 전달
+      },
+    });
   };
 
   return (
     <ThemeProvider theme={Theme}>
       <Container>
-        {/* 구매할 이용권 선택 */}
+        {/* 구매할 이용권 */}
         <InputField
           name='purchaseOption'
           label='구매할 이용권 *'
           id='purchaseOption'
           as={CustomSelect}
           value={purchaseOption}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-            setPurchaseOption(e.target.value);
-            if (e.target.value === '1회 이용권') setTicketSetting('');
-          }}
+          onChange={(e) => setPurchaseOption(e.target.value)}
         >
-          {ticketNames.map((name) => (
-            <option key={name} value={name}>
-              {name}
+          {templates.map((tpl) => (
+            <option key={tpl.id} value={tpl.name}>
+              {tpl.name}
             </option>
           ))}
         </InputField>
@@ -110,30 +120,16 @@ const PurchaseOfPasses: React.FC<PurchaseOfPassesProps> = () => {
         />
 
         <RowLabel>
-          {/* 결제 금액 */}
           <HalfBox>
             <InputField
               name='paymentAmount'
               label='이용권 결제금액'
               id='paymentAmount'
-              prefixcontent={
-                discountRate > 0 ? (
-                  <PriceWrapper>
-                    <OriginalPrice>{formattedBasePrice}원</OriginalPrice>
-                    <Arrow>→</Arrow>
-                    <DiscountedPrice>
-                      {formattedDiscountedPrice}원 ({discountRate}% 할인)
-                    </DiscountedPrice>
-                  </PriceWrapper>
-                ) : (
-                  `${formattedBasePrice}원`
-                )
-              }
+              prefixcontent={`${formattedDiscountedPrice}원`}
               readOnly
             />
           </HalfBox>
 
-          {/* 이용권 설정 */}
           <HalfBox>
             <InputField
               name='ticketSetting'
@@ -141,25 +137,22 @@ const PurchaseOfPasses: React.FC<PurchaseOfPassesProps> = () => {
               id='ticketSetting'
               as={CustomSelect}
               value={ticketSetting}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                setTicketSetting(e.target.value)
-              }
+              onChange={(e) => setTicketSetting(e.target.value)}
               disabled={isOneTime}
             >
               {isOneTime ? (
                 <option value=''>해당없음</option>
               ) : (
-                ticketSettingsOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))
+                <>
+                  <option value='월 4회권'>월 4회권</option>
+                  <option value='무제한'>무제한</option>
+                </>
               )}
             </InputField>
           </HalfBox>
         </RowLabel>
 
-        {/* 진행 중인 시즌 및 자동결제 일자 */}
+        {/* 진행 중인 시즌 */}
         <InputField
           name='currentSeason'
           label='진행 중인 시즌 표시'
@@ -167,12 +160,16 @@ const PurchaseOfPasses: React.FC<PurchaseOfPassesProps> = () => {
           prefixcontent='2025 SPRING | 2025.05 ~ 2025.07'
           readOnly
         />
+
+        {/* 자동결제 일자 */}
         <InputField
           name='autoPaymentDate'
           label='자동결제 일자'
           id='autoPaymentDate'
           prefixcontent={formattedToday}
-          suffixcontent={`매달 ${paymentDay}일마다 결제`}
+          suffixcontent={
+            !isOneTime ? `매달 ${paymentDay}일마다 결제` : undefined
+          }
           readOnly
         />
 
@@ -262,27 +259,4 @@ const OrangeBoldText = styled.span`
 const BlackBoldText = styled.span`
   color: #000000;
   font-weight: 700;
-`;
-
-const PriceWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const OriginalPrice = styled.span`
-  font-size: 13px;
-  color: #999999;
-  text-decoration: line-through;
-`;
-
-const Arrow = styled.span`
-  font-size: 13px;
-  color: #999999;
-`;
-
-const DiscountedPrice = styled.span`
-  font-size: 14px;
-  font-weight: 700;
-  color: #000000;
 `;
