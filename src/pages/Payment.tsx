@@ -1,17 +1,17 @@
+// src/pages/PaymentPage.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import sampleImage from '../assets/sample-dress.svg';
-import PriceIcon from '../assets/Basket/PriceIcon.svg';
-import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
-import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
+import { useLocation } from 'react-router-dom';
 import FixedBottomBar from '../components/FixedBottomBar';
 import InputField from '../components/InputField';
 import { YellowButton, BlackButton } from '../components/ButtonWrapper';
 import ReusableModal from '../components/ReusableModal';
 import ReusableModal2 from '../components/ReusableModal2';
 import AddressSearchModal from '../components/AddressSearchModal';
-import { useLocation } from 'react-router-dom';
+import PriceIcon from '../assets/Basket/PriceIcon.svg';
+import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
+import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
 
 declare global {
   interface Window {
@@ -19,7 +19,7 @@ declare global {
   }
 }
 
-// 결제 전화번호 검증 스키마
+// 전화번호 검증 스키마
 const paymentSchema = yup.object().shape({
   deliveryContact: yup
     .string()
@@ -50,7 +50,6 @@ interface BasketItem {
   nameType: string;
   type: 'rental' | 'purchase';
   servicePeriod?: string;
-  deliveryDate?: string;
   size: string;
   color: string;
   price: number;
@@ -59,41 +58,15 @@ interface BasketItem {
 }
 
 const PaymentPage: React.FC = () => {
-  const { state } = useLocation<{ servicePeriod?: string }>();
-  const [recipient, setRecipient] = useState<string>('');
-  const [navigateHome, setNavigateHome] = useState(false);
-  const [selectedListAddress, setSelectedListAddress] = useState<string>('');
-  const handleListConfirm = () => {
-    if (modalField === 'delivery') {
-      setDeliveryInfo((info) => ({ ...info, address: selectedListAddress }));
-    } else {
-      setReturnInfo((info) => ({ ...info, address: selectedListAddress }));
-    }
-    setListModalOpen(false);
-  };
-  const [modalField, setModalField] = useState<'delivery' | 'return'>(
-    'delivery'
-  );
-  const [searchModalOpen, setSearchModalOpen] = useState(false);
-  const [listModalOpen, setListModalOpen] = useState(false);
-  const [modalAlert, setModalAlert] = useState({ isOpen: false, message: '' });
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  // Location.state 에서 전달된 상품 정보 읽기
+  const location = useLocation();
+  const itemData = location.state as BasketItem;
 
-  const [items] = useState<BasketItem[]>([
-    {
-      id: 1,
-      brand: 'SANDRO',
-      nameCode: 'SF25S3FRD7699',
-      nameType: '원피스',
-      type: 'rental',
-      servicePeriod: state?.servicePeriod,
-      size: 'M (55)',
-      color: '블랙',
-      price: 50000,
-      imageUrl: sampleImage,
-      $isSelected: true,
-    },
-  ]);
+  // items 배열 초기화
+  const [items] = useState<BasketItem[]>([{ ...itemData, $isSelected: true }]);
+
+  // form state
+  const [recipient, setRecipient] = useState('');
   const [selectedMethod, setSelectedMethod] = useState<
     '매니저 배송' | '택배 배송'
   >('매니저 배송');
@@ -108,37 +81,38 @@ const PaymentPage: React.FC = () => {
     contact: '010',
   });
   const [isSameAsDelivery, setIsSameAsDelivery] = useState(false);
+  const [modalField, setModalField] = useState<'delivery' | 'return'>(
+    'delivery'
+  );
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [listModalOpen, setListModalOpen] = useState(false);
+  const [selectedListAddress, setSelectedListAddress] = useState('');
+  const [modalAlert, setModalAlert] = useState({ isOpen: false, message: '' });
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [navigateHome, setNavigateHome] = useState(false);
 
-  const closeAlertModal = () => {
-    setModalAlert({ isOpen: false, message: '' });
-    if (navigateHome) window.location.href = '/home';
-    setNavigateHome(false);
+  const handleListConfirm = () => {
+    if (modalField === 'delivery') {
+      setDeliveryInfo((info) => ({ ...info, address: selectedListAddress }));
+    } else {
+      setReturnInfo((info) => ({ ...info, address: selectedListAddress }));
+    }
+    setListModalOpen(false);
   };
 
-  // 모달 내 임베드 방식 우편번호 검색
   const handleAddressSearch = (field: 'delivery' | 'return') => {
     setModalField(field);
     setSearchModalOpen(true);
   };
 
-  const handleDeliveryContactChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    let v = e.target.value.replace(/[^0-9]/g, '');
+  const handleContactChange = (field: 'delivery' | 'return', value: string) => {
+    let v = value.replace(/[^0-9]/g, '');
     if (!v.startsWith('010')) v = '010' + v;
     v = v.slice(0, 11);
     if (v.length === 11) v = v.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-    setDeliveryInfo((info) => ({ ...info, contact: v }));
-  };
-
-  const handleReturnContactChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    let v = e.target.value.replace(/[^0-9]/g, '');
-    if (!v.startsWith('010')) v = '010' + v;
-    v = v.slice(0, 11);
-    if (v.length === 11) v = v.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-    setReturnInfo((info) => ({ ...info, contact: v }));
+    if (field === 'delivery')
+      setDeliveryInfo((info) => ({ ...info, contact: v }));
+    else setReturnInfo((info) => ({ ...info, contact: v }));
   };
 
   const handleUseSame = () => {
@@ -157,8 +131,8 @@ const PaymentPage: React.FC = () => {
   const handlePaymentSubmit = async () => {
     if (
       !recipient.trim() ||
-      !deliveryInfo.address.trim() ||
-      !deliveryInfo.detailAddress.trim()
+      !deliveryInfo.address ||
+      !deliveryInfo.detailAddress
     ) {
       setModalAlert({
         isOpen: true,
@@ -185,6 +159,11 @@ const PaymentPage: React.FC = () => {
     setModalAlert({ isOpen: true, message: '결제가 완료되었습니다.' });
     setNavigateHome(true);
   };
+  const closeAlertModal = () => {
+    setModalAlert({ isOpen: false, message: '' });
+    if (navigateHome) window.location.href = '/home';
+    setNavigateHome(false);
+  };
 
   return (
     <Container>
@@ -199,8 +178,7 @@ const PaymentPage: React.FC = () => {
           <ModalBody>{modalAlert.message}</ModalBody>
         </ReusableModal>
       )}
-
-      {/* Confirm */}
+      {/* 결제 확인 */}
       {confirmModalOpen && (
         <ReusableModal2
           isOpen
@@ -234,14 +212,11 @@ const PaymentPage: React.FC = () => {
                   <RowText>
                     <LabelDetailText>진행 서비스 - </LabelDetailText>
                     <DetailHighlight>
-                      {item.type === 'rental' ? '대여(3일)' : '구매'}
+                      {item.type === 'rental'
+                        ? `대여(${item.servicePeriod})`
+                        : '구매'}
                     </DetailHighlight>
                   </RowText>
-                  {item.servicePeriod && (
-                    <AdditionalText>
-                      <DetailText>{item.servicePeriod}</DetailText>
-                    </AdditionalText>
-                  )}
                 </TextContainer>
               </InfoRowFlex>
               <InfoRowFlex>
@@ -249,16 +224,17 @@ const PaymentPage: React.FC = () => {
                   <Icon src={ProductInfoIcon} />
                 </IconArea>
                 <TextContainer>
+                  <LabelDetailText>제품 정보</LabelDetailText>
                   <RowText>
-                    <LabelDetailText>제품 정보</LabelDetailText>
-                  </RowText>
-                  <AdditionalText>
-                    <DetailText>사이즈 - </DetailText>
-                    <DetailHighlight>{item.size}</DetailHighlight>
-                    <Slash>/</Slash>
-                    <DetailText>색상 - </DetailText>
+                    <AdditionalText>
+                      <LabelDetailText>사이즈 - </LabelDetailText>
+                      <DetailHighlight>{item.size}</DetailHighlight>
+                      <Slash>/</Slash>
+                      <DetailText>색상 - </DetailText>
+                    </AdditionalText>
+
                     <DetailHighlight>{item.color}</DetailHighlight>
-                  </AdditionalText>
+                  </RowText>
                 </TextContainer>
               </InfoRowFlex>
               <InfoRowFlex>
@@ -310,7 +286,6 @@ const PaymentPage: React.FC = () => {
           </InputGroup>
         </Row>
       </Section>
-
       {selectedMethod === '매니저 배송' && (
         <DeliveryNotice>
           <NoticeTitle>※ 매니저 배송이란?</NoticeTitle>
@@ -327,7 +302,7 @@ const PaymentPage: React.FC = () => {
       {/* 배송지 입력 */}
       <Section>
         <SectionTitle>배송지 입력 *</SectionTitle>
-        <Row style={{ marginBottom: '10px' }}>
+        <Row>
           <AddressInputWrapper>
             <AddressInput
               readOnly
@@ -342,7 +317,7 @@ const PaymentPage: React.FC = () => {
             배송목록
           </DeliveryListButton>
         </Row>
-        <Row style={{ marginBottom: '10px' }}>
+        <Row>
           <DetailAddressInput
             placeholder='상세주소를 입력 하세요'
             value={deliveryInfo.detailAddress}
@@ -360,7 +335,9 @@ const PaymentPage: React.FC = () => {
             label='연락처'
             placeholder='나머지 8자리 입력'
             value={deliveryInfo.contact}
-            onChange={handleDeliveryContactChange}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleContactChange('delivery', e.target.value)
+            }
           />
         </Row>
       </Section>
@@ -379,7 +356,7 @@ const PaymentPage: React.FC = () => {
             새로 입력
           </OptionButtonLeft>
         </ReturnOption>
-        <Row style={{ marginBottom: '10px' }}>
+        <Row>
           <AddressInputWrapper>
             <AddressInput
               readOnly
@@ -400,7 +377,7 @@ const PaymentPage: React.FC = () => {
             배송목록
           </DeliveryListButton>
         </Row>
-        <Row style={{ marginBottom: '10px' }}>
+        <Row>
           <DetailAddressInput
             disabled={isSameAsDelivery}
             placeholder='상세주소를 입력 하세요'
@@ -420,21 +397,21 @@ const PaymentPage: React.FC = () => {
             placeholder='나머지 8자리 입력'
             disabled={isSameAsDelivery}
             value={returnInfo.contact}
-            onChange={handleReturnContactChange}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleContactChange('return', e.target.value)
+            }
           />
         </Row>
       </ReturnSection>
 
-      {/* 주소 검색 모달 */}
+      {/* 우편번호 검색 모달 */}
       <AddressSearchModal
         isOpen={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}
         onSelect={(addr) => {
-          if (modalField === 'delivery') {
+          if (modalField === 'delivery')
             setDeliveryInfo((info) => ({ ...info, address: addr }));
-          } else {
-            setReturnInfo((info) => ({ ...info, address: addr }));
-          }
+          else setReturnInfo((info) => ({ ...info, address: addr }));
         }}
       />
 
@@ -450,7 +427,6 @@ const PaymentPage: React.FC = () => {
         >
           <ModalBodyContent>
             <DeliveryListLabel>배송목록 (1/3)</DeliveryListLabel>
-
             <DeliverySelect
               value={selectedListAddress}
               onChange={(e) => setSelectedListAddress(e.target.value)}
@@ -469,8 +445,6 @@ const PaymentPage: React.FC = () => {
           </ModalBodyContent>
         </ReusableModal>
       )}
-
-      {/* 결제방식 / 쿠폰 */}
       <PaymentAndCouponContainer>
         <PaymentSection>
           <InputField
@@ -484,7 +458,6 @@ const PaymentPage: React.FC = () => {
           />
         </PaymentSection>
       </PaymentAndCouponContainer>
-
       {/* 총 결제금액 */}
       <TotalPaymentSection>
         <SectionTitle>총 결제금액 (VAT 포함)</SectionTitle>
@@ -498,7 +471,7 @@ const PaymentPage: React.FC = () => {
         </TotalAmount>
       </TotalPaymentSection>
 
-      {/* 결제하기 버튼 */}
+      {/* 결제버튼 */}
       <FixedBottomBar
         text='결제하기'
         color='yellow'
@@ -509,6 +482,8 @@ const PaymentPage: React.FC = () => {
 };
 
 export default PaymentPage;
+
+// styled-components 아래에 생략...
 
 const Container = styled.div`
   display: flex;
@@ -523,12 +498,10 @@ const Container = styled.div`
 const Section = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 16px;
 `;
 
 const SectionTitle = styled.h2`
-  font-weight: 700;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 11px;
   color: #000000;
   margin-bottom: 8px;
@@ -538,6 +511,7 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-bottom: 10px;
 `;
 
 const InputGroup = styled.div`
@@ -555,6 +529,7 @@ const AddressInputWrapper = styled.div`
   height: 57px;
   border: 1px solid #dddddd;
   border-radius: 4px;
+  min-width: 200px;
   overflow: hidden;
 `;
 
@@ -565,6 +540,7 @@ const AddressInput = styled.input`
   font-size: 14px;
   box-sizing: border-box;
   height: 100%;
+
   &:focus {
     outline: none;
   }
@@ -656,7 +632,6 @@ const ReturnSection = styled(Section)`
 const PaymentSection = styled.section`
   display: flex;
   flex-direction: column;
-  margin-bottom: 16px;
 `;
 
 // const CouponSection = styled.section`
@@ -731,7 +706,7 @@ const ItemName = styled.div`
 
 const NameCode = styled.span`
   font-weight: 900;
-  font-size: 16px;
+  font-size: 14px;
   color: #000000;
 `;
 
@@ -797,12 +772,6 @@ const RowText = styled.div`
   white-space: nowrap;
 `;
 
-const AdditionalText = styled.div`
-  display: flex;
-  gap: 5px;
-  white-space: nowrap;
-`;
-
 const RightSection = styled.div`
   display: flex;
   flex-direction: column;
@@ -814,6 +783,7 @@ const ItemImageContainer = styled.div`
   position: relative;
   width: 140px;
   height: 210px;
+  border: 1px solid #dddddd;
 `;
 
 const ItemImage = styled.img`
@@ -897,4 +867,9 @@ const ModalBody = styled.div`
   font-size: 14px;
   text-align: center;
   padding: 20px;
+`;
+const AdditionalText = styled.div`
+  display: flex;
+
+  white-space: nowrap;
 `;

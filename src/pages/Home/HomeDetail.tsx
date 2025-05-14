@@ -158,6 +158,21 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     discountPercent: product.discountPercent,
     discountPrice: product.discountPrice,
   };
+  const itemData = {
+    id: product.id,
+    brand: product.brand,
+    nameCode: product.product_num,
+    nameType: product.name,
+    type: selectedService as 'rental' | 'purchase',
+    servicePeriod,
+    size: selectedSize,
+    color: selectedColor,
+    price:
+      selectedService === 'rental'
+        ? product.discountPrice
+        : product.retailPrice,
+    imageUrl: product.mainImage,
+  };
 
   return (
     <DetailContainer>
@@ -253,9 +268,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         cartIconSrc={ShoppingBasket}
         orderButtonLabel='제품 주문하기'
         onOrderClick={() =>
-          navigate(`/payment/${product.id}`, {
-            state: { servicePeriod },
-          })
+          navigate(`/payment/${product.id}`, { state: itemData })
         }
       />
     </DetailContainer>

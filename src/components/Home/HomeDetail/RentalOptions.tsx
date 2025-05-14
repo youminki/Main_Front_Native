@@ -53,7 +53,7 @@ interface RentalOptionsProps {
 const RentalOptions: React.FC<RentalOptionsProps> = ({
   productId,
   selectedSize,
-  selectedColor,
+
   onSelectPeriod,
 }) => {
   const [selectedPeriod, setSelectedPeriod] = useState('');
