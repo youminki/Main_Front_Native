@@ -54,7 +54,7 @@ interface BasketItem {
   color: string;
   price: number;
   imageUrl: string;
-  isSelected: boolean;
+  $isSelected: boolean;
 }
 
 const PaymentPage: React.FC = () => {
@@ -89,7 +89,7 @@ const PaymentPage: React.FC = () => {
       color: '블랙',
       price: 50000,
       imageUrl: sampleImage,
-      isSelected: true,
+      $isSelected: true,
     },
   ]);
   const [selectedMethod, setSelectedMethod] = useState<

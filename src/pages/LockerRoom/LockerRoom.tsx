@@ -1,9 +1,7 @@
 // src/pages/LockerRoom.tsx
 import React from 'react';
 import styled from 'styled-components';
-import { ThemeProvider } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import Theme from '../../styles/Theme';
 import StatsSection from '../../components/LockerRoom/StatsSection';
 
 import LockerRoomIcons from '../../assets/LockerRoomIcons.svg';
@@ -42,47 +40,45 @@ const LockerRoom: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <ThemeProvider theme={Theme}>
-      <Container>
-        <Header>
-          <Title>락커룸</Title>
-          <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
-        </Header>
+    <Container>
+      <Header>
+        <Title>락커룸</Title>
+        <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
+      </Header>
 
-        <StatsRow>
-          <StatsSection
-            visits='구독자'
-            sales='26,000'
-            dateRange='요약정보'
-            visitLabel='그룹'
-            salesLabel='보유 포인트'
-          />
-          <MenuIcon src={LockerRoomIcons} alt='메뉴 이미지' />
-        </StatsRow>
+      <StatsRow>
+        <StatsSection
+          visits='구독자'
+          sales='26,000'
+          dateRange='요약정보'
+          visitLabel='그룹'
+          salesLabel='보유 포인트'
+        />
+        <MenuIcon src={LockerRoomIcons} alt='메뉴 이미지' />
+      </StatsRow>
 
-        <Divider />
+      <Divider />
 
-        <GridMenu>
-          {menuItems.map((item, idx) => (
-            <GridItem
-              key={idx}
-              disabled={item.disabled}
-              onClick={() => {
-                if (!item.disabled) navigate(item.path);
-              }}
-            >
-              <IconLabelRow>
-                <IconImage src={item.icon} alt={item.label} />
-                <Label disabled={item.disabled}>{item.label}</Label>
-              </IconLabelRow>
-              <PickButton disabled={item.disabled}>
-                PICK <Arrow>→</Arrow>
-              </PickButton>
-            </GridItem>
-          ))}
-        </GridMenu>
-      </Container>
-    </ThemeProvider>
+      <GridMenu>
+        {menuItems.map((item, idx) => (
+          <GridItem
+            key={idx}
+            disabled={item.disabled}
+            onClick={() => {
+              if (!item.disabled) navigate(item.path);
+            }}
+          >
+            <IconLabelRow>
+              <IconImage src={item.icon} alt={item.label} />
+              <Label disabled={item.disabled}>{item.label}</Label>
+            </IconLabelRow>
+            <PickButton disabled={item.disabled}>
+              PICK <Arrow>→</Arrow>
+            </PickButton>
+          </GridItem>
+        ))}
+      </GridMenu>
+    </Container>
   );
 };
 

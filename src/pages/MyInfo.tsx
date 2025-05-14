@@ -602,7 +602,7 @@ const MyInfo: React.FC = () => {
                   type='button'
                   selected={gender === '여성'}
                   onClick={() => handleGenderChange('여성')}
-                  isSelected={selectedGenderButton === '여성'}
+                  $isSelected={selectedGenderButton === '여성'}
                   disabled
                 >
                   여성
@@ -611,7 +611,7 @@ const MyInfo: React.FC = () => {
                   type='button'
                   selected={gender === '남성'}
                   onClick={() => handleGenderChange('남성')}
-                  isSelected={selectedGenderButton === '남성'}
+                  $isSelected={selectedGenderButton === '남성'}
                   disabled
                 >
                   남성
@@ -973,12 +973,12 @@ const GenderRow = styled.div`
   justify-content: space-between;
 `;
 
-const GenderButton = styled.button<{ selected: boolean; isSelected: boolean }>`
+const GenderButton = styled.button<{ selected: boolean; $isSelected: boolean }>`
   flex: 1;
   font-size: 12px;
   font-weight: 700;
   line-height: 11.05px;
-  border: ${({ isSelected }) => (isSelected ? '2px solid #f6ae24' : 'none')};
+  border: ${({ $isSelected }) => ($isSelected ? '2px solid #f6ae24' : 'none')};
   border-radius: 10px;
   background-color: ${({ selected }) => (selected ? '#FFFFFF' : '#EEEEEE')};
   color: ${({ selected }) => (selected ? '#000000' : '#999999')};

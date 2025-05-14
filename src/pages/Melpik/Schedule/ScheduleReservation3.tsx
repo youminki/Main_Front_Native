@@ -23,7 +23,7 @@ interface ItemCardProps {
   brand: string;
   description: string;
   onSelect: (id: number) => void;
-  isSelected: boolean;
+  $isSelected: boolean;
 }
 
 const ItemCard: React.FC<ItemCardProps> = ({
@@ -101,7 +101,7 @@ const ItemList: React.FC<ItemListProps> = ({
           key={item.id}
           {...item}
           description={truncateText(item.description, 12)}
-          isSelected={selectedItems.includes(item.id)}
+          $isSelected={selectedItems.includes(item.id)}
           onSelect={onSelect}
         />
       ))}

@@ -1,3 +1,4 @@
+// src/components/LockerRoom/StatsSection.tsx
 import React from 'react';
 import styled from 'styled-components';
 
@@ -15,13 +16,13 @@ const StatsSection: React.FC<Props> = ({
   return (
     <Container>
       <StatsContainer>
-        <StatBox white>
+        <StatBox $white>
           <Row>
             <StatLabel>종류</StatLabel>
             <StatNumber>{brandCount}</StatNumber>
           </Row>
         </StatBox>
-        <StatBox gray>
+        <StatBox $gray>
           <Row>
             <StatLabel>등록 상품수</StatLabel>
             <StatNumber>{productCount}</StatNumber>
@@ -64,24 +65,26 @@ const StatsContainer = styled.div`
   width: 100%;
 `;
 
-const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
+const StatBox = styled.div<{
+  $white?: boolean;
+  $gray?: boolean;
+}>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: ${({ white, gray }) =>
-    white ? '#fff' : gray ? '#f6f6f6' : '#fff'};
+  background: ${({ $white, $gray }) =>
+    $white ? '#fff' : $gray ? '#f6f6f6' : '#fff'};
   border: 1px solid #ddd;
-  border-radius: ${({ white, gray }) =>
-    white ? '10px 0 0 0' : gray ? '0 0 10px 0' : '0'};
+  border-radius: ${({ $white, $gray }) =>
+    $white ? '10px 0 0 0' : $gray ? '0 0 10px 0' : '0'};
   text-align: center;
   padding: 15px 20px;
   position: relative;
-  margin-right: 0px;
+  margin-right: 0;
 `;
 
 const Row = styled.div`
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: center;
 `;
@@ -97,7 +100,7 @@ const StatLabel = styled.div`
   font-weight: 700;
   font-size: 12px;
   line-height: 13px;
-  color: #000000;
+  color: #000;
   margin-right: 5px;
   width: 100%;
 `;

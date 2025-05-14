@@ -20,7 +20,7 @@ interface BasketItem {
   color: string;
   price: number | string;
   imageUrl: string;
-  isSelected: boolean;
+  $isSelected: boolean;
   rentalDays?: string;
 }
 
@@ -38,7 +38,7 @@ const Basket: React.FC = () => {
       color: '블랙',
       price: 50000,
       imageUrl: sampleImage,
-      isSelected: true,
+      $isSelected: true,
       rentalDays: '대여 (3일)',
     },
     {
@@ -52,7 +52,7 @@ const Basket: React.FC = () => {
       color: '블랙',
       price: '489,000',
       imageUrl: sampleImage,
-      isSelected: true,
+      $isSelected: true,
       rentalDays: '구매',
     },
   ]);
@@ -64,14 +64,14 @@ const Basket: React.FC = () => {
   const handleSelectAll = () => {
     const updatedItems = items.map((item) => ({
       ...item,
-      isSelected: !items.every((i) => i.isSelected),
+      $isSelected: !items.every((i) => i.$isSelected),
     }));
     setItems(updatedItems);
   };
 
   const handleSelectItem = (id: number) => {
     const updatedItems = items.map((item) =>
-      item.id === id ? { ...item, isSelected: !item.isSelected } : item
+      item.id === id ? { ...item, $isSelected: !item.$isSelected } : item
     );
     setItems(updatedItems);
   };
@@ -110,7 +110,7 @@ const Basket: React.FC = () => {
       <Header>
         <Checkbox
           type='checkbox'
-          checked={items.every((item) => item.isSelected)}
+          checked={items.every((item) => item.$isSelected)}
           onChange={handleSelectAll}
         />
         <span>전체선택</span>
@@ -197,7 +197,7 @@ const Basket: React.FC = () => {
                 <CheckboxOverlay>
                   <Checkbox
                     type='checkbox'
-                    checked={item.isSelected}
+                    checked={item.$isSelected}
                     onChange={() => handleSelectItem(item.id)}
                   />
                 </CheckboxOverlay>

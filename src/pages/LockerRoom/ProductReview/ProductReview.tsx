@@ -23,7 +23,7 @@ interface BasketItem {
   color: string;
   price: number | string;
   imageUrl: string;
-  isSelected: boolean;
+  $isSelected: boolean;
   rentalDays?: string;
   rating?: number;
 }
@@ -44,7 +44,7 @@ const ProductReview: React.FC = () => {
       color: '블랙',
       price: 50000,
       imageUrl: sampleImage,
-      isSelected: true,
+      $isSelected: true,
       rentalDays: '대여 (3일)',
       rating: 3,
     },
@@ -59,7 +59,7 @@ const ProductReview: React.FC = () => {
       color: '블랙',
       price: '489,000',
       imageUrl: sampleImage,
-      isSelected: true,
+      $isSelected: true,
       rentalDays: '구매',
       rating: 5,
     },

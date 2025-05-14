@@ -18,7 +18,7 @@ interface ItemCardProps {
   brand: string;
   description: string;
   onSelect: (id: number) => void;
-  isSelected: boolean;
+  $isSelected: boolean;
 }
 
 const ItemCard: React.FC<ItemCardProps> = ({
@@ -27,7 +27,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
   brand,
   description,
   onSelect,
-  isSelected,
+  $isSelected,
 }) => {
   const handleSelect = () => {
     onSelect(id);
@@ -38,7 +38,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
       <ImageWrapper onClick={handleSelect}>
         <Image src={image} alt={brand} />
         <AddButton src={ImgAdd} alt='Add' />
-        {isSelected && (
+        {$isSelected && (
           <SelectionOverlay>
             <CircularSelection>
               <CheckIcon src={checkIcon} alt='Check Icon' />
@@ -103,7 +103,7 @@ const ItemList: React.FC<ItemListProps> = ({
             key={item.id}
             {...item}
             description={truncateText(item.description, 12)}
-            isSelected={selectedItems.includes(item.id)}
+            $isSelected={selectedItems.includes(item.id)}
             onSelect={onSelect}
           />
         ))}

@@ -1,3 +1,4 @@
+// src/components/LockerRoom/StatsSection.tsx
 import React from 'react';
 import styled from 'styled-components';
 
@@ -17,18 +18,17 @@ const StatsSection: React.FC<StatsSectionProps> = ({
   salesLabel,
 }) => (
   <StatsContainer>
-    <StatBox white>
+    <StatBox $white>
       <Row>
         <StatLabel>{visitLabel}</StatLabel>
         <StatNumber>{visits}</StatNumber>
       </Row>
     </StatBox>
-    <StatBox gray>
+    <StatBox $gray>
       <Row>
         <StatLabel>{salesLabel}</StatLabel>
         <StatNumber>{sales}</StatNumber>
       </Row>
-
       <DateLabel>{dateRange}</DateLabel>
     </StatBox>
   </StatsContainer>
@@ -42,15 +42,18 @@ const StatsContainer = styled.div`
   width: 100%;
 `;
 
-const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
+const StatBox = styled.div<{
+  $white?: boolean;
+  $gray?: boolean;
+}>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: ${({ white, gray }) =>
-    white ? '#fff' : gray ? '#f6f6f6' : '#fff'};
+  background: ${({ $white, $gray }) =>
+    $white ? '#fff' : $gray ? '#f6f6f6' : '#fff'};
   border: 1px solid #ddd;
-  border-radius: ${({ white, gray }) =>
-    white ? '10px 0 0 0' : gray ? '0 0 10px 0' : '0'};
+  border-radius: ${({ $white, $gray }) =>
+    $white ? '10px 0 0 0' : $gray ? '0 0 10px 0' : '0'};
   text-align: center;
   padding: 15px 20px;
   position: relative;
@@ -60,7 +63,6 @@ const StatBox = styled.div<{ white?: boolean; gray?: boolean }>`
 
 const Row = styled.div`
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: center;
   white-space: nowrap;

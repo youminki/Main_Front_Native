@@ -108,16 +108,16 @@ const SubHeader: React.FC<SubHeaderProps> = ({
 
         <IconsWrapper ref={iconsRef}>
           {homeIcons.map((icon, idx) => {
-            const isSelected = icon.category === selectedCategory;
+            const $isSelected = icon.category === selectedCategory;
             return (
               <IconContainer
                 key={idx}
                 data-category={icon.category}
-                selected={isSelected}
+                selected={$isSelected}
                 onClick={() => handleClick(icon.category)}
               >
                 <Icon src={icon.src} alt={icon.alt} />
-                <IconText selected={isSelected}>{icon.alt}</IconText>
+                <IconText selected={$isSelected}>{icon.alt}</IconText>
               </IconContainer>
             );
           })}
