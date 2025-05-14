@@ -77,7 +77,7 @@ const Basket: React.FC = () => {
   };
 
   const handleConfirmPayment = () => {
-    navigate('/payment');
+    navigate('/payment/:id');
   };
 
   const handleDeleteClick = (id: number) => {
@@ -253,6 +253,7 @@ const Container = styled.div`
   flex-direction: column;
   margin: 0 auto;
   padding: 1rem;
+  max-width: 600px;
 `;
 
 const Header = styled.div`
