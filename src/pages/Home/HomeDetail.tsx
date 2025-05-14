@@ -1,4 +1,3 @@
-// src/pages/HomeDetail.tsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -174,6 +173,16 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     imageUrl: product.mainImage,
   };
 
+  // Cart 아이콘 클릭 시 /basket으로 이동
+  const handleCartIconClick = () => {
+    navigate('/basket'); // /basket으로 이동
+  };
+
+  // 제품 주문하기 버튼 클릭 시 /payment/${product.id}로 이동
+  const handleOrderClick = () => {
+    navigate(`/payment/${product.id}`, { state: itemData });
+  };
+
   return (
     <DetailContainer>
       <ImageSlider
@@ -267,9 +276,8 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       <BottomBar
         cartIconSrc={ShoppingBasket}
         orderButtonLabel='제품 주문하기'
-        onOrderClick={() =>
-          navigate(`/payment/${product.id}`, { state: itemData })
-        }
+        onOrderClick={handleOrderClick} // 제품 주문하기 버튼 클릭 시 /payment/${product.id}로 이동
+        onCartClick={handleCartIconClick} // Cart 아이콘 클릭 시 /basket으로 이동
       />
     </DetailContainer>
   );
@@ -287,27 +295,33 @@ const DetailContainer = styled.div`
   margin: 0 auto 100px;
   box-sizing: border-box;
 `;
+
 const ContentContainer = styled.div`
   padding: 1rem;
 `;
+
 const ServiceSelectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
   margin-bottom: 20px;
 `;
+
 const ConditionalContainer = styled.div`
   margin-top: 20px;
 `;
+
 const Separator = styled.div`
   border: 1px solid #ccc;
   margin: 30px 0;
 `;
+
 const Message = styled.p`
   text-align: center;
   font-size: 16px;
   color: gray;
 `;
+
 const ErrorMsg = styled.div`
   font-size: 14px;
   font-weight: 700;
