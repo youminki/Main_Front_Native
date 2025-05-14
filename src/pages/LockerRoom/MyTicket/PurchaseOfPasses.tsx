@@ -1,4 +1,3 @@
-// src/pages/PurchaseOfPasses.tsx
 import React, { useState, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import InputField from '../../../components/InputField';
@@ -8,18 +7,44 @@ import ReusableModal2 from '../../../components/ReusableModal2';
 import { useNavigate } from 'react-router-dom';
 import Theme from '../../../styles/Theme';
 import { format, addMonths } from 'date-fns';
-import { getMembershipInfo } from '../../../api/user/userApi'; // 경로 확인
+import { getMembershipInfo } from '../../../api/user/userApi';
+import {
+  getUserTicketsByDateRange,
+  UserTicket,
+} from '../../../api/ticket/ticket';
 
-const PurchaseOfPasses: React.FC = () => {
-  const [purchaseOption, setPurchaseOption] = useState<
-    '정기 구독권' | '1회 이용권'
-  >('정기 구독권');
+const ticketSettingsOptions = ['월 4회권', '무제한'] as const;
+
+type PurchaseOfPassesProps = {};
+
+const PurchaseOfPasses: React.FC<PurchaseOfPassesProps> = () => {
+  const [ticketNames, setTicketNames] = useState<string[]>([]);
+  const [purchaseOption, setPurchaseOption] = useState<string>('');
   const [ticketSetting, setTicketSetting] = useState<string>('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [discountRate, setDiscountRate] = useState<number>(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  const isOneTime = purchaseOption === '1회 이용권';
+  const today = new Date();
+  const startDate = format(today, 'yyyy-MM-dd');
+  const endDate = format(addMonths(today, 1), 'yyyy-MM-dd');
+
+  // 로그인한 사용자의 이용권 이름 조회 (기간 조회 사용)
+  useEffect(() => {
+    (async () => {
+      try {
+        const tickets: UserTicket[] = await getUserTicketsByDateRange(
+          startDate,
+          endDate
+        );
+        const names = tickets.map((t) => t.ticketList.name);
+        setTicketNames(names);
+        if (names.length > 0) setPurchaseOption(names[0]);
+      } catch (error) {
+        console.error('티켓 조회 실패:', error);
+      }
+    })();
+  }, [startDate, endDate]);
 
   // 멤버십 할인율 조회
   useEffect(() => {
@@ -27,20 +52,18 @@ const PurchaseOfPasses: React.FC = () => {
       try {
         const info = await getMembershipInfo();
         setDiscountRate(info.discount_rate);
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error('멤버십 정보 조회 실패:', error);
       }
     })();
   }, []);
 
-  // 날짜 세팅
-  const today = new Date();
+  // 날짜 및 가격 세팅
   const formattedToday = format(today, 'yyyy.MM.dd');
-  const oneMonthLater = addMonths(today, 1);
-  const formattedOneMonthLater = format(oneMonthLater, 'yyyy.MM.dd');
+  const formattedOneMonthLater = format(addMonths(today, 1), 'yyyy.MM.dd');
   const paymentDay = today.getDate();
 
-  // 가격 계산
+  const isOneTime = purchaseOption === '1회 이용권';
   const basePrice = isOneTime ? 50000 : 120000;
   const discountedPrice = Math.round((basePrice * (100 - discountRate)) / 100);
   const formattedBasePrice = basePrice.toLocaleString();
@@ -58,7 +81,7 @@ const PurchaseOfPasses: React.FC = () => {
   return (
     <ThemeProvider theme={Theme}>
       <Container>
-        {/* 구매할 이용권 */}
+        {/* 구매할 이용권 선택 */}
         <InputField
           name='purchaseOption'
           label='구매할 이용권 *'
@@ -66,14 +89,15 @@ const PurchaseOfPasses: React.FC = () => {
           as={CustomSelect}
           value={purchaseOption}
           onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-            setPurchaseOption(e.target.value as '정기 구독권' | '1회 이용권');
-            if (e.target.value === '1회 이용권') {
-              setTicketSetting('');
-            }
+            setPurchaseOption(e.target.value);
+            if (e.target.value === '1회 이용권') setTicketSetting('');
           }}
         >
-          <option value='정기 구독권'>정기 구독권</option>
-          <option value='1회 이용권'>1회 이용권</option>
+          {ticketNames.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
         </InputField>
 
         {/* 이용권 사용기간 */}
@@ -86,14 +110,14 @@ const PurchaseOfPasses: React.FC = () => {
         />
 
         <RowLabel>
-          {/* 이용권 결제금액 */}
+          {/* 결제 금액 */}
           <HalfBox>
             <InputField
               name='paymentAmount'
               label='이용권 결제금액'
               id='paymentAmount'
               prefixcontent={
-                !isOneTime && discountRate > 0 ? (
+                discountRate > 0 ? (
                   <PriceWrapper>
                     <OriginalPrice>{formattedBasePrice}원</OriginalPrice>
                     <Arrow>→</Arrow>
@@ -125,16 +149,17 @@ const PurchaseOfPasses: React.FC = () => {
               {isOneTime ? (
                 <option value=''>해당없음</option>
               ) : (
-                <>
-                  <option value='월 4회권'>월 4회권</option>
-                  <option value='무제한'>무제한</option>
-                </>
+                ticketSettingsOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))
               )}
             </InputField>
           </HalfBox>
         </RowLabel>
 
-        {/* 진행 중인 시즌 */}
+        {/* 진행 중인 시즌 및 자동결제 일자 */}
         <InputField
           name='currentSeason'
           label='진행 중인 시즌 표시'
@@ -142,16 +167,12 @@ const PurchaseOfPasses: React.FC = () => {
           prefixcontent='2025 SPRING | 2025.05 ~ 2025.07'
           readOnly
         />
-
-        {/* 자동결제 일자 */}
         <InputField
           name='autoPaymentDate'
           label='자동결제 일자'
           id='autoPaymentDate'
           prefixcontent={formattedToday}
-          suffixcontent={
-            !isOneTime ? `매달 ${paymentDay}일마다 결제` : undefined
-          }
+          suffixcontent={`매달 ${paymentDay}일마다 결제`}
           readOnly
         />
 
@@ -243,7 +264,6 @@ const BlackBoldText = styled.span`
   font-weight: 700;
 `;
 
-// 가격 표시용 스타일
 const PriceWrapper = styled.div`
   display: flex;
   align-items: center;
