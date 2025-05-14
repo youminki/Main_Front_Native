@@ -146,7 +146,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  max-width: 1000px;
+  max-width: 600px;
   min-height: 100vh;
 `;
 
@@ -159,7 +159,7 @@ const Divider = styled.div`
 const Section = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 30px 0;
+  margin: 20px 0;
 `;
 
 const CustomLabel = styled.div`
