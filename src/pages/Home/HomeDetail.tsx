@@ -283,7 +283,7 @@ const DetailContainer = styled.div`
   flex-direction: column;
   justify-content: space-between;
 
-  max-width: 1000px;
+  max-width: 600px;
   margin: 0 auto 100px;
   box-sizing: border-box;
 `;
