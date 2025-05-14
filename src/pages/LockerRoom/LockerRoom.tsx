@@ -1,3 +1,4 @@
+// src/pages/LockerRoom.tsx
 import React from 'react';
 import styled from 'styled-components';
 import { ThemeProvider } from 'styled-components';
@@ -14,12 +15,27 @@ import PaymentIcon from '../../assets/LockerRoom/PaymentIcon.svg';
 import ReviewIcon from '../../assets/LockerRoom/ReviewIcon.svg';
 
 const menuItems = [
-  { icon: ClosetIcon, label: '내 옷장', path: '/my-closet' },
-  { icon: HistoryIcon, label: '이용내역', path: '/usage-history' },
-  { icon: PointsIcon, label: '포인트', path: '/point' },
-  { icon: TicketIcon, label: '이용권', path: '/my-ticket' },
-  { icon: PaymentIcon, label: '결제수단', path: '/payment-method' },
-  { icon: ReviewIcon, label: '상품리뷰', path: '/product-review' },
+  { icon: ClosetIcon, label: '내 옷장', path: '/my-closet', disabled: false },
+  {
+    icon: HistoryIcon,
+    label: '이용내역',
+    path: '/usage-history',
+    disabled: true,
+  },
+  { icon: PointsIcon, label: '포인트', path: '/point', disabled: true },
+  { icon: TicketIcon, label: '이용권', path: '/my-ticket', disabled: false },
+  {
+    icon: PaymentIcon,
+    label: '결제수단',
+    path: '/payment-method',
+    disabled: false,
+  },
+  {
+    icon: ReviewIcon,
+    label: '상품리뷰',
+    path: '/product-review',
+    disabled: true,
+  },
 ];
 
 const LockerRoom: React.FC = () => {
@@ -48,12 +64,18 @@ const LockerRoom: React.FC = () => {
 
         <GridMenu>
           {menuItems.map((item, idx) => (
-            <GridItem key={idx} onClick={() => navigate(item.path)}>
+            <GridItem
+              key={idx}
+              disabled={item.disabled}
+              onClick={() => {
+                if (!item.disabled) navigate(item.path);
+              }}
+            >
               <IconLabelRow>
                 <IconImage src={item.icon} alt={item.label} />
-                <Label>{item.label}</Label>
+                <Label disabled={item.disabled}>{item.label}</Label>
               </IconLabelRow>
-              <PickButton>
+              <PickButton disabled={item.disabled}>
                 PICK <Arrow>→</Arrow>
               </PickButton>
             </GridItem>
@@ -65,6 +87,8 @@ const LockerRoom: React.FC = () => {
 };
 
 export default LockerRoom;
+
+// --- Styled Components ---
 
 const Container = styled.div`
   width: 100%;
@@ -84,7 +108,6 @@ const Title = styled.h1`
   font-weight: 800;
   margin: 0;
   color: #000;
-
   @media (min-width: 1024px) {
     font-size: 32px;
     margin-bottom: 10px;
@@ -96,7 +119,6 @@ const Subtitle = styled.p`
   line-height: 28px;
   margin: 0;
   color: #cccccc;
-
   @media (min-width: 1024px) {
     font-size: 16px;
   }
@@ -107,6 +129,7 @@ const StatsRow = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
+
 const MenuIcon = styled.img`
   width: 64px;
   height: 58px;
@@ -131,20 +154,18 @@ const GridMenu = styled.div`
   }
 `;
 
-const GridItem = styled.div`
+const GridItem = styled.div<{ disabled?: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
   padding: 1rem;
   box-sizing: border-box;
   border: 1px solid #ddd;
   background: #fff;
-  cursor: pointer;
-
-  /* 셀을 꽉 채우기 위해 높이를 자동으로 늘림 */
   width: 100%;
   height: 100%;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 `;
 
 const IconLabelRow = styled.div`
@@ -158,18 +179,17 @@ const IconImage = styled.img`
   object-fit: contain;
 `;
 
-const Label = styled.div`
+const Label = styled.div<{ disabled?: boolean }>`
   font-weight: 700;
   font-size: 14px;
-
-  color: #000;
+  color: ${({ disabled }) => (disabled ? '#999' : '#000')};
   @media (min-width: 1024px) {
     font-size: 18px;
     margin-left: 1rem;
   }
 `;
 
-const PickButton = styled.div`
+const PickButton = styled.div<{ disabled?: boolean }>`
   align-self: flex-end;
   display: inline-flex;
   align-items: center;
@@ -178,6 +198,7 @@ const PickButton = styled.div`
   background: #fafafa;
   font-size: 12px;
   font-weight: 600;
+  color: ${({ disabled }) => (disabled ? '#aaa' : '#000')};
   @media (min-width: 1024px) {
     padding: 10px 16px;
     font-size: 14px;
