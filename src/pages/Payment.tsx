@@ -298,8 +298,8 @@ const PaymentPage: React.FC = () => {
                   <Icon src={ServiceInfoIcon} />
                 </IconArea>
                 <TextContainer>
+                  <LabelDetailText>진행 서비스 - </LabelDetailText>
                   <RowText>
-                    <LabelDetailText>진행 서비스 - </LabelDetailText>
                     <DetailHighlight>
                       {item.type === 'rental'
                         ? `대여(${item.servicePeriod})`

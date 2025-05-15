@@ -1,83 +1,91 @@
-import React, { useState } from 'react';
+// src/pages/Basket.tsx
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import sampleImage from '../assets/sample-dress.svg';
 import PriceIcon from '../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
 import FixedBottomBar from '../components/FixedBottomBar';
 import { useNavigate } from 'react-router-dom';
 import ReusableModal2 from '../components/ReusableModal2';
+import { getCartItems, deleteCartItem } from '../api/cart/cart';
+import type { CartItemListResponse } from '../api/cart/cart';
 
-interface BasketItem {
+// PaymentPage가 기대하는 BasketItem 인터페이스
+interface BasketItemForPayment {
   id: number;
   brand: string;
   nameCode: string;
   nameType: string;
   type: 'rental' | 'purchase';
-  servicePeriod?: string;
-  deliveryDate?: string;
+  servicePeriod?: string; // "YYYY.MM.DD ~ YYYY.MM.DD"
   size: string;
   color: string;
-  price: number | string;
+  price: number;
   imageUrl: string;
   $isSelected: boolean;
-  rentalDays?: string;
+}
+
+interface BasketItem extends CartItemListResponse {
+  $isSelected: boolean;
 }
 
 const Basket: React.FC = () => {
   const navigate = useNavigate();
-  const [items, setItems] = useState<BasketItem[]>([
-    {
-      id: 1,
-      brand: 'SANDRO',
-      nameCode: 'SF25S3FRD7699',
-      nameType: '원피스',
-      type: 'rental',
-      servicePeriod: '2025.03.02 (일) ~ 03.05 (수)',
-      size: 'M (55)',
-      color: '블랙',
-      price: 50000,
-      imageUrl: sampleImage,
-      $isSelected: true,
-      rentalDays: '대여 (3일)',
-    },
-    {
-      id: 2,
-      brand: 'SANDRO',
-      nameCode: 'SF25S3FRD7699',
-      nameType: '원피스',
-      type: 'rental',
-      servicePeriod: '2025.03.02 (일) ~ 03.05 (수)',
-      size: 'M (55)',
-      color: '블랙',
-      price: '489,000',
-      imageUrl: sampleImage,
-      $isSelected: true,
-      rentalDays: '구매',
-    },
-  ]);
-
+  const [items, setItems] = useState<BasketItem[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
 
+  useEffect(() => {
+    getCartItems()
+      .then((data) => {
+        const withSelectFlag = data.map((item) => ({
+          ...item,
+          $isSelected: true,
+        }));
+        setItems(withSelectFlag);
+      })
+      .catch((err) => console.error('장바구니 목록 조회 실패', err));
+  }, []);
+
   const handleSelectAll = () => {
-    const updatedItems = items.map((item) => ({
-      ...item,
-      $isSelected: !items.every((i) => i.$isSelected),
-    }));
-    setItems(updatedItems);
+    const allSelected = items.every((i) => i.$isSelected);
+    setItems(items.map((item) => ({ ...item, $isSelected: !allSelected })));
   };
 
   const handleSelectItem = (id: number) => {
-    const updatedItems = items.map((item) =>
-      item.id === id ? { ...item, $isSelected: !item.$isSelected } : item
+    setItems(
+      items.map((item) =>
+        item.id === id ? { ...item, $isSelected: !item.$isSelected } : item
+      )
     );
-    setItems(updatedItems);
+  };
+
+  const navigateToPayment = (item: BasketItem) => {
+    const servicePeriod =
+      item.rentalStartDate && item.rentalEndDate
+        ? `${item.rentalStartDate} ~ ${item.rentalEndDate}`
+        : undefined;
+    const payload: BasketItemForPayment = {
+      id: item.productId,
+      brand: item.productBrand,
+      nameCode: item.productName,
+      nameType: '',
+      type: item.serviceType.toLowerCase() === 'rental' ? 'rental' : 'purchase',
+      servicePeriod,
+      size: item.size,
+      color: item.color,
+      price: item.totalPrice ?? 0,
+      imageUrl: item.productThumbnail,
+      $isSelected: true,
+    };
+    navigate(`/payment/${item.productId}`, { state: payload });
   };
 
   const handleConfirmPayment = () => {
-    navigate('/payment/:id');
+    const toPay = items.filter((item) => item.$isSelected);
+    if (toPay.length === 0) return;
+    navigateToPayment(toPay[0]);
   };
 
   const handleDeleteClick = (id: number) => {
@@ -85,24 +93,26 @@ const Basket: React.FC = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleBuyClick = (id: number) => {
-    setSelectedItemId(id);
-    setIsBuyModalOpen(true);
-  };
-
   const handleConfirmDelete = () => {
-    if (selectedItemId !== null) {
-      setItems((prevItems) =>
-        prevItems.filter((item) => item.id !== selectedItemId)
+    if (selectedItemId != null) {
+      deleteCartItem(selectedItemId).catch((err) =>
+        console.error('삭제 실패', err)
       );
+      setItems(items.filter((item) => item.id !== selectedItemId));
       setSelectedItemId(null);
     }
     setIsDeleteModalOpen(false);
   };
 
+  const handleBuyClick = (id: number) => {
+    setSelectedItemId(id);
+    setIsBuyModalOpen(true);
+  };
+
   const handleConfirmBuy = () => {
     setIsBuyModalOpen(false);
-    navigate('/payment');
+    const item = items.find((i) => i.id === selectedItemId);
+    if (item) navigateToPayment(item);
   };
 
   return (
@@ -120,63 +130,46 @@ const Basket: React.FC = () => {
         <Item key={item.id}>
           <ContentWrapper>
             <ItemDetails>
-              <Brand>{item.brand}</Brand>
+              <Brand>{item.productBrand}</Brand>
               <ItemName>
-                <NameCode>{item.nameCode}</NameCode>
-                <Slash>/</Slash>
-                <ItemType>{item.nameType}</ItemType>
+                <NameCode>{item.productName}</NameCode>
               </ItemName>
-              {item.type === 'rental' ? (
-                <InfoRowFlex>
-                  <IconArea>
-                    <Icon src={ServiceInfoIcon} alt='Service Info' />
-                  </IconArea>
-                  <TextContainer>
-                    <RowText>
-                      <LabelDetailText>진행 서비스 - </LabelDetailText>
-                      <DetailHighlight>{item.rentalDays}</DetailHighlight>
-                    </RowText>
-                    {item.servicePeriod && (
-                      <AdditionalText>
-                        <DetailText>{item.servicePeriod}</DetailText>
-                      </AdditionalText>
-                    )}
-                  </TextContainer>
-                </InfoRowFlex>
-              ) : (
-                <InfoRowFlex>
-                  <IconArea>
-                    <Icon src={ServiceInfoIcon} alt='Service Info' />
-                  </IconArea>
-                  <TextContainer>
-                    <RowText>
-                      <DetailText>진행 서비스 - 구매</DetailText>
-                    </RowText>
-                    {item.deliveryDate && (
-                      <AdditionalText>
-                        <DetailText>{item.deliveryDate}</DetailText>
-                      </AdditionalText>
-                    )}
-                  </TextContainer>
-                </InfoRowFlex>
-              )}
+
               <InfoRowFlex>
                 <IconArea>
-                  <Icon src={ProductInfoIcon} alt='Product Info' />
+                  <Icon src={ServiceInfoIcon} alt='Service' />
                 </IconArea>
                 <TextContainer>
                   <RowText>
-                    <LabelDetailText>제품 정보</LabelDetailText>
+                    <LabelDetailText>서비스 타입 - </LabelDetailText>
+                    <DetailHighlight>{item.serviceType}</DetailHighlight>
+                  </RowText>
+                  {item.rentalStartDate && item.rentalEndDate && (
+                    <AdditionalText>
+                      <DetailText>
+                        {item.rentalStartDate} ~ {item.rentalEndDate}
+                      </DetailText>
+                    </AdditionalText>
+                  )}
+                </TextContainer>
+              </InfoRowFlex>
+
+              <InfoRowFlex>
+                <IconArea>
+                  <Icon src={ProductInfoIcon} alt='Product' />
+                </IconArea>
+                <TextContainer>
+                  <RowText>
+                    <LabelDetailText>사이즈/색상</LabelDetailText>
                   </RowText>
                   <AdditionalText>
-                    <DetailText>사이즈 - </DetailText>
-                    <DetailHighlight>{item.size}</DetailHighlight>
-                    <Slash>/</Slash>
-                    <DetailText>색상 - </DetailText>
-                    <DetailHighlight>{item.color}</DetailHighlight>
+                    <DetailText>
+                      {item.size} / {item.color}
+                    </DetailText>
                   </AdditionalText>
                 </TextContainer>
               </InfoRowFlex>
+
               <InfoRowFlex>
                 <IconArea>
                   <Icon src={PriceIcon} alt='Price' />
@@ -185,7 +178,10 @@ const Basket: React.FC = () => {
                   <RowText>
                     <LabelDetailText>결제금액 - </LabelDetailText>
                     <DetailHighlight>
-                      {item.price.toLocaleString()}원
+                      {item.totalPrice != null
+                        ? item.totalPrice.toLocaleString()
+                        : '0'}
+                      원
                     </DetailHighlight>
                   </RowText>
                 </TextContainer>
@@ -201,7 +197,7 @@ const Basket: React.FC = () => {
                     onChange={() => handleSelectItem(item.id)}
                   />
                 </CheckboxOverlay>
-                <ItemImage src={item.imageUrl} alt={item.nameCode} />
+                <ItemImage src={item.productThumbnail} alt={item.productName} />
               </ItemImageContainer>
             </RightSection>
           </ContentWrapper>
@@ -223,7 +219,6 @@ const Basket: React.FC = () => {
         color='yellow'
       />
 
-      {/* 삭제 모달 */}
       <ReusableModal2
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
@@ -233,7 +228,6 @@ const Basket: React.FC = () => {
         해당 제품을 삭제하시겠습니까?
       </ReusableModal2>
 
-      {/* 바로구매 모달 */}
       <ReusableModal2
         isOpen={isBuyModalOpen}
         onClose={() => setIsBuyModalOpen(false)}
