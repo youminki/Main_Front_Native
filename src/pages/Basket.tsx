@@ -337,21 +337,6 @@ const NameCode = styled.span`
   color: #000000;
 `;
 
-const ItemType = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  color: #999999;
-`;
-
-const Slash = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  color: #dddddd;
-  margin: 0 4px;
-`;
-
 const LabelDetailText = styled.span`
   font-weight: 700;
   font-size: 14px;
