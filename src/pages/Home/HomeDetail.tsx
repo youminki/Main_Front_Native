@@ -17,10 +17,8 @@ import ProductDetails from '../../components/Home/HomeDetail/ProductDetails';
 import ServiceSelection from '../../components/Home/HomeDetail/ServiceSelection';
 import RentalOptions from '../../components/Home/HomeDetail/RentalOptions';
 import ReusableModal from '../../components/ReusableModal';
-import ReusableModal2 from '../../components/ReusableModal2';
 import BottomBar from '../../components/Home/HomeDetail/BottomBar';
 import ShoppingBasket from '../../assets/Home/HomeDetail/ShoppingBasket.svg';
-import { addCartItem, CartItemRequest } from '../../api/cart/cart';
 
 interface ProductDetail {
   id: number;
@@ -56,23 +54,17 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   const params = useParams<{ id: string }>();
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
-
-  // UI 상태
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedService, setSelectedService] = useState<
     'rental' | 'purchase' | ''
   >('');
-  const [servicePeriod, setServicePeriod] = useState<string>('');
-
-  // 모달 상태
   const [warnModalOpen, setWarnModalOpen] = useState(false);
   const [warnMessage, setWarnMessage] = useState('');
-  const [cartConfirmOpen, setCartConfirmOpen] = useState(false);
-  const [cartAlert, setCartAlert] = useState({ open: false, message: '' });
+  const [servicePeriod, setServicePeriod] = useState<string>('');
 
   // 이미지 슬라이드
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const images = useMemo<string[]>(() => {
     if (!product) return [];
     return product.product_img.length
@@ -117,36 +109,38 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     if (!id) return;
     getProductInfo(Number(id))
       .then((res) => {
-        const api = res.product as APIProductDetail & any;
-        // fabricComposition 매핑
-        const raw = api.fabricComposition;
-        let mapped: any;
-        if (Array.isArray(raw)) {
-          const [겉감 = '', 안감 = '', 배색 = '', 부속 = ''] = raw;
-          mapped = { 겉감, 안감, 배색, 부속 };
+        const api = res.product as APIProductDetail & Record<string, any>;
+        const rawFabric = api.fabricComposition;
+        let mappedFabric: Record<'겉감' | '안감' | '배색' | '부속', string>;
+        if (Array.isArray(rawFabric)) {
+          const [겉감 = '', 안감 = '', 배색 = '', 부속 = ''] = rawFabric;
+          mappedFabric = { 겉감, 안감, 배색, 부속 };
         } else {
-          mapped = {
-            겉감: raw['겉감'] || '',
-            안감: raw['안감'] || '',
-            배색: raw['배색'] || '',
-            부속: raw['부속'] || '',
+          mappedFabric = {
+            겉감: rawFabric['겉감'] || '',
+            안감: rawFabric['안감'] || '',
+            배색: rawFabric['배색'] || '',
+            부속: rawFabric['부속'] || '',
           };
         }
-        const { fabricComposition: _f, size_label_guide: guide, ...rest } = api;
+        const labelGuide = api.size_label_guide as
+          | Record<string, string>
+          | undefined;
+        const { fabricComposition: _f, size_label_guide: _l, ...rest } = api;
         setProduct({
           ...rest,
-          fabricComposition: mapped,
-          size_label_guide: guide,
+          fabricComposition: mappedFabric,
+          size_label_guide: labelGuide,
         });
       })
-      .catch(console.error)
+      .catch((e) => console.error(e))
       .finally(() => setLoading(false));
   }, [propId, params.id]);
 
   // 서비스 변경
   const handleServiceChange = (service: string) => {
     if (service === 'rental' && (!selectedSize || !selectedColor)) {
-      setWarnMessage('렌탈은 사이즈와 색상을 먼저 선택해야 합니다.');
+      setWarnMessage('사이즈와 색상을 먼저 선택해주세요.');
       setWarnModalOpen(true);
       return;
     }
@@ -156,62 +150,39 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   if (loading) return <Spinner />;
   if (!product) return <div>제품을 찾을 수 없습니다.</div>;
 
-  // 결제/장바구니에 넘길 공통 데이터
-  const payload: CartItemRequest = {
-    productId: product.id,
-    serviceType: selectedService as 'rental' | 'purchase',
-    rentalStartDate:
-      selectedService === 'rental'
-        ? servicePeriod.split('~')[0]?.trim().replace(/\./g, '-')
-        : undefined,
-    rentalEndDate:
-      selectedService === 'rental'
-        ? servicePeriod.split('~')[1]?.trim().replace(/\./g, '-')
-        : undefined,
+  const productInfoItem = {
+    brand: product.brand,
+    product_num: product.product_num,
+    name: product.name,
+    retailPrice: product.retailPrice,
+    discountPercent: product.discountPercent,
+    discountPrice: product.discountPrice,
+  };
+
+  // 주문에 넘길 데이터
+  const itemData = {
+    id: product.id,
+    brand: product.brand,
+    nameCode: product.product_num,
+    nameType: product.name,
+    type: selectedService as 'rental' | 'purchase',
+    servicePeriod,
     size: selectedSize,
     color: selectedColor,
-    quantity: 1,
-    totalPrice: selectedService === 'rental' ? 0 : product.retailPrice,
+    // ─────────── 수정된 부분 ───────────
+    price: selectedService === 'rental' ? 0 : product.retailPrice,
+    // ──────────────────────────────────
+    imageUrl: product.mainImage,
   };
 
-  // 장바구니 버튼
-  const onCartClick = () => {
-    if (!selectedService) {
-      setWarnMessage('서비스 타입을 먼저 선택해주세요.');
-      setWarnModalOpen(true);
-      return;
-    }
-    if (selectedService === 'rental' && !servicePeriod) {
-      setWarnMessage('렌탈 기간을 선택해주세요.');
-      setWarnModalOpen(true);
-      return;
-    }
-    setCartConfirmOpen(true);
+  // 장바구니 아이콘
+  const handleCartIconClick = () => {
+    navigate('/basket');
   };
 
-  const confirmAddToCart = async () => {
-    setCartConfirmOpen(false);
-    try {
-      await addCartItem(payload);
-      setCartAlert({ open: true, message: '장바구니에 추가되었습니다.' });
-    } catch {
-      setCartAlert({ open: true, message: '장바구니 추가에 실패했습니다.' });
-    }
-  };
-
-  // 주문하기 버튼
-  const onOrderClick = () => {
-    if (!selectedService) {
-      setWarnMessage('서비스 타입을 먼저 선택해주세요.');
-      setWarnModalOpen(true);
-      return;
-    }
-    if (selectedService === 'rental' && !servicePeriod) {
-      setWarnMessage('렌탈 기간을 선택해주세요.');
-      setWarnModalOpen(true);
-      return;
-    }
-    navigate(`/payment/${product.id}`, { state: payload });
+  // 제품 주문하기
+  const handleOrderClick = () => {
+    navigate(`/payment/${product.id}`, { state: itemData });
   };
 
   return (
@@ -225,17 +196,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       />
 
       <ContentContainer>
-        <ProductInfo
-          item={{
-            brand: product.brand,
-            product_num: product.product_num,
-            name: product.name,
-            retailPrice: product.retailPrice,
-            discountPercent: product.discountPercent,
-            discountPrice: product.discountPrice,
-          }}
-          productId={product.id}
-        />
+        <ProductInfo item={productInfoItem} productId={product.id} />
 
         <ProductOptions
           selectedSize={selectedSize}
@@ -262,7 +223,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
             />
           )}
           {selectedService === 'purchase' && <PaymentMethod />}
-          {!selectedService && <Message>서비스를 선택하세요</Message>}
+          {selectedService === '' && <Message>서비스를 선택하세요</Message>}
         </ConditionalContainer>
 
         <Separator />
@@ -297,7 +258,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         />
       </ContentContainer>
 
-      {/* 경고 모달 */}
       {warnModalOpen && (
         <ReusableModal
           isOpen={warnModalOpen}
@@ -310,42 +270,20 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         </ReusableModal>
       )}
 
-      {/* 장바구니 확인 모달 */}
-      {cartConfirmOpen && (
-        <ReusableModal2
-          isOpen={cartConfirmOpen}
-          onClose={() => setCartConfirmOpen(false)}
-          onConfirm={confirmAddToCart}
-          title='장바구니'
-        >
-          장바구니에 저장하시겠습니까?
-        </ReusableModal2>
-      )}
-
-      {/* 장바구니 결과 알림 */}
-      {cartAlert.open && (
-        <ReusableModal
-          isOpen
-          onClose={() => setCartAlert({ open: false, message: '' })}
-          title='알림'
-          width='80%'
-          height='200px'
-        >
-          <ErrorMsg>{cartAlert.message}</ErrorMsg>
-        </ReusableModal>
-      )}
-
       <BottomBar
         cartIconSrc={ShoppingBasket}
         orderButtonLabel='제품 주문하기'
-        onCartClick={onCartClick}
-        onOrderClick={onOrderClick}
+        onOrderClick={handleOrderClick}
+        onCartClick={handleCartIconClick}
       />
     </DetailContainer>
   );
 };
 
 export default HomeDetail;
+
+// — Styled Components (생략 없이 유지) —
+// ... (위에 있던 모든 styled-components 정의를 그대로 붙여 넣으시면 됩니다) ...
 
 // — Styled Components
 const DetailContainer = styled.div`
