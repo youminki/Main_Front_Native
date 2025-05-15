@@ -1,5 +1,5 @@
 // src/pages/LockerRoom/MyTicket.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
@@ -7,6 +7,7 @@ import TicketIllustration from '../../../assets/LockerRoom/TicketIllustration.sv
 import AddTicketIllustration from '../../../assets/LockerRoom/AddTicketIllustration.svg';
 import CardIcon from '../../../assets/LockerRoom/cardIcon.svg';
 import BarcodeImg from '../../../assets/LockerRoom/barcodeIcon.svg';
+import { getUserTickets, TicketItem } from '../../../api/ticket/ticket';
 
 const visitLabel = '사용중인 이용권';
 const salesLabel = '시즌';
@@ -16,6 +17,13 @@ const dateRange = 'SPRING';
 
 const MyTicket: React.FC = () => {
   const navigate = useNavigate();
+  const [tickets, setTickets] = useState<TicketItem[]>([]);
+
+  useEffect(() => {
+    getUserTickets()
+      .then((res) => setTickets(res.data))
+      .catch((err) => console.error('티켓 조회 실패:', err));
+  }, []);
 
   return (
     <MyTicketContainer>
@@ -34,41 +42,43 @@ const MyTicket: React.FC = () => {
       <Divider />
 
       <TicketWrapper>
-        {/* 정기 구독권 */}
-        <TicketCard onClick={() => navigate('/my-ticket/SubscriptionPass')}>
-          <Left>
-            <SeasonRow>
-              <SeasonText>2025 SPRING</SeasonText>
-              <CardIconImg src={CardIcon} alt='card icon' />
-            </SeasonRow>
-            <TicketTitle>정기 구독권</TicketTitle>
-            <TicketSubtitle>(매월결제)</TicketSubtitle>
-            <TicketPrice>120,000</TicketPrice>
-            <Barcode src={BarcodeImg} alt='barcode' />
-          </Left>
-          <Right>
-            <DateText>2025.02.01 ~ 02.28</DateText>
-            <Illustration src={TicketIllustration} alt='ticket illustration' />
-          </Right>
-        </TicketCard>
+        {tickets.map((ticket) => {
+          const {
+            id,
+            startDate,
+            endDate,
+            ticketList: { name, price, isLongTerm },
+          } = ticket;
 
-        {/* 1회 이용권 */}
-        <TicketCard onClick={() => navigate('/my-ticket/OnetimePass')}>
-          <Left>
-            <SeasonRow>
-              <SeasonText>2025 SPRING</SeasonText>
-              <CardIconImg src={CardIcon} alt='card icon' />
-            </SeasonRow>
-            <TicketTitle>1회 이용권</TicketTitle>
-            <TicketSubtitle>(일반결제)</TicketSubtitle>
-            <TicketPrice>50,000</TicketPrice>
-            <Barcode src={BarcodeImg} alt='barcode' />
-          </Left>
-          <Right>
-            <DateText>2025.02.12 ~ 03.11</DateText>
-            <Illustration src={TicketIllustration} alt='ticket illustration' />
-          </Right>
-        </TicketCard>
+          const path = isLongTerm
+            ? '/my-ticket/SubscriptionPass'
+            : '/my-ticket/OnetimePass';
+          const subtitle = isLongTerm ? '(매월결제)' : '(일반결제)';
+          const formattedPrice = `${price.toLocaleString()}원`;
+          const formattedDate = `${startDate.replace(/-/g, '.')} ~ ${endDate.replace(/-/g, '.')}`;
+
+          return (
+            <TicketCard key={id} onClick={() => navigate(path)}>
+              <Left>
+                <SeasonRow>
+                  <SeasonText>2025 SPRING</SeasonText>
+                  <CardIconImg src={CardIcon} alt='card icon' />
+                </SeasonRow>
+                <TicketTitle>{name}</TicketTitle>
+                <TicketSubtitle>{subtitle}</TicketSubtitle>
+                <TicketPrice>{formattedPrice}</TicketPrice>
+                <Barcode src={BarcodeImg} alt='barcode' />
+              </Left>
+              <Right>
+                <DateText>{formattedDate}</DateText>
+                <Illustration
+                  src={TicketIllustration}
+                  alt='ticket illustration'
+                />
+              </Right>
+            </TicketCard>
+          );
+        })}
 
         {/* 이용권 추가 버튼 */}
         <TicketCard onClick={() => navigate('/my-ticket/PurchaseOfPasses')}>
@@ -106,11 +116,13 @@ const Header = styled.div`
   width: 100%;
   margin-bottom: 6px;
 `;
+
 const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
   color: #000;
 `;
+
 const Subtitle = styled.p`
   font-size: 12px;
   color: #ccc;
@@ -131,7 +143,7 @@ const TicketWrapper = styled.div`
 `;
 
 const TicketCard = styled.div`
-  position: relative; /* Illustration absolute positioning 기준 */
+  position: relative;
   display: flex;
   width: 376px;
   height: 160px;
@@ -174,11 +186,13 @@ const SeasonRow = styled.div`
   gap: 4px;
   margin-bottom: 4px;
 `;
+
 const SeasonText = styled.span`
   font-size: 12px;
   font-weight: 700;
   color: #000;
 `;
+
 const CardIconImg = styled.img`
   width: 12px;
   height: 12px;
@@ -190,12 +204,14 @@ const TicketTitle = styled.h3`
   color: #000;
   margin: 0;
 `;
+
 const TicketSubtitle = styled.p`
   font-size: 8px;
   line-height: 9px;
   color: #666;
   margin: 8px 0;
 `;
+
 const TicketPrice = styled.p`
   font-size: 24px;
   font-weight: 900;
@@ -215,9 +231,9 @@ const Right = styled.div`
   box-sizing: border-box;
   background: #f6ae24;
   display: flex;
-  flex-direction: column; /* DateText 위에 Illustration 배치 위해 */
+  flex-direction: column;
   align-items: center;
-  position: relative; /* Illustration absolute positioning 기준 */
+  position: relative;
   border-left: 1px dashed #fff;
 `;
 
@@ -227,13 +243,12 @@ const DateText = styled.p`
   color: #fff;
   margin: 0;
 `;
+
 const Illustration = styled.img`
   position: absolute;
   bottom: 16px;
   right: 16px;
 `;
-
-// ─── “이용권 추가” 전용 스타일 ────────────────────────────────────
 
 const AddLeft = styled.div`
   width: 100%;

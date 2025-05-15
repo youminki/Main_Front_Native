@@ -1,8 +1,8 @@
 // src/pages/PaymentPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import FixedBottomBar from '../components/FixedBottomBar';
 import InputField from '../components/InputField';
 import { YellowButton, BlackButton } from '../components/ButtonWrapper';
@@ -12,6 +12,7 @@ import AddressSearchModal from '../components/AddressSearchModal';
 import PriceIcon from '../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
+import { getUserTickets, TicketItem } from '../api/ticket/ticket';
 
 declare global {
   interface Window {
@@ -58,6 +59,9 @@ interface BasketItem {
 }
 
 const PaymentPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const [tickets, setTickets] = useState<TicketItem[]>([]);
   // Location.state 에서 전달된 상품 정보 읽기
   const location = useLocation();
   const itemData = location.state as BasketItem;
@@ -67,9 +71,8 @@ const PaymentPage: React.FC = () => {
 
   // form state
   const [recipient, setRecipient] = useState('');
-  const [selectedMethod, setSelectedMethod] = useState<
-    '매니저 배송' | '택배 배송'
-  >('매니저 배송');
+  const [selectedMethod, setSelectedMethod] =
+    useState<string>('결제방식 선택하기');
   const [deliveryInfo, setDeliveryInfo] = useState({
     address: '',
     detailAddress: '',
@@ -90,6 +93,33 @@ const PaymentPage: React.FC = () => {
   const [modalAlert, setModalAlert] = useState({ isOpen: false, message: '' });
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [navigateHome, setNavigateHome] = useState(false);
+  // 1) 사용자 이용권 조회
+  useEffect(() => {
+    getUserTickets()
+      .then((res) => setTickets(res.data))
+      .catch((err) => console.error('티켓 조회 실패:', err));
+  }, []);
+
+  // 2) 옵션 리스트 생성
+  const paymentOptions = tickets.length
+    ? [
+        '결제방식 선택하기',
+        ...tickets.map(
+          (t) =>
+            // 남은 횟수 remainingRentals 사용
+            `${t.ticketList.name} (${t.remainingRentals}회 남음)`
+        ),
+      ]
+    : ['결제방식 선택하기', '이용권 구매하기'];
+
+  const handlePaymentSelect = (value: string) => {
+    // 이용권 구매하기 선택 시 마이티켓 페이지로 이동
+    if (value === '이용권 구매하기') {
+      navigate('/my-ticket');
+      return;
+    }
+    setSelectedMethod(value);
+  };
 
   const handleListConfirm = () => {
     if (modalField === 'delivery') {
@@ -447,15 +477,16 @@ const PaymentPage: React.FC = () => {
       )}
       <PaymentAndCouponContainer>
         <PaymentSection>
-          <InputField
-            id='payment-method'
-            label='결제방식 *'
-            options={[
-              '이용권 / 정기 구독권 (2025년 3월분)',
-              '무통장 결제',
-              '카드 결제',
-            ]}
-          />
+          <InputGroup>
+            {/* 여기를 동적 옵션으로 교체 */}
+            <InputField
+              id='payment-method'
+              label='결제방식 *'
+              options={paymentOptions}
+              value={selectedMethod}
+              onSelectChange={handlePaymentSelect}
+            />
+          </InputGroup>
         </PaymentSection>
       </PaymentAndCouponContainer>
       {/* 총 결제금액 */}

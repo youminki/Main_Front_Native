@@ -51,24 +51,36 @@ export const getAllTicketTemplates = async (): Promise<TicketListResponse> => {
 };
 
 /**
- * 로그인한 사용자의 이용권 목록 조회
+ * 1. 로그인한 사용자의 이용권 목록 조회
  * GET /ticket/user
+ * @returns TicketItem[]
  */
-export const getUserTickets = async (): Promise<UserTicket[]> => {
-  const response = await Axios.get<UserTicket[]>('/ticket/user');
-  return response.data;
+export const getUserTickets = () => {
+  return Axios.get<TicketItem[]>('/user/me/tickets');
 };
 
+// --- Types ---
 /**
- * 특정 기간 동안의 이용권 조회
- * GET /ticket/user/date-range?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
+ * 사용자가 구매한 이용권 항목 스펙
  */
-export const getUserTicketsByDateRange = async (
-  startDate: string,
-  endDate: string
-): Promise<UserTicket[]> => {
-  const response = await Axios.get<UserTicket[]>('/ticket/user/date-range', {
-    params: { startDate, endDate },
-  });
-  return response.data;
-};
+export interface TicketItem {
+  id: number;
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  remainingRentals: number;
+  monthlyUsedRentals: number;
+  autoRenewal: boolean;
+  nextBillingDate: string; // ISO 8601
+  isActive: boolean;
+  status: 'PAID' | 'EXPIRED' | string;
+  ticketList: {
+    id: number;
+    name: string;
+    durationMonths: number;
+    rentalLimit: number;
+    monthlyRentalLimit: number;
+    isLongTerm: boolean;
+    price: number;
+  };
+  purchasedAt: string; // ISO 8601
+}
