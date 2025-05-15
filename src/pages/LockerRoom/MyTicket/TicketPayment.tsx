@@ -1,11 +1,15 @@
+// src/pages/LockerRoom/TicketPayment.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { format, addMonths } from 'date-fns';
 import InputField from '../../../components/InputField';
 import FixedBottomBar from '../../../components/FixedBottomBar';
-import { getMyCards } from '../../../api/default/payment'; // API 함수 경로에 맞게 수정
-import { initPayment, recurringPayment } from '../../../api/payple/payple'; // API 호출 함수
+import {
+  postInitPayment,
+  getMyCards,
+  postRecurringPayment,
+} from '../../../api/default/payment';
 
 import PaymentAmountIcon from '../../../assets/LockerRoom/PaymentAmount.svg';
 import TicketPaymentSeaSonIcon from '../../../assets/LockerRoom/TicketPaymentSeaSon.svg';
@@ -22,7 +26,7 @@ export interface CardItem {
 const TicketPayment: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { name, discountedPrice, isOneTime } = location.state || {}; // state에서 name, discountedPrice, isOneTime 받기
+  const { name, discountedPrice } = location.state || {};
 
   const formattedDiscountedPrice = discountedPrice
     ? discountedPrice.toLocaleString()
@@ -32,13 +36,13 @@ const TicketPayment: React.FC = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>('');
 
-  // 오늘 날짜 및 한 달 후 날짜 계산
+  // 날짜 계산
   const today = new Date();
   const formattedToday = format(today, 'yyyy.MM.dd');
   const oneMonthLater = addMonths(today, 1);
   const formattedOneMonthLater = format(oneMonthLater, 'MM.dd');
 
-  // 1) 카드 목록 로드
+  // 카드 목록 로드
   useEffect(() => {
     (async () => {
       try {
@@ -72,36 +76,22 @@ const TicketPayment: React.FC = () => {
   };
 
   const handlePaymentClick = async () => {
-    if (isOneTime) {
-      // 1회 이용권 결제
-      const requestData = {
-        payerId: selectedPaymentMethod, // 선택된 결제 방법 (예: 카드 결제)
-        amount: discountedPrice,
-        goods: name,
-      };
-      try {
-        const response = await initPayment(requestData);
-        console.log('1회 이용권 결제 초기화 응답:', response);
-        // 결제 결과 처리
-        navigate('/payple/payment-result', { state: response });
-      } catch (error) {
-        console.error('1회 이용권 결제 실패:', error);
+    const requestData = {
+      payerId: selectedPaymentMethod,
+      amount: discountedPrice,
+      goods: name,
+    };
+
+    try {
+      let response;
+      if (name === '1회 이용권') {
+        response = await postInitPayment(requestData);
+      } else {
+        response = await postRecurringPayment(requestData);
       }
-    } else {
-      // 정기 결제
-      const requestData = {
-        payerId: selectedPaymentMethod, // 선택된 결제 방법 (예: 카드 결제)
-        amount: discountedPrice,
-        goods: name,
-      };
-      try {
-        const response = await recurringPayment(requestData);
-        console.log('정기 결제 응답:', response);
-        // 결제 결과 처리
-        navigate('/payple/payment-result', { state: response });
-      } catch (error) {
-        console.error('정기 결제 실패:', error);
-      }
+      navigate('/payple/payment-result', { state: response.data });
+    } catch (error) {
+      console.error('결제 실패:', error);
     }
   };
 
@@ -116,7 +106,7 @@ const TicketPayment: React.FC = () => {
             <SubscriptionLabel>이용권 결제</SubscriptionLabel>
 
             <ProductTitle>
-              <MainTitle>{name}</MainTitle> {/* 이름을 여기서 표시 */}
+              <MainTitle>{name}</MainTitle>
             </ProductTitle>
 
             <Row>
@@ -135,8 +125,7 @@ const TicketPayment: React.FC = () => {
               <IconImg src={PaymentAmountIcon} alt='결제금액 아이콘' />
               <RowTextContainer>
                 <RowLabel>
-                  결제금액 -<RowValue>{formattedDiscountedPrice}원</RowValue>{' '}
-                  {/* 할인된 가격 표시 */}
+                  결제금액 -<RowValue>{formattedDiscountedPrice}원</RowValue>
                 </RowLabel>
               </RowTextContainer>
             </Row>
@@ -169,8 +158,7 @@ const TicketPayment: React.FC = () => {
       <Section>
         <CustomLabel>총 결제금액 (VAT 포함)</CustomLabel>
         <PaymentAmountWrapper>
-          <PaymentAmount>{formattedDiscountedPrice}원</PaymentAmount>{' '}
-          {/* 할인된 가격 표시 */}
+          <PaymentAmount>{formattedDiscountedPrice}원</PaymentAmount>
         </PaymentAmountWrapper>
       </Section>
 
