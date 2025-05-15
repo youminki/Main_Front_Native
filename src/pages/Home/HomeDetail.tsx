@@ -1,3 +1,4 @@
+// src/pages/HomeDetail.tsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -56,12 +57,14 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
-  const [selectedService, setSelectedService] = useState('');
+  const [selectedService, setSelectedService] = useState<
+    'rental' | 'purchase' | ''
+  >('');
   const [warnModalOpen, setWarnModalOpen] = useState(false);
   const [warnMessage, setWarnMessage] = useState('');
   const [servicePeriod, setServicePeriod] = useState<string>('');
 
-  // 이미지 슬라이드용
+  // 이미지 슬라이드
   const images = useMemo<string[]>(() => {
     if (!product) return [];
     return product.product_img.length
@@ -100,14 +103,13 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     [handleSwipeLeft, handleSwipeRight]
   );
 
-  // 상품 정보 가져오기
+  // 상품 정보 조회
   useEffect(() => {
     const id = propId || params.id;
     if (!id) return;
     getProductInfo(Number(id))
       .then((res) => {
         const api = res.product as APIProductDetail & Record<string, any>;
-        // fabricComposition 매핑
         const rawFabric = api.fabricComposition;
         let mappedFabric: Record<'겉감' | '안감' | '배색' | '부속', string>;
         if (Array.isArray(rawFabric)) {
@@ -121,7 +123,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
             부속: rawFabric['부속'] || '',
           };
         }
-        // size_label_guide 추출
         const labelGuide = api.size_label_guide as
           | Record<string, string>
           | undefined;
@@ -136,14 +137,14 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       .finally(() => setLoading(false));
   }, [propId, params.id]);
 
-  // 서비스 선택 시 옵션 체크
+  // 서비스 변경
   const handleServiceChange = (service: string) => {
     if (service === 'rental' && (!selectedSize || !selectedColor)) {
       setWarnMessage('사이즈와 색상을 먼저 선택해주세요.');
       setWarnModalOpen(true);
       return;
     }
-    setSelectedService(service);
+    setSelectedService(service as 'rental' | 'purchase');
   };
 
   if (loading) return <Spinner />;
@@ -157,6 +158,8 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     discountPercent: product.discountPercent,
     discountPrice: product.discountPrice,
   };
+
+  // 주문에 넘길 데이터
   const itemData = {
     id: product.id,
     brand: product.brand,
@@ -166,19 +169,18 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     servicePeriod,
     size: selectedSize,
     color: selectedColor,
-    price:
-      selectedService === 'rental'
-        ? product.discountPrice
-        : product.retailPrice,
+    // ─────────── 수정된 부분 ───────────
+    price: selectedService === 'rental' ? 0 : product.retailPrice,
+    // ──────────────────────────────────
     imageUrl: product.mainImage,
   };
 
-  // Cart 아이콘 클릭 시 /basket으로 이동
+  // 장바구니 아이콘
   const handleCartIconClick = () => {
-    navigate('/basket'); // /basket으로 이동
+    navigate('/basket');
   };
 
-  // 제품 주문하기 버튼 클릭 시 /payment/${product.id}로 이동
+  // 제품 주문하기
   const handleOrderClick = () => {
     navigate(`/payment/${product.id}`, { state: itemData });
   };
@@ -196,7 +198,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       <ContentContainer>
         <ProductInfo item={productInfoItem} productId={product.id} />
 
-        {/* 사이즈/색상 옵션 */}
         <ProductOptions
           selectedSize={selectedSize}
           setSelectedSize={setSelectedSize}
@@ -206,7 +207,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           colorOptions={product.color.split(',').map((c) => c.trim())}
         />
 
-        {/* 서비스 선택 */}
         <ServiceSelectionWrapper>
           <ServiceSelection
             selectedService={selectedService}
@@ -214,13 +214,11 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           />
         </ServiceSelectionWrapper>
 
-        {/* 선택된 서비스에 따른 영역 */}
         <ConditionalContainer>
           {selectedService === 'rental' && (
             <RentalOptions
               productId={product.id}
               selectedSize={selectedSize}
-              selectedColor={selectedColor}
               onSelectPeriod={(formatted) => setServicePeriod(formatted)}
             />
           )}
@@ -260,7 +258,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         />
       </ContentContainer>
 
-      {/* 옵션 미선택 경고 모달 */}
       {warnModalOpen && (
         <ReusableModal
           isOpen={warnModalOpen}
@@ -276,14 +273,17 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       <BottomBar
         cartIconSrc={ShoppingBasket}
         orderButtonLabel='제품 주문하기'
-        onOrderClick={handleOrderClick} // 제품 주문하기 버튼 클릭 시 /payment/${product.id}로 이동
-        onCartClick={handleCartIconClick} // Cart 아이콘 클릭 시 /basket으로 이동
+        onOrderClick={handleOrderClick}
+        onCartClick={handleCartIconClick}
       />
     </DetailContainer>
   );
 };
 
 export default HomeDetail;
+
+// — Styled Components (생략 없이 유지) —
+// ... (위에 있던 모든 styled-components 정의를 그대로 붙여 넣으시면 됩니다) ...
 
 // — Styled Components
 const DetailContainer = styled.div`

@@ -189,8 +189,9 @@ const PaymentPage: React.FC = () => {
     const [startRaw, endRaw] = itemData
       .servicePeriod!.split('~')
       .map((s) => s.trim());
-    const startDate = startRaw.replace(/\./g, '-'); // "2025-05-20"
+    const startDate = startRaw.replace(/\./g, '-');
     const endDate = endRaw.replace(/\./g, '-');
+
     const orderBody: RentalOrderRequest = {
       ticketId: tickets[0].id,
       items: [
@@ -225,8 +226,8 @@ const PaymentPage: React.FC = () => {
       const scheduleReq: RentalScheduleCreateRequest = {
         productId: itemData.id,
         sizeLabel: itemData.size,
-        startDate: start.replace(/\./g, '-'),
-        endDate: end.replace(/\./g, '-'),
+        startDate: startDate, // 이미 변환된 변수 사용
+        endDate: endDate,
         quantity: 1,
       };
       await createRentalSchedule(scheduleReq);
@@ -356,7 +357,9 @@ const PaymentPage: React.FC = () => {
               label='수령인 *'
               placeholder='이름을 입력 하세요'
               value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setRecipient(e.target.value)
+              }
             />
           </InputGroup>
           <InputGroup>
@@ -364,9 +367,7 @@ const PaymentPage: React.FC = () => {
               id='delivery-method'
               label='배송방법 *'
               options={['매니저 배송', '택배 배송']}
-              onSelectChange={(v) =>
-                setSelectedMethod(v as '매니저 배송' | '택배 배송')
-              }
+              onSelectChange={(v: string) => handlePaymentSelect(v)}
             />
           </InputGroup>
         </Row>
@@ -420,7 +421,9 @@ const PaymentPage: React.FC = () => {
             label='연락처'
             placeholder='나머지 8자리 입력'
             value={deliveryInfo.contact}
-            onChange={(e) => handleContactChange('delivery', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleContactChange('delivery', e.target.value)
+            }
           />
         </Row>
       </Section>
@@ -480,7 +483,9 @@ const PaymentPage: React.FC = () => {
             placeholder='나머지 8자리 입력'
             disabled={isSameAsDelivery}
             value={returnInfo.contact}
-            onChange={(e) => handleContactChange('return', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleContactChange('return', e.target.value)
+            }
           />
         </Row>
       </ReturnSection>

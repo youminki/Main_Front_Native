@@ -11,6 +11,9 @@ import RentalSelectDateIcon from '../../../assets/Home/HomeDetail/RentalSelectDa
 import { getUnavailableDates } from '../../../api/scedule/scedule';
 import 'react-datepicker/dist/react-datepicker.css';
 
+interface SquareIconProps {
+  disabled?: boolean;
+}
 registerLocale('ko', ko);
 const hd = new Holidays('KR');
 
