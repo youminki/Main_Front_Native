@@ -145,7 +145,7 @@ const TicketWrapper = styled.div`
 const TicketCard = styled.div`
   position: relative;
   display: flex;
-  width: 376px;
+  min-width: 350px;
   height: 160px;
   border: 1px solid #ddd;
   overflow: hidden;
