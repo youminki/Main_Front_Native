@@ -13,6 +13,11 @@ import PriceIcon from '../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
 import { getUserTickets, TicketItem } from '../api/ticket/ticket';
+import { createRentalOrder, RentalOrderRequest } from '../api/rental/rental';
+import {
+  createRentalSchedule,
+  RentalScheduleCreateRequest,
+} from '../api/scedule/scedule';
 
 declare global {
   interface Window {
@@ -50,7 +55,7 @@ interface BasketItem {
   nameCode: string;
   nameType: string;
   type: 'rental' | 'purchase';
-  servicePeriod?: string;
+  servicePeriod?: string; // "YYYY.MM.DD ~ YYYY.MM.DD"
   size: string;
   color: string;
   price: number;
@@ -60,16 +65,11 @@ interface BasketItem {
 
 const PaymentPage: React.FC = () => {
   const navigate = useNavigate();
-
   const [tickets, setTickets] = useState<TicketItem[]>([]);
-  // Location.state 에서 전달된 상품 정보 읽기
   const location = useLocation();
   const itemData = location.state as BasketItem;
-
-  // items 배열 초기화
   const [items] = useState<BasketItem[]>([{ ...itemData, $isSelected: true }]);
 
-  // form state
   const [recipient, setRecipient] = useState('');
   const [selectedMethod, setSelectedMethod] =
     useState<string>('결제방식 선택하기');
@@ -93,27 +93,23 @@ const PaymentPage: React.FC = () => {
   const [modalAlert, setModalAlert] = useState({ isOpen: false, message: '' });
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [navigateHome, setNavigateHome] = useState(false);
-  // 1) 사용자 이용권 조회
+
   useEffect(() => {
     getUserTickets()
       .then((res) => setTickets(res.data))
       .catch((err) => console.error('티켓 조회 실패:', err));
   }, []);
 
-  // 2) 옵션 리스트 생성
   const paymentOptions = tickets.length
     ? [
         '결제방식 선택하기',
         ...tickets.map(
-          (t) =>
-            // 남은 횟수 remainingRentals 사용
-            `${t.ticketList.name} (${t.remainingRentals}회 남음)`
+          (t) => `${t.ticketList.name} (${t.remainingRentals}회 남음)`
         ),
       ]
     : ['결제방식 선택하기', '이용권 구매하기'];
 
   const handlePaymentSelect = (value: string) => {
-    // 이용권 구매하기 선택 시 마이티켓 페이지로 이동
     if (value === '이용권 구매하기') {
       navigate('/my-ticket');
       return;
@@ -140,9 +136,11 @@ const PaymentPage: React.FC = () => {
     if (!v.startsWith('010')) v = '010' + v;
     v = v.slice(0, 11);
     if (v.length === 11) v = v.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-    if (field === 'delivery')
+    if (field === 'delivery') {
       setDeliveryInfo((info) => ({ ...info, contact: v }));
-    else setReturnInfo((info) => ({ ...info, contact: v }));
+    } else {
+      setReturnInfo((info) => ({ ...info, contact: v }));
+    }
   };
 
   const handleUseSame = () => {
@@ -184,15 +182,75 @@ const PaymentPage: React.FC = () => {
     }
   };
 
-  const handleConfirmPayment = () => {
+  const handleConfirmPayment = async () => {
     setConfirmModalOpen(false);
-    setModalAlert({ isOpen: true, message: '결제가 완료되었습니다.' });
-    setNavigateHome(true);
+
+    // 1) Create rental order
+    const [startRaw, endRaw] = itemData
+      .servicePeriod!.split('~')
+      .map((s) => s.trim());
+    const startDate = startRaw.replace(/\./g, '-'); // "2025-05-20"
+    const endDate = endRaw.replace(/\./g, '-');
+    const orderBody: RentalOrderRequest = {
+      ticketId: tickets[0].id,
+      items: [
+        {
+          productId: itemData.id,
+          sizeLabel: itemData.size,
+          startDate, // 올바른 포맷
+          endDate,
+          quantity: 1,
+          count: 1,
+        },
+      ],
+      shipping: {
+        address: deliveryInfo.address,
+        detailAddress: deliveryInfo.detailAddress,
+        phone: deliveryInfo.contact,
+        receiver: recipient,
+        deliveryMethod: selectedMethod,
+        message: '',
+      },
+      return: {
+        address: returnInfo.address,
+        detailAddress: returnInfo.detailAddress,
+        phone: returnInfo.contact,
+      },
+    };
+
+    try {
+      const resp = await createRentalOrder(orderBody);
+
+      // 2) Create rental schedule after payment succeeds
+      const scheduleReq: RentalScheduleCreateRequest = {
+        productId: itemData.id,
+        sizeLabel: itemData.size,
+        startDate: start.replace(/\./g, '-'),
+        endDate: end.replace(/\./g, '-'),
+        quantity: 1,
+      };
+      await createRentalSchedule(scheduleReq);
+
+      setModalAlert({
+        isOpen: true,
+        message: `주문 ${resp.orderId}이(가) 성공적으로 등록되었습니다.`,
+      });
+      setNavigateHome(true);
+    } catch (err) {
+      console.error('렌탈 주문/스케줄 생성 실패:', err);
+      setModalAlert({
+        isOpen: true,
+        message: '주문 중 오류가 발생했습니다. 다시 시도해주세요.',
+      });
+    }
   };
+
   const closeAlertModal = () => {
     setModalAlert({ isOpen: false, message: '' });
-    if (navigateHome) window.location.href = '/home';
-    setNavigateHome(false);
+    if (navigateHome) {
+      navigate('/home');
+      setNavigateHome(false);
+    }
   };
 
   return (
@@ -262,7 +320,6 @@ const PaymentPage: React.FC = () => {
                       <Slash>/</Slash>
                       <DetailText>색상 - </DetailText>
                     </AdditionalText>
-
                     <DetailHighlight>{item.color}</DetailHighlight>
                   </RowText>
                 </TextContainer>
@@ -299,9 +356,7 @@ const PaymentPage: React.FC = () => {
               label='수령인 *'
               placeholder='이름을 입력 하세요'
               value={recipient}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setRecipient(e.target.value)
-              }
+              onChange={(e) => setRecipient(e.target.value)}
             />
           </InputGroup>
           <InputGroup>
@@ -309,7 +364,7 @@ const PaymentPage: React.FC = () => {
               id='delivery-method'
               label='배송방법 *'
               options={['매니저 배송', '택배 배송']}
-              onSelectChange={(v: string) =>
+              onSelectChange={(v) =>
                 setSelectedMethod(v as '매니저 배송' | '택배 배송')
               }
             />
@@ -365,9 +420,7 @@ const PaymentPage: React.FC = () => {
             label='연락처'
             placeholder='나머지 8자리 입력'
             value={deliveryInfo.contact}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleContactChange('delivery', e.target.value)
-            }
+            onChange={(e) => handleContactChange('delivery', e.target.value)}
           />
         </Row>
       </Section>
@@ -427,9 +480,7 @@ const PaymentPage: React.FC = () => {
             placeholder='나머지 8자리 입력'
             disabled={isSameAsDelivery}
             value={returnInfo.contact}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleContactChange('return', e.target.value)
-            }
+            onChange={(e) => handleContactChange('return', e.target.value)}
           />
         </Row>
       </ReturnSection>
@@ -475,10 +526,11 @@ const PaymentPage: React.FC = () => {
           </ModalBodyContent>
         </ReusableModal>
       )}
+
+      {/* 결제방식 선택 */}
       <PaymentAndCouponContainer>
         <PaymentSection>
           <InputGroup>
-            {/* 여기를 동적 옵션으로 교체 */}
             <InputField
               id='payment-method'
               label='결제방식 *'
@@ -489,6 +541,7 @@ const PaymentPage: React.FC = () => {
           </InputGroup>
         </PaymentSection>
       </PaymentAndCouponContainer>
+
       {/* 총 결제금액 */}
       <TotalPaymentSection>
         <SectionTitle>총 결제금액 (VAT 포함)</SectionTitle>
@@ -514,7 +567,7 @@ const PaymentPage: React.FC = () => {
 
 export default PaymentPage;
 
-// styled-components 아래에 생략...
+// (styled-components omitted for brevity; see above for full definitions)
 
 const Container = styled.div`
   display: flex;

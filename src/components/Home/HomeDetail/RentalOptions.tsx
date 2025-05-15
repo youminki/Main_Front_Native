@@ -1,4 +1,3 @@
-// src/components/RentalOptions.tsx
 import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import DatePicker, { registerLocale } from 'react-datepicker';
@@ -9,18 +8,12 @@ import Holidays from 'date-holidays';
 import ReusableModal2 from '../../../components/Home/HomeDetail/HomeDetailModal';
 import ReusableModal from '../../../components/ReusableModal';
 import RentalSelectDateIcon from '../../../assets/Home/HomeDetail/RentalSelectDateIcon.svg';
-import {
-  getUnavailableDates,
-  createRentalSchedule,
-  RentalScheduleCreateRequest,
-} from '../../../api/scedule/scedule';
+import { getUnavailableDates } from '../../../api/scedule/scedule';
 import 'react-datepicker/dist/react-datepicker.css';
 
-// 한국 로케일 & 공휴일 설정
 registerLocale('ko', ko);
 const hd = new Holidays('KR');
 
-// 전역 스타일
 const GlobalStyle = createGlobalStyle`
   .react-datepicker__day--outside-month { visibility: hidden !important; }
   .day-today { background-color: #FFA726 !important; color: #000 !important; }
@@ -39,21 +32,15 @@ const GlobalStyle = createGlobalStyle`
   .day-blue { color: #000 !important; }
 `;
 
-interface SquareIconProps {
-  disabled?: boolean;
-}
-
 interface RentalOptionsProps {
   productId: number;
   selectedSize: string;
-  selectedColor: string;
   onSelectPeriod?: (formatted: string) => void;
 }
 
 const RentalOptions: React.FC<RentalOptionsProps> = ({
   productId,
   selectedSize,
-
   onSelectPeriod,
 }) => {
   const [selectedPeriod, setSelectedPeriod] = useState('');
@@ -69,7 +56,6 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
   const minDays =
     selectedPeriod === '3박4일' ? 4 : selectedPeriod === '5박6일' ? 6 : 0;
   const maxDays = 10;
-
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const minSelectableDate = _addDays(today, 3);
@@ -77,46 +63,31 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
   const getTotalDays = (s: Date, e: Date) =>
     Math.floor((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1;
   const formatDate = (d: Date) =>
-    `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+    `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(
+      d.getDate()
+    ).padStart(2, '0')}`;
 
-  // ───────────────────────────────────────────────────────────────
-  // 예약 불가 범위 → 날짜 하나하나로 풀어서 reservedDates 세팅
-  // 각 범위의 end 날짜마다 +1, +2, +3일까지 추가
-  // ───────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!productId || !selectedSize) return;
-
     getUnavailableDates({ productId, sizeLabel: selectedSize })
       .then((ranges) => {
-        const allTimeNumbers: number[] = [];
-
+        const allTime: number[] = [];
         ranges.forEach(([startStr, endStr]) => {
           const start = new Date(startStr);
           const end = new Date(endStr);
-
-          // 1) 각 범위 내 날짜 풀어쓰기
           for (let d = new Date(start); d <= end; d = _addDays(d, 1)) {
-            allTimeNumbers.push(d.getTime());
+            allTime.push(d.getTime());
           }
-
-          // 2) 각 end 날짜에 +1, +2, +3일 추가
           for (let i = 1; i <= 3; i++) {
-            allTimeNumbers.push(_addDays(end, i).getTime());
+            allTime.push(_addDays(end, i).getTime());
           }
         });
-
-        // 중복 제거 후 Date 객체로 변환
-        const uniqueDates = Array.from(new Set(allTimeNumbers)).map(
-          (t) => new Date(t)
-        );
-        setReservedDates(uniqueDates);
+        const unique = Array.from(new Set(allTime)).map((t) => new Date(t));
+        setReservedDates(unique);
       })
       .catch(console.error);
   }, [productId, selectedSize]);
 
-  // ───────────────────────────────────────────────────────────────
-
-  // 날짜 선택 핸들러
   const handleDateChange = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
     if (start) {
@@ -161,10 +132,8 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
     }
   };
 
-  // 클릭 차단 (비활성 날짜, 과거)
   const handleDayClick = (e: React.MouseEvent) => {
     const t = e.target as HTMLElement;
-    if (!t.classList.contains('react-datepicker__day')) return;
     if (
       t.classList.contains('day-reserved') ||
       t.classList.contains('day-past')
@@ -182,8 +151,7 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
     setSelectedRange({ start, end: _addDays(end, delta) });
   };
 
-  // 확정 버튼
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     const { start, end } = selectedRange;
     if (!start || !end) {
       setErrorMessage('날짜를 모두 선택해주세요.');
@@ -199,31 +167,11 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
       return setErrorModalOpen(true);
     }
 
-    const req: RentalScheduleCreateRequest = {
-      productId,
-      sizeLabel: selectedSize,
-      startDate: `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`,
-      endDate: `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`,
-      quantity: 1,
-    };
-
-    try {
-      await createRentalSchedule(req);
-      if (onSelectPeriod && start && end) {
-        const formatted = `${formatDate(start)} ~ ${formatDate(end)}`;
-        onSelectPeriod(formatted);
-      }
-      // 방금 생성된 일정도 disabled 처리
-      const newReserved: Date[] = [];
-      for (let d = new Date(start); d <= end; d = _addDays(d, 1)) {
-        newReserved.push(new Date(d));
-      }
-      setReservedDates((prev) => [...prev, ...newReserved]);
-      setIsModalOpen(false);
-    } catch {
-      setErrorMessage('스케줄 생성에 실패했습니다.');
-      setErrorModalOpen(true);
+    if (onSelectPeriod) {
+      const formatted = `${formatDate(start)} ~ ${formatDate(end)}`;
+      onSelectPeriod(formatted);
     }
+    setIsModalOpen(false);
   };
 
   const currentTotal =
@@ -254,7 +202,9 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
           >
             <span>
               {selectedRange.start && selectedRange.end
-                ? `${formatDate(selectedRange.start)} ~ ${formatDate(selectedRange.end)}`
+                ? `${formatDate(selectedRange.start)} ~ ${formatDate(
+                    selectedRange.end
+                  )}`
                 : '대여일정 선택'}
             </span>
             <Icon src={RentalSelectDateIcon} alt='달력 아이콘' />
@@ -277,11 +227,13 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
                     : '선택해주세요'}
                 </ModalTitle>
               </ModalHeader>
-              <ModalContent>
+              <ModalContent onClick={handleDayClick}>
                 <SelectedBlock>
                   <RangeBox>
                     {selectedRange.start && selectedRange.end ? (
-                      <RangeText>{`${formatDate(selectedRange.start)} ~ ${formatDate(selectedRange.end)}`}</RangeText>
+                      <RangeText>{`${formatDate(
+                        selectedRange.start
+                      )} ~ ${formatDate(selectedRange.end)}`}</RangeText>
                     ) : (
                       <Placeholder>날짜를 선택해주세요</Placeholder>
                     )}
@@ -301,8 +253,7 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
                     </IconWrapper>
                   </RangeBox>
                 </SelectedBlock>
-
-                <CalendarContainer onClick={handleDayClick}>
+                <CalendarContainer>
                   <DatePicker
                     locale='ko'
                     inline
@@ -341,17 +292,10 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
                         isBefore(date, selectedRange.end)
                       )
                         return 'day-between';
-                      if (
-                        isAfter(date, _addDays(minSelectableDate, -1)) &&
-                        date.getDay() !== 0 &&
-                        !hd.isHoliday(date)
-                      )
-                        return 'day-blue';
                       return '';
                     }}
                   />
                 </CalendarContainer>
-
                 <Legend>
                   <LegendItem>
                     <Dot color='red' /> 일요일·공휴일
