@@ -28,9 +28,9 @@ const TicketPayment: React.FC = () => {
   const location = useLocation();
   const { name, discountedPrice } = location.state || {};
 
-  const formattedDiscountedPrice = discountedPrice
-    ? discountedPrice.toLocaleString()
-    : '0';
+  // 소수점 제거를 위해 반올림 처리
+  const roundedPrice = discountedPrice ? Math.round(discountedPrice) : 0;
+  const formattedDiscountedPrice = roundedPrice.toLocaleString();
 
   const [options, setOptions] = useState<string[]>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
@@ -78,7 +78,7 @@ const TicketPayment: React.FC = () => {
   const handlePaymentClick = async () => {
     const requestData = {
       payerId: selectedPaymentMethod,
-      amount: discountedPrice,
+      amount: roundedPrice, // 반올림된 정수 전달
       goods: name,
     };
 
@@ -172,6 +172,8 @@ const TicketPayment: React.FC = () => {
 };
 
 export default TicketPayment;
+
+// 이하 styled-components 생략
 
 // --- styled-components ---
 const Container = styled.div`
