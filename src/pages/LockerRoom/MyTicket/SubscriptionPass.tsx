@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+// src/pages/SubscriptionPassDetail.tsx
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import ReusableModal2 from '../../../components/ReusableModal2';
+import { getUserTickets, TicketItem } from '../../../api/ticket/ticket'; // 실제 경로로 조정
 
 const SubscriptionPassDetail: React.FC = () => {
+  const [ticket, setTicket] = useState<TicketItem | null>(null);
   const [isCancelled, setIsCancelled] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
@@ -17,13 +20,36 @@ const SubscriptionPassDetail: React.FC = () => {
   const [modalSelectedPlan, setModalSelectedPlan] =
     useState<typeof selectedPlan>(selectedPlan);
 
+  // 1) 티켓 데이터 불러오기 (autoRenewal=true 우선)
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getUserTickets();
+        const items: TicketItem[] = res.data;
+        if (items.length) {
+          // autoRenewal true인 것만 필터
+          const autoTickets = items.filter((item) => item.autoRenewal);
+          const tk = autoTickets.length > 0 ? autoTickets[0] : items[0];
+          setTicket(tk);
+          setIsCancelled(!tk.autoRenewal);
+          setSelectedPlan(
+            tk.ticketList.name.includes('4회') ? '월 4회권' : '무제한 이용권'
+          );
+        }
+      } catch (err) {
+        console.error('티켓 조회 실패', err);
+      }
+    })();
+  }, []);
+
+  const formatDate = (iso: string) => iso.slice(0, 10).replace(/-/g, '.');
+  const formatTime = (iso: string) => new Date(iso).toTimeString().slice(0, 8);
+
   const handleOpenSetting = () => {
-    // 모달 열 때 현재 플랜으로 초기화
     setModalSelectedPlan(selectedPlan);
     setIsSettingOpen(true);
   };
   const handleSubmitChange = () => {
-    // 모달 확인 시에만 선택 플랜 저장
     setSelectedPlan(modalSelectedPlan);
     setIsSettingOpen(false);
   };
@@ -45,6 +71,10 @@ const SubscriptionPassDetail: React.FC = () => {
     setModalOpen(true);
   };
 
+  if (!ticket) {
+    return <Container>로딩 중...</Container>;
+  }
+
   return (
     <Container>
       <ContentArea>
@@ -59,7 +89,6 @@ const SubscriptionPassDetail: React.FC = () => {
           </InFieldBoxBlack>
         </Section>
 
-        {/* Fixed 모달 */}
         <ReusableModal2
           isOpen={isSettingOpen}
           title='이용권 설정변경'
@@ -86,7 +115,8 @@ const SubscriptionPassDetail: React.FC = () => {
         <Section>
           <SectionTitle>이용권 사용기간</SectionTitle>
           <ReadOnlyBox>
-            2025.02.01 ~ 2025.02.28 <GrayText>(유효기간)</GrayText>
+            {formatDate(ticket.startDate)} ~ {formatDate(ticket.endDate)}{' '}
+            <GrayText>(유효기간)</GrayText>
           </ReadOnlyBox>
         </Section>
 
@@ -94,16 +124,17 @@ const SubscriptionPassDetail: React.FC = () => {
         <Section>
           <SectionTitle>이용권 결제일시</SectionTitle>
           <ReadOnlyBox>
-            2025.02.01 <GrayText>(14:40:38)</GrayText>
+            {formatDate(ticket.purchasedAt)}{' '}
+            <GrayText>({formatTime(ticket.purchasedAt)})</GrayText>
           </ReadOnlyBox>
         </Section>
 
-        {/* ⬇️ 잔여 횟수 입력 필드 추가 */}
+        {/* 잔여 횟수 */}
         {selectedPlan === '월 4회권' && (
           <Section>
             <SectionTitle>잔여횟수</SectionTitle>
             <InFieldBoxGray>
-              <SeasonValue>4회</SeasonValue>
+              <SeasonValue>{ticket.remainingRentals}회</SeasonValue>
             </InFieldBoxGray>
           </Section>
         )}
@@ -114,12 +145,18 @@ const SubscriptionPassDetail: React.FC = () => {
             <HalfSection>
               <SectionTitle>이용권(매달) 결제금액</SectionTitle>
               <ReadOnlyBox>
-                <PriceText>120,000</PriceText>
+                <PriceText>
+                  {ticket.ticketList.price.toLocaleString()}원
+                </PriceText>
               </ReadOnlyBox>
             </HalfSection>
             <HalfSection>
               <SectionTitle>다음 결제일</SectionTitle>
-              <ReadOnlyBox>2025.03.01</ReadOnlyBox>
+              <ReadOnlyBox>
+                {ticket.nextBillingDate
+                  ? formatDate(ticket.nextBillingDate)
+                  : '—'}
+              </ReadOnlyBox>
             </HalfSection>
           </Row>
         </Section>
@@ -130,7 +167,7 @@ const SubscriptionPassDetail: React.FC = () => {
           <InFieldBoxGray>
             <Row>
               <SeasonLabel>다음 시즌</SeasonLabel>
-              <Pipe> | </Pipe>
+              <Pipe>|</Pipe>
               <SeasonValue>2025 SUMMER</SeasonValue>
             </Row>
             <InFieldButton onClick={handleButtonClick}>
@@ -139,7 +176,6 @@ const SubscriptionPassDetail: React.FC = () => {
           </InFieldBoxGray>
         </Section>
 
-        {/* 자동연장 확인 모달 */}
         <ReusableModal2
           isOpen={isModalOpen}
           title='시즌 자동연장'
