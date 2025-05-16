@@ -45,6 +45,21 @@ const TicketPayment: React.FC = () => {
   const formattedToday = format(today, 'yyyy.MM.dd');
   const formattedOneMonthLater = format(addMonths(today, 1), 'MM.dd');
 
+  // 팝업 윈도우에서 결제 결과를 부모 윈도우에 전달
+  useEffect(() => {
+    (window as any).PCD_PAY_CALLBACK = (result: any) => {
+      if (window.opener) {
+        window.opener.postMessage(
+          {
+            paymentStatus: result?.status === 'success' ? 'success' : 'failure',
+          },
+          window.location.origin
+        );
+      }
+      window.close();
+    };
+  }, []);
+
   useEffect(() => {
     (async () => {
       try {
@@ -97,16 +112,22 @@ const TicketPayment: React.FC = () => {
           ? await postInitPayment(requestData)
           : await postRecurringPayment(requestData);
 
-      if (typeof window.PaypleCpayAuthCheck !== 'function') {
+      if (typeof (window as any).PaypleCpayAuthCheck !== 'function') {
         alert('Payple SDK가 로딩되지 않았습니다.');
         return;
       }
-      window.PaypleCpayAuthCheck(response.data);
+      (window as any).PaypleCpayAuthCheck(response.data);
     } catch (error: any) {
       console.error('결제 실패:', error);
       const errMsg =
         error.response?.data?.message || error.message || '알 수 없는 오류';
       alert(`결제 실패: ${errMsg}`);
+      // 실패 시 팝업 닫기
+      window.opener?.postMessage(
+        { paymentStatus: 'failure' },
+        window.location.origin
+      );
+      window.close();
     }
   };
 

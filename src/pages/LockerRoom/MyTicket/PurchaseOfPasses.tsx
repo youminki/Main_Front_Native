@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import InputField from '../../../components/InputField';
 import { CustomSelect } from '../../../components/CustomSelect';
@@ -9,10 +10,26 @@ import { getAllTicketTemplates, TicketList } from '../../../api/ticket/ticket';
 import { getMembershipInfo, MembershipInfo } from '../../../api/user/userApi';
 
 const PurchaseOfPasses: React.FC = () => {
+  const navigate = useNavigate();
   const [templates, setTemplates] = useState<TicketList[]>([]);
   const [purchaseOption, setPurchaseOption] = useState<string>('');
   const [discountRate, setDiscountRate] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 팝업창 메시지 리스너
+  useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      const { paymentStatus } = event.data as { paymentStatus: string };
+      if (paymentStatus === 'success') {
+        navigate('/my-ticket');
+      } else {
+        window.location.reload();
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [navigate]);
 
   const selectedTemplate = templates.find((t) => t.name === purchaseOption);
   const isOneTime = selectedTemplate?.name === '1회 이용권';
@@ -81,22 +98,11 @@ const PurchaseOfPasses: React.FC = () => {
         `width=${w},height=${h},left=${left},top=${top},resizable,scrollbars`
       );
       if (popup) {
-        const timer = setInterval(() => {
-          if (popup.closed) {
-            clearInterval(timer);
-            window.location.reload();
-          }
-        }, 500);
+        // 팝업을 닫아도 리스너가 동작하도록 타이머 제거
       }
     }
     setIsModalOpen(false);
   }, [selectedTemplate, discountedPrice, isOneTime]);
-
-  const handlePaymentClick = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
-  const handlePurchaseOptionChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => setPurchaseOption(e.target.value);
 
   return (
     <Container>
@@ -106,7 +112,7 @@ const PurchaseOfPasses: React.FC = () => {
         id='purchaseOption'
         as={CustomSelect}
         value={purchaseOption}
-        onChange={handlePurchaseOptionChange}
+        onChange={(e) => setPurchaseOption(e.target.value)}
       >
         {templates.map((tpl) => (
           <option key={tpl.id} value={tpl.name}>
@@ -166,13 +172,13 @@ const PurchaseOfPasses: React.FC = () => {
       <FixedBottomBar
         text='이용권 결제하기'
         color='black'
-        onClick={handlePaymentClick}
+        onClick={() => setIsModalOpen(true)}
       />
 
       <ReusableModal2
         title='이용권 구매'
         isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmPayment}
       >
         이용권을 결제하시겠습니까?
@@ -182,6 +188,8 @@ const PurchaseOfPasses: React.FC = () => {
 };
 
 export default PurchaseOfPasses;
+
+// styled-components 생략...
 
 // Styled Components
 const Container = styled.div`
