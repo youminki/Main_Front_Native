@@ -289,23 +289,28 @@ const PaymentPage: React.FC = () => {
             <ItemDetails>
               <Brand>{item.brand}</Brand>
               <ItemName>
-                <NameCode>{item.nameCode}</NameCode>
-                <Slash>/</Slash>
-                <ItemType>{item.nameType}</ItemType>
+                <Column>
+                  <NameCode>{item.nameCode}</NameCode>
+                  <ItemType>{item.nameType}</ItemType>
+                </Column>
               </ItemName>
               <InfoRowFlex>
                 <IconArea>
                   <Icon src={ServiceInfoIcon} />
                 </IconArea>
                 <TextContainer>
-                  <LabelDetailText>진행 서비스 - </LabelDetailText>
-                  <RowText>
-                    <DetailHighlight>
-                      {item.type === 'rental'
-                        ? `대여(${item.servicePeriod})`
-                        : '구매'}
-                    </DetailHighlight>
-                  </RowText>
+                  <Column>
+                    <LabelDetailText>
+                      진행 서비스 -{' '}
+                      <DetailHighlight>
+                        {item.type === 'rental' ? '대여' : '구매'}
+                      </DetailHighlight>
+                    </LabelDetailText>
+
+                    {item.type === 'rental' && item.servicePeriod && (
+                      <DetailText>{item.servicePeriod}</DetailText>
+                    )}
+                  </Column>
                 </TextContainer>
               </InfoRowFlex>
               <InfoRowFlex>
@@ -790,7 +795,7 @@ const Brand = styled.div`
 const ItemName = styled.div`
   display: flex;
   align-items: center;
-  margin: 6px 0 28px;
+  margin: 6px 0 20px;
 `;
 
 const NameCode = styled.span`
@@ -961,4 +966,11 @@ const AdditionalText = styled.div`
   display: flex;
 
   white-space: nowrap;
+`;
+// TextContainer 는 이미 flex-direction: column 으로 되어 있습니다.
+// 새로 추가할 Column
+const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 `;

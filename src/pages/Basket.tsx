@@ -10,6 +10,12 @@ import ReusableModal2 from '../components/ReusableModal2';
 import { getCartItems, deleteCartItem } from '../api/cart/cart';
 import type { CartItemListResponse } from '../api/cart/cart';
 
+const getServiceLabel = (type: string) => {
+  if (type === 'rental') return '대여';
+  if (type === 'purchase') return '구매';
+  return type;
+};
+
 // PaymentPage가 기대하는 BasketItem 인터페이스
 interface BasketItemForPayment {
   id: number;
@@ -142,7 +148,10 @@ const Basket: React.FC = () => {
                 <TextContainer>
                   <RowText>
                     <LabelDetailText>서비스 타입 - </LabelDetailText>
-                    <DetailHighlight>{item.serviceType}</DetailHighlight>
+                    <DetailHighlight>
+                      {' '}
+                      {getServiceLabel(item.serviceType.toLowerCase())}
+                    </DetailHighlight>
                   </RowText>
                   {item.rentalStartDate && item.rentalEndDate && (
                     <AdditionalText>
