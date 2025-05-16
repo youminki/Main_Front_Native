@@ -13,7 +13,7 @@ import { getMembershipInfo, MembershipInfo } from '../../../api/user/userApi';
 const PurchaseOfPasses: React.FC = () => {
   const [templates, setTemplates] = useState<TicketList[]>([]);
   const [purchaseOption, setPurchaseOption] = useState<string>('');
-  const [ticketSetting, setTicketSetting] = useState<string>('');
+
   const [discountRate, setDiscountRate] = useState<number>(0); // 할인율을 숫자로 설정
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -95,9 +95,6 @@ const PurchaseOfPasses: React.FC = () => {
   const handlePurchaseOptionChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => setPurchaseOption(e.target.value);
-
-  const handleTicketSettingChange = (e: React.ChangeEvent<HTMLSelectElement>) =>
-    setTicketSetting(e.target.value);
 
   return (
     <ThemeProvider theme={Theme}>
