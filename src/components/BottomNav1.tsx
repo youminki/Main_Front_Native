@@ -22,7 +22,7 @@ const TABS: Tab[] = [
   { key: 'melpik', route: '/melpik', icon: MelpikIcon, label: '멜픽' },
   {
     key: 'lockerRoom',
-    route: '/lockerroom',
+    route: '/my-closet',
     icon: LockerRoomIcon,
     label: '락커룸',
   },
