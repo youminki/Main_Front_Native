@@ -160,7 +160,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     discountPrice: product.discountPrice,
   };
 
-  // 주문에 넘길 데이터
   const itemData = {
     id: product.id,
     brand: product.brand,
@@ -170,15 +169,12 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     servicePeriod,
     size: selectedSize,
     color: selectedColor,
-    // ─────────── 수정된 부분 ───────────
     price: selectedService === 'rental' ? 0 : product.retailPrice,
-    // ──────────────────────────────────
     imageUrl: product.mainImage,
   };
-
   const handleCartIconClick = async () => {
     if (!selectedService) {
-      setWarnMessage('서비스를 선택해주세요.');
+      setWarnMessage('서비스 방식을 선택해주세요.');
       setWarnModalOpen(true);
       return;
     }
@@ -187,6 +183,12 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       setWarnModalOpen(true);
       return;
     }
+    if (selectedService === 'rental' && !servicePeriod) {
+      setWarnMessage('대여 기간을 선택해주세요.');
+      setWarnModalOpen(true);
+      return;
+    }
+
     // rental이나 purchase에 따라 요청 객체 생성
     const [start, end] = servicePeriod
       ? servicePeriod.split(' ~ ').map((d) => d.replace(/\./g, '-'))
@@ -214,6 +216,22 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
 
   // 제품 주문하기
   const handleOrderClick = () => {
+    if (!selectedService) {
+      setWarnMessage('서비스 방식을 선택해주세요.');
+      setWarnModalOpen(true);
+      return;
+    }
+    if (!selectedSize || !selectedColor) {
+      setWarnMessage('사이즈와 색상을 선택해주세요.');
+      setWarnModalOpen(true);
+      return;
+    }
+    if (selectedService === 'rental' && !servicePeriod) {
+      setWarnMessage('대여 기간을 선택해주세요.');
+      setWarnModalOpen(true);
+      return;
+    }
+
     navigate(`/payment/${product.id}`, { state: itemData });
   };
 
