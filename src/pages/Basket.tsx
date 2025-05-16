@@ -138,7 +138,9 @@ const Basket: React.FC = () => {
             <ItemDetails>
               <Brand>{item.productBrand}</Brand>
               <ItemName>
-                <NameCode>{item.productName}</NameCode>
+                <NameCode>
+                  {item.product_num} / {item.productName}
+                </NameCode>
               </ItemName>
 
               <InfoRowFlex>
@@ -340,9 +342,9 @@ const ItemName = styled.div`
 `;
 
 const NameCode = styled.span`
-  font-weight: 900;
-  font-size: 18px;
-  line-height: 22px;
+  font-weight: 700;
+  font-size: 15px;
+  margin: 8px 0;
   color: #000000;
 `;
 

@@ -44,6 +44,7 @@ export interface CartItem {
 export interface CartItemListResponse {
   id: number;
   productId: number;
+  product_num: string;
   productName: string;
   productThumbnail: string;
   productBrand: string;
