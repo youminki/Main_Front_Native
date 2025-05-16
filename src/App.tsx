@@ -71,6 +71,7 @@ import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
 
 import PaypleTest from './Test/PaypleTest.tsx';
 import PasswordChange from './pages/PasswordChange';
+import PaymentComplete from './pages/PaymentComplete';
 
 const App: React.FC = () => (
   <Router>
@@ -196,6 +197,7 @@ const App: React.FC = () => (
           element={<TermsAndConditionsOfUseDetail />}
         />
         <Route path='/password-change' element={<PasswordChange />} />
+        <Route path='/payment-complete' element={<PaymentComplete />} />
       </Route>
     </Routes>
   </Router>
