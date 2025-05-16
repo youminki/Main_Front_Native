@@ -32,7 +32,8 @@ const TicketPayment: React.FC = () => {
 
   const [options, setOptions] = useState<string[]>([]);
   const [cards, setCards] = useState<CardItem[]>([]);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<string>('');
 
   const today = new Date();
   const formattedToday = format(today, 'yyyy.MM.dd');
@@ -65,7 +66,9 @@ const TicketPayment: React.FC = () => {
   }, []);
 
   const extractPayerId = (val: string) => {
-    const card = cards.find((c) => val.includes(c.cardName) && val.includes(c.cardNumber));
+    const card = cards.find(
+      (c) => val.includes(c.cardName) && val.includes(c.cardNumber)
+    );
     return card?.payerId || '';
   };
 
@@ -102,7 +105,6 @@ const TicketPayment: React.FC = () => {
       window.PaypleCpayAuthCheck(response.data);
     } catch (error) {
       console.error('결제 실패:', error);
-      alert('결제 실패: ' + error.message);
     }
   };
 
