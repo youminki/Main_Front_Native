@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 import TicketIllustration from '../../../assets/LockerRoom/TicketIllustration.svg';
 import AddTicketIllustration from '../../../assets/LockerRoom/AddTicketIllustration.svg';
-import CardIcon from '../../../assets/LockerRoom/cardIcon.svg';
+import CardIcon from '../../../assets/LockerRoom/CardIcon.svg';
 import BarcodeImg from '../../../assets/LockerRoom/barcodeIcon.svg';
 import { getUserTickets, TicketItem } from '../../../api/ticket/ticket';
 
