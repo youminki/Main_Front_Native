@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 import ReusableModal2 from '../../../components/ReusableModal2';
-import CardIcon from '../../../assets/LockerRoom/CardIcon.svg';
+
 import { getMyCards, CardItem } from '../../../api/default/payment';
 import { Trash2 as DeleteIconSVG } from 'lucide-react';
 
@@ -25,6 +25,7 @@ const sales = '2025 1분기';
 const dateRange = 'SPRING';
 
 const PaymentMethod: React.FC = () => {
+  const [currentCard] = useState(0);
   const [cards, setCards] = useState<CardData[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
@@ -36,8 +37,8 @@ const PaymentMethod: React.FC = () => {
     getMyCards()
       .then((res) => {
         const list = res.data.items.map((item: CardItem) => ({
-          registerDate: item.createAt
-            ? `등록일 ${new Date(item.createAt).toISOString().slice(0, 10)}`
+          registerDate: item.createdAt
+            ? `등록일 ${new Date(item.createdAt).toISOString().slice(0, 10)}`
             : '등록일 알 수 없음',
           brand: item.cardName || '알 수 없음',
           cardNumber: item.cardNumber || '****-****-****-****',
@@ -144,7 +145,6 @@ const PaymentMethod: React.FC = () => {
             </CardTop>
             <CardBody>
               <BrandRow>
-                <CardIconImg src={CardIcon} alt='card icon' />
                 <BrandText>{card.brand}</BrandText>
               </BrandRow>
               <NumberText>{card.cardNumber}</NumberText>
@@ -162,10 +162,13 @@ const PaymentMethod: React.FC = () => {
         </AddCardBox>
       </CardsList>
       {error && <ErrorMsg>{error}</ErrorMsg>}
+
       <DotsWrapper>
-        {cards.map((_, idx) => (
-          <Dot key={idx} />
-        ))}
+        {Array(cards.length + 1)
+          .fill(0)
+          .map((_, idx) => (
+            <Dot key={idx} $active={idx === currentCard} />
+          ))}
       </DotsWrapper>
       <ReusableModal2
         isOpen={isDeleteModalOpen}
@@ -214,7 +217,7 @@ const CardsList = styled.div`
   flex-direction: column;
   gap: 20px;
   width: 100%;
-  max-width: 280px;
+  max-width: 300px;
   @media (min-width: 1024px) {
     max-width: 400px;
     margin: 0 auto;
@@ -250,7 +253,7 @@ const DeleteButton = styled.button`
   }
 `;
 const DateLabel = styled.span`
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   color: #fff;
 `;
@@ -268,15 +271,12 @@ const CardBody = styled.div`
 const BrandRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+
   margin-bottom: 10px;
 `;
-const CardIconImg = styled.img`
-  width: 12px;
-  height: 12px;
-`;
+
 const BrandText = styled.span`
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   color: #fff;
 `;
@@ -337,11 +337,11 @@ const DotsWrapper = styled.div`
   gap: 8px;
   margin: 20px 0;
 `;
-const Dot = styled.div`
+const Dot = styled.div<{ $active: boolean }>`
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #d9d9d9;
+  background: ${({ $active }) => ($active ? '#F6AE24' : '#D9D9D9')};
 `;
 const ErrorMsg = styled.p`
   color: #d32f2f;
