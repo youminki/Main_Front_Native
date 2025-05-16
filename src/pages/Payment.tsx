@@ -1,4 +1,3 @@
-// src/pages/PaymentPage.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import * as yup from 'yup';
@@ -14,10 +13,6 @@ import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
 import { getUserTickets, TicketItem } from '../api/ticket/ticket';
 import { createRentalOrder, RentalOrderRequest } from '../api/rental/rental';
-import {
-  createRentalSchedule,
-  RentalScheduleCreateRequest,
-} from '../api/scedule/scedule';
 
 declare global {
   interface Window {
@@ -185,31 +180,52 @@ const PaymentPage: React.FC = () => {
   const handleConfirmPayment = async () => {
     setConfirmModalOpen(false);
 
+    // 1) 주문 생성
     const [startRaw, endRaw] = itemData
       .servicePeriod!.split('~')
       .map((s) => s.trim());
     const startDate = startRaw.replace(/\./g, '-');
     const endDate = endRaw.replace(/\./g, '-');
 
-    const scheduleData: RentalScheduleCreateRequest = {
-      productId: itemData.id,
-      sizeLabel: itemData.size,
-      startDate,
-      endDate,
-      quantity: 1,
+    const orderBody: RentalOrderRequest = {
+      ticketId: tickets[0].id,
+      items: [
+        {
+          productId: itemData.id,
+          sizeLabel: itemData.size,
+          startDate,
+          endDate,
+          quantity: 1,
+          count: 1,
+        },
+      ],
+      shipping: {
+        address: deliveryInfo.address,
+        detailAddress: deliveryInfo.detailAddress,
+        phone: deliveryInfo.contact,
+        receiver: recipient,
+        deliveryMethod: selectedMethod,
+        message: '',
+      },
+      return: {
+        address: returnInfo.address,
+        detailAddress: returnInfo.detailAddress,
+        phone: returnInfo.contact,
+      },
     };
 
     try {
-      await createRentalSchedule(scheduleData);
+      await createRentalOrder(orderBody);
       navigate('/payment-complete');
-    } catch (err) {
-      console.error('예약 생성 실패:', err);
-      setModalAlert({
-        isOpen: true,
-        message: '주문 중 오류가 발생했습니다. 다시 시도해주세요.',
-      });
+    } catch (err: any) {
+      console.error('렌탈 주문 생성 실패:', err);
+      const msg =
+        err.response?.data?.message ||
+        '주문 중 오류가 발생했습니다. 다시 시도해주세요.';
+      setModalAlert({ isOpen: true, message: msg });
     }
   };
+
   const closeAlertModal = () => {
     setModalAlert({ isOpen: false, message: '' });
     if (navigateHome) {
