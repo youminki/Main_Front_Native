@@ -69,7 +69,8 @@ import ScheduleReservation1 from './pages/Melpik/Schedule/ScheduleReservation1';
 import ScheduleReservation2 from './pages/Melpik/Schedule/ScheduleReservation2';
 import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
 
-import PaypleTest from './Test/PaypleTest.tsx';
+import PaypleTest from './Test/PaypleTest';
+import AddCardPayple from './Test/AddCardPayple';
 import PasswordChange from './pages/PasswordChange';
 import PaymentComplete from './pages/PaymentComplete';
 
@@ -82,6 +83,7 @@ const App: React.FC = () => (
       <Route path='/login' element={<Login />} />
       <Route path='/PersonalLink' element={<PersonalLink />} />
       <Route path='/test/payple' element={<PaypleTest />} />
+      <Route path='/test/AddCardPayple' element={<AddCardPayple />} />
 
       <Route element={<AppLayout />}>
         <Route path='/signup' element={<Signup />} />
