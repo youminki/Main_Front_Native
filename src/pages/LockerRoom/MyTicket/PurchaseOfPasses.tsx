@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import InputField from '../../../components/InputField';
@@ -11,16 +11,20 @@ import { getMembershipInfo, MembershipInfo } from '../../../api/user/userApi';
 
 const PurchaseOfPasses: React.FC = () => {
   const navigate = useNavigate();
+  const popupRef = useRef<Window | null>(null);
+  const didReceive = useRef(false);
+
   const [templates, setTemplates] = useState<TicketList[]>([]);
   const [purchaseOption, setPurchaseOption] = useState<string>('');
   const [discountRate, setDiscountRate] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 팝업창 메시지 리스너
+  // 메시지 수신 및 팝업 닫힘 감지
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return;
       const { paymentStatus } = event.data as { paymentStatus: string };
+      didReceive.current = true;
       if (paymentStatus === 'success') {
         navigate('/my-ticket');
       } else {
@@ -28,39 +32,29 @@ const PurchaseOfPasses: React.FC = () => {
       }
     };
     window.addEventListener('message', handler);
-    return () => window.removeEventListener('message', handler);
+    return () => {
+      window.removeEventListener('message', handler);
+    };
   }, [navigate]);
 
-  const selectedTemplate = templates.find((t) => t.name === purchaseOption);
-  const isOneTime = selectedTemplate?.name === '1회 이용권';
-
+  // 템플릿 로드
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await getAllTicketTemplates();
+    getAllTicketTemplates()
+      .then((res) => {
         setTemplates(res.items);
-        if (res.items.length > 0) {
-          setPurchaseOption(res.items[0].name);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    })();
+        if (res.items.length > 0) setPurchaseOption(res.items[0].name);
+      })
+      .catch(console.error);
   }, []);
 
+  // 할인율 로드
   useEffect(() => {
-    (async () => {
-      try {
-        const info: MembershipInfo = await getMembershipInfo();
-        const discount = info.discountRate
-          ? parseFloat(info.discountRate.toString())
-          : 0;
-        setDiscountRate(!isNaN(discount) && discount >= 0 ? discount : 0);
-      } catch (err) {
-        console.error('Error fetching discount rate:', err);
-        setDiscountRate(0);
-      }
-    })();
+    getMembershipInfo()
+      .then((info: MembershipInfo) => {
+        const discount = parseFloat(info.discountRate?.toString() || '0');
+        setDiscountRate(discount >= 0 ? discount : 0);
+      })
+      .catch(() => setDiscountRate(0));
   }, []);
 
   const today = new Date();
@@ -68,7 +62,9 @@ const PurchaseOfPasses: React.FC = () => {
   const formattedOneMonthLater = format(addMonths(today, 1), 'yyyy.MM.dd');
   const paymentDay = today.getDate();
 
-  const basePrice = selectedTemplate ? selectedTemplate.price : 0;
+  const selectedTemplate = templates.find((t) => t.name === purchaseOption);
+  const isOneTime = selectedTemplate?.name === '1회 이용권';
+  const basePrice = selectedTemplate?.price || 0;
   const discountedPrice =
     basePrice > 0 && discountRate > 0
       ? basePrice * (1 - discountRate / 100)
@@ -84,23 +80,22 @@ const PurchaseOfPasses: React.FC = () => {
     }).toString();
     const url = `/my-ticket/PurchaseOfPasses/TicketPayment?${params}`;
 
-    const isMobile = window.innerWidth <= 768;
-    if (isMobile) {
-      window.location.href = url;
-    } else {
-      const w = 360,
-        h = 600;
-      const left = (window.screen.availWidth - w) / 2;
-      const top = (window.screen.availHeight - h) / 2;
-      const popup = window.open(
-        url,
-        'ticketPaymentPopup',
-        `width=${w},height=${h},left=${left},top=${top},resizable,scrollbars`
-      );
-      if (popup) {
-        // 팝업을 닫아도 리스너가 동작하도록 타이머 제거
+    didReceive.current = false;
+    popupRef.current = window.open(
+      url,
+      'ticketPaymentPopup',
+      `width=360,height=600,left=${(window.screen.availWidth - 360) / 2},top=${(window.screen.availHeight - 600) / 2},resizable,scrollbars`
+    );
+
+    const timer = setInterval(() => {
+      if (popupRef.current?.closed) {
+        clearInterval(timer);
+        if (!didReceive.current) {
+          window.location.reload();
+        }
       }
-    }
+    }, 500);
+
     setIsModalOpen(false);
   }, [selectedTemplate, discountedPrice, isOneTime]);
 
@@ -159,7 +154,6 @@ const PurchaseOfPasses: React.FC = () => {
       />
 
       <Divider />
-
       <NoticeArea>
         <NoticeText>
           ※ 이용 중인 구독권은{' '}
@@ -190,6 +184,8 @@ const PurchaseOfPasses: React.FC = () => {
 };
 
 export default PurchaseOfPasses;
+
+// Styled Components (생략)
 
 // styled-components 생략...
 
