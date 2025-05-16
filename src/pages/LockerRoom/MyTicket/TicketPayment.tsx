@@ -1,4 +1,3 @@
-// src/pages/LockerRoom/TicketPayment.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -28,21 +27,18 @@ const TicketPayment: React.FC = () => {
   const location = useLocation();
   const { name, discountedPrice } = location.state || {};
 
-  // 소수점 제거를 위해 반올림 처리
   const roundedPrice = discountedPrice ? Math.round(discountedPrice) : 0;
   const formattedDiscountedPrice = roundedPrice.toLocaleString();
 
   const [options, setOptions] = useState<string[]>([]);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<string>('');
+  const [cards, setCards] = useState<CardItem[]>([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
 
-  // 날짜 계산
   const today = new Date();
   const formattedToday = format(today, 'yyyy.MM.dd');
   const oneMonthLater = addMonths(today, 1);
   const formattedOneMonthLater = format(oneMonthLater, 'MM.dd');
 
-  // 카드 목록 로드
   useEffect(() => {
     (async () => {
       try {
@@ -57,6 +53,7 @@ const TicketPayment: React.FC = () => {
           opts.push('카드 추가하기');
         }
 
+        setCards(items);
         setOptions(opts);
         setSelectedPaymentMethod(opts[0]);
       } catch (e) {
@@ -67,6 +64,11 @@ const TicketPayment: React.FC = () => {
     })();
   }, []);
 
+  const extractPayerId = (val: string) => {
+    const card = cards.find((c) => val.includes(c.cardName) && val.includes(c.cardNumber));
+    return card?.payerId || '';
+  };
+
   const handleSelectChange = (val: string) => {
     if (val === '카드 추가하기') {
       navigate('/payment-method');
@@ -76,9 +78,11 @@ const TicketPayment: React.FC = () => {
   };
 
   const handlePaymentClick = async () => {
+    const payerId = extractPayerId(selectedPaymentMethod);
+
     const requestData = {
-      payerId: selectedPaymentMethod,
-      amount: roundedPrice, // 반올림된 정수 전달
+      payerId,
+      amount: roundedPrice,
       goods: name,
     };
 
@@ -89,9 +93,16 @@ const TicketPayment: React.FC = () => {
       } else {
         response = await postRecurringPayment(requestData);
       }
-      navigate('/payple/payment-result', { state: response.data });
+
+      if (typeof window.PaypleCpayAuthCheck !== 'function') {
+        alert('Payple SDK가 로딩되지 않았습니다.');
+        return;
+      }
+
+      window.PaypleCpayAuthCheck(response.data);
     } catch (error) {
       console.error('결제 실패:', error);
+      alert('결제 실패: ' + error.message);
     }
   };
 
@@ -173,9 +184,6 @@ const TicketPayment: React.FC = () => {
 
 export default TicketPayment;
 
-// 이하 styled-components 생략
-
-// --- styled-components ---
 const Container = styled.div`
   position: relative;
   background: #ffffff;
