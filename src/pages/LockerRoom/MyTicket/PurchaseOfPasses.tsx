@@ -128,36 +128,13 @@ const PurchaseOfPasses: React.FC = () => {
         />
 
         <RowLabel>
-          <HalfBox>
-            <InputField
-              name='paymentAmount'
-              label='이용권 결제금액'
-              id='paymentAmount'
-              prefixcontent={`${formattedDiscountedPrice}원`}
-              readOnly
-            />
-          </HalfBox>
-
-          <HalfBox>
-            <InputField
-              name='ticketSetting'
-              label='이용권 설정 *'
-              id='ticketSetting'
-              as={CustomSelect}
-              value={ticketSetting}
-              onChange={handleTicketSettingChange}
-              disabled={isOneTime}
-            >
-              {isOneTime ? (
-                <option value=''>해당없음</option>
-              ) : (
-                <>
-                  <option value='월 4회권'>월 4회권</option>
-                  <option value='무제한'>무제한</option>
-                </>
-              )}
-            </InputField>
-          </HalfBox>
+          <InputField
+            name='paymentAmount'
+            label='이용권 결제금액'
+            id='paymentAmount'
+            prefixcontent={`${formattedDiscountedPrice}원`}
+            readOnly
+          />
         </RowLabel>
 
         {/* 진행 중인 시즌 */}
@@ -231,10 +208,6 @@ const RowLabel = styled.div`
   align-items: center;
   gap: 20px;
   width: 100%;
-`;
-
-const HalfBox = styled.div`
-  flex: 1;
 `;
 
 const Divider = styled.hr`
