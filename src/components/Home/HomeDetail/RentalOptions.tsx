@@ -84,6 +84,9 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
           for (let i = 1; i <= 3; i++) {
             allTime.push(_addDays(end, i).getTime());
           }
+          for (let i = 1; i <= 3; i++) {
+            allTime.push(_addDays(start, -i).getTime());
+          }
         });
         const unique = Array.from(new Set(allTime)).map((t) => new Date(t));
         setReservedDates(unique);
