@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import PriceIcon from '../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
-// import FixedBottomBar from '../components/FixedBottomBar';
+import FixedBottomBar from '../components/FixedBottomBar';
 import { useNavigate } from 'react-router-dom';
 import ReusableModal2 from '../components/ReusableModal2';
 import { getCartItems, deleteCartItem } from '../api/cart/cart';
@@ -88,11 +88,11 @@ const Basket: React.FC = () => {
     navigate(`/payment/${item.productId}`, { state: payload });
   };
 
-  // const handleConfirmPayment = () => {
-  //   const toPay = items.filter((item) => item.$isSelected);
-  //   if (toPay.length === 0) return;
-  //   navigateToPayment(toPay[0]);
-  // };
+  const handleConfirmPayment = () => {
+    const toPay = items.filter((item) => item.$isSelected);
+    if (toPay.length === 0) return;
+    navigateToPayment(toPay[0]);
+  };
 
   const handleDeleteClick = (id: number) => {
     setSelectedItemId(id);
@@ -224,11 +224,11 @@ const Basket: React.FC = () => {
         </Item>
       ))}
 
-      {/* <FixedBottomBar
+      <FixedBottomBar
         onClick={handleConfirmPayment}
         text='결제하기'
         color='yellow'
-      /> */}
+      />
 
       <ReusableModal2
         isOpen={isDeleteModalOpen}

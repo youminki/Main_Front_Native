@@ -49,7 +49,7 @@ const LockerRoom: React.FC = () => {
       <StatsRow>
         <StatsSection
           visits='구독자'
-          sales='26,000'
+          sales='0'
           dateRange='요약정보'
           visitLabel='그룹'
           salesLabel='보유 포인트'
