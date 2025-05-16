@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import styled, { ThemeProvider } from 'styled-components';
+import React, { useState, useEffect, useCallback } from 'react';
+import styled from 'styled-components';
 import InputField from '../../../components/InputField';
 import { CustomSelect } from '../../../components/CustomSelect';
 import FixedBottomBar from '../../../components/FixedBottomBar';
 import ReusableModal2 from '../../../components/ReusableModal2';
-import { useNavigate } from 'react-router-dom';
-import Theme from '../../../styles/Theme';
 import { format, addMonths } from 'date-fns';
 import { getAllTicketTemplates, TicketList } from '../../../api/ticket/ticket';
 import { getMembershipInfo, MembershipInfo } from '../../../api/user/userApi';
@@ -13,16 +11,12 @@ import { getMembershipInfo, MembershipInfo } from '../../../api/user/userApi';
 const PurchaseOfPasses: React.FC = () => {
   const [templates, setTemplates] = useState<TicketList[]>([]);
   const [purchaseOption, setPurchaseOption] = useState<string>('');
-
-  const [discountRate, setDiscountRate] = useState<number>(0); // 할인율을 숫자로 설정
+  const [discountRate, setDiscountRate] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
 
-  // 현재 선택된 템플릿 객체
   const selectedTemplate = templates.find((t) => t.name === purchaseOption);
   const isOneTime = selectedTemplate?.name === '1회 이용권';
 
-  // 템플릿 목록 조회
   useEffect(() => {
     (async () => {
       try {
@@ -37,153 +31,153 @@ const PurchaseOfPasses: React.FC = () => {
     })();
   }, []);
 
-  // 멤버십 할인율 조회
   useEffect(() => {
     (async () => {
       try {
         const info: MembershipInfo = await getMembershipInfo();
-        // 할인율을 문자열에서 숫자로 변환
         const discount = info.discountRate
-          ? parseFloat(info.discountRate.toString()) // 10.00 -> 10.00 숫자형으로 변환
+          ? parseFloat(info.discountRate.toString())
           : 0;
-
-        // discountRate가 NaN이 아닌지 확인하고 유효한 값만 설정
-        if (!isNaN(discount) && discount >= 0) {
-          setDiscountRate(discount);
-        } else {
-          setDiscountRate(0); // Invalid discount rate일 경우 0으로 설정
-        }
+        setDiscountRate(!isNaN(discount) && discount >= 0 ? discount : 0);
       } catch (err) {
         console.error('Error fetching discount rate:', err);
-        setDiscountRate(0); // 에러가 발생하면 기본값 0으로 설정
+        setDiscountRate(0);
       }
     })();
   }, []);
 
-  // 날짜 세팅
   const today = new Date();
   const formattedToday = format(today, 'yyyy.MM.dd');
-  const oneMonthLater = addMonths(today, 1);
-  const formattedOneMonthLater = format(oneMonthLater, 'yyyy.MM.dd');
+  const formattedOneMonthLater = format(addMonths(today, 1), 'yyyy.MM.dd');
   const paymentDay = today.getDate();
 
-  // 가격 계산
   const basePrice = selectedTemplate ? selectedTemplate.price : 0;
-
-  // 할인율을 반영하여 가격 계산 (percentage discount)
   const discountedPrice =
-    basePrice > 0 && !isNaN(discountRate) && discountRate > 0 // 할인율이 0보다 클 때만 할인 적용
-      ? basePrice * (1 - discountRate / 100) // 할인율 적용: price * (1 - discountRate / 100)
-      : basePrice; // 할인율이 0일 경우 원래 가격을 그대로 사용
-
+    basePrice > 0 && discountRate > 0
+      ? basePrice * (1 - discountRate / 100)
+      : basePrice;
   const formattedDiscountedPrice =
-    discountedPrice > 0 ? discountedPrice.toLocaleString() : '0'; // 원 단위로 표시
+    discountedPrice > 0 ? discountedPrice.toLocaleString() : '0';
+
+  const handleConfirmPayment = useCallback(() => {
+    const params = new URLSearchParams({
+      name: selectedTemplate?.name || '',
+      discountedPrice: String(discountedPrice),
+      isOneTime: String(isOneTime),
+    }).toString();
+    const url = `/my-ticket/PurchaseOfPasses/TicketPayment?${params}`;
+
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      window.location.href = url;
+    } else {
+      const w = 360,
+        h = 600;
+      const left = (window.screen.availWidth - w) / 2;
+      const top = (window.screen.availHeight - h) / 2;
+      const popup = window.open(
+        url,
+        'ticketPaymentPopup',
+        `width=${w},height=${h},left=${left},top=${top},resizable,scrollbars`
+      );
+      if (popup) {
+        const timer = setInterval(() => {
+          if (popup.closed) {
+            clearInterval(timer);
+            window.location.reload();
+          }
+        }, 500);
+      }
+    }
+    setIsModalOpen(false);
+  }, [selectedTemplate, discountedPrice, isOneTime]);
 
   const handlePaymentClick = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
-  const handleConfirmPayment = () => {
-    navigate('/my-ticket/PurchaseOfPasses/TicketPayment', {
-      state: {
-        name: selectedTemplate?.name,
-        discountedPrice,
-        isOneTime: selectedTemplate?.name === '1회 이용권', // 1회 이용권 여부 전달
-      },
-    });
-  };
-
-  // onChange 이벤트 타입 명시
   const handlePurchaseOptionChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => setPurchaseOption(e.target.value);
 
   return (
-    <ThemeProvider theme={Theme}>
-      <Container>
-        {/* 구매할 이용권 */}
-        <InputField
-          name='purchaseOption'
-          label='구매할 이용권 *'
-          id='purchaseOption'
-          as={CustomSelect}
-          value={purchaseOption}
-          onChange={handlePurchaseOptionChange}
-        >
-          {templates.map((tpl) => (
-            <option key={tpl.id} value={tpl.name}>
-              {tpl.name}
-            </option>
-          ))}
-        </InputField>
+    <Container>
+      <InputField
+        name='purchaseOption'
+        label='구매할 이용권 *'
+        id='purchaseOption'
+        as={CustomSelect}
+        value={purchaseOption}
+        onChange={handlePurchaseOptionChange}
+      >
+        {templates.map((tpl) => (
+          <option key={tpl.id} value={tpl.name}>
+            {tpl.name}
+          </option>
+        ))}
+      </InputField>
 
-        {/* 이용권 사용기간 */}
+      <InputField
+        name='usagePeriod'
+        label='이용권 사용기간'
+        id='usagePeriod'
+        prefixcontent={`${formattedToday} ~ ${formattedOneMonthLater} (1개월)`}
+        readOnly
+      />
+
+      <RowLabel>
         <InputField
-          name='usagePeriod'
-          label='이용권 사용기간'
-          id='usagePeriod'
-          prefixcontent={`${formattedToday} ~ ${formattedOneMonthLater} (1개월)`}
+          name='paymentAmount'
+          label='이용권 결제금액'
+          id='paymentAmount'
+          prefixcontent={`${formattedDiscountedPrice}원`}
           readOnly
         />
+      </RowLabel>
 
-        <RowLabel>
-          <InputField
-            name='paymentAmount'
-            label='이용권 결제금액'
-            id='paymentAmount'
-            prefixcontent={`${formattedDiscountedPrice}원`}
-            readOnly
-          />
-        </RowLabel>
+      <InputField
+        name='currentSeason'
+        label='진행 중인 시즌 표시'
+        id='currentSeason'
+        prefixcontent='2025 SPRING | 2025.05 ~ 2025.07'
+        readOnly
+      />
 
-        {/* 진행 중인 시즌 */}
-        <InputField
-          name='currentSeason'
-          label='진행 중인 시즌 표시'
-          id='currentSeason'
-          prefixcontent='2025 SPRING | 2025.05 ~ 2025.07'
-          readOnly
-        />
+      <InputField
+        name='autoPaymentDate'
+        label='자동결제 일자'
+        id='autoPaymentDate'
+        prefixcontent={formattedToday}
+        suffixcontent={!isOneTime ? `매달 ${paymentDay}일마다 결제` : undefined}
+        readOnly
+      />
 
-        {/* 자동결제 일자 */}
-        <InputField
-          name='autoPaymentDate'
-          label='자동결제 일자'
-          id='autoPaymentDate'
-          prefixcontent={formattedToday}
-          suffixcontent={
-            !isOneTime ? `매달 ${paymentDay}일마다 결제` : undefined
-          }
-          readOnly
-        />
+      <Divider />
 
-        <Divider />
+      <NoticeArea>
+        <NoticeText>
+          ※ 이용 중인 구독권은{' '}
+          <OrangeBoldText>시즌 중간에 취소가 불가</OrangeBoldText>합니다.
+        </NoticeText>
+        <NoticeText>
+          구독권 설정은 <BlackBoldText>시즌 시작 전에 선택</BlackBoldText>해야
+          하며, 다음 시즌에 변경 가능합니다.
+        </NoticeText>
+      </NoticeArea>
 
-        <NoticeArea>
-          <NoticeText>
-            ※ 이용 중인 구독권은{' '}
-            <OrangeBoldText>시즌 중간에 취소가 불가</OrangeBoldText>합니다.
-          </NoticeText>
-          <NoticeText>
-            구독권 설정은 <BlackBoldText>시즌 시작 전에 선택</BlackBoldText>해야
-            하며, 다음 시즌에 변경 가능합니다.
-          </NoticeText>
-        </NoticeArea>
+      <FixedBottomBar
+        text='이용권 결제하기'
+        color='black'
+        onClick={handlePaymentClick}
+      />
 
-        <FixedBottomBar
-          text='이용권 결제하기'
-          color='black'
-          onClick={handlePaymentClick}
-        />
-
-        <ReusableModal2
-          title='이용권 구매'
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          onConfirm={handleConfirmPayment}
-        >
-          이용권을 결제하시겠습니까?
-        </ReusableModal2>
-      </Container>
-    </ThemeProvider>
+      <ReusableModal2
+        title='이용권 구매'
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmPayment}
+      >
+        이용권을 결제하시겠습니까?
+      </ReusableModal2>
+    </Container>
   );
 };
 

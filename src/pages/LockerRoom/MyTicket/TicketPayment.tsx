@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { format, addMonths } from 'date-fns';
+import axios from 'axios';
 import InputField from '../../../components/InputField';
 import FixedBottomBar from '../../../components/FixedBottomBar';
 import {
@@ -25,9 +26,14 @@ export interface CardItem {
 const TicketPayment: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { name, discountedPrice } = location.state || {};
 
-  const roundedPrice = discountedPrice ? Math.round(discountedPrice) : 0;
+  // URL 쿼리에서 파라미터 추출
+  const searchParams = new URLSearchParams(location.search);
+  const name = searchParams.get('name') || '';
+  const discountedPriceParam = searchParams.get('discountedPrice') || '0';
+  const discountedPrice = parseFloat(discountedPriceParam);
+
+  const roundedPrice = isNaN(discountedPrice) ? 0 : Math.round(discountedPrice);
   const formattedDiscountedPrice = roundedPrice.toLocaleString();
 
   const [options, setOptions] = useState<string[]>([]);
@@ -37,15 +43,13 @@ const TicketPayment: React.FC = () => {
 
   const today = new Date();
   const formattedToday = format(today, 'yyyy.MM.dd');
-  const oneMonthLater = addMonths(today, 1);
-  const formattedOneMonthLater = format(oneMonthLater, 'MM.dd');
+  const formattedOneMonthLater = format(addMonths(today, 1), 'MM.dd');
 
   useEffect(() => {
     (async () => {
       try {
         const res = await getMyCards();
         const items: CardItem[] = res.data.items;
-
         let opts: string[];
         if (items.length === 0) {
           opts = ['등록된 카드가 없습니다', '카드 추가하기'];
@@ -53,7 +57,6 @@ const TicketPayment: React.FC = () => {
           opts = items.map((c) => `카드 결제 / ${c.cardName} ${c.cardNumber}`);
           opts.push('카드 추가하기');
         }
-
         setCards(items);
         setOptions(opts);
         setSelectedPaymentMethod(opts[0]);
@@ -82,29 +85,28 @@ const TicketPayment: React.FC = () => {
 
   const handlePaymentClick = async () => {
     const payerId = extractPayerId(selectedPaymentMethod);
+    if (!payerId) {
+      alert('결제할 카드를 선택해주세요.');
+      return;
+    }
 
-    const requestData = {
-      payerId,
-      amount: roundedPrice,
-      goods: name,
-    };
-
+    const requestData = { payerId, amount: roundedPrice, goods: name };
     try {
-      let response;
-      if (name === '1회 이용권') {
-        response = await postInitPayment(requestData);
-      } else {
-        response = await postRecurringPayment(requestData);
-      }
+      const response =
+        name === '1회 이용권'
+          ? await postInitPayment(requestData)
+          : await postRecurringPayment(requestData);
 
       if (typeof window.PaypleCpayAuthCheck !== 'function') {
         alert('Payple SDK가 로딩되지 않았습니다.');
         return;
       }
-
       window.PaypleCpayAuthCheck(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('결제 실패:', error);
+      const errMsg =
+        error.response?.data?.message || error.message || '알 수 없는 오류';
+      alert(`결제 실패: ${errMsg}`);
     }
   };
 
@@ -117,7 +119,6 @@ const TicketPayment: React.FC = () => {
         <ProductHeader>
           <LeftSide>
             <SubscriptionLabel>이용권 결제</SubscriptionLabel>
-
             <ProductTitle>
               <MainTitle>{name}</MainTitle>
             </ProductTitle>
