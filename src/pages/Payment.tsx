@@ -198,7 +198,7 @@ const PaymentPage: React.FC = () => {
         {
           productId: itemData.id,
           sizeLabel: itemData.size,
-          startDate, // 올바른 포맷
+          startDate,
           endDate,
           quantity: 1,
           count: 1,
@@ -220,23 +220,16 @@ const PaymentPage: React.FC = () => {
     };
 
     try {
-      const resp = await createRentalOrder(orderBody);
-
-      // 2) Create rental schedule after payment succeeds
-      const scheduleReq: RentalScheduleCreateRequest = {
+      await createRentalOrder(orderBody);
+      await createRentalSchedule({
         productId: itemData.id,
         sizeLabel: itemData.size,
-        startDate: startDate, // 이미 변환된 변수 사용
-        endDate: endDate,
+        startDate,
+        endDate,
         quantity: 1,
-      };
-      await createRentalSchedule(scheduleReq);
-
-      setModalAlert({
-        isOpen: true,
-        message: `주문 ${resp.orderId}이(가) 성공적으로 등록되었습니다.`,
       });
-      setNavigateHome(true);
+      // 결제 완료 화면으로 이동
+      navigate('/payment-complete');
     } catch (err) {
       console.error('렌탈 주문/스케줄 생성 실패:', err);
       setModalAlert({
@@ -248,10 +241,6 @@ const PaymentPage: React.FC = () => {
 
   const closeAlertModal = () => {
     setModalAlert({ isOpen: false, message: '' });
-    if (navigateHome) {
-      navigate('/home');
-      setNavigateHome(false);
-    }
   };
 
   return (
