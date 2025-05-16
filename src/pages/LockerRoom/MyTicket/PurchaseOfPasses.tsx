@@ -12,30 +12,11 @@ import { getMembershipInfo, MembershipInfo } from '../../../api/user/userApi';
 const PurchaseOfPasses: React.FC = () => {
   const navigate = useNavigate();
   const popupRef = useRef<Window | null>(null);
-  const didReceive = useRef(false);
 
   const [templates, setTemplates] = useState<TicketList[]>([]);
   const [purchaseOption, setPurchaseOption] = useState<string>('');
   const [discountRate, setDiscountRate] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // 메시지 수신 및 팝업 닫힘 감지
-  useEffect(() => {
-    const handler = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      const { paymentStatus } = event.data as { paymentStatus: string };
-      didReceive.current = true;
-      if (paymentStatus === 'success') {
-        navigate('/my-ticket');
-      } else {
-        window.location.reload();
-      }
-    };
-    window.addEventListener('message', handler);
-    return () => {
-      window.removeEventListener('message', handler);
-    };
-  }, [navigate]);
 
   // 템플릿 로드
   useEffect(() => {
@@ -80,7 +61,6 @@ const PurchaseOfPasses: React.FC = () => {
     }).toString();
     const url = `/my-ticket/PurchaseOfPasses/TicketPayment?${params}`;
 
-    didReceive.current = false;
     popupRef.current = window.open(
       url,
       'ticketPaymentPopup',
@@ -90,14 +70,12 @@ const PurchaseOfPasses: React.FC = () => {
     const timer = setInterval(() => {
       if (popupRef.current?.closed) {
         clearInterval(timer);
-        if (!didReceive.current) {
-          window.location.reload();
-        }
+        navigate('/my-ticket');
       }
     }, 500);
 
     setIsModalOpen(false);
-  }, [selectedTemplate, discountedPrice, isOneTime]);
+  }, [selectedTemplate, discountedPrice, isOneTime, navigate]);
 
   return (
     <Container>
