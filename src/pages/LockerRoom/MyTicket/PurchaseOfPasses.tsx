@@ -61,18 +61,23 @@ const PurchaseOfPasses: React.FC = () => {
     }).toString();
     const url = `/my-ticket/PurchaseOfPasses/TicketPayment?${params}`;
 
-    popupRef.current = window.open(
-      url,
-      'ticketPaymentPopup',
-      `width=360,height=600,left=${(window.screen.availWidth - 360) / 2},top=${(window.screen.availHeight - 600) / 2},resizable,scrollbars`
-    );
-
-    const timer = setInterval(() => {
-      if (popupRef.current?.closed) {
-        clearInterval(timer);
-        navigate('/my-ticket');
-      }
-    }, 500);
+    const isDesktop = window.innerWidth > 768;
+    if (isDesktop) {
+      popupRef.current = window.open(
+        url,
+        'ticketPaymentPopup',
+        `width=360,height=600,left=${(window.screen.availWidth - 360) / 2},top=${(window.screen.availHeight - 600) / 2},resizable,scrollbars`
+      );
+      const timer = setInterval(() => {
+        if (popupRef.current?.closed) {
+          clearInterval(timer);
+          navigate('/my-ticket');
+        }
+      }, 500);
+    } else {
+      // 모바일에서는 바로 이동
+      window.location.href = url;
+    }
 
     setIsModalOpen(false);
   }, [selectedTemplate, discountedPrice, isOneTime, navigate]);
