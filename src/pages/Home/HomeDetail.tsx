@@ -19,6 +19,7 @@ import RentalOptions from '../../components/Home/HomeDetail/RentalOptions';
 import ReusableModal from '../../components/ReusableModal';
 import BottomBar from '../../components/Home/HomeDetail/BottomBar';
 import ShoppingBasket from '../../assets/Home/HomeDetail/ShoppingBasket.svg';
+import { addCartItem } from '../../api/cart/cart';
 
 interface ProductDetail {
   id: number;
@@ -175,9 +176,40 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     imageUrl: product.mainImage,
   };
 
-  // 장바구니 아이콘
-  const handleCartIconClick = () => {
-    navigate('/basket');
+  const handleCartIconClick = async () => {
+    if (!selectedService) {
+      setWarnMessage('서비스를 선택해주세요.');
+      setWarnModalOpen(true);
+      return;
+    }
+    if (!selectedSize || !selectedColor) {
+      setWarnMessage('사이즈와 색상을 선택해주세요.');
+      setWarnModalOpen(true);
+      return;
+    }
+    // rental이나 purchase에 따라 요청 객체 생성
+    const [start, end] = servicePeriod
+      ? servicePeriod.split(' ~ ').map((d) => d.replace(/\./g, '-'))
+      : [undefined, undefined];
+    const cartReq = {
+      productId: product.id,
+      serviceType: selectedService,
+      rentalStartDate: selectedService === 'rental' ? start : undefined,
+      rentalEndDate: selectedService === 'rental' ? end : undefined,
+      size: selectedSize,
+      color: selectedColor,
+      quantity: 1,
+      totalPrice: selectedService === 'purchase' ? product.retailPrice : 0, // 필요 시 다르게 계산
+    };
+    try {
+      await addCartItem(cartReq);
+      // 추가 성공 시 장바구니 페이지로 이동
+      navigate('/basket');
+    } catch (err) {
+      console.error('장바구니 추가 실패', err);
+      setWarnMessage('장바구니에 추가하는데 실패했습니다.');
+      setWarnModalOpen(true);
+    }
   };
 
   // 제품 주문하기
