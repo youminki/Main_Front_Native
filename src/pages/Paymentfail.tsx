@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import CompleteIcon from '../assets/Complete/CompleteIcon.svg';
+import FailIcon from '../assets/Complete/FailIcon.svg';
 import FixedBottomBar from '../components/FixedBottomBar';
 
 interface PaymentFailProps {
@@ -28,15 +28,15 @@ const PaymentFail: React.FC<PaymentFailProps> = ({ onClose }) => {
     <Container>
       <Content>
         <IconWrapper>
-          <CompleteImg src={CompleteIcon} alt='결제 실패 아이콘' />
+          <CompleteImg src={FailIcon} alt='결제 실패 아이콘' />
         </IconWrapper>
         <Title>
           결제가 <Strong>실패</Strong> 되었습니다.
         </Title>
         <Subtitle>
-          신청하신 제품을 신속하게 준비하여,
+          처리 중 문제가 발생 하였습니다.
           <br />
-          빠르게 전달 드리겠습니다.
+          서비스팀에서 신속히 처리 드리겠습니다.
         </Subtitle>
       </Content>
       <FixedBottomBar text='확인' color='black' onClick={handleClose} />
@@ -45,16 +45,6 @@ const PaymentFail: React.FC<PaymentFailProps> = ({ onClose }) => {
 };
 
 export default PaymentFail;
-
-// 애니메이션: 화면 왼쪽 밖 → 화면 오른쪽 밖
-const slideAcross = keyframes`
-  0% {
-    left: -80px;
-  }
-  100% {
-    left: calc(100% + 80px);
-  }
-`;
 
 const Container = styled.div`
   position: fixed;
@@ -83,12 +73,11 @@ const IconWrapper = styled.div`
 `;
 
 const CompleteImg = styled.img`
-  position: absolute;
+  position: relative;
   top: 0;
   width: 80px;
   height: 80px;
   object-fit: contain;
-  animation: ${slideAcross} 4s linear infinite;
 `;
 
 const Title = styled.h1`
