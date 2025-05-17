@@ -1,3 +1,4 @@
+// src/pages/Basket.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FiShoppingCart } from 'react-icons/fi';
@@ -9,22 +10,14 @@ import Spinner from '../components/Spinner';
 import { useNavigate } from 'react-router-dom';
 import ReusableModal2 from '../components/ReusableModal2';
 import { getCartItems, deleteCartItem } from '../api/cart/cart';
-import type { CartItemListResponse } from '../api/cart/cart';
 
-const getServiceLabel = (type: string) => {
-  if (type === 'rental') return '대여';
-  if (type === 'purchase') return '구매';
-  return type;
-};
-
-// PaymentPage가 기대하는 BasketItem 인터페이스
 interface BasketItemForPayment {
   id: number;
   brand: string;
   nameCode: string;
   nameType: string;
   type: 'rental' | 'purchase';
-  servicePeriod?: string; // "YYYY.MM.DD ~ YYYY.MM.DD"
+  servicePeriod?: string;
   size: string;
   color: string;
   price: number;
@@ -32,9 +25,27 @@ interface BasketItemForPayment {
   $isSelected: boolean;
 }
 
-interface BasketItem extends CartItemListResponse {
+interface BasketItem {
+  id: number;
+  productId: number;
+  product_num: string;
+  name: string; // API에서 돌아오는 name 필드
+  productBrand: string;
+  productThumbnail: string;
+  serviceType: 'rental' | 'purchase';
+  rentalStartDate?: string;
+  rentalEndDate?: string;
+  size: string;
+  color: string;
+  totalPrice: number;
   $isSelected: boolean;
 }
+
+const getServiceLabel = (type: string) => {
+  if (type === 'rental') return '대여';
+  if (type === 'purchase') return '구매';
+  return type;
+};
 
 const Basket: React.FC = () => {
   const navigate = useNavigate();
@@ -49,7 +60,18 @@ const Basket: React.FC = () => {
     getCartItems()
       .then((data) => {
         const withSelectFlag = data.map((item) => ({
-          ...item,
+          id: item.id,
+          productId: item.productId,
+          product_num: item.product_num,
+          name: item.name, // productName 대신 name 사용
+          productBrand: item.productBrand,
+          productThumbnail: item.productThumbnail,
+          serviceType: item.serviceType,
+          rentalStartDate: item.rentalStartDate,
+          rentalEndDate: item.rentalEndDate,
+          size: item.size,
+          color: item.color,
+          totalPrice: item.totalPrice ?? 0,
           $isSelected: true,
         }));
         setItems(withSelectFlag);
@@ -79,13 +101,13 @@ const Basket: React.FC = () => {
     const payload: BasketItemForPayment = {
       id: item.productId,
       brand: item.productBrand,
-      nameCode: item.productName,
+      nameCode: `${item.product_num} / ${item.name}`, // nameCode에 합쳐서 전달
       nameType: '',
-      type: item.serviceType.toLowerCase() === 'rental' ? 'rental' : 'purchase',
+      type: item.serviceType,
       servicePeriod,
       size: item.size,
       color: item.color,
-      price: item.totalPrice ?? 0,
+      price: item.totalPrice,
       imageUrl: item.productThumbnail,
       $isSelected: true,
     };
@@ -157,9 +179,9 @@ const Basket: React.FC = () => {
                 <ItemDetails>
                   <Brand>{item.productBrand}</Brand>
                   <ItemName>
-                    <NameCode>
-                      {item.product_num} / {item.productName}
-                    </NameCode>
+                    <Code>{item.product_num}</Code>
+                    <Slash>/</Slash>
+                    <Name>{item.name}</Name>
                   </ItemName>
 
                   <InfoRowFlex>
@@ -168,9 +190,9 @@ const Basket: React.FC = () => {
                     </IconArea>
                     <TextContainer>
                       <RowText>
-                        <LabelDetailText>서비스 타입 - </LabelDetailText>
+                        <LabelDetailText>진행 서비스 - </LabelDetailText>
                         <DetailHighlight>
-                          {getServiceLabel(item.serviceType.toLowerCase())}
+                          {getServiceLabel(item.serviceType)}
                         </DetailHighlight>
                       </RowText>
                       {item.rentalStartDate && item.rentalEndDate && (
@@ -189,11 +211,13 @@ const Basket: React.FC = () => {
                     </IconArea>
                     <TextContainer>
                       <RowText>
-                        <LabelDetailText>사이즈/색상</LabelDetailText>
+                        <LabelDetailText>제품정보</LabelDetailText>
                       </RowText>
                       <AdditionalText>
                         <DetailText>
-                          {item.size} / {item.color}
+                          사이즈 -{' '}
+                          <DetailHighlight>{item.size}</DetailHighlight> <br />{' '}
+                          색상 -<DetailHighlight> {item.color}</DetailHighlight>
                         </DetailText>
                       </AdditionalText>
                     </TextContainer>
@@ -207,10 +231,7 @@ const Basket: React.FC = () => {
                       <RowText>
                         <LabelDetailText>결제금액 - </LabelDetailText>
                         <DetailHighlight>
-                          {item.totalPrice
-                            ? item.totalPrice.toLocaleString()
-                            : '0'}
-                          원
+                          {item.totalPrice.toLocaleString()}원
                         </DetailHighlight>
                       </RowText>
                     </TextContainer>
@@ -226,10 +247,7 @@ const Basket: React.FC = () => {
                         onChange={() => handleSelectItem(item.id)}
                       />
                     </CheckboxOverlay>
-                    <ItemImage
-                      src={item.productThumbnail}
-                      alt={item.productName}
-                    />
+                    <ItemImage src={item.productThumbnail} alt={item.name} />
                   </ItemImageContainer>
                 </RightSection>
               </ContentWrapper>
@@ -276,6 +294,8 @@ const Basket: React.FC = () => {
 
 export default Basket;
 
+// --- styled-components 아래 생략 없이 동일하게 유지 ---
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -309,16 +329,15 @@ const Header = styled.div`
 `;
 
 const Checkbox = styled.input`
-  margin-bottom: 5px;
   width: 20px;
   height: 20px;
-  margin-right: 10px;
+  margin-right: 8px;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   background-color: #ffffff;
   border: 1px solid #cccccc;
-  border-radius: 3px;
+
   cursor: pointer;
   position: relative;
 
@@ -368,9 +387,14 @@ const ItemDetails = styled.div`
 
 const Brand = styled.div`
   font-weight: 900;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 11px;
   color: #000000;
+
+  @media (max-width: 480px) {
+    margin: 0;
+    font-size: 11px;
+  }
 `;
 
 const ItemName = styled.div`
@@ -378,13 +402,13 @@ const ItemName = styled.div`
   align-items: center;
   margin-top: 6px;
   margin-bottom: 28px;
-`;
 
-const NameCode = styled.span`
-  font-weight: 700;
-  font-size: 15px;
-  margin: 8px 0;
-  color: #000000;
+  @media (max-width: 480px) {
+    /* 모바일에선 세로 정렬 */
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
 `;
 
 const LabelDetailText = styled.span`
@@ -393,6 +417,9 @@ const LabelDetailText = styled.span`
   line-height: 22px;
   color: #000000;
   white-space: nowrap;
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 `;
 
 const DetailText = styled.span`
@@ -401,6 +428,9 @@ const DetailText = styled.span`
   line-height: 22px;
   color: #000000;
   white-space: nowrap;
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 `;
 
 const DetailHighlight = styled.span`
@@ -409,6 +439,10 @@ const DetailHighlight = styled.span`
   line-height: 22px;
   color: #000000;
   white-space: nowrap;
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 `;
 
 const InfoRowFlex = styled.div`
@@ -430,7 +464,10 @@ const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  @media (max-width: 480px) {
+    margin-bottom: 10px;
+  }
 `;
 
 const RowText = styled.div`
@@ -454,8 +491,14 @@ const RightSection = styled.div`
 
 const ItemImageContainer = styled.div`
   position: relative;
-  width: 140px;
+  width: 100%;
   height: 210px;
+  border: 1px solid #ddd;
+
+  @media (min-width: 600px) {
+    width: 200px;
+    height: auto;
+  }
 `;
 
 const CheckboxOverlay = styled.div`
@@ -469,9 +512,13 @@ const ItemImage = styled.img`
 
 const ButtonContainer = styled.div`
   display: flex;
-  gap: 20px;
-  margin-top: 20px;
+  gap: 10px;
+
   align-self: flex-end;
+
+  @media (min-width: 600px) {
+    margin-top: 20px;
+  }
 `;
 
 const DeleteButton = styled.button`
@@ -483,6 +530,13 @@ const DeleteButton = styled.button`
   border-radius: 6px;
   cursor: pointer;
   border: 1px solid #ddd;
+
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 15px;
+  text-align: center;
+
+  color: #999999;
 `;
 
 const PurchaseButton = styled.button`
@@ -495,9 +549,43 @@ const PurchaseButton = styled.button`
   border-radius: 6px;
   cursor: pointer;
   border: 1px solid #ddd;
+
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 15px;
+  text-align: center;
 `;
 
 const Icon = styled.img`
   width: 20px;
   height: 20px;
+`;
+
+const Code = styled.span`
+  font-weight: 700;
+  font-size: 13px;
+  color: #999;
+  margin-right: 4px;
+  @media (max-width: 480px) {
+    margin: 0;
+    font-size: 13px;
+  }
+`;
+const Slash = styled.span`
+  font-weight: 700;
+  font-size: 15px;
+  color: #000;
+  margin: 0 4px;
+  @media (max-width: 480px) {
+    display: none;
+  }
+`;
+const Name = styled.span`
+  font-weight: 700;
+  font-size: 15px;
+  color: #000;
+  @media (max-width: 480px) {
+    margin-top: 4px;
+    font-size: 14px;
+  }
 `;
