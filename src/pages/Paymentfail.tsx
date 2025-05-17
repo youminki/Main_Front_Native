@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import FailIcon from '../assets/Complete/FailIcon.svg';
 import FixedBottomBar from '../components/FixedBottomBar';
