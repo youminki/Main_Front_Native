@@ -74,6 +74,8 @@ const SearchBox = styled.div<{ open: boolean }>`
   align-items: center;
   border-radius: 18px;
   padding: 4px;
+  padding-right: 0px;
+
   box-shadow: ${({ open }) => (open ? '0 2px 8px rgba(0,0,0,0.15)' : 'none')};
   transition:
     width 0.3s ease,
@@ -84,6 +86,7 @@ const SearchBox = styled.div<{ open: boolean }>`
 `;
 const SearchInput = styled.input<{ open?: boolean }>`
   flex: 1;
+
   margin-left: ${({ open }) => (open ? '8px' : '0')};
   border: none;
   outline: none;
@@ -99,6 +102,7 @@ const SearchIconWrapper = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
   flex-shrink: 0;
 `;
 
@@ -488,7 +492,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                 alt='공유'
                 onClick={() => setFeatureModalOpen(true)}
               />
-              <Icon src={HomeIcon} alt='홈' onClick={() => navigate('/')} />
+              <Icon src={HomeIcon} alt='홈' onClick={() => navigate('/home')} />
             </RightSection>
           </HeaderContainer>
         </HeaderWrapper>
