@@ -51,6 +51,7 @@ interface ProductDetail {
 type HomeDetailProps = { id?: string };
 
 const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
+  const [cartModalOpen, setCartModalOpen] = useState(false);
   const navigate = useNavigate();
   const params = useParams<{ id: string }>();
   const [product, setProduct] = useState<ProductDetail | null>(null);
@@ -205,8 +206,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     };
     try {
       await addCartItem(cartReq);
-      // 추가 성공 시 장바구니 페이지로 이동
-      navigate('/basket');
+      setCartModalOpen(true);
     } catch (err) {
       console.error('장바구니 추가 실패', err);
       setWarnMessage('장바구니에 추가하는데 실패했습니다.');
@@ -317,6 +317,22 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
           height='200px'
         >
           <ErrorMsg>{warnMessage}</ErrorMsg>
+        </ReusableModal>
+      )}
+
+      {cartModalOpen && (
+        <ReusableModal
+          isOpen
+          onClose={() => setCartModalOpen(false)}
+          title='알림'
+          width='80%'
+          height='200px'
+        >
+          <div
+            style={{ textAlign: 'center', fontSize: '14px', padding: '20px' }}
+          >
+            장바구니에 추가되었습니다.
+          </div>
         </ReusableModal>
       )}
 
