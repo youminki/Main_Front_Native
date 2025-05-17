@@ -43,6 +43,7 @@ export interface CartItem {
  */
 export interface CartItemListResponse {
   id: number;
+  name: string;
   productId: number;
   product_num: string;
   productName: string;
