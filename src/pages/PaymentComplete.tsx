@@ -1,18 +1,28 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import CompleteIcon from '../assets/Complete/CompleteIcon.svg';
 import FixedBottomBar from '../components/FixedBottomBar';
 
-interface PaymentFailProps {
-  onClose: () => void;
+interface PaymentCompleteProps {
+  onClose?: () => void;
 }
 
-const PaymentFail: React.FC<PaymentFailProps> = ({ onClose }) => {
+const PaymentComplete: React.FC<PaymentCompleteProps> = ({ onClose }) => {
+  const navigate = useNavigate();
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate('/home');
+    }
+  };
+
   return (
     <Container>
       <Content>
         <IconWrapper>
-          <CompleteImg src={CompleteIcon} alt='결제 실패 아이콘' />
+          <CompleteImg src={CompleteIcon} alt='결제 완료 아이콘' />
         </IconWrapper>
         <Title>
           결제가 <Strong>완료</Strong> 되었습니다.
@@ -23,14 +33,12 @@ const PaymentFail: React.FC<PaymentFailProps> = ({ onClose }) => {
           빠르게 전달 드리겠습니다.
         </Subtitle>
       </Content>
-
-      {/* 이 FixedBottomBar는 내부에서 position: fixed 처리되므로 Container 밖에서도 하단에 고정됩니다 */}
-      <FixedBottomBar text='확인' color='black' onClick={onClose} />
+      <FixedBottomBar text='확인' color='yellow' onClick={handleClose} />
     </Container>
   );
 };
 
-export default PaymentFail;
+export default PaymentComplete;
 
 // 애니메이션: 화면 왼쪽 밖 → 화면 오른쪽 밖
 const slideAcross = keyframes`
@@ -94,6 +102,5 @@ const Subtitle = styled.p`
   font-size: 14px;
   line-height: 23px;
   text-align: center;
-
   color: #999999;
 `;
