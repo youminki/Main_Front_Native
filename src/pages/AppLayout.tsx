@@ -57,7 +57,7 @@ const AppLayout: React.FC = () => {
     '/home',
     '/brand',
     '/melpik',
-    '/lockerroom',
+    '/lockerRoom',
     '/customerService',
   ];
 
