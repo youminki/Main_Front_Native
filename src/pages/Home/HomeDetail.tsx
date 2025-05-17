@@ -160,18 +160,18 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     discountPrice: product.discountPrice,
   };
 
-  const itemData = {
-    id: product.id,
-    brand: product.brand,
-    nameCode: product.product_num,
-    nameType: product.name,
-    type: selectedService as 'rental' | 'purchase',
-    servicePeriod,
-    size: selectedSize,
-    color: selectedColor,
-    price: selectedService === 'rental' ? 0 : product.retailPrice,
-    imageUrl: product.mainImage,
-  };
+  // const itemData = {
+  //   id: product.id,
+  //   brand: product.brand,
+  //   nameCode: product.product_num,
+  //   nameType: product.name,
+  //   type: selectedService as 'rental' | 'purchase',
+  //   servicePeriod,
+  //   size: selectedSize,
+  //   color: selectedColor,
+  //   price: selectedService === 'rental' ? 0 : product.retailPrice,
+  //   imageUrl: product.mainImage,
+  // };
 
   const handleCartIconClick = async () => {
     if (!selectedService) {
