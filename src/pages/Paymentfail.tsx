@@ -10,10 +10,16 @@ interface PaymentFailProps {
 
 const PaymentFail: React.FC<PaymentFailProps> = ({ onClose }) => {
   const navigate = useNavigate();
+
   const handleClose = () => {
     if (onClose) {
+      // 부모 컴포넌트에서 전달된 닫기 콜백 실행
       onClose();
+    } else if (window.opener) {
+      // 팝업으로 열렸다면 창 닫기
+      window.close();
     } else {
+      // SPA 라우팅으로 홈으로 이동
       navigate('/home');
     }
   };
