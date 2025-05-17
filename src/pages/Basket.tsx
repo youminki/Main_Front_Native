@@ -151,7 +151,6 @@ const Basket: React.FC = () => {
                   <RowText>
                     <LabelDetailText>서비스 타입 - </LabelDetailText>
                     <DetailHighlight>
-                      {' '}
                       {getServiceLabel(item.serviceType.toLowerCase())}
                     </DetailHighlight>
                   </RowText>
@@ -217,7 +216,7 @@ const Basket: React.FC = () => {
             <DeleteButton onClick={() => handleDeleteClick(item.id)}>
               삭제
             </DeleteButton>
-            <PurchaseButton onClick={() => handleBuyClick(item.id)}>
+            <PurchaseButton onClick={() => handleBuyClick(item.id)} disabled>
               바로구매
             </PurchaseButton>
           </ButtonContainer>
@@ -228,6 +227,7 @@ const Basket: React.FC = () => {
         onClick={handleConfirmPayment}
         text='결제하기'
         color='yellow'
+        disabled
       />
 
       <ReusableModal2
@@ -253,6 +253,8 @@ const Basket: React.FC = () => {
 
 export default Basket;
 
+/* Styled Components */
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -275,8 +277,6 @@ const Checkbox = styled.input`
   height: 20px;
   margin-right: 10px;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   background-color: #ffffff;
   border: 1px solid #cccccc;
   border-radius: 3px;
@@ -284,7 +284,6 @@ const Checkbox = styled.input`
   position: relative;
 
   &:checked {
-    background-color: #ffffff;
     border-color: #999999;
   }
 
@@ -330,7 +329,6 @@ const ItemDetails = styled.div`
 const Brand = styled.div`
   font-weight: 900;
   font-size: 14px;
-  line-height: 11px;
   color: #000000;
 `;
 
@@ -440,7 +438,6 @@ const DeleteButton = styled.button`
   color: #888;
   width: 91px;
   height: 46px;
-  white-space: nowrap;
   border-radius: 6px;
   cursor: pointer;
   border: 1px solid #ddd;
@@ -452,10 +449,14 @@ const PurchaseButton = styled.button`
   border: none;
   width: 91px;
   height: 46px;
-  white-space: nowrap;
   border-radius: 6px;
   cursor: pointer;
   border: 1px solid #ddd;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
 
 const Icon = styled.img`

@@ -21,7 +21,7 @@ const menuItems = [
     disabled: true,
   },
   { icon: PointsIcon, label: '포인트', path: '/point', disabled: true },
-  { icon: TicketIcon, label: '이용권', path: '/my-ticket', disabled: false },
+  { icon: TicketIcon, label: '이용권', path: '/my-ticket', disabled: true },
   {
     icon: PaymentIcon,
     label: '결제수단',

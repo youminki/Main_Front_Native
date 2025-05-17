@@ -172,6 +172,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     price: selectedService === 'rental' ? 0 : product.retailPrice,
     imageUrl: product.mainImage,
   };
+
   const handleCartIconClick = async () => {
     if (!selectedService) {
       setWarnMessage('서비스 방식을 선택해주세요.');
@@ -189,7 +190,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       return;
     }
 
-    // rental이나 purchase에 따라 요청 객체 생성
     const [start, end] = servicePeriod
       ? servicePeriod.split(' ~ ').map((d) => d.replace(/\./g, '-'))
       : [undefined, undefined];
@@ -201,11 +201,10 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       size: selectedSize,
       color: selectedColor,
       quantity: 1,
-      totalPrice: selectedService === 'purchase' ? product.retailPrice : 0, // 필요 시 다르게 계산
+      totalPrice: selectedService === 'purchase' ? product.retailPrice : 0,
     };
     try {
       await addCartItem(cartReq);
-      // 추가 성공 시 장바구니 페이지로 이동
       navigate('/basket');
     } catch (err) {
       console.error('장바구니 추가 실패', err);
@@ -214,25 +213,9 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     }
   };
 
-  // 제품 주문하기
+  // --- 주문하기 버튼을 임시로 비활성화 처리 ---
   const handleOrderClick = () => {
-    if (!selectedService) {
-      setWarnMessage('서비스 방식을 선택해주세요.');
-      setWarnModalOpen(true);
-      return;
-    }
-    if (!selectedSize || !selectedColor) {
-      setWarnMessage('사이즈와 색상을 선택해주세요.');
-      setWarnModalOpen(true);
-      return;
-    }
-    if (selectedService === 'rental' && !servicePeriod) {
-      setWarnMessage('대여 기간을 선택해주세요.');
-      setWarnModalOpen(true);
-      return;
-    }
-
-    navigate(`/payment/${product.id}`, { state: itemData });
+    // 빈 함수: 클릭해도 아무 동작 없음
   };
 
   return (
@@ -331,10 +314,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
 };
 
 export default HomeDetail;
-
-// — Styled Components (생략 없이 유지) —
-// ... (위에 있던 모든 styled-components 정의를 그대로 붙여 넣으시면 됩니다) ...
-
 // — Styled Components
 const DetailContainer = styled.div`
   display: flex;
