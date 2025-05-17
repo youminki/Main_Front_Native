@@ -232,7 +232,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       return;
     }
 
-    navigate(`/payment/${product.id}`, { state: itemData });
+    navigate(`/payment/${product.id}`, { state: [itemData] });
   };
 
   return (

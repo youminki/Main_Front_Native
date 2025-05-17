@@ -29,7 +29,7 @@ interface BasketItem {
   id: number;
   productId: number;
   product_num: string;
-  name: string; // API에서 돌아오는 name 필드
+  name: string;
   productBrand: string;
   productThumbnail: string;
   serviceType: 'rental' | 'purchase';
@@ -63,7 +63,7 @@ const Basket: React.FC = () => {
           id: item.id,
           productId: item.productId,
           product_num: item.product_num,
-          name: item.name, // productName 대신 name 사용
+          name: item.name,
           productBrand: item.productBrand,
           productThumbnail: item.productThumbnail,
           serviceType: item.serviceType,
@@ -101,7 +101,7 @@ const Basket: React.FC = () => {
     const payload: BasketItemForPayment = {
       id: item.productId,
       brand: item.productBrand,
-      nameCode: `${item.product_num} / ${item.name}`, // nameCode에 합쳐서 전달
+      nameCode: `${item.product_num} / ${item.name}`,
       nameType: '',
       type: item.serviceType,
       servicePeriod,
@@ -111,13 +111,32 @@ const Basket: React.FC = () => {
       imageUrl: item.productThumbnail,
       $isSelected: true,
     };
-    navigate(`/payment/${item.productId}`, { state: payload });
+    navigate(`/payment/${item.productId}`, { state: [payload] });
   };
 
+  // 수정된 부분: 선택된 모든 아이템을 payment로 보내도록 함
   const handleConfirmPayment = () => {
     const toPay = items.filter((item) => item.$isSelected);
     if (toPay.length === 0) return;
-    navigateToPayment(toPay[0]);
+
+    const payloads: BasketItemForPayment[] = toPay.map((item) => ({
+      id: item.productId,
+      brand: item.productBrand,
+      nameCode: `${item.product_num} / ${item.name}`,
+      nameType: '',
+      type: item.serviceType,
+      servicePeriod:
+        item.rentalStartDate && item.rentalEndDate
+          ? `${item.rentalStartDate} ~ ${item.rentalEndDate}`
+          : undefined,
+      size: item.size,
+      color: item.color,
+      price: item.totalPrice,
+      imageUrl: item.productThumbnail,
+      $isSelected: true,
+    }));
+    const firstId = payloads[0].id;
+    navigate(`/payment/${firstId}`, { state: payloads });
   };
 
   const handleDeleteClick = (id: number) => {
@@ -216,8 +235,8 @@ const Basket: React.FC = () => {
                       <AdditionalText>
                         <DetailText>
                           사이즈 -{' '}
-                          <DetailHighlight>{item.size}</DetailHighlight> <br />{' '}
-                          색상 -<DetailHighlight> {item.color}</DetailHighlight>
+                          <DetailHighlight>{item.size}</DetailHighlight> <br />
+                          색상 - <DetailHighlight>{item.color}</DetailHighlight>
                         </DetailText>
                       </AdditionalText>
                     </TextContainer>
@@ -225,7 +244,7 @@ const Basket: React.FC = () => {
 
                   <InfoRowFlex>
                     <IconArea>
-                      <Icon src={PriceIcon} alt='Price' />
+                      <IconArea src={PriceIcon} alt='Price' />
                     </IconArea>
                     <TextContainer>
                       <RowText>
@@ -294,7 +313,7 @@ const Basket: React.FC = () => {
 
 export default Basket;
 
-// --- styled-components 아래 생략 없이 동일하게 유지 ---
+// --- styled-components 정의 (생략 없이 동일하게 유지) ---
 
 const Container = styled.div`
   display: flex;

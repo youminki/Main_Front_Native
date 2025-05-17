@@ -44,7 +44,7 @@ const paymentSchema = yup.object().shape({
     ),
 });
 
-interface BasketItem {
+interface BasketItemForPayment {
   id: number;
   brand: string;
   nameCode: string;
@@ -62,9 +62,10 @@ const PaymentPage: React.FC = () => {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState<TicketItem[]>([]);
   const location = useLocation();
-  const itemData = location.state as BasketItem;
-  const [items] = useState<BasketItem[]>([{ ...itemData, $isSelected: true }]);
-
+  // ★ 복수 아이템 배열로 받기
+  const itemsData = location.state as BasketItemForPayment[];
+  // ★ 그대로 상태로 보관
+  const [items] = useState<BasketItemForPayment[]>(itemsData);
   const [recipient, setRecipient] = useState('');
   const [selectedMethod, setSelectedMethod] =
     useState<string>('결제방식 선택하기');
