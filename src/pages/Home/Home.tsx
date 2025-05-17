@@ -78,7 +78,7 @@ const Home: React.FC = () => {
     setSearchQuery(s);
   }, [searchParams]);
 
-  // 제품 로드
+  // 제품 로드 (카테고리 변경 시)
   useEffect(() => {
     const categoryKey =
       selectedCategory === 'Entire' ? 'all' : selectedCategory;
@@ -101,7 +101,7 @@ const Home: React.FC = () => {
     })();
   }, [selectedCategory]);
 
-  // 필터 & 무한스크롤
+  // 필터 & 무한스크롤 준비
   const filtered = products.filter(
     (item) =>
       item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -161,7 +161,7 @@ const Home: React.FC = () => {
 
   return (
     <MainContainer>
-      {/* 알림 공지 모달: 로그인→홈 이동 시에만 뜸 */}
+      {/* 알림 공지 모달 */}
       <ReusableModal
         isOpen={isNoticeOpen}
         onClose={() => setNoticeOpen(false)}
@@ -184,7 +184,7 @@ const Home: React.FC = () => {
         </ModalContent>
       </ReusableModal>
 
-      {/* 이하 기존 UI */}
+      {/* 서브헤더(카테고리) */}
       <SubHeader
         selectedCategory={selectedCategory}
         setSelectedCategory={(cat) => {
@@ -194,6 +194,7 @@ const Home: React.FC = () => {
         onCategoryClick={() => setSearchQuery('')}
       />
 
+      {/* 필터 및 열 선택 */}
       <ControlsContainer ref={menuRef}>
         <DropdownToggle onClick={() => setMenuOpen((o) => !o)}>
           <FaTh size={20} />
@@ -215,21 +216,28 @@ const Home: React.FC = () => {
         )}
       </ControlsContainer>
 
+      {/* 제품 리스트 or 로딩 스피너 */}
       <ContentWrapper>
-        <ItemList
-          items={uiItems}
-          columns={viewCols}
-          onItemClick={handleOpenModal}
-        />
-        {isLoading && <Spinner />}
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <ItemList
+            items={uiItems}
+            columns={viewCols}
+            onItemClick={handleOpenModal}
+          />
+        )}
       </ContentWrapper>
 
+      {/* 푸터 */}
       <Footer />
 
+      {/* 스크롤 탑 버튼 */}
       <ScrollToTopButton onClick={scrollToTop}>
         <ArrowIconImg src={ArrowIconSvg} alt='위로 이동' />
       </ScrollToTopButton>
 
+      {/* 상세 모달 */}
       {isModalOpen && modalId && (
         <>
           <ModalOverlay>
@@ -278,7 +286,7 @@ const Home: React.FC = () => {
 
 export default Home;
 
-// styled components...
+// styled components…
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -299,7 +307,8 @@ const ControlsContainer = styled.div`
 const ContentWrapper = styled.div`
   flex: 1;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ScrollToTopButton = styled.button`
@@ -445,7 +454,6 @@ const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-
   line-height: 1.6;
   color: #333;
   font-size: 14px;

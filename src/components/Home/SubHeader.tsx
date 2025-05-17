@@ -3,6 +3,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSearchParams } from 'react-router-dom';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import Spinner from '../Spinner';
 
 import Entire from '../../assets/SubHeader/Entire.svg';
 import MiniDress from '../../assets/SubHeader/MiniDress.svg';
@@ -66,30 +67,19 @@ const SubHeader: React.FC<SubHeaderProps> = ({
   const iconsRef = useRef<HTMLDivElement>(null);
   const [indicatorPos, setIndicatorPos] = useState(0);
 
-  const handleClick = (category: string) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set('categori', category);
-    newParams.delete('search');
-    setSearchParams(newParams);
+  // 카테고리 로딩 상태 (API 연동 시 사용)
+  const [loading, setLoading] = useState(true);
 
-    setSelectedCategory(category);
-    onCategoryClick();
-  };
+  // 초기 로딩 해제 (실제 API 호출 로직으로 교체하세요)
+  useEffect(() => {
+    setLoading(false);
+  }, []);
 
-  const scroll = (dir: 'left' | 'right') => {
-    if (!iconsRef.current) return;
-    const amount = ICON_WIDTH * 3;
-    iconsRef.current.scrollBy({
-      left: dir === 'left' ? -amount : amount,
-      behavior: 'smooth',
-    });
-  };
-
-  // 선택된 카테고리가 바뀔 때마다 Indicator 위치 계산
+  // 선택된 카테고리 위치 계산
   useEffect(() => {
     if (!iconsRef.current) return;
     const container = iconsRef.current;
-    const selectedEl = container.querySelector<HTMLDivElement>(
+    const selectedEl = container.querySelector<HTMLElement>(
       `[data-category="${selectedCategory}"]`
     );
     if (selectedEl) {
@@ -99,34 +89,60 @@ const SubHeader: React.FC<SubHeaderProps> = ({
     }
   }, [selectedCategory]);
 
+  // 카테고리 클릭 핸들러
+  const handleClick = (category: string) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.set('categori', category);
+    newParams.delete('search');
+    setSearchParams(newParams);
+    setSelectedCategory(category);
+    onCategoryClick();
+  };
+
+  // 좌/우 스크롤
+  const scroll = (dir: 'left' | 'right') => {
+    if (!iconsRef.current) return;
+    const amount = ICON_WIDTH * 3;
+    iconsRef.current.scrollBy({
+      left: dir === 'left' ? -amount : amount,
+      behavior: 'smooth',
+    });
+  };
+
   return (
     <SubHeaderWrapper>
       <ContentWrapper>
-        <ArrowButtonWrapper onClick={() => scroll('left')}>
-          <FiChevronLeft size={24} />
-        </ArrowButtonWrapper>
+        {loading ? (
+          <Spinner />
+        ) : (
+          <>
+            <ArrowButtonWrapper onClick={() => scroll('left')}>
+              <FiChevronLeft size={24} />
+            </ArrowButtonWrapper>
 
-        <IconsWrapper ref={iconsRef}>
-          {homeIcons.map((icon, idx) => {
-            const $isSelected = icon.category === selectedCategory;
-            return (
-              <IconContainer
-                key={idx}
-                data-category={icon.category}
-                selected={$isSelected}
-                onClick={() => handleClick(icon.category)}
-              >
-                <Icon src={icon.src} alt={icon.alt} />
-                <IconText selected={$isSelected}>{icon.alt}</IconText>
-              </IconContainer>
-            );
-          })}
-          <Indicator position={indicatorPos} />
-        </IconsWrapper>
+            <IconsWrapper ref={iconsRef}>
+              {homeIcons.map((icon, idx) => {
+                const isSelected = icon.category === selectedCategory;
+                return (
+                  <IconContainer
+                    key={idx}
+                    data-category={icon.category}
+                    selected={isSelected}
+                    onClick={() => handleClick(icon.category)}
+                  >
+                    <Icon src={icon.src} alt={icon.alt} />
+                    <IconText selected={isSelected}>{icon.alt}</IconText>
+                  </IconContainer>
+                );
+              })}
+              <Indicator position={indicatorPos} />
+            </IconsWrapper>
 
-        <ArrowButtonWrapper onClick={() => scroll('right')}>
-          <FiChevronRight size={24} />
-        </ArrowButtonWrapper>
+            <ArrowButtonWrapper onClick={() => scroll('right')}>
+              <FiChevronRight size={24} />
+            </ArrowButtonWrapper>
+          </>
+        )}
       </ContentWrapper>
       <Divider />
     </SubHeaderWrapper>
@@ -135,6 +151,7 @@ const SubHeader: React.FC<SubHeaderProps> = ({
 
 export default SubHeader;
 
+// styled components
 const SubHeaderWrapper = styled.div`
   position: fixed;
   top: 50px;
