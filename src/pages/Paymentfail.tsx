@@ -15,7 +15,7 @@ const PaymentFail: React.FC<PaymentFailProps> = ({ onClose }) => {
           <CompleteImg src={CompleteIcon} alt='결제 실패 아이콘' />
         </IconWrapper>
         <Title>
-          결제가 <Strong>완료</Strong> 되었습니다.
+          결제를 <Strong>실패</Strong> 되었습니다.
         </Title>
         <Subtitle>
           신청하신 제품을 신속하게 준비하여,

@@ -73,6 +73,7 @@ import PaypleTest from './Test/PaypleTest';
 import AddCardPayple from './Test/AddCardPayple';
 import PasswordChange from './pages/PasswordChange';
 import PaymentComplete from './pages/PaymentComplete';
+import PaymentFail from './pages/Paymentfail.tsx';
 
 const App: React.FC = () => (
   <Router>
@@ -200,6 +201,7 @@ const App: React.FC = () => (
         />
         <Route path='/password-change' element={<PasswordChange />} />
         <Route path='/payment-complete' element={<PaymentComplete />} />
+        <Route path='/payment-fail' element={<PaymentFail />} />
       </Route>
     </Routes>
   </Router>
