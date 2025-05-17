@@ -1,5 +1,5 @@
 // src/pages/Home.tsx
-import React, { useState, useEffect, useRef, MouseEvent } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import Spinner from '../../components/Spinner';
@@ -34,9 +34,6 @@ const Home: React.FC = () => {
   const [isNoticeOpen, setNoticeOpen] = useState<boolean>(
     Boolean(showNoticeFlag)
   );
-
-  // 공유 모달 상태
-  const [isShareModalOpen, setShareModalOpen] = useState(false);
 
   // 모바일 뷰 여부
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
@@ -162,28 +159,6 @@ const Home: React.FC = () => {
   };
   const colOptions = isMobileView ? [1, 2, 3] : [4, 5, 6];
 
-  // 공유하기 핸들러
-  const handleShare = async (e?: MouseEvent) => {
-    const shareData = {
-      title: document.title,
-      url: window.location.href,
-    };
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        console.error('공유 실패', err);
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(shareData.url);
-        setShareModalOpen(true);
-      } catch (err) {
-        console.error('클립보드 복사 실패', err);
-      }
-    }
-  };
-
   return (
     <MainContainer>
       {/* 알림 공지 모달 */}
@@ -207,15 +182,6 @@ const Home: React.FC = () => {
             조금만 더 기다려 주세요 :)
           </NoticeParagraph>
         </ModalContent>
-      </ReusableModal>
-
-      {/* 공유 링크 복사 안내 모달 */}
-      <ReusableModal
-        isOpen={isShareModalOpen}
-        onClose={() => setShareModalOpen(false)}
-        title='링크 복사됨'
-      >
-        현재 페이지 URL이 클립보드에 복사되었습니다.
       </ReusableModal>
 
       {/* 서브헤더(카테고리) */}
@@ -279,7 +245,7 @@ const Home: React.FC = () => {
               <ModalHeaderWrapper>
                 <ModalHeaderContainer>
                   <LeftSection>
-                    <CancleIcon
+                    <CancelIcon
                       src={CancleIconIcon}
                       alt='취소'
                       onClick={handleCloseModal}
@@ -287,7 +253,11 @@ const Home: React.FC = () => {
                   </LeftSection>
                   <CenterSection />
                   <RightSection>
-                    <Icon src={ShareIcon} alt='공유' onClick={handleShare} />
+                    <Icon
+                      src={ShareIcon}
+                      alt='공유'
+                      onClick={() => setFeatureModalOpen(true)}
+                    />
                     <Icon
                       src={HomeIcon}
                       alt='홈'
@@ -420,7 +390,7 @@ const RightSection = styled.div`
   gap: 19px;
 `;
 
-const CancleIcon = styled.img`
+const CancelIcon = styled.img`
   cursor: pointer;
 `;
 const Icon = styled.img`

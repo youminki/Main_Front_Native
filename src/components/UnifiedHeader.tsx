@@ -75,6 +75,7 @@ const SearchBox = styled.div<{ open: boolean }>`
   border-radius: 18px;
   padding: 4px;
   padding-right: 0px;
+
   box-shadow: ${({ open }) => (open ? '0 2px 8px rgba(0,0,0,0.15)' : 'none')};
   transition:
     width 0.3s ease,
@@ -85,6 +86,7 @@ const SearchBox = styled.div<{ open: boolean }>`
 `;
 const SearchInput = styled.input<{ open?: boolean }>`
   flex: 1;
+
   margin-left: ${({ open }) => (open ? '8px' : '0')};
   border: none;
   outline: none;
@@ -100,6 +102,7 @@ const SearchIconWrapper = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
   flex-shrink: 0;
 `;
 
@@ -203,8 +206,8 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   const [nickname, setNickname] = useState('멜픽 회원');
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [isMypageOpen, setMypageOpen] = useState(false);
+
   const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
-  const [isShareModalOpen, setShareModalOpen] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [openSearch, setOpenSearch] = useState(false);
@@ -286,48 +289,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     setOpenSearch(false);
   };
 
-  // 공유하기 핸들러
-  const handleShare = async () => {
-    const shareData = {
-      title: document.title,
-      url: window.location.href,
-    };
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        console.error('공유 실패', err);
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(shareData.url);
-        setShareModalOpen(true);
-      } catch (err) {
-        console.error('클립보드 복사 실패', err);
-      }
-    }
-  };
-
-  // 공통 모달
-  const renderFeatureModal = (
-    <ReusableModal
-      isOpen={isFeatureModalOpen}
-      onClose={() => setFeatureModalOpen(false)}
-      title='준비 중입니다'
-    >
-      아직 구현 전인 기능이에요.
-    </ReusableModal>
-  );
-  const renderShareModal = (
-    <ReusableModal
-      isOpen={isShareModalOpen}
-      onClose={() => setShareModalOpen(false)}
-      title='링크 복사됨'
-    >
-      현재 페이지 URL이 클립보드에 복사되었습니다.
-    </ReusableModal>
-  );
-
   if (variant === 'default') {
     return (
       <>
@@ -335,7 +296,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
           <HeaderContainer>
             <LeftSection onClick={() => isLoggedIn && setMypageOpen(true)}>
               {isLoggedIn ? (
-                <>
+                <Greeting>
                   {profileImageUrl ? (
                     <ProfileImage
                       src={profileImageUrl}
@@ -348,11 +309,12 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                   <GreetingText>
                     <Nickname>{nickname}</Nickname> 님 안녕하세요!
                   </GreetingText>
-                </>
+                </Greeting>
               ) : (
                 <LogoIcon src={Logo} alt='Logo' onClick={() => navigate('/')} />
               )}
             </LeftSection>
+
             <RightSection>
               <SearchBox open={openSearch} ref={boxRef}>
                 <form
@@ -390,6 +352,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                   </Dropdown>
                 )}
               </SearchBox>
+
               {isLoggedIn ? (
                 <>
                   <Icon
@@ -402,7 +365,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                     alt='알림'
                     onClick={() => setFeatureModalOpen(true)}
                   />
-                  <Icon src={ShareIcon} alt='공유' onClick={handleShare} />
                 </>
               ) : (
                 <>
@@ -416,7 +378,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                     alt='알림'
                     onClick={() => setFeatureModalOpen(true)}
                   />
-                  <Icon src={ShareIcon} alt='공유' onClick={handleShare} />
                 </>
               )}
             </RightSection>
@@ -427,8 +388,14 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
           isOpen={isMypageOpen}
           onClose={() => setMypageOpen(false)}
         />
-        {renderFeatureModal}
-        {renderShareModal}
+
+        <ReusableModal
+          isOpen={isFeatureModalOpen}
+          onClose={() => setFeatureModalOpen(false)}
+          title='준비 중입니다'
+        >
+          아직 구현 전인 기능이에요.
+        </ReusableModal>
       </>
     );
   }
@@ -449,7 +416,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
               <SearchBox open={openSearch} ref={boxRef}>
                 <form
                   onSubmit={handleSearchSubmit}
-                  style={{ display: 'flex', flex: 1 }}
+                  style={{ flex: 1, display: 'flex' }}
                 >
                   <SearchInput
                     open={openSearch}
@@ -474,7 +441,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                     alt='알림'
                     onClick={() => setFeatureModalOpen(true)}
                   />
-                  <Icon src={ShareIcon} alt='공유' onClick={handleShare} />
                 </>
               ) : (
                 <>
@@ -488,14 +454,19 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                     alt='알림'
                     onClick={() => setFeatureModalOpen(true)}
                   />
-                  <Icon src={ShareIcon} alt='공유' onClick={handleShare} />
                 </>
               )}
             </RightSection>
           </HeaderContainer>
         </HeaderWrapper>
-        {renderFeatureModal}
-        {renderShareModal}
+
+        <ReusableModal
+          isOpen={isFeatureModalOpen}
+          onClose={() => setFeatureModalOpen(false)}
+          title='준비 중입니다'
+        >
+          아직 구현 전인 기능이에요.
+        </ReusableModal>
       </>
     );
   }
@@ -516,13 +487,23 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
               <Title>{title}</Title>
             </CenterSection>
             <RightSection>
-              <Icon src={ShareIcon} alt='공유' onClick={handleShare} />
+              <Icon
+                src={ShareIcon}
+                alt='공유'
+                onClick={() => setFeatureModalOpen(true)}
+              />
               <Icon src={HomeIcon} alt='홈' onClick={() => navigate('/home')} />
             </RightSection>
           </HeaderContainer>
         </HeaderWrapper>
-        {renderFeatureModal}
-        {renderShareModal}
+
+        <ReusableModal
+          isOpen={isFeatureModalOpen}
+          onClose={() => setFeatureModalOpen(false)}
+          title='준비 중입니다'
+        >
+          아직 구현 전인 기능이에요.
+        </ReusableModal>
       </>
     );
   }
@@ -542,12 +523,8 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
             <CenterSection>
               <Title>{title}</Title>
             </CenterSection>
-            <RightSection>
-              <Icon src={ShareIcon} alt='공유' onClick={handleShare} />
-            </RightSection>
           </HeaderContainer>
         </HeaderWrapper>
-        {renderShareModal}
       </AnimatedHeaderWrapper>
     );
   }
