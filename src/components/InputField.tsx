@@ -21,6 +21,7 @@ type InputFieldProps = {
   onSelectChange?: (value: string) => void;
   readOnly?: boolean;
   [key: string]: any;
+  disabledOptions?: string[];
 };
 
 function parsePrefixContent(content: string) {
@@ -62,6 +63,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       options,
       onSelectChange,
       readOnly = false,
+      disabledOptions = [],
       ...rest
     },
     ref
@@ -116,7 +118,11 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                 {...rest}
               >
                 {options.map((option: string) => (
-                  <option key={option} value={option}>
+                  <option
+                    key={option}
+                    value={option}
+                    disabled={disabledOptions.includes(option)}
+                  >
                     {option}
                   </option>
                 ))}

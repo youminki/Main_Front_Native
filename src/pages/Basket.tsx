@@ -244,7 +244,7 @@ const Basket: React.FC = () => {
 
                   <InfoRowFlex>
                     <IconArea>
-                      <IconArea src={PriceIcon} alt='Price' />
+                      <Icon src={PriceIcon} alt='Price' />
                     </IconArea>
                     <TextContainer>
                       <RowText>
