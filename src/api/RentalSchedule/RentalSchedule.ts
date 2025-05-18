@@ -2,6 +2,7 @@
 import { Axios } from '../Axios';
 
 export interface RentalScheduleItem {
+  id: number; // 예약 ID 추가
   brand: string;
   productNum: string;
   category: string;
@@ -30,3 +31,21 @@ export const getMyRentalSchedule =
     );
     return response.data;
   };
+
+/**
+ * 로그인한 유저가 본인의 대여 건에 대해 취소 요청을 합니다.
+ * PATCH /rental-schedule/{id}/cancel-request
+ */
+export interface CancelRequestResponse {
+  id: number;
+  paymentStatus: string; // ex: "취소요청"
+}
+
+export const cancelRentalSchedule = async (
+  id: number
+): Promise<CancelRequestResponse> => {
+  const response = await Axios.patch<CancelRequestResponse>(
+    `/rental-schedule/cancel-request/${id}`
+  );
+  return response.data;
+};

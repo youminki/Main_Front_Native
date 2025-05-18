@@ -532,11 +532,11 @@ const ItemImage = styled.img`
 const ButtonContainer = styled.div`
   display: flex;
   gap: 10px;
-
+  margin-top: 20px;
   align-self: flex-end;
 
-  @media (min-width: 600px) {
-    margin-top: 20px;
+  @media (max-width: 600px) {
+    margin-top: 10px;
   }
 `;
 
@@ -556,6 +556,11 @@ const DeleteButton = styled.button`
   text-align: center;
 
   color: #999999;
+
+  @media (max-width: 600px) {
+    width: 60px;
+    height: 40px;
+  }
 `;
 
 const PurchaseButton = styled.button`
@@ -573,6 +578,11 @@ const PurchaseButton = styled.button`
   font-size: 14px;
   line-height: 15px;
   text-align: center;
+
+  @media (max-width: 600px) {
+    width: 60px;
+    height: 40px;
+  }
 `;
 
 const Icon = styled.img`

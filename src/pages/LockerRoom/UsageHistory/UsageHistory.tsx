@@ -1,4 +1,3 @@
-// src/pages/UsageHistory.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
@@ -8,10 +7,14 @@ import ServiceInfoIcon from '../../../assets/Basket/ServiceInfoIcon.svg';
 import ProductInfoIcon from '../../../assets/Basket/ProductInfoIcon.svg';
 import PriceIcon from '../../../assets/Basket/PriceIcon.svg';
 import sampleImage from '../../../assets/sample-dress.svg';
-import { getMyRentalSchedule } from '../../../api/RentalSchedule/RentalSchedule';
+import {
+  getMyRentalSchedule,
+  cancelRentalSchedule,
+  RentalScheduleItem,
+} from '../../../api/RentalSchedule/RentalSchedule';
 
 interface BasketItem {
-  id: number;
+  id: number; // 실제 예약 ID
   brand: string;
   nameCode: string;
   nameType: string;
@@ -24,6 +27,7 @@ interface BasketItem {
   imageUrl: string;
   $isSelected: boolean;
   rentalDays?: string;
+  paymentStatus?: string; // 취소요청 등 상태
 }
 
 const UsageHistory: React.FC = () => {
@@ -31,17 +35,17 @@ const UsageHistory: React.FC = () => {
   const [items, setItems] = useState<BasketItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [cancelingId, setCancelingId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
         const data = await getMyRentalSchedule();
-        // API 리턴값을 UI용 BasketItem 형태로 매핑
-        const mapped = data.rentals.map((rental, idx) => {
+        const mapped = data.rentals.map((rental) => {
           const isRental = rental.serviceType === '대여';
           const servicePeriod = `${rental.startDate} ~ ${rental.endDate}`;
           return {
-            id: idx + 1,
+            id: rental.id,
             brand: rental.brand,
             nameCode: rental.productNum,
             nameType: rental.category,
@@ -50,12 +54,13 @@ const UsageHistory: React.FC = () => {
             deliveryDate: !isRental ? rental.endDate : undefined,
             size: rental.size,
             color: rental.color,
-            price: rental.ticketName, // 티켓명 대신 가격 표시 원하면 ticketName 대신 price 필드 사용
+            price: rental.ticketName,
             imageUrl: rental.mainImage || sampleImage,
             $isSelected: true,
             rentalDays: isRental
               ? `대여 (${calculateDays(rental.startDate, rental.endDate)}일)`
               : '구매',
+            paymentStatus: (rental as any).paymentStatus || undefined,
           } as BasketItem;
         });
         setItems(mapped);
@@ -69,12 +74,36 @@ const UsageHistory: React.FC = () => {
     fetchSchedule();
   }, []);
 
-  // 날짜 간 일수 계산 함수
   const calculateDays = (start: string, end: string): number => {
     const s = new Date(start);
     const e = new Date(end);
     const diff = (e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24) + 1;
     return Math.round(diff);
+  };
+
+  const handleCancel = async (id: number) => {
+    if (!window.confirm('정말 예약을 취소 요청하시겠습니까?')) return;
+    try {
+      setCancelingId(id);
+      const result = await cancelRentalSchedule(id);
+      // 상태 업데이트
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? { ...item, paymentStatus: result.paymentStatus }
+            : item
+        )
+      );
+      alert('취소 요청이 완료되었습니다.');
+    } catch (e: any) {
+      console.error(e);
+      const msg =
+        e.response?.data?.message ||
+        '취소 요청에 실패했습니다. 다시 시도해주세요.';
+      alert(msg);
+    } finally {
+      setCancelingId(null);
+    }
   };
 
   const filteredItems = selectedPeriod === 3 ? items.slice(0, 3) : items;
@@ -125,14 +154,14 @@ const UsageHistory: React.FC = () => {
                 <ItemDetails>
                   <Brand>{item.brand}</Brand>
                   <ItemName>
-                    <NameCode>{item.nameCode}</NameCode>
+                    <Code>{item.nameCode}</Code>
                     <Slash>/</Slash>
-                    <ItemType>{item.nameType}</ItemType>
+                    <Name>{item.nameType}</Name>
                   </ItemName>
 
                   <InfoRowFlex>
                     <IconArea>
-                      <IconArea src={ServiceInfoIcon} alt='Service Info' />
+                      <Icon src={ServiceInfoIcon} alt='Service Info' />
                     </IconArea>
                     <TextContainer>
                       <RowText>
@@ -161,12 +190,16 @@ const UsageHistory: React.FC = () => {
                         <LabelDetailText>제품 정보</LabelDetailText>
                       </RowText>
                       <AdditionalText>
-                        <DetailText>사이즈 - </DetailText>
-                        <DetailHighlight>{item.size}</DetailHighlight>
+                        <DetailText>
+                          사이즈 -{' '}
+                          <DetailHighlight>{item.size}</DetailHighlight>
+                        </DetailText>
+
                         <Slash>/</Slash>
-                        <DetailText>색상 - </DetailText>
-                        <DetailHighlight>{item.color}</DetailHighlight>
                       </AdditionalText>
+                      <DetailText>
+                        색상 - <DetailHighlight>{item.color}</DetailHighlight>
+                      </DetailText>
                     </TextContainer>
                   </InfoRowFlex>
 
@@ -176,12 +209,11 @@ const UsageHistory: React.FC = () => {
                     </IconArea>
                     <TextContainer>
                       <RowText>
-                        <LabelDetailText>결제금액 - </LabelDetailText>
+                        <LabelDetailText>결제방식 - </LabelDetailText>
                         <DetailHighlight>
                           {typeof item.price === 'number'
                             ? item.price.toLocaleString()
                             : item.price}
-                          원
                         </DetailHighlight>
                       </RowText>
                     </TextContainer>
@@ -197,7 +229,18 @@ const UsageHistory: React.FC = () => {
 
               <ButtonContainer>
                 <DeleteButton>제품상세</DeleteButton>
-                <PurchaseButton>재신청</PurchaseButton>
+                <PurchaseButton
+                  onClick={() => handleCancel(item.id)}
+                  disabled={
+                    cancelingId === item.id || item.paymentStatus === '취소요청'
+                  }
+                >
+                  {item.paymentStatus === '취소요청'
+                    ? '취소요청'
+                    : cancelingId === item.id
+                      ? '요청중...'
+                      : '취소'}
+                </PurchaseButton>
               </ButtonContainer>
             </Item>
           ))}
@@ -279,7 +322,6 @@ const ContentWrapper = styled.div`
   justify-content: space-between;
   align-items: flex-start;
 `;
-
 const ItemDetails = styled.div`
   display: flex;
   flex-direction: column;
@@ -290,35 +332,55 @@ const Brand = styled.div`
   font-weight: 900;
   font-size: 12px;
   line-height: 11px;
-  color: #000;
+  color: #000000;
+
+  @media (max-width: 480px) {
+    margin: 0;
+    font-size: 11px;
+  }
 `;
 
 const ItemName = styled.div`
   display: flex;
   align-items: center;
-  margin: 6px 0 28px;
+  margin-top: 6px;
+  margin-bottom: 28px;
+
+  @media (max-width: 480px) {
+    /* 모바일에선 세로 정렬 */
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
 `;
 
-const NameCode = styled.span`
-  font-weight: 900;
-  font-size: 18px;
-  line-height: 22px;
-  color: #000;
-`;
-
-const Slash = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  color: #dddddd;
-  margin: 0 4px;
-`;
-
-const ItemType = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
+const Code = styled.span`
+  font-weight: 700;
+  font-size: 13px;
   color: #999;
+  margin-right: 4px;
+  @media (max-width: 480px) {
+    margin: 0;
+    font-size: 13px;
+  }
+`;
+const Slash = styled.span`
+  font-weight: 700;
+  font-size: 15px;
+  color: #000;
+  margin: 0 4px;
+  @media (max-width: 480px) {
+    display: none;
+  }
+`;
+const Name = styled.span`
+  font-weight: 700;
+  font-size: 15px;
+  color: #000;
+  @media (max-width: 480px) {
+    margin-top: 4px;
+    font-size: 14px;
+  }
 `;
 
 const InfoRowFlex = styled.div`
@@ -340,9 +402,11 @@ const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  @media (max-width: 480px) {
+    margin-bottom: 10px;
+  }
 `;
-
 const RowText = styled.div`
   display: flex;
   gap: 5px;
@@ -359,16 +423,23 @@ const DetailText = styled.span`
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
-  color: #000;
+  color: #000000;
   white-space: nowrap;
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 `;
 
 const DetailHighlight = styled.span`
   font-weight: 900;
   font-size: 14px;
   line-height: 22px;
-  color: #000;
+  color: #000000;
   white-space: nowrap;
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 `;
 
 const RightSection = styled.div`
@@ -380,20 +451,29 @@ const RightSection = styled.div`
 
 const ItemImageContainer = styled.div`
   position: relative;
-  width: 140px;
+  width: 100%;
+  min-width: 140px;
   height: 210px;
-`;
+  border: 1px solid #ddd;
 
+  @media (min-width: 600px) {
+    width: 200px;
+    height: auto;
+  }
+`;
 const ItemImage = styled.img`
   width: 100%;
   height: 100%;
 `;
-
 const ButtonContainer = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 10px;
   margin-top: 20px;
   align-self: flex-end;
+
+  @media (max-width: 600px) {
+    margin-top: 10px;
+  }
 `;
 
 const DeleteButton = styled.button`
@@ -401,19 +481,44 @@ const DeleteButton = styled.button`
   color: #888;
   width: 91px;
   height: 46px;
-  border: 1px solid #ddd;
+  white-space: nowrap;
   border-radius: 6px;
   cursor: pointer;
+  border: 1px solid #ddd;
+
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 15px;
+  text-align: center;
+
+  color: #999999;
+
+  @media (max-width: 600px) {
+    width: 60px;
+    height: 40px;
+  }
 `;
 
 const PurchaseButton = styled.button`
-  background-color: #000;
-  color: #fff;
+  background-color: black;
+  color: white;
+  border: none;
   width: 91px;
   height: 46px;
-  border: 1px solid #ddd;
+  white-space: nowrap;
   border-radius: 6px;
   cursor: pointer;
+  border: 1px solid #ddd;
+
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 15px;
+  text-align: center;
+
+  @media (max-width: 600px) {
+    width: 60px;
+    height: 40px;
+  }
 `;
 
 const Icon = styled.img`
@@ -427,6 +532,9 @@ const LabelDetailText = styled.span`
   line-height: 22px;
   color: #000000;
   white-space: nowrap;
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 `;
 
 const ErrorText = styled.div`
