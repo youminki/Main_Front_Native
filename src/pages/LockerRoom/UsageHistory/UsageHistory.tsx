@@ -8,10 +8,7 @@ import ServiceInfoIcon from '../../../assets/Basket/ServiceInfoIcon.svg';
 import ProductInfoIcon from '../../../assets/Basket/ProductInfoIcon.svg';
 import PriceIcon from '../../../assets/Basket/PriceIcon.svg';
 import sampleImage from '../../../assets/sample-dress.svg';
-import {
-  getMyRentalSchedule,
-  RentalScheduleItem,
-} from '../../../api/RentalSchedule/RentalSchedule';
+import { getMyRentalSchedule } from '../../../api/RentalSchedule/RentalSchedule';
 
 interface BasketItem {
   id: number;
