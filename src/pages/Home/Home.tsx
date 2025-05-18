@@ -1,6 +1,6 @@
 // src/pages/Home.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import Spinner from '../../components/Spinner';
 import ItemList, { UIItem } from '../../components/Home/ItemList';
@@ -25,15 +25,9 @@ const ITEMS_PER_LOAD = 20;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const menuRef = useRef<HTMLDivElement>(null);
-
-  // 로그인→홈 이동 시에만 전달된 showNotice 플래그로 모달 열기
-  const showNoticeFlag = (location.state as any)?.showNotice;
-  const [isNoticeOpen, setNoticeOpen] = useState<boolean>(
-    Boolean(showNoticeFlag)
-  );
 
   // 공유 모달 상태
   const [isShareModalOpen, setShareModalOpen] = useState(false);
@@ -186,29 +180,6 @@ const Home: React.FC = () => {
 
   return (
     <MainContainer>
-      {/* 알림 공지 모달 */}
-      <ReusableModal
-        isOpen={isNoticeOpen}
-        onClose={() => setNoticeOpen(false)}
-        title='알림 공지'
-      >
-        <ModalContent>
-          <NoticeTitle>PG사 결제 지연 안내</NoticeTitle>
-          <NoticeParagraph>
-            금일 오전에 카드등록 및 결제가 PG사 연결 지연으로 오후에 진행하게
-            되었습니다.
-          </NoticeParagraph>
-          <NoticeParagraph>
-            중요한 결제이니만큼 신중하게 처리 후 좋은 서비스로 보답
-            드리겠습니다.
-          </NoticeParagraph>
-          <NoticeParagraph>
-            계속 기다리게 해드려서 죄송합니다. <br />
-            조금만 더 기다려 주세요 :)
-          </NoticeParagraph>
-        </ModalContent>
-      </ReusableModal>
-
       {/* 공유 링크 복사 안내 모달 */}
       <ReusableModal
         isOpen={isShareModalOpen}
@@ -478,23 +449,4 @@ const OptionNumber = styled.span`
 
 const OptionText = styled.span`
   margin-left: 4px;
-`;
-
-const ModalContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  line-height: 1.6;
-  color: #333;
-  font-size: 14px;
-`;
-
-const NoticeTitle = styled.h3`
-  margin: 0;
-  font-size: 16px;
-  font-weight: bold;
-`;
-
-const NoticeParagraph = styled.p`
-  margin: 0;
 `;
