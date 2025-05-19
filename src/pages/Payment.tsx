@@ -101,7 +101,7 @@ const PaymentPage: React.FC = () => {
           (t) => `${t.ticketList.name} (${t.remainingRentals}회 남음)`
         ),
       ]
-    : ['결제방식 선택하기', '이용권 구매하기'];
+    : ['결제방식 선택하기'];
 
   const handlePaymentSelect = (value: string) => {
     if (value === '이용권 구매하기') {
