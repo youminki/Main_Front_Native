@@ -91,7 +91,9 @@ const PurchaseOfPasses: React.FC = () => {
         id='purchaseOption'
         as={CustomSelect}
         value={purchaseOption}
-        onChange={(e) => setPurchaseOption(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+          setPurchaseOption(e.target.value)
+        }
       >
         {templates.map((tpl) => (
           <option key={tpl.id} value={tpl.name}>
