@@ -359,13 +359,13 @@ const Section = styled.div`
   width: 100%;
   padding-bottom: 80px;
   margin-top: 30px;
+  max-width: 600px;
 `;
 
 const ItemList = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-top: 20px;
 `;
 
 const Item = styled.div`
