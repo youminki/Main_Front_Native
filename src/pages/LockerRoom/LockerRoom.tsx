@@ -1,5 +1,5 @@
 // src/pages/LockerRoom.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import StatsSection from '../../components/LockerRoom/StatsSection';
@@ -11,6 +11,8 @@ import PointsIcon from '../../assets/LockerRoom/PointsIcon.svg';
 import TicketIcon from '../../assets/LockerRoom/TicketIcon.svg';
 import PaymentIcon from '../../assets/LockerRoom/PaymentIcon.svg';
 import ReviewIcon from '../../assets/LockerRoom/ReviewIcon.svg';
+
+import { getMembershipInfo, MembershipInfo } from '../../api/user/userApi';
 
 const menuItems = [
   { icon: ClosetIcon, label: '내 옷장', path: '/my-closet', disabled: false },
@@ -38,6 +40,17 @@ const menuItems = [
 
 const LockerRoom: React.FC = () => {
   const navigate = useNavigate();
+  const [membership, setMembership] = useState<MembershipInfo | null>(null);
+
+  useEffect(() => {
+    getMembershipInfo()
+      .then((res) => {
+        setMembership(res);
+      })
+      .catch((err) => {
+        console.error('멤버십 정보 조회 실패', err);
+      });
+  }, []);
 
   return (
     <Container>
@@ -48,7 +61,7 @@ const LockerRoom: React.FC = () => {
 
       <StatsRow>
         <StatsSection
-          visits='구독자'
+          visits={membership?.name ?? '—'}
           sales='0'
           dateRange='요약정보'
           visitLabel='그룹'
