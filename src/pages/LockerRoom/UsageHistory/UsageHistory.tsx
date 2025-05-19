@@ -18,6 +18,7 @@ import CancleIconIcon from '../../../assets/Header/CancleIcon.svg';
 
 interface BasketItem {
   id: number;
+  productId: number;
   brand: string;
   nameCode: string;
   nameType: string;
@@ -39,9 +40,10 @@ const UsageHistory: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [cancelingId, setCancelingId] = useState<number | null>(null);
-
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? 'hidden' : '';
@@ -59,6 +61,7 @@ const UsageHistory: React.FC = () => {
           const servicePeriod = `${rental.startDate} ~ ${rental.endDate}`;
           return {
             id: rental.id,
+            productId: rental.productId,
             brand: rental.brand,
             nameCode: rental.productNum,
             nameType: rental.category,
@@ -129,14 +132,14 @@ const UsageHistory: React.FC = () => {
     }
   };
 
-  const handleOpenDetail = (id: number) => {
-    setSelectedItemId(id);
+  const handleOpenDetail = (productId: number) => {
+    setSelectedProductId(productId);
     setIsModalOpen(true);
   };
 
   const handleCloseDetail = () => {
     setIsModalOpen(false);
-    setSelectedItemId(null);
+    setSelectedProductId(null);
   };
 
   const filteredItems = selectedPeriod === 3 ? items.slice(0, 3) : items;
@@ -260,7 +263,7 @@ const UsageHistory: React.FC = () => {
               </ContentWrapper>
 
               <ButtonContainer>
-                <DeleteButton onClick={() => handleOpenDetail(item.id)}>
+                <DeleteButton onClick={() => handleOpenDetail(item.productId)}>
                   제품상세
                 </DeleteButton>
                 <PurchaseButton
@@ -279,7 +282,7 @@ const UsageHistory: React.FC = () => {
         </ItemList>
       </Section>
 
-      {isModalOpen && selectedItemId !== null && (
+      {isModalOpen && selectedProductId !== null && (
         <ModalOverlay>
           <ModalBox>
             <ModalHeaderWrapper>
@@ -296,7 +299,7 @@ const UsageHistory: React.FC = () => {
               </ModalHeaderContainer>
             </ModalHeaderWrapper>
             <ModalBody>
-              <HomeDetail id={String(selectedItemId)} />
+              <HomeDetail id={String(selectedProductId)} />
             </ModalBody>
           </ModalBox>
         </ModalOverlay>
@@ -318,6 +321,8 @@ const UsageHistoryContainer = styled.div`
   background-color: #fff;
   padding: 1rem;
 `;
+
+/* 이하 스타일 컴포넌트는 변경 없으므로 생략 */
 
 const Header = styled.div`
   display: flex;
