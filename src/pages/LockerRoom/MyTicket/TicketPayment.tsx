@@ -112,10 +112,6 @@ const TicketPayment: React.FC = () => {
           ? await postInitPayment(requestData)
           : await postRecurringPayment(requestData);
 
-      if (typeof (window as any).PaypleCpayAuthCheck !== 'function') {
-        alert('Payple SDK가 로딩되지 않았습니다.');
-        return;
-      }
       (window as any).PaypleCpayAuthCheck(response.data);
     } catch (error: any) {
       console.error('결제 실패:', error);
