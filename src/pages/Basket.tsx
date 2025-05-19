@@ -1,7 +1,7 @@
 // src/pages/Basket.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { FiShoppingCart } from 'react-icons/fi';
+import BasketIcon from '../assets/Basket/BasketIcon.svg';
 import PriceIcon from '../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
@@ -178,7 +178,7 @@ const Basket: React.FC = () => {
     <Container>
       {items.length === 0 ? (
         <EmptyContainer>
-          <FiShoppingCart size={60} />
+          <Icon src={BasketIcon} alt='장바구니 아이콘' />
           <EmptyText>장바구니가 비어있습니다</EmptyText>
         </EmptyContainer>
       ) : (
@@ -335,8 +335,12 @@ const EmptyContainer = styled.div`
 
 const EmptyText = styled.p`
   margin-top: 16px;
-  font-size: 18px;
-  font-weight: bold;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 15px;
+  text-align: center;
+
+  color: #aaaaaa;
 `;
 
 const Header = styled.div`
@@ -586,8 +590,8 @@ const PurchaseButton = styled.button`
 `;
 
 const Icon = styled.img`
-  width: 20px;
-  height: 20px;
+  width: 75px;
+  height: auto;
 `;
 
 const Code = styled.span`
