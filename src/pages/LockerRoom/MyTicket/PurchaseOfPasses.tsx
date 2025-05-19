@@ -1,3 +1,5 @@
+// src/pages/LockerRoom/MyTicket/PurchaseOfPasses.tsx
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -18,17 +20,17 @@ const PurchaseOfPasses: React.FC = () => {
   const [discountRate, setDiscountRate] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 템플릿 로드
   useEffect(() => {
     getAllTicketTemplates()
       .then((res) => {
         setTemplates(res.items);
-        if (res.items.length > 0) setPurchaseOption(res.items[0].name);
+        if (res.items.length > 0) {
+          setPurchaseOption(res.items[0].name);
+        }
       })
       .catch(console.error);
   }, []);
 
-  // 할인율 로드
   useEffect(() => {
     getMembershipInfo()
       .then((info: MembershipInfo) => {
@@ -44,7 +46,7 @@ const PurchaseOfPasses: React.FC = () => {
   const paymentDay = today.getDate();
 
   const selectedTemplate = templates.find((t) => t.name === purchaseOption);
-  const isOneTime = selectedTemplate?.name === '1회 이용권';
+  const isUnlimited = selectedTemplate?.isUlimited ?? false;
   const basePrice = selectedTemplate?.price || 0;
   const discountedPrice =
     basePrice > 0 && discountRate > 0
@@ -57,7 +59,7 @@ const PurchaseOfPasses: React.FC = () => {
     const params = new URLSearchParams({
       name: selectedTemplate?.name || '',
       discountedPrice: String(discountedPrice),
-      isOneTime: String(isOneTime),
+      isUnlimited: String(isUnlimited),
     }).toString();
     const url = `/my-ticket/PurchaseOfPasses/TicketPayment?${params}`;
 
@@ -75,12 +77,11 @@ const PurchaseOfPasses: React.FC = () => {
         }
       }, 500);
     } else {
-      // 모바일에서는 바로 이동
       window.location.href = url;
     }
 
     setIsModalOpen(false);
-  }, [selectedTemplate, discountedPrice, isOneTime, navigate]);
+  }, [selectedTemplate, discountedPrice, isUnlimited, navigate]);
 
   return (
     <Container>
@@ -90,9 +91,7 @@ const PurchaseOfPasses: React.FC = () => {
         id='purchaseOption'
         as={CustomSelect}
         value={purchaseOption}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-          setPurchaseOption(e.target.value)
-        }
+        onChange={(e) => setPurchaseOption(e.target.value)}
       >
         {templates.map((tpl) => (
           <option key={tpl.id} value={tpl.name}>
@@ -105,7 +104,11 @@ const PurchaseOfPasses: React.FC = () => {
         name='usagePeriod'
         label='이용권 사용기간'
         id='usagePeriod'
-        prefixcontent={`${formattedToday} ~ ${formattedOneMonthLater} (1개월)`}
+        prefixcontent={
+          isUnlimited
+            ? `${formattedToday} ~ 무제한`
+            : `${formattedToday} ~ ${formattedOneMonthLater} (1개월)`
+        }
         readOnly
       />
 
@@ -132,7 +135,9 @@ const PurchaseOfPasses: React.FC = () => {
         label='자동결제 일자'
         id='autoPaymentDate'
         prefixcontent={formattedToday}
-        suffixcontent={!isOneTime ? `매달 ${paymentDay}일마다 결제` : undefined}
+        suffixcontent={
+          isUnlimited ? `매월 ${paymentDay}일마다 결제` : undefined
+        }
         readOnly
       />
 
@@ -168,11 +173,8 @@ const PurchaseOfPasses: React.FC = () => {
 
 export default PurchaseOfPasses;
 
-// Styled Components (생략)
-
-// styled-components 생략...
-
 // Styled Components
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;

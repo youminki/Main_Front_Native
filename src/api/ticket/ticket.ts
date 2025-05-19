@@ -10,6 +10,7 @@ export interface TicketList {
   rentalLimit: number; // 전체 대여 제한 횟수
   monthlyRentalLimit: number; // 월별 대여 제한 횟수
   isLongTerm: boolean; // 장기권 여부
+  isUlimited: boolean; // 무제한 여부
   price: number; // 가격 (원)
   recurringIntervalMonths: number; // 갱신 주기 (개월)
   isVisible: boolean; // 화면 노출 여부
