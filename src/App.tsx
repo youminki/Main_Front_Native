@@ -9,6 +9,9 @@ import AppLayout from './pages/AppLayout';
 
 import Landing from './pages/Landing';
 import Login from './pages/Login';
+import ReadyLogin from './pages/ReadyLogin';
+
+import TestLogin from './pages/TestLogin';
 import Signup from './pages/Signup';
 import FindId from './pages/FindId';
 import FindPassword from './pages/FindPassword';
@@ -82,6 +85,9 @@ const App: React.FC = () => (
       <Route path='/landing' element={<Landing />} />
       <Route path='/' element={<Navigate to='/landing' replace />} />
       <Route path='/login' element={<Login />} />
+      <Route path='/ladyLogin' element={<ReadyLogin />} />
+      <Route path='/TestLogin' element={<TestLogin />} />
+
       <Route path='/PersonalLink' element={<PersonalLink />} />
       <Route path='/test/payple' element={<PaypleTest />} />
       <Route path='/test/AddCardPayple' element={<AddCardPayple />} />

@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, Controller } from 'react-hook-form';
@@ -18,7 +18,7 @@ type LoginFormValues = {
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<ReactNode>(null);
+  const [modalMessage, setModalMessage] = useState('');
 
   const {
     control,
@@ -34,23 +34,7 @@ const Login: React.FC = () => {
 
   // 로그인 대신 점검중 메시지 표시
   const handleLoginClick = () => {
-    setModalContent(
-      <>
-        <MessageTitle>현재 서비스 점검 안내</MessageTitle>
-        <MessageBody>
-          죄송합니다.
-          <br />
-          현재 시스템 점검이 진행 중입니다.
-          <br />
-          서비스 이용이 잠시 지연되오니
-          <br />
-          잠시 후 다시 시도해 주시기 바랍니다.
-          <br />
-          <br />
-          감사합니다.
-        </MessageBody>
-      </>
-    );
+    setModalMessage('지금은 점검중입니다.');
     setIsModalOpen(true);
   };
 
@@ -60,7 +44,7 @@ const Login: React.FC = () => {
         <LoginContainer>
           <Logo src={MelpikLogo} alt='멜픽 로고' />
 
-          <LoginForm onSubmit={handleSubmit(handleLoginClick)}>
+          <LoginForm onSubmit={handleSubmit(() => handleLoginClick())}>
             <InputFieldRow>
               <Controller
                 control={control}
@@ -118,7 +102,7 @@ const Login: React.FC = () => {
           onClose={handleModalClose}
           title='알림'
         >
-          {modalContent}
+          {modalMessage}
         </ReusableModal>
       </Container>
     </ThemeProvider>
@@ -191,14 +175,6 @@ const CheckboxText = styled.div`
   font-size: 12px;
   font-weight: 700;
   margin-left: 8px;
-`;
-const MessageTitle = styled.h2`
-  margin-bottom: 16px;
-  font-size: 18px;
-`;
-const MessageBody = styled.p`
-  font-size: 14px;
-  line-height: 1.5;
 `;
 const ExtraLinks = styled.div`
   display: flex;
