@@ -1,3 +1,5 @@
+// src/pages/UsageHistory.tsx
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
@@ -7,14 +9,15 @@ import ServiceInfoIcon from '../../../assets/Basket/ServiceInfoIcon.svg';
 import ProductInfoIcon from '../../../assets/Basket/ProductInfoIcon.svg';
 import PriceIcon from '../../../assets/Basket/PriceIcon.svg';
 import sampleImage from '../../../assets/sample-dress.svg';
+import HomeDetail from '../../Home/HomeDetail';
 import {
   getMyRentalSchedule,
   cancelRentalSchedule,
-  RentalScheduleItem,
 } from '../../../api/RentalSchedule/RentalSchedule';
+import CancleIconIcon from '../../../assets/Header/CancleIcon.svg';
 
 interface BasketItem {
-  id: number; // 실제 예약 ID
+  id: number;
   brand: string;
   nameCode: string;
   nameType: string;
@@ -27,7 +30,7 @@ interface BasketItem {
   imageUrl: string;
   $isSelected: boolean;
   rentalDays?: string;
-  paymentStatus?: string; // 취소요청 등 상태
+  paymentStatus?: string;
 }
 
 const UsageHistory: React.FC = () => {
@@ -36,6 +39,16 @@ const UsageHistory: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [cancelingId, setCancelingId] = useState<number | null>(null);
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+
+  useEffect(() => {
+    document.body.style.overflow = isModalOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isModalOpen]);
 
   useEffect(() => {
     const fetchSchedule = async () => {
@@ -81,29 +94,49 @@ const UsageHistory: React.FC = () => {
     return Math.round(diff);
   };
 
-  const handleCancel = async (id: number) => {
-    if (!window.confirm('정말 예약을 취소 요청하시겠습니까?')) return;
+  const handleCancel = async (item: BasketItem) => {
+    const isRequested = item.paymentStatus === '취소요청';
+    const confirmMsg = isRequested
+      ? '정말 취소요청을 확정하시겠습니까?'
+      : '정말 예약을 취소 요청하시겠습니까?';
+    if (!window.confirm(confirmMsg)) return;
+
     try {
-      setCancelingId(id);
-      const result = await cancelRentalSchedule(id);
-      // 상태 업데이트
+      setCancelingId(item.id);
+      const result = await cancelRentalSchedule(item.id);
+      const newStatus =
+        result.paymentStatus ?? (isRequested ? '취소' : '취소요청');
       setItems((prev) =>
-        prev.map((item) =>
-          item.id === id
-            ? { ...item, paymentStatus: result.paymentStatus }
-            : item
+        prev.map((it) =>
+          it.id === item.id ? { ...it, paymentStatus: newStatus } : it
         )
       );
-      alert('취소 요청이 완료되었습니다.');
+      alert(
+        isRequested
+          ? '최종 취소가 완료되었습니다.'
+          : '취소 요청이 완료되었습니다.'
+      );
     } catch (e: any) {
       console.error(e);
       const msg =
         e.response?.data?.message ||
-        '취소 요청에 실패했습니다. 다시 시도해주세요.';
+        (isRequested
+          ? '최종 취소에 실패했습니다. 다시 시도해주세요.'
+          : '취소 요청에 실패했습니다. 다시 시도해주세요.');
       alert(msg);
     } finally {
       setCancelingId(null);
     }
+  };
+
+  const handleOpenDetail = (id: number) => {
+    setSelectedItemId(id);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseDetail = () => {
+    setIsModalOpen(false);
+    setSelectedItemId(null);
   };
 
   const filteredItems = selectedPeriod === 3 ? items.slice(0, 3) : items;
@@ -194,7 +227,6 @@ const UsageHistory: React.FC = () => {
                           사이즈 -{' '}
                           <DetailHighlight>{item.size}</DetailHighlight>
                         </DetailText>
-
                         <Slash>/</Slash>
                       </AdditionalText>
                       <DetailText>
@@ -228,17 +260,17 @@ const UsageHistory: React.FC = () => {
               </ContentWrapper>
 
               <ButtonContainer>
-                <DeleteButton>제품상세</DeleteButton>
+                <DeleteButton onClick={() => handleOpenDetail(item.id)}>
+                  제품상세
+                </DeleteButton>
                 <PurchaseButton
-                  onClick={() => handleCancel(item.id)}
-                  disabled={
-                    cancelingId === item.id || item.paymentStatus === '취소요청'
-                  }
+                  onClick={() => handleCancel(item)}
+                  disabled={cancelingId === item.id}
                 >
-                  {item.paymentStatus === '취소요청'
-                    ? '취소요청'
-                    : cancelingId === item.id
-                      ? '요청중...'
+                  {cancelingId === item.id
+                    ? '요청중...'
+                    : item.paymentStatus === '취소요청'
+                      ? '요청취소'
                       : '취소'}
                 </PurchaseButton>
               </ButtonContainer>
@@ -246,6 +278,29 @@ const UsageHistory: React.FC = () => {
           ))}
         </ItemList>
       </Section>
+
+      {isModalOpen && selectedItemId !== null && (
+        <ModalOverlay>
+          <ModalBox>
+            <ModalHeaderWrapper>
+              <ModalHeaderContainer>
+                <LeftSection>
+                  <CancelIcon
+                    src={CancleIconIcon}
+                    alt='닫기'
+                    onClick={handleCloseDetail}
+                  />
+                </LeftSection>
+                <CenterSection />
+                <RightSection />
+              </ModalHeaderContainer>
+            </ModalHeaderWrapper>
+            <ModalBody>
+              <HomeDetail id={String(selectedItemId)} />
+            </ModalBody>
+          </ModalBox>
+        </ModalOverlay>
+      )}
     </UsageHistoryContainer>
   );
 };
@@ -540,4 +595,62 @@ const LabelDetailText = styled.span`
 const ErrorText = styled.div`
   color: red;
   margin-top: 2rem;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ModalBox = styled.div`
+  background: #fff;
+  width: 100%;
+  max-width: 1000px;
+  height: 100%;
+  position: relative;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const ModalHeaderWrapper = styled.div`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #fff;
+  z-index: 3100;
+`;
+
+const ModalHeaderContainer = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  padding: 0 1rem;
+`;
+
+const ModalBody = styled.div`
+  padding-top: 60px;
+  padding: 1rem;
+`;
+
+const LeftSection = styled.div`
+  cursor: pointer;
+`;
+
+const CenterSection = styled.div`
+  flex: 1;
+`;
+
+const CancelIcon = styled.img`
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
 `;

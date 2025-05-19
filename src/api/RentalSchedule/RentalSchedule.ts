@@ -3,6 +3,7 @@ import { Axios } from '../Axios';
 
 export interface RentalScheduleItem {
   id: number; // 예약 ID 추가
+  productId: number;
   brand: string;
   productNum: string;
   category: string;
