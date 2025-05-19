@@ -31,7 +31,7 @@ const SubscriptionPassDetail: React.FC = () => {
           const autoTickets = items.filter((item) => item.autoRenewal);
           const tk = autoTickets.length > 0 ? autoTickets[0] : items[0];
           setTicket(tk);
-          setIsCancelled(!tk.autoRenewal);
+          // setIsCancelled(!tk.autoRenewal);
           setSelectedPlan(
             tk.ticketList.name.includes('4회') ? '월 4회권' : '무제한 이용권'
           );

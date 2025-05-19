@@ -1,3 +1,5 @@
+// src/pages/LockerRoom/PaymentMethod/PaymentMethod.tsx
+
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
@@ -13,7 +15,6 @@ interface UserInfo {
 }
 
 interface CardData {
-  count: number;
   registerDate: string;
   brand: string;
   cardNumber: string;
@@ -21,7 +22,6 @@ interface CardData {
 
 const visitLabel = '결제등록 카드';
 const salesLabel = '시즌';
-
 const sales = '2025 1분기';
 const dateRange = 'SPRING';
 
@@ -32,6 +32,9 @@ const PaymentMethod: React.FC = () => {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // 카드 개수
+  const count = cards.length;
 
   // 카드 목록 불러오기
   useEffect(() => {
@@ -78,8 +81,9 @@ const PaymentMethod: React.FC = () => {
     setIsDeleteModalOpen(true);
   };
   const confirmDelete = () => {
-    if (selectedIdx !== null)
+    if (selectedIdx !== null) {
       setCards((prev) => prev.filter((_, i) => i !== selectedIdx));
+    }
     setSelectedIdx(null);
     setIsDeleteModalOpen(false);
   };
@@ -127,14 +131,17 @@ const PaymentMethod: React.FC = () => {
         <Title>결제수단</Title>
         <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
       </Header>
+
       <StatsSection
-        visits={cards.length.toString()}
+        visits={count}
         sales={sales}
         dateRange={dateRange}
         visitLabel={visitLabel}
         salesLabel={salesLabel}
       />
+
       <Divider />
+
       <CardsList>
         {cards.map((card, idx) => (
           <CardItemBox key={idx}>
@@ -162,6 +169,7 @@ const PaymentMethod: React.FC = () => {
           </PlusWrapper>
         </AddCardBox>
       </CardsList>
+
       {error && <ErrorMsg>{error}</ErrorMsg>}
 
       <DotsWrapper>
@@ -171,6 +179,7 @@ const PaymentMethod: React.FC = () => {
             <Dot key={idx} $active={idx === currentCard} />
           ))}
       </DotsWrapper>
+
       <ReusableModal2
         isOpen={isDeleteModalOpen}
         title='카드 삭제'
@@ -219,6 +228,7 @@ const CardsList = styled.div`
   gap: 20px;
   width: 100%;
   max-width: 300px;
+
   @media (min-width: 1024px) {
     max-width: 400px;
     margin: 0 auto;
@@ -232,6 +242,7 @@ const CardItemBox = styled.div`
   display: flex;
   flex-direction: column;
   cursor: pointer;
+
   @media (min-width: 1024px) {
     height: 250px;
   }
@@ -249,6 +260,7 @@ const DeleteButton = styled.button`
   border-radius: 50%;
   padding: 4px;
   cursor: pointer;
+
   svg {
     color: #fff;
   }
@@ -265,6 +277,7 @@ const CardBody = styled.div`
   justify-content: flex-end;
   padding-bottom: 50px;
   padding-left: 20px;
+
   @media (min-width: 1024px) {
     padding-bottom: 70px;
   }
@@ -272,10 +285,8 @@ const CardBody = styled.div`
 const BrandRow = styled.div`
   display: flex;
   align-items: center;
-
   margin-bottom: 10px;
 `;
-
 const BrandText = styled.span`
   font-size: 12px;
   font-weight: 700;
@@ -295,6 +306,7 @@ const AddCardBox = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
   @media (min-width: 1024px) {
     height: 250px;
   }
