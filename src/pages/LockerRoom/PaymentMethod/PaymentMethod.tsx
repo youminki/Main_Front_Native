@@ -6,7 +6,7 @@ import StatsSection from '../../../components/StatsSection';
 import ReusableModal2 from '../../../components/ReusableModal2';
 
 import { getMyCards, CardItem } from '../../../api/default/payment';
-import { Trash2 as DeleteIconSVG } from 'lucide-react';
+// import { Trash2 as DeleteIconSVG } from 'lucide-react';
 
 interface UserInfo {
   userId: string;
@@ -76,10 +76,10 @@ const PaymentMethod: React.FC = () => {
   }, []);
 
   // 카드 삭제 모달 처리
-  const openDeleteModal = (idx: number) => {
-    setSelectedIdx(idx);
-    setIsDeleteModalOpen(true);
-  };
+  // const openDeleteModal = (idx: number) => {
+  //   setSelectedIdx(idx);
+  //   setIsDeleteModalOpen(true);
+  // };
   const confirmDelete = () => {
     if (selectedIdx !== null) {
       setCards((prev) => prev.filter((_, i) => i !== selectedIdx));
@@ -147,9 +147,9 @@ const PaymentMethod: React.FC = () => {
           <CardItemBox key={idx}>
             <CardTop>
               <DateLabel>{card.registerDate}</DateLabel>
-              <DeleteButton onClick={() => openDeleteModal(idx)}>
+              {/* <DeleteButton onClick={() => openDeleteModal(idx)}>
                 <DeleteIconSVG size={16} />
-              </DeleteButton>
+              </DeleteButton> */}
             </CardTop>
             <CardBody>
               <BrandRow>
@@ -254,17 +254,17 @@ const CardTop = styled.div`
   gap: 8px;
   padding: 16px;
 `;
-const DeleteButton = styled.button`
-  background: rgba(0, 0, 0, 0.5);
-  border: none;
-  border-radius: 50%;
-  padding: 4px;
-  cursor: pointer;
+// const DeleteButton = styled.button`
+//   background: rgba(0, 0, 0, 0.5);
+//   border: none;
+//   border-radius: 50%;
+//   padding: 4px;
+//   cursor: pointer;
 
-  svg {
-    color: #fff;
-  }
-`;
+//   svg {
+//     color: #fff;
+//   }
+// `;
 const DateLabel = styled.span`
   font-size: 12px;
   font-weight: 700;
