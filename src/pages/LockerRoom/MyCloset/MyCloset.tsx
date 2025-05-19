@@ -91,7 +91,7 @@ const MyCloset: React.FC = () => {
           <Spinner /> // 로딩 중 스피너 표시
         ) : items.length === 0 ? (
           <EmptyState>
-            <EmptyMessage>락커룸에 보관한 옷이 없습니다.</EmptyMessage>
+            <EmptyMessage>내옷장에 보관한 옷이 없습니다.</EmptyMessage>
             <AddButton onClick={goToLocker}>
               <FaTshirt size={48} />
               <ButtonText>옷 추가하러 가기</ButtonText>
