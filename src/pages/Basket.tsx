@@ -590,7 +590,7 @@ const PurchaseButton = styled.button`
 `;
 
 const Icon = styled.img`
-  width: 75px;
+  width: auto;
   height: auto;
 `;
 
