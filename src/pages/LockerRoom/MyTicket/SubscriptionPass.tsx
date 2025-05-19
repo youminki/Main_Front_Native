@@ -6,10 +6,10 @@ import { getUserTickets, TicketItem } from '../../../api/ticket/ticket'; // 실�
 
 const SubscriptionPassDetail: React.FC = () => {
   const [ticket, setTicket] = useState<TicketItem | null>(null);
-  const [isCancelled, setIsCancelled] = useState(false);
+  // const [isCancelled, setIsCancelled] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [onModalConfirm, setOnModalConfirm] = useState<() => void>(() => {});
+  const [modalMessage] = useState('');
+  const [onModalConfirm] = useState<() => void>(() => {});
   const [isSettingOpen, setIsSettingOpen] = useState(false);
 
   // 실제 적용될 선택된 플랜
@@ -45,31 +45,31 @@ const SubscriptionPassDetail: React.FC = () => {
   const formatDate = (iso: string) => iso.slice(0, 10).replace(/-/g, '.');
   const formatTime = (iso: string) => new Date(iso).toTimeString().slice(0, 8);
 
-  const handleOpenSetting = () => {
-    setModalSelectedPlan(selectedPlan);
-    setIsSettingOpen(true);
-  };
+  // const handleOpenSetting = () => {
+  //   setModalSelectedPlan(selectedPlan);
+  //   setIsSettingOpen(true);
+  // };
   const handleSubmitChange = () => {
     setSelectedPlan(modalSelectedPlan);
     setIsSettingOpen(false);
   };
 
-  const handleButtonClick = () => {
-    if (!isCancelled) {
-      setModalMessage('다음 시즌 자동연장을 취소 하시겠습니까?');
-      setOnModalConfirm(() => () => {
-        setIsCancelled(true);
-        setModalOpen(false);
-      });
-    } else {
-      setModalMessage('시즌 자동연장을 다시 하시겠습니까?');
-      setOnModalConfirm(() => () => {
-        setIsCancelled(false);
-        setModalOpen(false);
-      });
-    }
-    setModalOpen(true);
-  };
+  // const handleButtonClick = () => {
+  //   if (!isCancelled) {
+  //     setModalMessage('다음 시즌 자동연장을 취소 하시겠습니까?');
+  //     setOnModalConfirm(() => () => {
+  //       setIsCancelled(true);
+  //       setModalOpen(false);
+  //     });
+  //   } else {
+  //     setModalMessage('시즌 자동연장을 다시 하시겠습니까?');
+  //     setOnModalConfirm(() => () => {
+  //       setIsCancelled(false);
+  //       setModalOpen(false);
+  //     });
+  //   }
+  //   setModalOpen(true);
+  // };
 
   if (!ticket) {
     return <Container>로딩 중...</Container>;
@@ -85,7 +85,7 @@ const SubscriptionPassDetail: React.FC = () => {
             <PassName>
               정기 구독권 <GrayText>({selectedPlan})</GrayText>
             </PassName>
-            <InFieldButton onClick={handleOpenSetting}>설정변경</InFieldButton>
+            {/* <InFieldButton onClick={handleOpenSetting}>설정변경</InFieldButton> */}
           </InFieldBoxBlack>
         </Section>
 
@@ -170,9 +170,9 @@ const SubscriptionPassDetail: React.FC = () => {
               <Pipe>|</Pipe>
               <SeasonValue>2025 SUMMER</SeasonValue>
             </Row>
-            <InFieldButton onClick={handleButtonClick}>
+            {/* <InFieldButton onClick={handleButtonClick}>
               {isCancelled ? '취소신청 완료' : '취소신청'}
-            </InFieldButton>
+            </InFieldButton> */}
           </InFieldBoxGray>
         </Section>
 
@@ -262,18 +262,18 @@ const GrayText = styled.span`
   color: #999999;
 `;
 
-const InFieldButton = styled.button`
-  background: #000000;
-  border-radius: 5px;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
+// const InFieldButton = styled.button`
+//   background: #000000;
+//   border-radius: 5px;
+//   padding: 10px;
+//   border: none;
+//   cursor: pointer;
 
-  font-weight: 800;
-  font-size: 12px;
-  line-height: 13px;
-  color: #ffffff;
-`;
+//   font-weight: 800;
+//   font-size: 12px;
+//   line-height: 13px;
+//   color: #ffffff;
+// `;
 
 const ReadOnlyBox = styled.div`
   box-sizing: border-box;
