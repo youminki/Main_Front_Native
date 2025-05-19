@@ -13,6 +13,7 @@ interface UserInfo {
 }
 
 interface CardData {
+  count: number;
   registerDate: string;
   brand: string;
   cardNumber: string;
@@ -20,7 +21,7 @@ interface CardData {
 
 const visitLabel = '결제등록 카드';
 const salesLabel = '시즌';
-const visits = '1';
+
 const sales = '2025 1분기';
 const dateRange = 'SPRING';
 
@@ -127,7 +128,7 @@ const PaymentMethod: React.FC = () => {
         <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
       </Header>
       <StatsSection
-        visits={visits}
+        visits={cards.length.toString()}
         sales={sales}
         dateRange={dateRange}
         visitLabel={visitLabel}
