@@ -516,7 +516,6 @@ const ItemImageContainer = styled.div`
   position: relative;
   width: 100%;
   height: 210px;
-  border: 1px solid #ddd;
 
   @media (min-width: 600px) {
     width: 200px;
@@ -531,6 +530,7 @@ const CheckboxOverlay = styled.div`
 const ItemImage = styled.img`
   width: 100%;
   height: 100%;
+  border: 1px solid #ddd;
 `;
 
 const ButtonContainer = styled.div`
