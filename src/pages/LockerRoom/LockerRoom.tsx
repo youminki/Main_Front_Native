@@ -1,6 +1,7 @@
 // src/pages/LockerRoom.tsx
+
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import StatsSection from '../../components/LockerRoom/StatsSection';
 
@@ -38,19 +39,26 @@ const menuItems = [
   },
 ];
 
+// 호버 시 살짝 확대
+const hoverScale = keyframes`
+  from { transform: scale(1); }
+  to   { transform: scale(1.05); }
+`;
+
 const LockerRoom: React.FC = () => {
   const navigate = useNavigate();
   const [membership, setMembership] = useState<MembershipInfo | null>(null);
 
   useEffect(() => {
     getMembershipInfo()
-      .then((res) => {
-        setMembership(res);
-      })
-      .catch((err) => {
-        console.error('멤버십 정보 조회 실패', err);
-      });
+      .then((res) => setMembership(res))
+      .catch((err) => console.error('멤버십 정보 조회 실패', err));
   }, []);
+
+  const handleClick = (path: string, disabled?: boolean) => {
+    if (disabled) return;
+    navigate(path);
+  };
 
   return (
     <Container>
@@ -77,9 +85,7 @@ const LockerRoom: React.FC = () => {
           <GridItem
             key={idx}
             disabled={item.disabled}
-            onClick={() => {
-              if (!item.disabled) navigate(item.path);
-            }}
+            onClick={() => handleClick(item.path, item.disabled)}
           >
             <IconLabelRow>
               <IconImage src={item.icon} alt={item.label} />
@@ -157,7 +163,6 @@ const GridMenu = styled.div`
   gap: 24px;
   width: 100%;
   margin: auto;
-
   @media (min-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -171,17 +176,18 @@ const GridItem = styled.div<{ disabled?: boolean }>`
   box-sizing: border-box;
   border: 1px solid #ddd;
   background: #fff;
-  width: 100%;
-  height: 100%;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
+  transition: transform 0.2s ease;
+  &:hover {
+    animation: ${hoverScale} 0.2s forwards alternate;
+  }
 `;
 
 const IconLabelRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-top: 10px;
+  gap: 8px;
 `;
 
 const IconImage = styled.img`
