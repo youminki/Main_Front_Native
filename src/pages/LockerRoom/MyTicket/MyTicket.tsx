@@ -1,3 +1,4 @@
+// src/pages/LockerRoom/MyTicket.tsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -25,7 +26,6 @@ const MyTicket: React.FC = () => {
 
   // isActive 가 true인 티켓만 보여줌
   const activeTickets = tickets.filter((t) => t.isActive);
-
   // active 티켓이 하나라도 있으면 추가 버튼 숨김
   const hasActiveTicket = activeTickets.length > 0;
 
@@ -48,9 +48,11 @@ const MyTicket: React.FC = () => {
       <TicketWrapper>
         {activeTickets.map((ticket) => {
           const {
+            id,
             startDate,
             endDate,
-            ticketList: { id: tplId, name, price, isLongTerm },
+            remainingRentals,
+            ticketList: { id: tplId, name, price, isLongTerm, isUlimited },
           } = ticket;
 
           const subtitle = isLongTerm ? '(매월결제)' : '(일반결제)';
@@ -59,9 +61,12 @@ const MyTicket: React.FC = () => {
 
           return (
             <TicketCard
-              key={ticket.id}
+              key={id}
               onClick={() => navigate(`/ticketDetail/${tplId}`)}
             >
+              <RemainingBadge>
+                {isUlimited ? '무제한' : `잔여횟수 ${remainingRentals}회`}
+              </RemainingBadge>
               <Left>
                 <SeasonRow>
                   <SeasonText>2025 SPRING</SeasonText>
@@ -83,7 +88,6 @@ const MyTicket: React.FC = () => {
           );
         })}
 
-        {/* active 티켓이 없을 때만 “이용권 추가” 버튼 노출 */}
         {!hasActiveTicket && (
           <TicketCard onClick={() => navigate('/my-ticket/PurchaseOfPasses')}>
             <AddLeft>
@@ -107,13 +111,18 @@ const MyTicket: React.FC = () => {
 
 export default MyTicket;
 
-// ─── Styled Components ─────────────────────────────────────────────
-// (기존 스타일 그대로 사용)
-
-// ─── Styled Components ─────────────────────────────────────────────
-// (생략: 기존 스타일 그대로 사용)
-
-// ─── Styled Components ─────────────────────────────────────────────
+const RemainingBadge = styled.div`
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 6px;
+  border-radius: 12px;
+  z-index: 2;
+`;
 
 const MyTicketContainer = styled.div`
   display: flex;
@@ -251,8 +260,9 @@ const Right = styled.div`
 const DateText = styled.p`
   font-size: 12px;
   font-weight: 700;
+  white-space: nowrap;
   color: #fff;
-  margin: 0;
+  margin: 20px 0;
 `;
 
 const Illustration = styled.img`
