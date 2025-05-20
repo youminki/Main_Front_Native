@@ -188,7 +188,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #f5f5f5;
+
   padding: 1rem;
   min-height: 100vh;
 `;
@@ -212,7 +212,7 @@ const Divider = styled.div`
   width: 100%;
   height: 1px;
   background: #e0e0e0;
-  margin: 16px 0;
+  margin: 30px 0;
 `;
 
 const CardsList = styled.div`
