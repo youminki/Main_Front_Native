@@ -93,32 +93,24 @@ const PaymentPage: React.FC = () => {
   const [modalAlert, setModalAlert] = useState({ isOpen: false, message: '' });
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
-  // 1) 마운트 시 티켓 불러오기 & 첫 번째 티켓을 기본 선택
   useEffect(() => {
     getUserTickets()
       .then((data) => {
         setTickets(data);
-        if (data.length > 0) {
-          const first = data[0];
-          const label = `${first.ticketList.name} (${first.remainingRentals}회 남음)`;
-          setSelectedMethod(label);
-          setSelectedTicketId(first.id);
-        }
       })
       .catch((err) => console.error('티켓 조회 실패:', err));
   }, []);
-
+  const activeTickets = tickets.filter((t) => t.isActive);
   // 드롭다운 옵션 생성
-  const paymentOptions = tickets.length
+  const paymentOptions = activeTickets.length
     ? [
         '결제방식 선택하기',
-        ...tickets.map(
+        ...activeTickets.map(
           (t) => `${t.ticketList.name} (${t.remainingRentals}회 남음)`
         ),
       ]
     : ['결제방식 선택하기'];
 
-  // 2) 드롭다운 변경 핸들러
   const handlePaymentSelect = (value: string) => {
     if (value === '이용권 구매하기') {
       navigate('/my-ticket');
@@ -126,11 +118,10 @@ const PaymentPage: React.FC = () => {
     }
     setSelectedMethod(value);
 
-    const ticket = tickets.find(
+    const ticket = activeTickets.find(
       (t) => `${t.ticketList.name} (${t.remainingRentals}회 남음)` === value
     );
     setSelectedTicketId(ticket ? ticket.id : null);
-    console.log('선택된 티켓 ID:', ticket?.id);
   };
 
   const handleAddressSearch = (field: 'delivery' | 'return') => {
