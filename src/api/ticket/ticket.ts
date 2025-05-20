@@ -15,6 +15,7 @@ export interface TicketList {
   recurringIntervalMonths?: number;
   isVisible?: boolean;
   createdAt?: string;
+  isUlimited: string;
 }
 
 /**

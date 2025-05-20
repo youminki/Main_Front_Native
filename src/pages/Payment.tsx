@@ -102,14 +102,16 @@ const PaymentPage: React.FC = () => {
   }, []);
   const activeTickets = tickets.filter((t) => t.isActive);
   // 드롭다운 옵션 생성
-  const paymentOptions = activeTickets.length
-    ? [
-        '결제방식 선택하기',
-        ...activeTickets.map(
-          (t) => `${t.ticketList.name} (${t.ticketList.rentalLimit}회 남음)`
-        ),
-      ]
-    : ['결제방식 선택하기'];
+
+  const paymentOptions = [
+    '결제방식 선택하기',
+    ...activeTickets.map((t) => {
+      const name = t.ticketList.name;
+      return t.ticketList.isUlimited
+        ? name
+        : `${name} (${t.remainingRentals}회 남음)`;
+    }),
+  ];
 
   const handlePaymentSelect = (value: string) => {
     if (value === '이용권 구매하기') {
@@ -117,12 +119,16 @@ const PaymentPage: React.FC = () => {
       return;
     }
     setSelectedMethod(value);
-
-    const ticket = activeTickets.find(
-      (t) => `${t.ticketList.name} (${t.remainingRentals}회 남음)` === value
-    );
+    // 똑같은 로직으로 매칭
+    const ticket = activeTickets.find((t) => {
+      const label = t.ticketList.isUlimited
+        ? t.ticketList.name
+        : `${t.ticketList.name} (${t.remainingRentals}회 남음)`;
+      return label === value;
+    });
     setSelectedTicketId(ticket ? ticket.id : null);
   };
+  // ─
 
   const handleAddressSearch = (field: 'delivery' | 'return') => {
     setModalField(field);

@@ -41,7 +41,7 @@ const TicketDetail: React.FC = () => {
   }
 
   const {
-    ticketList: { name, durationMonths, isLongTerm, price },
+    ticketList: { name, durationMonths, isLongTerm, price, isUlimited },
     startDate,
     endDate,
     purchasedAt,
@@ -95,13 +95,15 @@ const TicketDetail: React.FC = () => {
           <ReadOnlyBox>{price.toLocaleString()}원</ReadOnlyBox>
         </Section>
 
-        {/* 잔여횟수 */}
-        <Section>
-          <SectionTitle>잔여횟수</SectionTitle>
-          <ReadOnlyBoxGray>
-            <SeasonValue>{remainingRentals}회</SeasonValue>
-          </ReadOnlyBoxGray>
-        </Section>
+        {/* 잔여횟수: isUlimited가 false일 때만 */}
+        {!isUlimited && (
+          <Section>
+            <SectionTitle>잔여횟수</SectionTitle>
+            <ReadOnlyBoxGray>
+              <SeasonValue>{remainingRentals}회</SeasonValue>
+            </ReadOnlyBoxGray>
+          </Section>
+        )}
 
         {/* 다음 결제일 & 자동연장 */}
         <Section>
