@@ -177,12 +177,20 @@ const LikeButton = styled.div<{ $animating: boolean }>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: transform 0.2s ease;
 
+  /* 클릭으로 $animating=true 일 때 한 번 뛰기 */
   ${({ $animating }) =>
     $animating &&
     css`
       animation: ${heartbeat} 0.3s ease-out;
     `}
+
+  /* 호버 시에도 계속 뛰는 효과 */
+  &:hover {
+    animation: ${heartbeat} 0.6s ease-out infinite;
+    transform: scale(1.1);
+  }
 
   & svg {
     width: 16px;
