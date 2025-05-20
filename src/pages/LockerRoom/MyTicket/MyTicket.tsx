@@ -1,5 +1,3 @@
-// src/pages/LockerRoom/MyTicket.tsx
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -21,7 +19,7 @@ const MyTicket: React.FC = () => {
 
   useEffect(() => {
     getUserTickets()
-      .then((res) => setTickets(res.data))
+      .then((data) => setTickets(data))
       .catch((err) => console.error('티켓 조회 실패:', err));
   }, []);
 
@@ -44,28 +42,20 @@ const MyTicket: React.FC = () => {
       <TicketWrapper>
         {tickets.map((ticket) => {
           const {
-            id,
             startDate,
             endDate,
-            ticketList: { name, price, isLongTerm },
+            ticketList: { id: tplId, name, price, isLongTerm },
           } = ticket;
 
-          // API 타입에 없는 isUlimited 플래그 사용
-          const isUlimited = (ticket.ticketList as any).isUlimited as boolean;
-
-          const path = isLongTerm
-            ? '/my-ticket/SubscriptionPass'
-            : '/my-ticket/OnetimePass';
-          const subtitle = isUlimited
-            ? '(무제한권)'
-            : isLongTerm
-              ? '(매월결제)'
-              : '(일반결제)';
+          const subtitle = isLongTerm ? '(매월결제)' : '(일반결제)';
           const formattedPrice = `${price.toLocaleString()}원`;
           const formattedDate = `${startDate.replace(/-/g, '.')} ~ ${endDate.replace(/-/g, '.')}`;
 
           return (
-            <TicketCard key={id} onClick={() => navigate(path)}>
+            <TicketCard
+              key={ticket.id}
+              onClick={() => navigate(`/ticketDetail/${tplId}`)}
+            >
               <Left>
                 <SeasonRow>
                   <SeasonText>2025 SPRING</SeasonText>

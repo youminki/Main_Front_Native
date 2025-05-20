@@ -48,8 +48,8 @@ import PurchaseOfPasses from './pages/LockerRoom/MyTicket/PurchaseOfPasses';
 
 import TicketPayment from './pages/LockerRoom/MyTicket/TicketPayment.tsx';
 
-import SubscriptionPass from './pages/LockerRoom/MyTicket/SubscriptionPass';
-import OnetimePass from './pages/LockerRoom/MyTicket/OnetimePass';
+// import SubscriptionPass from './pages/LockerRoom/MyTicket/SubscriptionPass';
+// import OnetimePass from './pages/LockerRoom/MyTicket/OnetimePass';
 
 import PaymentMethod from './pages/LockerRoom/PaymentMethod/PaymentMethod';
 import AddCard from './pages/LockerRoom/PaymentMethod/AddCard';
@@ -77,6 +77,7 @@ import AddCardPayple from './Test/AddCardPayple';
 import PasswordChange from './pages/PasswordChange';
 import PaymentComplete from './pages/PaymentComplete';
 import PaymentFail from './pages/Paymentfail.tsx';
+import TicketDetail from './pages/LockerRoom/MyTicket/TicketDetail';
 
 const App: React.FC = () => (
   <Router>
@@ -165,11 +166,11 @@ const App: React.FC = () => (
           element={<TicketPayment />}
         />
 
-        <Route
+        {/* <Route
           path='/my-ticket/SubscriptionPass'
           element={<SubscriptionPass />}
         />
-        <Route path='/my-ticket/OnetimePass' element={<OnetimePass />} />
+        <Route path='/my-ticket/OnetimePass' element={<OnetimePass />} /> */}
 
         {/* PaymentMethod & Reviews */}
         <Route path='/payment-method' element={<PaymentMethod />} />
@@ -208,6 +209,8 @@ const App: React.FC = () => (
         <Route path='/password-change' element={<PasswordChange />} />
         <Route path='/payment-complete' element={<PaymentComplete />} />
         <Route path='/payment-fail' element={<PaymentFail />} />
+
+        <Route path='/ticketDetail/:ticketId' element={<TicketDetail />} />
       </Route>
     </Routes>
   </Router>

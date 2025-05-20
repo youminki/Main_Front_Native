@@ -1,35 +1,40 @@
-// src/pages/LockerRoom/MyTicket/PurchaseOfPasses.tsx
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import InputField from '../../../components/InputField';
 import { CustomSelect } from '../../../components/CustomSelect';
 import FixedBottomBar from '../../../components/FixedBottomBar';
 import ReusableModal2 from '../../../components/ReusableModal2';
 import { format, addMonths } from 'date-fns';
-import { getAllTicketTemplates, TicketList } from '../../../api/ticket/ticket';
+import { getUserTickets, TicketItem } from '../../../api/ticket/ticket';
 import { getMembershipInfo, MembershipInfo } from '../../../api/user/userApi';
 
 const PurchaseOfPasses: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const popupRef = useRef<Window | null>(null);
 
-  const [templates, setTemplates] = useState<TicketList[]>([]);
-  const [purchaseOption, setPurchaseOption] = useState<string>('');
+  const searchParams = new URLSearchParams(location.search);
+  const initialName = searchParams.get('name') || '';
+
+  const [ticketItems, setTicketItems] = useState<TicketItem[]>([]);
+  const [templates, setTemplates] = useState<TicketItem['ticketList'][]>([]);
+  const [purchaseOption, setPurchaseOption] = useState<string>(initialName);
   const [discountRate, setDiscountRate] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    getAllTicketTemplates()
-      .then((res) => {
-        setTemplates(res.items);
-        if (res.items.length > 0) {
-          setPurchaseOption(res.items[0].name);
+    getUserTickets()
+      .then((items) => {
+        setTicketItems(items);
+        const lists = items.map((t) => t.ticketList);
+        setTemplates(lists);
+        if (!initialName && lists.length > 0) {
+          setPurchaseOption(lists[0].name);
         }
       })
       .catch(console.error);
-  }, []);
+  }, [initialName]);
 
   useEffect(() => {
     getMembershipInfo()
@@ -43,11 +48,9 @@ const PurchaseOfPasses: React.FC = () => {
   const today = new Date();
   const formattedToday = format(today, 'yyyy.MM.dd');
   const formattedOneMonthLater = format(addMonths(today, 1), 'yyyy.MM.dd');
-  const paymentDay = today.getDate();
 
   const selectedTemplate = templates.find((t) => t.name === purchaseOption);
-  const isUnlimited = selectedTemplate?.isUlimited ?? false;
-  const basePrice = selectedTemplate?.price || 0;
+  const basePrice = selectedTemplate?.price ?? 0;
   const discountedPrice =
     basePrice > 0 && discountRate > 0
       ? basePrice * (1 - discountRate / 100)
@@ -59,7 +62,6 @@ const PurchaseOfPasses: React.FC = () => {
     const params = new URLSearchParams({
       name: selectedTemplate?.name || '',
       discountedPrice: String(discountedPrice),
-      isUnlimited: String(isUnlimited),
     }).toString();
     const url = `/my-ticket/PurchaseOfPasses/TicketPayment?${params}`;
 
@@ -81,7 +83,7 @@ const PurchaseOfPasses: React.FC = () => {
     }
 
     setIsModalOpen(false);
-  }, [selectedTemplate, discountedPrice, isUnlimited, navigate]);
+  }, [selectedTemplate, discountedPrice, navigate]);
 
   return (
     <Container>
@@ -106,11 +108,7 @@ const PurchaseOfPasses: React.FC = () => {
         name='usagePeriod'
         label='이용권 사용기간'
         id='usagePeriod'
-        prefixcontent={
-          isUnlimited
-            ? `${formattedToday} ~ 무제한`
-            : `${formattedToday} ~ ${formattedOneMonthLater} (1개월)`
-        }
+        prefixcontent={`${formattedToday} ~ ${formattedOneMonthLater} (1개월)`}
         readOnly
       />
 
@@ -137,9 +135,6 @@ const PurchaseOfPasses: React.FC = () => {
         label='자동결제 일자'
         id='autoPaymentDate'
         prefixcontent={formattedToday}
-        suffixcontent={
-          isUnlimited ? `매월 ${paymentDay}일마다 결제` : undefined
-        }
         readOnly
       />
 
@@ -176,7 +171,6 @@ const PurchaseOfPasses: React.FC = () => {
 export default PurchaseOfPasses;
 
 // Styled Components
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;

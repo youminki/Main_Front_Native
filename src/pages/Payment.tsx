@@ -90,7 +90,7 @@ const PaymentPage: React.FC = () => {
 
   useEffect(() => {
     getUserTickets()
-      .then((res) => setTickets(res.data))
+      .then((data) => setTickets(data))
       .catch((err) => console.error('티켓 조회 실패:', err));
   }, []);
 
