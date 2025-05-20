@@ -1,7 +1,7 @@
 // src/pages/UsageHistory.tsx
 
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 import PeriodSection from '../../../components/PeriodSection';
 import Spinner from '../../../components/Spinner';
@@ -16,6 +16,11 @@ import {
 } from '../../../api/RentalSchedule/RentalSchedule';
 import CancleIconIcon from '../../../assets/Header/CancleIcon.svg';
 
+// 버튼 확대 애니메이션
+const hoverScale = keyframes`
+  from { transform: scale(1); }
+  to   { transform: scale(1.05); }
+`;
 interface BasketItem {
   id: number;
   productId: number;
@@ -541,17 +546,19 @@ const DeleteButton = styled.button`
   color: #888;
   width: 91px;
   height: 46px;
-  white-space: nowrap;
   border-radius: 6px;
-  cursor: pointer;
   border: 1px solid #ddd;
-
   font-weight: 800;
   font-size: 14px;
-  line-height: 15px;
-  text-align: center;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 
-  color: #999999;
+  &:hover {
+    animation: ${hoverScale} 0.2s forwards alternate;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
 
   @media (max-width: 600px) {
     width: 60px;
@@ -560,20 +567,28 @@ const DeleteButton = styled.button`
 `;
 
 const PurchaseButton = styled.button`
-  background-color: black;
-  color: white;
-  border: none;
+  background-color: #000;
+  color: #fff;
   width: 91px;
   height: 46px;
-  white-space: nowrap;
   border-radius: 6px;
-  cursor: pointer;
   border: 1px solid #ddd;
-
   font-weight: 800;
   font-size: 14px;
-  line-height: 15px;
-  text-align: center;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover:not(:disabled) {
+    animation: ${hoverScale} 0.2s forwards alternate;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
   @media (max-width: 600px) {
     width: 60px;
