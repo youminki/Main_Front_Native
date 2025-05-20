@@ -1,7 +1,7 @@
 import { Axios } from '../Axios';
 
 /**
- * 이용권 템플릿 정보 (UserTicket.ticketList)
+ * 이용권 템플릿 정보 (UserTicket.ticketList 및 /ticket-list 응답 아이템)
  */
 export interface TicketList {
   id: number;
@@ -11,6 +11,10 @@ export interface TicketList {
   monthlyRentalLimit: number; // 월별 대여 제한 횟수
   isLongTerm: boolean; // 장기권 여부
   price: number; // 가격 (원)
+  // 아래 필드는 /ticket-list 엔드포인트에서만 제공됩니다.
+  recurringIntervalMonths?: number;
+  isVisible?: boolean;
+  createdAt?: string;
 }
 
 /**
@@ -40,9 +44,33 @@ export const getUserTickets = async (): Promise<TicketItem[]> => {
 };
 
 /**
- * 이용권 템플릿 전체 조회
+ * /ticket-list 응답 스펙
+ */
+export interface TicketListResponse {
+  total: number;
+  items: TicketList[];
+}
+
+/**
+ * 전체 이용권 목록 조회 (공개)
+ * GET /ticket-list
+ */
+export const getTicketList = async (): Promise<TicketListResponse> => {
+  const response = await Axios.get<TicketListResponse>('/ticket-list');
+  return response.data;
+};
+
+/**
+ * 이용권 템플릿 전체 조회 (관리자용 혹은 다른 용도)
  * GET /ticket/templates
  */
 export interface TicketTemplatesResponse {
   items: TicketList[];
 }
+
+export const getTicketTemplates =
+  async (): Promise<TicketTemplatesResponse> => {
+    const response =
+      await Axios.get<TicketTemplatesResponse>('/ticket/templates');
+    return response.data;
+  };

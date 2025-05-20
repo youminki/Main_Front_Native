@@ -65,9 +65,12 @@ const PaymentPage: React.FC = () => {
   const itemsData = (location.state as BasketItemForPayment[]) || [];
   const [items] = useState<BasketItemForPayment[]>(itemsData);
 
+  // 폼 state
   const [recipient, setRecipient] = useState('');
   const [selectedMethod, setSelectedMethod] =
     useState<string>('결제방식 선택하기');
+  const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
+
   const [deliveryInfo, setDeliveryInfo] = useState({
     address: '',
     detailAddress: '',
@@ -79,21 +82,33 @@ const PaymentPage: React.FC = () => {
     contact: '010',
   });
   const [isSameAsDelivery, setIsSameAsDelivery] = useState(false);
+
   const [modalField, setModalField] = useState<'delivery' | 'return'>(
     'delivery'
   );
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [listModalOpen, setListModalOpen] = useState(false);
   const [selectedListAddress, setSelectedListAddress] = useState('');
+
   const [modalAlert, setModalAlert] = useState({ isOpen: false, message: '' });
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
+  // 1) 마운트 시 티켓 불러오기 & 첫 번째 티켓을 기본 선택
   useEffect(() => {
     getUserTickets()
-      .then((data) => setTickets(data))
+      .then((data) => {
+        setTickets(data);
+        if (data.length > 0) {
+          const first = data[0];
+          const label = `${first.ticketList.name} (${first.remainingRentals}회 남음)`;
+          setSelectedMethod(label);
+          setSelectedTicketId(first.id);
+        }
+      })
       .catch((err) => console.error('티켓 조회 실패:', err));
   }, []);
 
+  // 드롭다운 옵션 생성
   const paymentOptions = tickets.length
     ? [
         '결제방식 선택하기',
@@ -103,12 +118,19 @@ const PaymentPage: React.FC = () => {
       ]
     : ['결제방식 선택하기'];
 
+  // 2) 드롭다운 변경 핸들러
   const handlePaymentSelect = (value: string) => {
     if (value === '이용권 구매하기') {
       navigate('/my-ticket');
       return;
     }
     setSelectedMethod(value);
+
+    const ticket = tickets.find(
+      (t) => `${t.ticketList.name} (${t.remainingRentals}회 남음)` === value
+    );
+    setSelectedTicketId(ticket ? ticket.id : null);
+    console.log('선택된 티켓 ID:', ticket?.id);
   };
 
   const handleAddressSearch = (field: 'delivery' | 'return') => {
@@ -121,11 +143,9 @@ const PaymentPage: React.FC = () => {
     if (!v.startsWith('010')) v = '010' + v;
     v = v.slice(0, 11);
     if (v.length === 11) v = v.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-    if (field === 'delivery') {
-      setDeliveryInfo((info) => ({ ...info, contact: v }));
-    } else {
-      setReturnInfo((info) => ({ ...info, contact: v }));
-    }
+    field === 'delivery'
+      ? setDeliveryInfo((info) => ({ ...info, contact: v }))
+      : setReturnInfo((info) => ({ ...info, contact: v }));
   };
 
   const handleUseSame = () => {
@@ -137,13 +157,12 @@ const PaymentPage: React.FC = () => {
     setIsSameAsDelivery(false);
   };
   const handleListConfirm = () => {
-    if (modalField === 'delivery') {
-      setDeliveryInfo((info) => ({ ...info, address: selectedListAddress }));
-    } else {
-      setReturnInfo((info) => ({ ...info, address: selectedListAddress }));
-    }
+    modalField === 'delivery'
+      ? setDeliveryInfo((info) => ({ ...info, address: selectedListAddress }))
+      : setReturnInfo((info) => ({ ...info, address: selectedListAddress }));
     setListModalOpen(false);
   };
+
   const baseTotal = items.reduce((sum, x) => sum + x.price, 0);
   const extra = selectedMethod === '매니저 배송' ? 15000 : 0;
   const finalAmount = baseTotal + extra;
@@ -174,27 +193,24 @@ const PaymentPage: React.FC = () => {
     }
   };
 
+  // 3) 결제 확정: selectedTicketId 만 사용
   const handleConfirmPayment = async () => {
     setConfirmModalOpen(false);
-    // items 배열을 순회해 order items 생성
     const orderItems = items.map((item) => {
       const [startRaw, endRaw] = item
         .servicePeriod!.split('~')
-        .map((s: string) => s.trim());
-      const startDate = startRaw.replace(/\./g, '-');
-      const endDate = endRaw.replace(/\./g, '-');
+        .map((s) => s.trim());
       return {
         productId: item.id,
         sizeLabel: item.size,
-        startDate,
-        endDate,
+        startDate: startRaw.replace(/\./g, '-'),
+        endDate: endRaw.replace(/\./g, '-'),
         quantity: 1,
         count: 1,
       };
     });
-
     const orderBody: RentalOrderRequest = {
-      ticketId: tickets[0]?.id || 0,
+      ticketId: selectedTicketId ?? 0,
       items: orderItems,
       shipping: {
         address: deliveryInfo.address,
@@ -211,21 +227,22 @@ const PaymentPage: React.FC = () => {
       },
     };
 
+    console.log('Order Body:', orderBody);
     try {
       await createRentalOrder(orderBody);
       navigate('/payment-complete');
     } catch (err: any) {
       console.error('렌탈 주문 생성 실패:', err);
-      const msg =
-        err.response?.data?.message ||
-        '주문 중 오류가 발생했습니다. 다시 시도해주세요.';
-      setModalAlert({ isOpen: true, message: msg });
+      setModalAlert({
+        isOpen: true,
+        message:
+          err.response?.data?.message ||
+          '주문 중 오류가 발생했습니다. 다시 시도해주세요.',
+      });
     }
   };
 
-  const closeAlertModal = () => {
-    setModalAlert({ isOpen: false, message: '' });
-  };
+  const closeAlertModal = () => setModalAlert({ isOpen: false, message: '' });
 
   return (
     <Container>

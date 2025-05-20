@@ -1,3 +1,4 @@
+// src/pages/my-ticket/PurchaseOfPasses.tsx
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -6,7 +7,7 @@ import { CustomSelect } from '../../../components/CustomSelect';
 import FixedBottomBar from '../../../components/FixedBottomBar';
 import ReusableModal2 from '../../../components/ReusableModal2';
 import { format, addMonths } from 'date-fns';
-import { getUserTickets, TicketItem } from '../../../api/ticket/ticket';
+import { getTicketList, TicketList } from '../../../api/ticket/ticket';
 import { getMembershipInfo, MembershipInfo } from '../../../api/user/userApi';
 
 const PurchaseOfPasses: React.FC = () => {
@@ -17,47 +18,49 @@ const PurchaseOfPasses: React.FC = () => {
   const searchParams = new URLSearchParams(location.search);
   const initialName = searchParams.get('name') || '';
 
-  const [ticketItems, setTicketItems] = useState<TicketItem[]>([]);
-  const [templates, setTemplates] = useState<TicketItem['ticketList'][]>([]);
+  // 공개 API로부터 불러온 전체 템플릿 리스트
+  const [templates, setTemplates] = useState<TicketList[]>([]);
   const [purchaseOption, setPurchaseOption] = useState<string>(initialName);
   const [discountRate, setDiscountRate] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // 공개 이용권 목록 조회
   useEffect(() => {
-    getUserTickets()
-      .then((items) => {
-        setTicketItems(items);
-        const lists = items.map((t) => t.ticketList);
-        setTemplates(lists);
-        if (!initialName && lists.length > 0) {
-          setPurchaseOption(lists[0].name);
+    getTicketList()
+      .then((res) => {
+        setTemplates(res.items);
+        if (!initialName && res.items.length > 0) {
+          setPurchaseOption(res.items[0].name);
         }
       })
       .catch(console.error);
   }, [initialName]);
 
+  // 회원 할인율 조회
   useEffect(() => {
     getMembershipInfo()
       .then((info: MembershipInfo) => {
-        const discount = parseFloat(info.discountRate?.toString() || '0');
-        setDiscountRate(discount >= 0 ? discount : 0);
+        const rate = parseFloat(info.discountRate?.toString() || '0');
+        setDiscountRate(Math.max(0, rate));
       })
       .catch(() => setDiscountRate(0));
   }, []);
 
+  // 오늘 및 한 달 후 날짜 포맷
   const today = new Date();
   const formattedToday = format(today, 'yyyy.MM.dd');
   const formattedOneMonthLater = format(addMonths(today, 1), 'yyyy.MM.dd');
 
+  // 선택된 템플릿 객체
   const selectedTemplate = templates.find((t) => t.name === purchaseOption);
+
+  // 가격 계산
   const basePrice = selectedTemplate?.price ?? 0;
   const discountedPrice =
-    basePrice > 0 && discountRate > 0
-      ? basePrice * (1 - discountRate / 100)
-      : basePrice;
-  const formattedDiscountedPrice =
-    discountedPrice > 0 ? discountedPrice.toLocaleString() : '0';
+    discountRate > 0 ? basePrice * (1 - discountRate / 100) : basePrice;
+  const formattedDiscountedPrice = discountedPrice.toLocaleString();
 
+  // 결제 확인 핸들러
   const handleConfirmPayment = useCallback(() => {
     const params = new URLSearchParams({
       name: selectedTemplate?.name || '',
@@ -65,8 +68,7 @@ const PurchaseOfPasses: React.FC = () => {
     }).toString();
     const url = `/my-ticket/PurchaseOfPasses/TicketPayment?${params}`;
 
-    const isDesktop = window.innerWidth > 768;
-    if (isDesktop) {
+    if (window.innerWidth > 768) {
       popupRef.current = window.open(
         url,
         'ticketPaymentPopup',
@@ -81,7 +83,6 @@ const PurchaseOfPasses: React.FC = () => {
     } else {
       window.location.href = url;
     }
-
     setIsModalOpen(false);
   }, [selectedTemplate, discountedPrice, navigate]);
 
@@ -170,7 +171,8 @@ const PurchaseOfPasses: React.FC = () => {
 
 export default PurchaseOfPasses;
 
-// Styled Components
+// --- Styled Components ---
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
