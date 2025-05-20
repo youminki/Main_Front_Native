@@ -43,7 +43,7 @@ const ReusableModal: React.FC<ModalProps> = ({
         <ModalBody>{children}</ModalBody>
         {actions && <ModalActions>{actions}</ModalActions>}
         <CloseButtonWrapper>
-          <CloseButton onClick={handleConfirmClick}>확인</CloseButton>
+          <CloseButton onClick={handleConfirmClick}>닫기</CloseButton>
         </CloseButtonWrapper>
       </ModalContent>
     </StyledModal>
