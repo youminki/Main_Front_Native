@@ -262,7 +262,7 @@ const Home: React.FC = () => {
                     <Icon
                       src={HomeIcon}
                       alt='홈'
-                      onClick={() => navigate('/')}
+                      onClick={() => navigate('/home')}
                     />
                   </RightSection>
                 </ModalHeaderContainer>
