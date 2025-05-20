@@ -17,7 +17,6 @@ const PurchaseOfPasses: React.FC = () => {
   const searchParams = new URLSearchParams(location.search);
   const initialName = searchParams.get('name') || '';
 
-  const [ticketItems, setTicketItems] = useState<TicketItem[]>([]);
   const [templates, setTemplates] = useState<TicketItem['ticketList'][]>([]);
   const [purchaseOption, setPurchaseOption] = useState<string>(initialName);
   const [discountRate, setDiscountRate] = useState<number>(0);
@@ -26,7 +25,6 @@ const PurchaseOfPasses: React.FC = () => {
   useEffect(() => {
     getUserTickets()
       .then((items) => {
-        setTicketItems(items);
         const lists = items.map((t) => t.ticketList);
         setTemplates(lists);
         if (!initialName && lists.length > 0) {
