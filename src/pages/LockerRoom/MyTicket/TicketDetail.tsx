@@ -1,6 +1,8 @@
+// src/pages/LockerRoom/TicketDetail.tsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import Spinner from '../../../components/Spinner';
 import { getUserTickets, TicketItem } from '../../../api/ticket/ticket';
 
 const TicketDetail: React.FC = () => {
@@ -27,7 +29,11 @@ const TicketDetail: React.FC = () => {
   const formatTime = (iso: string) => new Date(iso).toTimeString().slice(0, 8);
 
   if (loading) {
-    return <Container>로딩 중...</Container>;
+    return (
+      <SpinnerWrapper>
+        <Spinner />
+      </SpinnerWrapper>
+    );
   }
 
   if (!ticket) {
@@ -135,6 +141,13 @@ const TicketDetail: React.FC = () => {
 export default TicketDetail;
 
 // ─── Styled Components ─────────────────────────────────────────────
+
+const SpinnerWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px; /* 스피너 위치 조정용 높이 */
+`;
 
 const Container = styled.div`
   display: flex;
