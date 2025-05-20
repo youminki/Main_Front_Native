@@ -344,7 +344,7 @@ const PaymentPage: React.FC = () => {
             <InputField
               id='delivery-method'
               label='배송방법 *'
-              options={['매니저 배송(준비중)', '택배 배송']}
+              options={['택배 배송', '매니저 배송(준비중)']}
               disabledOptions={['매니저 배송(준비중)']}
               onSelectChange={(v: string) => handlePaymentSelect(v)}
             />
