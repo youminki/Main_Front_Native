@@ -23,8 +23,11 @@ const MyTicket: React.FC = () => {
       .catch((err) => console.error('티켓 조회 실패:', err));
   }, []);
 
-  // active 티켓이 하나라도 있으면 true
-  const hasActiveTicket = tickets.some((t) => t.isActive);
+  // isActive 가 true인 티켓만 보여줌
+  const activeTickets = tickets.filter((t) => t.isActive);
+
+  // active 티켓이 하나라도 있으면 추가 버튼 숨김
+  const hasActiveTicket = activeTickets.length > 0;
 
   return (
     <MyTicketContainer>
@@ -34,7 +37,7 @@ const MyTicket: React.FC = () => {
       </Header>
 
       <StatsSection
-        visits={String(tickets.length)}
+        visits={String(activeTickets.length)}
         sales={sales}
         dateRange={dateRange}
         visitLabel={visitLabel}
@@ -43,7 +46,7 @@ const MyTicket: React.FC = () => {
       <Divider />
 
       <TicketWrapper>
-        {tickets.map((ticket) => {
+        {activeTickets.map((ticket) => {
           const {
             startDate,
             endDate,
@@ -103,6 +106,9 @@ const MyTicket: React.FC = () => {
 };
 
 export default MyTicket;
+
+// ─── Styled Components ─────────────────────────────────────────────
+// (기존 스타일 그대로 사용)
 
 // ─── Styled Components ─────────────────────────────────────────────
 // (생략: 기존 스타일 그대로 사용)
