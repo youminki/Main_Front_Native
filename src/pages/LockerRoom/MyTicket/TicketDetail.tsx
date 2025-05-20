@@ -41,10 +41,11 @@ const TicketDetail: React.FC = () => {
   }
 
   const {
-    ticketList: { name, durationMonths, isLongTerm, price, rentalLimit },
+    ticketList: { name, durationMonths, isLongTerm, price },
     startDate,
     endDate,
     purchasedAt,
+    remainingRentals,
     autoRenewal,
     nextBillingDate,
   } = ticket;
@@ -96,9 +97,9 @@ const TicketDetail: React.FC = () => {
 
         {/* 잔여횟수 */}
         <Section>
-          <SectionTitle>남은 횟수</SectionTitle>
+          <SectionTitle>잔여횟수</SectionTitle>
           <ReadOnlyBoxGray>
-            <SeasonValue>{rentalLimit}회</SeasonValue>
+            <SeasonValue>{remainingRentals}회</SeasonValue>
           </ReadOnlyBoxGray>
         </Section>
 
