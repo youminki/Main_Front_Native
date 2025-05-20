@@ -1,12 +1,11 @@
 // src/pages/LockerRoom/PaymentMethod/PaymentMethod.tsx
 
 import React, { useState, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
-import ReusableModal2 from '../../../components/ReusableModal2';
-
+import Spinner from '../../../components/Spinner';
+// import ReusableModal2 from '../../../components/ReusableModal2';
 import { getMyCards, CardItem } from '../../../api/default/payment';
-// import { Trash2 as DeleteIconSVG } from 'lucide-react';
 
 interface UserInfo {
   userId: string;
@@ -25,18 +24,31 @@ const salesLabel = '시즌';
 const sales = '2025 1분기';
 const dateRange = 'SPRING';
 
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to   { opacity: 1; }
+`;
+
 const PaymentMethod: React.FC = () => {
-  const [currentCard] = useState(0);
   const [cards, setCards] = useState<CardData[]>([]);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // 카드 개수
   const count = cards.length;
 
-  // 카드 목록 불러오기
   useEffect(() => {
     getMyCards()
       .then((res) => {
@@ -49,10 +61,10 @@ const PaymentMethod: React.FC = () => {
         }));
         setCards(list);
       })
-      .catch((err) => console.error('카드 목록 조회 실패', err));
+      .catch((err) => console.error('카드 목록 조회 실패', err))
+      .finally(() => setLoading(false));
   }, []);
 
-  // 유저 정보 로드
   useEffect(() => {
     (async () => {
       try {
@@ -75,20 +87,6 @@ const PaymentMethod: React.FC = () => {
     })();
   }, []);
 
-  // 카드 삭제 모달 처리
-  // const openDeleteModal = (idx: number) => {
-  //   setSelectedIdx(idx);
-  //   setIsDeleteModalOpen(true);
-  // };
-  const confirmDelete = () => {
-    if (selectedIdx !== null) {
-      setCards((prev) => prev.filter((_, i) => i !== selectedIdx));
-    }
-    setSelectedIdx(null);
-    setIsDeleteModalOpen(false);
-  };
-
-  // 카드 등록: 모바일은 페이지 이동, 데스크탑은 팝업
   const registerCard = useCallback(() => {
     if (!userInfo) {
       setError('로그인 정보를 불러올 수 없습니다.');
@@ -102,9 +100,8 @@ const PaymentMethod: React.FC = () => {
     }).toString();
     const url = `/test/AddCardPayple?${params}`;
     const isMobile = window.innerWidth <= 768;
-    if (isMobile) {
-      window.location.href = url;
-    } else {
+    if (isMobile) window.location.href = url;
+    else {
       const w = 360,
         h = 600;
       const left = (window.screen.availWidth - w) / 2;
@@ -142,52 +139,57 @@ const PaymentMethod: React.FC = () => {
 
       <Divider />
 
-      <CardsList>
-        {cards.map((card, idx) => (
-          <CardItemBox key={idx}>
-            <CardTop>
-              <DateLabel>{card.registerDate}</DateLabel>
-              {/* <DeleteButton onClick={() => openDeleteModal(idx)}>
-                <DeleteIconSVG size={16} />
-              </DeleteButton> */}
-            </CardTop>
-            <CardBody>
-              <BrandRow>
-                <BrandText>{card.brand}</BrandText>
-              </BrandRow>
-              <NumberText>{card.cardNumber}</NumberText>
-            </CardBody>
-          </CardItemBox>
-        ))}
-        <AddCardBox onClick={registerCard}>
-          <PlusWrapper>
-            <PlusBox>
-              <PlusLineVert />
-              <PlusLineHorz />
-            </PlusBox>
-            <AddText>카드 추가</AddText>
-          </PlusWrapper>
-        </AddCardBox>
-      </CardsList>
+      {loading ? (
+        <SpinnerWrapper>
+          <Spinner />
+        </SpinnerWrapper>
+      ) : (
+        <>
+          <CardsList>
+            {cards.map((card, idx) => (
+              <CardItemBox key={idx}>
+                <CardTop>
+                  <DateLabel>{card.registerDate}</DateLabel>
+                </CardTop>
+                <CardBody>
+                  <BrandRow>
+                    <BrandText>{card.brand}</BrandText>
+                  </BrandRow>
+                  <NumberText>{card.cardNumber}</NumberText>
+                </CardBody>
+              </CardItemBox>
+            ))}
+            <AddCardBox onClick={registerCard}>
+              <PlusWrapper>
+                <PlusBox>
+                  <PlusLineVert />
+                  <PlusLineHorz />
+                </PlusBox>
+                <AddText>카드 추가</AddText>
+              </PlusWrapper>
+            </AddCardBox>
+          </CardsList>
 
-      {error && <ErrorMsg>{error}</ErrorMsg>}
+          {error && <ErrorMsg>{error}</ErrorMsg>}
 
-      <DotsWrapper>
-        {Array(cards.length + 1)
-          .fill(0)
-          .map((_, idx) => (
-            <Dot key={idx} $active={idx === currentCard} />
-          ))}
-      </DotsWrapper>
+          <DotsWrapper>
+            {Array(cards.length + 1)
+              .fill(0)
+              .map((_, idx) => (
+                <Dot key={idx} $active={idx === 0} />
+              ))}
+          </DotsWrapper>
+        </>
+      )}
 
-      <ReusableModal2
+      {/* <ReusableModal2
         isOpen={isDeleteModalOpen}
         title='카드 삭제'
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={confirmDelete}
       >
         카드를 삭제하시겠습니까?
-      </ReusableModal2>
+      </ReusableModal2> */}
     </Container>
   );
 };
@@ -195,6 +197,7 @@ const PaymentMethod: React.FC = () => {
 export default PaymentMethod;
 
 // Styled Components
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -203,37 +206,49 @@ const Container = styled.div`
   padding: 1rem;
   max-width: 1000px;
 `;
+
 const Header = styled.div`
   width: 100%;
   margin-bottom: 6px;
 `;
+
 const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
   color: #000;
 `;
+
 const Subtitle = styled.p`
   font-size: 12px;
   color: #ccc;
 `;
+
 const Divider = styled.div`
   width: 100%;
   height: 1px;
   background: #ddd;
   margin: 20px 0;
 `;
+
 const CardsList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 100%;
   max-width: 300px;
-
   @media (min-width: 1024px) {
     max-width: 400px;
     margin: 0 auto;
   }
 `;
+
+const SpinnerWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+  animation: ${fadeIn} 0.5s ease-out;
+`;
+
 const CardItemBox = styled.div`
   position: relative;
   height: 180px;
@@ -242,61 +257,59 @@ const CardItemBox = styled.div`
   display: flex;
   flex-direction: column;
   cursor: pointer;
-
+  animation: ${fadeInUp} 0.5s ease-out;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  &:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  }
   @media (min-width: 1024px) {
     height: 250px;
   }
 `;
+
 const CardTop = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
   padding: 16px;
 `;
-// const DeleteButton = styled.button`
-//   background: rgba(0, 0, 0, 0.5);
-//   border: none;
-//   border-radius: 50%;
-//   padding: 4px;
-//   cursor: pointer;
 
-//   svg {
-//     color: #fff;
-//   }
-// `;
 const DateLabel = styled.span`
   font-size: 12px;
   font-weight: 700;
   color: #fff;
 `;
+
 const CardBody = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding-bottom: 50px;
-  padding-left: 20px;
-
+  padding: 0 16px 20px;
   @media (min-width: 1024px) {
-    padding-bottom: 70px;
+    padding-bottom: 24px;
   }
 `;
+
 const BrandRow = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 `;
+
 const BrandText = styled.span`
   font-size: 12px;
   font-weight: 700;
   color: #fff;
 `;
+
 const NumberText = styled.span`
   font-size: 14px;
   font-weight: 800;
   color: #fff;
 `;
+
 const AddCardBox = styled.div`
   height: 180px;
   background: #fff;
@@ -306,17 +319,26 @@ const AddCardBox = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-
+  animation: ${fadeInUp} 0.5s ease-out;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  &:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  }
   @media (min-width: 1024px) {
     height: 250px;
   }
 `;
+
 const PlusWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 `;
+
 const PlusBox = styled.div`
   width: 20px;
   height: 20px;
@@ -324,39 +346,46 @@ const PlusBox = styled.div`
   background: #fff;
   border: 1px solid #ddd;
 `;
+
 const PlusLineVert = styled.div`
-  width: 2px;
-  height: 10px;
   position: absolute;
   left: 9px;
   top: 5px;
+  width: 2px;
+  height: 10px;
   background: #d9d9d9;
 `;
+
 const PlusLineHorz = styled.div`
-  width: 10px;
-  height: 2px;
   position: absolute;
   left: 5px;
   top: 9px;
+  width: 10px;
+  height: 2px;
   background: #d9d9d9;
 `;
+
 const AddText = styled.span`
   font-size: 14px;
   font-weight: 800;
-  color: #ddd;
+  color: #999;
 `;
+
 const DotsWrapper = styled.div`
   display: flex;
-  gap: 8px;
-  margin: 20px 0;
+  gap: 6px;
+  margin: 16px 0;
 `;
+
 const Dot = styled.div<{ $active: boolean }>`
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: ${({ $active }) => ($active ? '#F6AE24' : '#D9D9D9')};
+  animation: ${fadeIn} 0.5s ease-out;
 `;
+
 const ErrorMsg = styled.p`
   color: #d32f2f;
-  margin-top: 16px;
+  margin-top: 12px;
 `;
