@@ -23,6 +23,9 @@ const MyTicket: React.FC = () => {
       .catch((err) => console.error('티켓 조회 실패:', err));
   }, []);
 
+  // active 티켓이 하나라도 있으면 true
+  const hasActiveTicket = tickets.some((t) => t.isActive);
+
   return (
     <MyTicketContainer>
       <Header>
@@ -77,27 +80,32 @@ const MyTicket: React.FC = () => {
           );
         })}
 
-        {/* 이용권 추가 버튼 */}
-        <TicketCard onClick={() => navigate('/my-ticket/PurchaseOfPasses')}>
-          <AddLeft>
-            <PlusBox>
-              <PlusSign>＋</PlusSign>
-            </PlusBox>
-            <AddText>이용권 추가</AddText>
-          </AddLeft>
-          <AddRight>
-            <Illustration
-              src={AddTicketIllustration}
-              alt='Add ticket illustration'
-            />
-          </AddRight>
-        </TicketCard>
+        {/* active 티켓이 없을 때만 “이용권 추가” 버튼 노출 */}
+        {!hasActiveTicket && (
+          <TicketCard onClick={() => navigate('/my-ticket/PurchaseOfPasses')}>
+            <AddLeft>
+              <PlusBox>
+                <PlusSign>＋</PlusSign>
+              </PlusBox>
+              <AddText>이용권 추가</AddText>
+            </AddLeft>
+            <AddRight>
+              <Illustration
+                src={AddTicketIllustration}
+                alt='Add ticket illustration'
+              />
+            </AddRight>
+          </TicketCard>
+        )}
       </TicketWrapper>
     </MyTicketContainer>
   );
 };
 
 export default MyTicket;
+
+// ─── Styled Components ─────────────────────────────────────────────
+// (생략: 기존 스타일 그대로 사용)
 
 // ─── Styled Components ─────────────────────────────────────────────
 
