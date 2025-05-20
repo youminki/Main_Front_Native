@@ -106,7 +106,7 @@ const PaymentPage: React.FC = () => {
     ? [
         '결제방식 선택하기',
         ...activeTickets.map(
-          (t) => `${t.ticketList.name} (${t.remainingRentals}회 남음)`
+          (t) => `${t.ticketList.name} (${t.ticketList.rentalLimit}회 남음)`
         ),
       ]
     : ['결제방식 선택하기'];
