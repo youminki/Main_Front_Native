@@ -1,8 +1,9 @@
 // src/pages/LockerRoom/MyTicket.tsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
+import Spinner from '../../../components/Spinner';
 import TicketIllustration from '../../../assets/LockerRoom/TicketIllustration.svg';
 import AddTicketIllustration from '../../../assets/LockerRoom/AddTicketIllustration.svg';
 import CardIcon from '../../../assets/LockerRoom/CardIcon.svg';
@@ -14,14 +15,27 @@ const salesLabel = '시즌';
 const sales = '2025 1분기';
 const dateRange = 'SPRING';
 
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
 const MyTicket: React.FC = () => {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState<TicketItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getUserTickets()
       .then((data) => setTickets(data))
-      .catch((err) => console.error('티켓 조회 실패:', err));
+      .catch((err) => console.error('티켓 조회 실패:', err))
+      .finally(() => setLoading(false));
   }, []);
 
   // isActive 가 true인 티켓만 보여줌
@@ -46,63 +60,73 @@ const MyTicket: React.FC = () => {
       <Divider />
 
       <TicketWrapper>
-        {activeTickets.map((ticket) => {
-          const {
-            id,
-            startDate,
-            endDate,
-            remainingRentals,
-            ticketList: { id: tplId, name, price, isLongTerm, isUlimited },
-          } = ticket;
+        {loading ? (
+          <SpinnerWrapper>
+            <Spinner />
+          </SpinnerWrapper>
+        ) : (
+          <>
+            {activeTickets.map((ticket) => {
+              const {
+                id,
+                startDate,
+                endDate,
+                remainingRentals,
+                ticketList: { id: tplId, name, price, isLongTerm, isUlimited },
+              } = ticket;
 
-          const subtitle = isLongTerm ? '(매월결제)' : '(일반결제)';
-          const formattedPrice = `${price.toLocaleString()}원`;
-          const formattedDate = `${startDate.replace(/-/g, '.')} ~ ${endDate.replace(/-/g, '.')}`;
+              const subtitle = isLongTerm ? '(매월결제)' : '(일반결제)';
+              const formattedPrice = `${price.toLocaleString()}원`;
+              const formattedDate = `${startDate.replace(/-/g, '.')} ~ ${endDate.replace(/-/g, '.')}`;
 
-          return (
-            <TicketCard
-              key={id}
-              onClick={() => navigate(`/ticketDetail/${tplId}`)}
-            >
-              <RemainingBadge>
-                {isUlimited ? '무제한' : `잔여횟수 ${remainingRentals}회`}
-              </RemainingBadge>
-              <Left>
-                <SeasonRow>
-                  <SeasonText>2025 SPRING</SeasonText>
-                  <CardIconImg src={CardIcon} alt='card icon' />
-                </SeasonRow>
-                <TicketTitle>{name}</TicketTitle>
-                <TicketSubtitle>{subtitle}</TicketSubtitle>
-                <TicketPrice>{formattedPrice}</TicketPrice>
-                <Barcode src={BarcodeImg} alt='barcode' />
-              </Left>
-              <Right>
-                <DateText>{formattedDate}</DateText>
-                <Illustration
-                  src={TicketIllustration}
-                  alt='ticket illustration'
-                />
-              </Right>
-            </TicketCard>
-          );
-        })}
+              return (
+                <TicketCard
+                  key={id}
+                  onClick={() => navigate(`/ticketDetail/${tplId}`)}
+                >
+                  <RemainingBadge>
+                    {isUlimited ? '무제한' : `잔여횟수 ${remainingRentals}회`}
+                  </RemainingBadge>
+                  <Left>
+                    <SeasonRow>
+                      <SeasonText>2025 SPRING</SeasonText>
+                      <CardIconImg src={CardIcon} alt='card icon' />
+                    </SeasonRow>
+                    <TicketTitle>{name}</TicketTitle>
+                    <TicketSubtitle>{subtitle}</TicketSubtitle>
+                    <TicketPrice>{formattedPrice}</TicketPrice>
+                    <Barcode src={BarcodeImg} alt='barcode' />
+                  </Left>
+                  <Right>
+                    <DateText>{formattedDate}</DateText>
+                    <Illustration
+                      src={TicketIllustration}
+                      alt='ticket illustration'
+                    />
+                  </Right>
+                </TicketCard>
+              );
+            })}
 
-        {!hasActiveTicket && (
-          <TicketCard onClick={() => navigate('/my-ticket/PurchaseOfPasses')}>
-            <AddLeft>
-              <PlusBox>
-                <PlusSign>＋</PlusSign>
-              </PlusBox>
-              <AddText>이용권 추가</AddText>
-            </AddLeft>
-            <AddRight>
-              <Illustration
-                src={AddTicketIllustration}
-                alt='Add ticket illustration'
-              />
-            </AddRight>
-          </TicketCard>
+            {!hasActiveTicket && (
+              <TicketCardAdd
+                onClick={() => navigate('/my-ticket/PurchaseOfPasses')}
+              >
+                <AddLeft>
+                  <PlusBox>
+                    <PlusSign>＋</PlusSign>
+                  </PlusBox>
+                  <AddText>이용권 추가</AddText>
+                </AddLeft>
+                <AddRight>
+                  <Illustration
+                    src={AddTicketIllustration}
+                    alt='Add ticket illustration'
+                  />
+                </AddRight>
+              </TicketCardAdd>
+            )}
+          </>
         )}
       </TicketWrapper>
     </MyTicketContainer>
@@ -110,19 +134,6 @@ const MyTicket: React.FC = () => {
 };
 
 export default MyTicket;
-
-const RemainingBadge = styled.div`
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  background: rgba(0, 0, 0, 0.75);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 4px 6px;
-  border-radius: 12px;
-  z-index: 2;
-`;
 
 const MyTicketContainer = styled.div`
   display: flex;
@@ -160,6 +171,14 @@ const TicketWrapper = styled.div`
   flex-direction: column;
   gap: 20px;
   align-items: center;
+  min-height: 200px; /* Spinner 자리 확보용 */
+`;
+
+const SpinnerWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
 `;
 
 const TicketCard = styled.div`
@@ -170,6 +189,15 @@ const TicketCard = styled.div`
   border: 1px solid #ddd;
   overflow: hidden;
   cursor: pointer;
+  animation: ${fadeInUp} 0.3s ease-out;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  }
 
   &::before,
   &::after {
@@ -189,6 +217,27 @@ const TicketCard = styled.div`
   &::after {
     bottom: -15px;
   }
+`;
+
+const TicketCardAdd = styled(TicketCard)`
+  justify-content: space-between;
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const RemainingBadge = styled.div`
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 6px;
+  border-radius: 12px;
+  z-index: 2;
 `;
 
 const Left = styled.div`
@@ -272,12 +321,8 @@ const Illustration = styled.img`
 `;
 
 const AddLeft = styled.div`
-  width: 100%;
-  height: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background: #fff;
 `;
 
 const PlusBox = styled.div`
