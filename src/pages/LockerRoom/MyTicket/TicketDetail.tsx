@@ -41,7 +41,7 @@ const TicketDetail: React.FC = () => {
   }
 
   const {
-    ticketList: { name, durationMonths, isLongTerm, price, isUlimited },
+    ticketList: { name, durationMonths, price, isUlimited },
     startDate,
     endDate,
     purchasedAt,
@@ -83,12 +83,6 @@ const TicketDetail: React.FC = () => {
           <ReadOnlyBox>{durationMonths}개월</ReadOnlyBox>
         </Section>
 
-        {/* 장기권 여부 */}
-        <Section>
-          <SectionTitle>장기권 여부</SectionTitle>
-          <ReadOnlyBox>{isLongTerm ? '장기권' : '일반권'}</ReadOnlyBox>
-        </Section>
-
         {/* 가격 */}
         <Section>
           <SectionTitle>가격 (원)</SectionTitle>
@@ -126,9 +120,12 @@ const TicketDetail: React.FC = () => {
         {/* 안내문 */}
         <NoticeArea>
           <NoticeText>
-            ※ 시즌 중간에는 <OrangeBold>취소가 불가</OrangeBold>합니다.
+            ※ 이용 중인 구독권은 시즌 중간에는{' '}
+            <OrangeBold>취소가 불가</OrangeBold>합니다.
           </NoticeText>
-          <NoticeText>취소 필요 시 서비스팀에 문의해주세요.</NoticeText>
+          <NoticeText>
+            만약, 취소가 필요할 경우는 서비스팀에 문의해 주시기 바랍니다.
+          </NoticeText>
         </NoticeArea>
       </ContentArea>
     </Container>
@@ -166,6 +163,7 @@ const SectionTitle = styled.div`
   font-size: 12px;
   font-weight: 700;
   color: #333;
+  margin-bottom: 5px;
 `;
 
 const ReadOnlyBox = styled.div`
