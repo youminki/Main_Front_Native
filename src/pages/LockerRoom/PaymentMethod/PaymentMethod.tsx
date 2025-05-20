@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 import Spinner from '../../../components/Spinner';
-// import ReusableModal2 from '../../../components/ReusableModal2';
 import { getMyCards, CardItem } from '../../../api/default/payment';
 
 interface UserInfo {
@@ -43,7 +42,6 @@ const fadeIn = keyframes`
 const PaymentMethod: React.FC = () => {
   const [cards, setCards] = useState<CardData[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,7 +55,7 @@ const PaymentMethod: React.FC = () => {
             ? `등록일 ${new Date(item.createdAt).toISOString().slice(0, 10)}`
             : '등록일 알 수 없음',
           brand: item.cardName || '알 수 없음',
-          cardNumber: item.cardNumber || '****-****-****-****',
+          cardNumber: item.cardNumber || '**** **** **** ****',
         }));
         setCards(list);
       })
@@ -148,15 +146,12 @@ const PaymentMethod: React.FC = () => {
           <CardsList>
             {cards.map((card, idx) => (
               <CardItemBox key={idx}>
-                <CardTop>
-                  <DateLabel>{card.registerDate}</DateLabel>
-                </CardTop>
-                <CardBody>
-                  <BrandRow>
-                    <BrandText>{card.brand}</BrandText>
-                  </BrandRow>
-                  <NumberText>{card.cardNumber}</NumberText>
-                </CardBody>
+                <Chip />
+                <Content>
+                  <BrandLogo>{card.brand}</BrandLogo>
+                  <CardNumber>{card.cardNumber}</CardNumber>
+                </Content>
+                <DateLabel>{card.registerDate}</DateLabel>
               </CardItemBox>
             ))}
             <AddCardBox onClick={registerCard}>
@@ -181,15 +176,6 @@ const PaymentMethod: React.FC = () => {
           </DotsWrapper>
         </>
       )}
-
-      {/* <ReusableModal2
-        isOpen={isDeleteModalOpen}
-        title='카드 삭제'
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={confirmDelete}
-      >
-        카드를 삭제하시겠습니까?
-      </ReusableModal2> */}
     </Container>
   );
 };
@@ -202,134 +188,122 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #fff;
+  background: #f5f5f5;
   padding: 1rem;
-  max-width: 1000px;
+  min-height: 100vh;
 `;
 
 const Header = styled.div`
   width: 100%;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
 `;
 
 const Title = styled.h1`
-  font-size: 24px;
-  font-weight: 800;
-  color: #000;
+  font-size: 26px;
+  font-weight: 900;
+  color: #333;
 `;
 
 const Subtitle = styled.p`
-  font-size: 12px;
-  color: #ccc;
+  font-size: 14px;
 `;
 
 const Divider = styled.div`
   width: 100%;
   height: 1px;
-  background: #ddd;
-  margin: 20px 0;
+  background: #e0e0e0;
+  margin: 16px 0;
 `;
 
 const CardsList = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
   width: 100%;
-  max-width: 300px;
-  @media (min-width: 1024px) {
-    max-width: 400px;
-    margin: 0 auto;
-  }
+  max-width: 800px;
 `;
 
 const SpinnerWrapper = styled.div`
   display: flex;
   justify-content: center;
-  padding: 40px 0;
+  padding: 60px 0;
   animation: ${fadeIn} 0.5s ease-out;
 `;
 
 const CardItemBox = styled.div`
   position: relative;
+  width: 300px;
   height: 180px;
+  border-radius: 16px;
   background: #f6ae24;
-  border-radius: 10px;
+  color: #fff;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  cursor: pointer;
+  align-items: center;
+  justify-content: center;
   animation: ${fadeInUp} 0.5s ease-out;
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
   &:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-  }
-  @media (min-width: 1024px) {
-    height: 250px;
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
   }
 `;
 
-const CardTop = styled.div`
+const Chip = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 30px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #eee 0%, #ccc 100%);
+`;
+
+const Content = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 16px;
+  flex-direction: column;
+  align-items: left;
+  margin-top: 100px;
+  margin-right: 40px;
+  gap: 8px;
+`;
+
+const BrandLogo = styled.div`
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 9px;
+  color: #ffffff;
+`;
+
+const CardNumber = styled.div`
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 2px;
 `;
 
 const DateLabel = styled.span`
+  position: absolute;
+  top: 12px;
+  right: 16px;
   font-size: 12px;
-  font-weight: 700;
-  color: #fff;
+  opacity: 0.8;
 `;
 
-const CardBody = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 0 16px 20px;
-  @media (min-width: 1024px) {
-    padding-bottom: 24px;
-  }
-`;
-
-const BrandRow = styled.div`
-  margin-bottom: 8px;
-`;
-
-const BrandText = styled.span`
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-`;
-
-const NumberText = styled.span`
-  font-size: 14px;
-  font-weight: 800;
-  color: #fff;
-`;
-
-const AddCardBox = styled.div`
-  height: 180px;
+const AddCardBox = styled(CardItemBox)`
   background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
+  color: #999;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  animation: ${fadeInUp} 0.5s ease-out;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-  &:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-  }
-  @media (min-width: 1024px) {
-    height: 250px;
-  }
+  flex-wrap: wrap;
+  gap: 24px;
+
+  max-width: 800px;
 `;
 
 const PlusWrapper = styled.div`
@@ -340,49 +314,47 @@ const PlusWrapper = styled.div`
 `;
 
 const PlusBox = styled.div`
-  width: 20px;
-  height: 20px;
   position: relative;
-  background: #fff;
-  border: 1px solid #ddd;
+  width: 32px;
+  height: 32px;
+  border: 2px dashed #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const PlusLineVert = styled.div`
   position: absolute;
-  left: 9px;
-  top: 5px;
   width: 2px;
-  height: 10px;
-  background: #d9d9d9;
+  height: 14px;
+  background: #ccc;
 `;
 
 const PlusLineHorz = styled.div`
   position: absolute;
-  left: 5px;
-  top: 9px;
-  width: 10px;
+  width: 14px;
   height: 2px;
-  background: #d9d9d9;
+  background: #ccc;
 `;
 
 const AddText = styled.span`
-  font-size: 14px;
-  font-weight: 800;
-  color: #999;
+  font-size: 16px;
+  font-weight: 700;
 `;
 
 const DotsWrapper = styled.div`
   display: flex;
-  gap: 6px;
-  margin: 16px 0;
+  gap: 8px;
+  margin: 24px 0;
 `;
 
 const Dot = styled.div<{ $active: boolean }>`
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: ${({ $active }) => ($active ? '#F6AE24' : '#D9D9D9')};
-  animation: ${fadeIn} 0.5s ease-out;
+  background: ${({ $active }) => ($active ? '#F6AE24' : '#ccc')};
+ _animation: ${fadeIn} 0.5s ease-out;_
 `;
 
 const ErrorMsg = styled.p`
