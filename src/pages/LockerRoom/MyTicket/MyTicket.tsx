@@ -1,4 +1,5 @@
 // src/pages/LockerRoom/MyTicket.tsx
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
@@ -38,9 +39,7 @@ const MyTicket: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  // isActive 가 true인 티켓만 보여줌
   const activeTickets = tickets.filter((t) => t.isActive);
-  // active 티켓이 하나라도 있으면 추가 버튼 숨김
   const hasActiveTicket = activeTickets.length > 0;
 
   return (
@@ -152,18 +151,24 @@ const Title = styled.h1`
   font-size: 24px;
   font-weight: 800;
   color: #000;
+  @media (min-width: 1024px) {
+    font-size: 32px;
+  }
 `;
 
 const Subtitle = styled.p`
   font-size: 12px;
   color: #ccc;
+  @media (min-width: 1024px) {
+    font-size: 14px;
+  }
 `;
 
 const Divider = styled.div`
   width: 100%;
   height: 1px;
   background: #ddd;
-  margin: 20px 0;
+  margin: 30px 0;
 `;
 
 const TicketWrapper = styled.div`
@@ -171,7 +176,7 @@ const TicketWrapper = styled.div`
   flex-direction: column;
   gap: 20px;
   align-items: center;
-  min-height: 200px; /* Spinner 자리 확보용 */
+  min-height: 200px;
 `;
 
 const SpinnerWrapper = styled.div`
@@ -184,7 +189,7 @@ const SpinnerWrapper = styled.div`
 const TicketCard = styled.div`
   position: relative;
   display: flex;
-  min-width: 350px;
+  width: 100%;
   height: 160px;
   border: 1px solid #ddd;
   overflow: hidden;
@@ -217,10 +222,15 @@ const TicketCard = styled.div`
   &::after {
     bottom: -15px;
   }
+
+  @media (min-width: 1024px) {
+    height: 200px;
+  }
 `;
 
 const TicketCardAdd = styled(TicketCard)`
   justify-content: space-between;
+
   &:hover {
     transform: scale(1.02);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
@@ -238,6 +248,11 @@ const RemainingBadge = styled.div`
   padding: 4px 6px;
   border-radius: 12px;
   z-index: 2;
+
+  @media (min-width: 1024px) {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
 `;
 
 const Left = styled.div`
@@ -247,6 +262,10 @@ const Left = styled.div`
   background: #fff;
   display: flex;
   flex-direction: column;
+
+  @media (min-width: 1024px) {
+    padding: 24px;
+  }
 `;
 
 const SeasonRow = styled.div`
@@ -260,6 +279,10 @@ const SeasonText = styled.span`
   font-size: 12px;
   font-weight: 700;
   color: #000;
+
+  @media (min-width: 1024px) {
+    font-size: 14px;
+  }
 `;
 
 const CardIconImg = styled.img`
@@ -272,6 +295,10 @@ const TicketTitle = styled.h3`
   font-weight: 800;
   color: #000;
   margin: 0;
+
+  @media (min-width: 1024px) {
+    font-size: 20px;
+  }
 `;
 
 const TicketSubtitle = styled.p`
@@ -279,6 +306,11 @@ const TicketSubtitle = styled.p`
   line-height: 9px;
   color: #666;
   margin: 8px 0;
+
+  @media (min-width: 1024px) {
+    font-size: 10px;
+    margin: 10px 0;
+  }
 `;
 
 const TicketPrice = styled.p`
@@ -286,12 +318,20 @@ const TicketPrice = styled.p`
   font-weight: 900;
   color: #000;
   margin: 0;
+
+  @media (min-width: 1024px) {
+    font-size: 28px;
+  }
 `;
 
 const Barcode = styled.img`
   width: 70px;
   height: auto;
   margin-top: auto;
+
+  @media (min-width: 1024px) {
+    width: 90px;
+  }
 `;
 
 const Right = styled.div`
@@ -304,6 +344,10 @@ const Right = styled.div`
   align-items: center;
   position: relative;
   border-left: 1px dashed #fff;
+
+  @media (min-width: 1024px) {
+    padding: 24px;
+  }
 `;
 
 const DateText = styled.p`
@@ -312,17 +356,31 @@ const DateText = styled.p`
   white-space: nowrap;
   color: #fff;
   margin: 20px 0;
+
+  @media (min-width: 1024px) {
+    font-size: 14px;
+    margin: 24px 0;
+  }
 `;
 
 const Illustration = styled.img`
   position: absolute;
   bottom: 16px;
   right: 16px;
+
+  @media (min-width: 1024px) {
+    bottom: 24px;
+    right: 24px;
+  }
 `;
 
 const AddLeft = styled.div`
   display: flex;
   align-items: center;
+
+  @media (min-width: 1024px) {
+    gap: 12px;
+  }
 `;
 
 const PlusBox = styled.div`
@@ -333,21 +391,40 @@ const PlusBox = styled.div`
   justify-content: center;
   align-items: center;
   margin-right: 8px;
+
+  @media (min-width: 1024px) {
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+  }
 `;
 
 const PlusSign = styled.span`
   font-size: 24px;
   color: #ccc;
+
+  @media (min-width: 1024px) {
+    font-size: 32px;
+  }
 `;
 
 const AddText = styled.span`
   font-size: 16px;
   font-weight: 700;
   color: #999;
+
+  @media (min-width: 1024px) {
+    font-size: 20px;
+  }
 `;
 
 const AddRight = styled.div`
   position: absolute;
   bottom: 0;
   right: 0;
+
+  @media (min-width: 1024px) {
+    bottom: 16px;
+    right: 16px;
+  }
 `;
