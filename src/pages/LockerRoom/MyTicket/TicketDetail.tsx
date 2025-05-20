@@ -41,14 +41,7 @@ const TicketDetail: React.FC = () => {
   }
 
   const {
-    ticketList: {
-      name,
-      durationMonths,
-      rentalLimit,
-      monthlyRentalLimit,
-      isLongTerm,
-      price,
-    },
+    ticketList: { name, durationMonths, isLongTerm, price },
     startDate,
     endDate,
     purchasedAt,
@@ -88,18 +81,6 @@ const TicketDetail: React.FC = () => {
         <Section>
           <SectionTitle>사용 가능 개월 수</SectionTitle>
           <ReadOnlyBox>{durationMonths}개월</ReadOnlyBox>
-        </Section>
-
-        {/* 전체 대여 제한 횟수 */}
-        <Section>
-          <SectionTitle>전체 대여 제한 횟수</SectionTitle>
-          <ReadOnlyBox>{rentalLimit}회</ReadOnlyBox>
-        </Section>
-
-        {/* 월별 대여 제한 횟수 */}
-        <Section>
-          <SectionTitle>월별 대여 제한 횟수</SectionTitle>
-          <ReadOnlyBox>{monthlyRentalLimit}회/월</ReadOnlyBox>
         </Section>
 
         {/* 장기권 여부 */}
