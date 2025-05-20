@@ -54,7 +54,6 @@ const headerRules: {
       '/my-ticket/PurchaseOfPasses',
 
       '/my-ticket/PurchaseOfPasses/TicketPayment',
-      '/ticketDetail/:id',
 
       '/customerService/NoticeDetail',
       '/customerService/PersonalInformationProcessingPolicyDetail',
@@ -74,6 +73,7 @@ const headerRules: {
       '/MyInfo',
       '/MyStyle',
       '/MyInfoList',
+      '/ticketDetail/:id',
     ],
     variant: 'threeDepth',
     getTitle: getThreeDepthTitle,
@@ -131,7 +131,7 @@ function getTwoDepthTitle(path: string): string {
   if (matchPath('/my-ticket/PurchaseOfPasses', path)) return '이용권 구매';
   if (matchPath('/my-ticket/PurchaseOfPasses/TicketPayment', path))
     return '결제하기';
-  if (matchPath('ticketDetail/:id', path)) return '이용권 상세';
+
   if (matchPath('/payment/:id', path)) return '결제하기';
   return '';
 }
@@ -146,6 +146,7 @@ function getThreeDepthTitle(path: string): string {
     '/MyInfo': '내 정보',
     '/MyStyle': '내 스타일',
     '/MyInfoList': '내 정보',
+    'ticketDetail/:id': '이용권 상세',
   };
   for (const pattern in map) {
     if (matchPath(pattern, path)) return map[pattern];
