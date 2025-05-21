@@ -7,7 +7,7 @@ import StatsSection from '../../../components/StatsSection';
 import Spinner from '../../../components/Spinner';
 import TicketIllustration from '../../../assets/LockerRoom/TicketIllustration.svg';
 import AddTicketIllustration from '../../../assets/LockerRoom/AddTicketIllustration.svg';
-import CardIcon from '../../../assets/LockerRoom/CardIcon.svg';
+import CardIcon from '../../../assets/LockerRoom/ClosetIcon.svg';
 import BarcodeImg from '../../../assets/LockerRoom/barcodeIcon.svg';
 import { getUserTickets, TicketItem } from '../../../api/ticket/ticket';
 
@@ -39,9 +39,6 @@ const MyTicket: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const activeTickets = tickets.filter((t) => t.isActive);
-  const hasActiveTicket = activeTickets.length > 0;
-
   return (
     <MyTicketContainer>
       <Header>
@@ -50,7 +47,7 @@ const MyTicket: React.FC = () => {
       </Header>
 
       <StatsSection
-        visits={String(activeTickets.length)}
+        visits={String(tickets.length)}
         sales={sales}
         dateRange={dateRange}
         visitLabel={visitLabel}
@@ -65,7 +62,7 @@ const MyTicket: React.FC = () => {
           </SpinnerWrapper>
         ) : (
           <>
-            {activeTickets.map((ticket) => {
+            {tickets.map((ticket) => {
               const {
                 id,
                 startDate,
@@ -107,24 +104,23 @@ const MyTicket: React.FC = () => {
               );
             })}
 
-            {!hasActiveTicket && (
-              <TicketCardAdd
-                onClick={() => navigate('/my-ticket/PurchaseOfPasses')}
-              >
-                <AddLeft>
-                  <PlusBox>
-                    <PlusSign>＋</PlusSign>
-                  </PlusBox>
-                  <AddText>이용권 추가</AddText>
-                </AddLeft>
-                <AddRight>
-                  <Illustration
-                    src={AddTicketIllustration}
-                    alt='Add ticket illustration'
-                  />
-                </AddRight>
-              </TicketCardAdd>
-            )}
+            {/* 항상 표시되는 “이용권 추가” 카드 */}
+            <TicketCardAdd
+              onClick={() => navigate('/my-ticket/PurchaseOfPasses')}
+            >
+              <AddLeft>
+                <PlusBox>
+                  <PlusSign>＋</PlusSign>
+                </PlusBox>
+                <AddText>이용권 추가</AddText>
+              </AddLeft>
+              <AddRight>
+                <Illustration
+                  src={AddTicketIllustration}
+                  alt='Add ticket illustration'
+                />
+              </AddRight>
+            </TicketCardAdd>
           </>
         )}
       </TicketWrapper>
@@ -133,6 +129,8 @@ const MyTicket: React.FC = () => {
 };
 
 export default MyTicket;
+
+// ─── Styled Components ─────────────────────────────────────────────
 
 const MyTicketContainer = styled.div`
   display: flex;
@@ -229,8 +227,8 @@ const TicketCard = styled.div`
 `;
 
 const TicketCardAdd = styled(TicketCard)`
-  justify-content: space-between;
-
+  justify-content: center;
+  position: relative;
   &:hover {
     transform: scale(1.02);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
