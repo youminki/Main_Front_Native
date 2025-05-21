@@ -196,7 +196,7 @@ const Home: React.FC = () => {
       <ReusableModal
         isOpen={isLoginNoticeOpen}
         onClose={() => setLoginNoticeOpen(false)}
-        title='멜픽 서비스 이용 안내'
+        title='멜픽 - 이용안내'
       >
         <p>멜픽 서비스에서 대여 이용 시 아래 순서로 진행하세요:</p>
         <InfoList>
