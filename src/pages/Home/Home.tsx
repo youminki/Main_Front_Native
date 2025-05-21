@@ -1,6 +1,6 @@
 // src/pages/Home.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import Spinner from '../../components/Spinner';
 import ItemList, { UIItem } from '../../components/Home/ItemList';
@@ -25,9 +25,14 @@ const ITEMS_PER_LOAD = 20;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation<{ showNotice?: boolean; membership?: any }>();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // 로그인 후 안내 모달
+  const [isLoginNoticeOpen, setLoginNoticeOpen] = useState(false);
+  const { showNotice } = location.state || {};
 
   // 공유 모달 상태
   const [isShareModalOpen, setShareModalOpen] = useState(false);
@@ -66,6 +71,13 @@ const Home: React.FC = () => {
   const modalId = searchParams.get('id');
   const isModalOpen = Boolean(modalId);
   const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
+
+  // 홈 진입 시 로그인 안내 모달 열기
+  useEffect(() => {
+    if (showNotice) {
+      setLoginNoticeOpen(true);
+    }
+  }, [showNotice]);
 
   // URL 동기화
   useEffect(() => {
@@ -180,6 +192,20 @@ const Home: React.FC = () => {
 
   return (
     <MainContainer>
+      {/* 로그인 안내 모달 */}
+      <ReusableModal
+        isOpen={isLoginNoticeOpen}
+        onClose={() => setLoginNoticeOpen(false)}
+        title='멜픽 서비스 이용 안내'
+      >
+        <p>멜픽 서비스에서 대여 이용 시 아래 순서로 진행하세요:</p>
+        <InfoList>
+          <li>결제카드 등록</li>
+          <li>이용권 결제</li>
+          <li>대여제품 신청</li>
+        </InfoList>
+      </ReusableModal>
+
       {/* 공유 링크 복사 안내 모달 */}
       <ReusableModal
         isOpen={isShareModalOpen}
@@ -189,7 +215,7 @@ const Home: React.FC = () => {
         현재 페이지 URL이 클립보드에 복사되었습니다.
       </ReusableModal>
 
-      {/* 서브헤더(카테고리) */}
+      {/* 서브헤더 */}
       <SubHeader
         selectedCategory={selectedCategory}
         setSelectedCategory={(cat) => {
@@ -286,6 +312,8 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
+// …styled components (변경 필요 없음)
 
 // styled components…
 const MainContainer = styled.div`
@@ -453,4 +481,13 @@ const OptionNumber = styled.span`
 
 const OptionText = styled.span`
   margin-left: 4px;
+`;
+const InfoList = styled.ol`
+  margin: 12px 0 0 16px;
+  padding: 0;
+  list-style: decimal;
+  font-size: 14px;
+  & li {
+    margin-bottom: 8px;
+  }
 `;
