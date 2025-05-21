@@ -45,7 +45,7 @@ const TicketPayment: React.FC = () => {
   const formattedToday = format(today, 'yyyy.MM.dd');
   const formattedOneMonthLater = format(addMonths(today, 1), 'MM.dd');
 
-  // 팝업 윈도우에서 결제 결과를 부모 윈도우에 전달
+  // 팝업 윈도우에서 결제 결과를 부모 윈도우에 전달 (1회 결제용)
   useEffect(() => {
     (window as any).PCD_PAY_CALLBACK = (result: any) => {
       if (window.opener) {
@@ -98,8 +98,6 @@ const TicketPayment: React.FC = () => {
     setSelectedPaymentMethod(val);
   };
 
-  // ... (위는 생략 없이 동일)
-
   const handlePaymentClick = async () => {
     const payerId = extractPayerId(selectedPaymentMethod);
     if (!payerId) {
@@ -118,17 +116,15 @@ const TicketPayment: React.FC = () => {
         name === '정기 구독권(4회권)' ||
         name === '정기 구독권(무제한)'
       ) {
-        // ✅ 정기결제: 팝업 없이 백엔드에서 결제 승인까지 완료됨
+        // ✅ 정기결제: 성공/실패에 따라 리다이렉트
         const response = await postRecurringPayment(requestData);
-        const payResult = response.data.PCD_PAY_RST; // 여기서 data 하위 속성 사용
+        const payResult = response.data.PCD_PAY_RST;
 
-        window.opener?.postMessage(
-          {
-            paymentStatus: payResult === 'success' ? 'success' : 'failure',
-          },
-          window.location.origin
-        );
-        window.close();
+        if (payResult === 'success') {
+          navigate('/payment-complete');
+        } else {
+          navigate('/payment-fail');
+        }
       } else {
         alert('알 수 없는 이용권 유형입니다.');
       }
@@ -137,16 +133,9 @@ const TicketPayment: React.FC = () => {
       const errMsg =
         error.response?.data?.message || error.message || '알 수 없는 오류';
       alert(`결제 실패: ${errMsg}`);
-
-      window.opener?.postMessage(
-        { paymentStatus: 'failure' },
-        window.location.origin
-      );
-      window.close();
+      navigate('/payment-fail');
     }
   };
-
-  // ... (아래는 생략 없이 동일)
 
   return (
     <Container>
@@ -225,6 +214,7 @@ const TicketPayment: React.FC = () => {
 
 export default TicketPayment;
 
+// styled-components 정의 (생략 없이 동일)
 const Container = styled.div`
   position: relative;
   background: #ffffff;
