@@ -98,6 +98,8 @@ const TicketPayment: React.FC = () => {
     setSelectedPaymentMethod(val);
   };
 
+  // ... (위는 생략 없이 동일)
+
   const handlePaymentClick = async () => {
     const payerId = extractPayerId(selectedPaymentMethod);
     if (!payerId) {
@@ -106,17 +108,36 @@ const TicketPayment: React.FC = () => {
     }
 
     const requestData = { payerId, amount: roundedPrice, goods: name };
-    try {
-      const response =
-        name === '1회 이용권'
-          ? await postInitPayment(requestData)
-          : await postRecurringPayment(requestData);
 
-      (window as any).PaypleCpayAuthCheck(response.data);
+    try {
+      if (name === '1회 이용권') {
+        // ✅ 1회 결제: Payple 팝업 호출
+        const response = await postInitPayment(requestData);
+        (window as any).PaypleCpayAuthCheck(response.data);
+      } else if (
+        name === '정기 구독권(4회권)' ||
+        name === '정기 구독권(무제한)'
+      ) {
+        // ✅ 정기결제: 팝업 없이 백엔드에서 결제 승인까지 완료됨
+        const response = await postRecurringPayment(requestData);
+        const payResult = response.data.PCD_PAY_RST; // 여기서 data 하위 속성 사용
+
+        window.opener?.postMessage(
+          {
+            paymentStatus: payResult === 'success' ? 'success' : 'failure',
+          },
+          window.location.origin
+        );
+        window.close();
+      } else {
+        alert('알 수 없는 이용권 유형입니다.');
+      }
     } catch (error: any) {
       console.error('결제 실패:', error);
+      const errMsg =
+        error.response?.data?.message || error.message || '알 수 없는 오류';
+      alert(`결제 실패: ${errMsg}`);
 
-      // 실패 시 팝업 닫기
       window.opener?.postMessage(
         { paymentStatus: 'failure' },
         window.location.origin
@@ -124,6 +145,8 @@ const TicketPayment: React.FC = () => {
       window.close();
     }
   };
+
+  // ... (아래는 생략 없이 동일)
 
   return (
     <Container>
