@@ -115,9 +115,7 @@ const TicketPayment: React.FC = () => {
       (window as any).PaypleCpayAuthCheck(response.data);
     } catch (error: any) {
       console.error('결제 실패:', error);
-      const errMsg =
-        error.response?.data?.message || error.message || '알 수 없는 오류';
-      alert(`결제 실패: ${errMsg}`);
+
       // 실패 시 팝업 닫기
       window.opener?.postMessage(
         { paymentStatus: 'failure' },
