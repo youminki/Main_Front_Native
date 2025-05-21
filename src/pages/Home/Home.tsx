@@ -25,14 +25,14 @@ const ITEMS_PER_LOAD = 20;
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation<{ showNotice?: boolean; membership?: any }>();
+  const location = useLocation();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const menuRef = useRef<HTMLDivElement>(null);
 
   // 로그인 후 안내 모달
   const [isLoginNoticeOpen, setLoginNoticeOpen] = useState(false);
-  const { showNotice } = location.state || {};
+  const showNotice = location.state?.showNotice;
 
   // 공유 모달 상태
   const [isShareModalOpen, setShareModalOpen] = useState(false);
