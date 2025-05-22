@@ -322,10 +322,6 @@ const MainContainer = styled.div`
   position: relative;
   padding: 2rem 1rem;
   padding-top: calc(70px + 2rem);
-
-  @media (max-width: 768px) {
-    padding-top: calc(70px + 1rem);
-  }
 `;
 
 const ControlsContainer = styled.div`

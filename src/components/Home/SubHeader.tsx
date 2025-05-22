@@ -162,10 +162,6 @@ const SubHeaderWrapper = styled.div`
   background: #fff;
   display: flex;
   justify-content: center;
-  @media (max-width: 768px) {
-    top: 50px;
-    height: 100px;
-  }
 `;
 
 const ContentWrapper = styled.div`
@@ -204,11 +200,6 @@ const IconContainer = styled.div<{ selected: boolean }>`
   cursor: pointer;
   padding: 10px 0;
   opacity: ${({ selected }) => (selected ? 1 : 0.6)};
-
-  @media (max-width: 768px) {
-    width: 60px;
-    padding: 5px 0;
-  }
 `;
 
 const Icon = styled.img`
@@ -216,20 +207,11 @@ const Icon = styled.img`
   height: 60px;
   object-fit: contain;
   margin-bottom: 5px;
-
-  @media (max-width: 768px) {
-    height: 50px;
-    margin-bottom: 3px;
-  }
 `;
 
 const IconText = styled.span<{ selected: boolean }>`
   font-size: 11px;
   color: ${({ selected }) => (selected ? '#000' : '#666')};
-
-  @media (max-width: 768px) {
-    font-size: 10px;
-  }
 `;
 
 const Indicator = styled.div<{ position: number }>`
@@ -241,10 +223,6 @@ const Indicator = styled.div<{ position: number }>`
   background-color: #000;
   border-radius: 3px;
   transition: left 0.3s ease-in-out;
-
-  @media (max-width: 768px) {
-    width: 30px;
-  }
 `;
 
 const Divider = styled.div`
