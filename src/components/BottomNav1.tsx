@@ -1,7 +1,7 @@
 // src/components/BottomNav.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 import HomeIcon from '../assets/BottomNav/HomeIcon.svg';
 import BrandIcon from '../assets/BottomNav/BrandIcon.svg';
