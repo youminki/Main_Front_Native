@@ -65,17 +65,14 @@ const SubHeader: React.FC<SubHeaderProps> = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const iconsRef = useRef<HTMLDivElement>(null);
-  const [indicatorPos, setIndicatorPos] = useState(0);
-
-  // 카테고리 로딩 상태 (API 연동 시 사용)
+  const initialPos = (ICON_WIDTH - INDICATOR_WIDTH) / 2;
+  const [indicatorPos, setIndicatorPos] = useState(initialPos);
   const [loading, setLoading] = useState(true);
 
-  // 초기 로딩 해제 (실제 API 호출 로직으로 교체하세요)
   useEffect(() => {
     setLoading(false);
   }, []);
 
-  // 선택된 카테고리 위치 계산
   useEffect(() => {
     if (!iconsRef.current) return;
     const container = iconsRef.current;
@@ -89,7 +86,6 @@ const SubHeader: React.FC<SubHeaderProps> = ({
     }
   }, [selectedCategory]);
 
-  // 카테고리 클릭 핸들러
   const handleClick = (category: string) => {
     const newParams = new URLSearchParams(searchParams.toString());
     newParams.set('categori', category);
@@ -99,7 +95,6 @@ const SubHeader: React.FC<SubHeaderProps> = ({
     onCategoryClick();
   };
 
-  // 좌/우 스크롤
   const scroll = (dir: 'left' | 'right') => {
     if (!iconsRef.current) return;
     const amount = ICON_WIDTH * 3;
@@ -121,6 +116,7 @@ const SubHeader: React.FC<SubHeaderProps> = ({
             </ArrowButtonWrapper>
 
             <IconsWrapper ref={iconsRef}>
+              <BottomLine />
               {homeIcons.map((icon, idx) => {
                 const isSelected = icon.category === selectedCategory;
                 return (
@@ -151,7 +147,6 @@ const SubHeader: React.FC<SubHeaderProps> = ({
 
 export default SubHeader;
 
-// styled components
 const SubHeaderWrapper = styled.div`
   position: fixed;
   top: 50px;
@@ -191,6 +186,15 @@ const IconsWrapper = styled.div`
   }
 `;
 
+const BottomLine = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #eeeeee;
+`;
+
 const IconContainer = styled.div<{ selected: boolean }>`
   flex: 0 0 auto;
   width: ${ICON_WIDTH}px;
@@ -203,8 +207,8 @@ const IconContainer = styled.div<{ selected: boolean }>`
 `;
 
 const Icon = styled.img`
-  width: 100%;
-  height: 60px;
+  width: auto;
+  height: auto;
   object-fit: contain;
   margin-bottom: 5px;
 `;
@@ -219,7 +223,7 @@ const Indicator = styled.div<{ position: number }>`
   bottom: 0;
   left: ${({ position }) => position}px;
   width: ${INDICATOR_WIDTH}px;
-  height: 2px;
+  height: 3px;
   background-color: #000;
   border-radius: 3px;
   transition: left 0.3s ease-in-out;

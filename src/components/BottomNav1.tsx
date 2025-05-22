@@ -47,6 +47,7 @@ const BottomNav: React.FC = () => {
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
 
+  // 스크롤에 따라 숨김 토글
   useEffect(() => {
     lastScrollY.current = window.scrollY;
     const onScroll = () => {
@@ -58,6 +59,7 @@ const BottomNav: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // activeKey, barPos 계산
   useEffect(() => {
     const current = TABS.find((t) => t.route === location.pathname);
     if (current && navRef.current) {
@@ -68,9 +70,9 @@ const BottomNav: React.FC = () => {
       if (el) {
         const containerRect = navRef.current.getBoundingClientRect();
         const elRect = el.getBoundingClientRect();
-        const left =
-          elRect.left - containerRect.left + (elRect.width - BAR_WIDTH) / 2;
-        setBarPos(left);
+        setBarPos(
+          elRect.left - containerRect.left + (elRect.width - BAR_WIDTH) / 2
+        );
       }
     } else {
       setActiveKey(null);
@@ -93,6 +95,7 @@ const BottomNav: React.FC = () => {
       <Dock ref={navRef}>
         {TABS.map((tab) => {
           const isActive = tab.key === activeKey && glow;
+          // home, lockerRoom 만 활성화 예시
           const enabled = tab.key === 'home' || tab.key === 'lockerRoom';
           return (
             <NavItem
@@ -102,7 +105,7 @@ const BottomNav: React.FC = () => {
               onClick={() => handleClick(tab, enabled)}
             >
               <IconWrapper $isActive={isActive} $disabled={!enabled}>
-                <Icon src={tab.icon} alt={tab.label} />
+                <Icon src={tab.icon} alt={tab.label} $isActive={isActive} />
               </IconWrapper>
               <Label $isActive={isActive} $disabled={!enabled}>
                 {tab.label}
@@ -117,6 +120,8 @@ const BottomNav: React.FC = () => {
 };
 
 export default BottomNav;
+
+/* Styled Components */
 
 const DockContainer = styled.nav<{ $visible: boolean }>`
   position: fixed;
@@ -139,7 +144,7 @@ const DockContainer = styled.nav<{ $visible: boolean }>`
 const Dock = styled.div`
   position: relative;
   display: flex;
-  background: rgba(29, 29, 27, 0.8);
+  background: #1d1d1b;
   backdrop-filter: blur(16px);
   border-radius: 32px;
   padding: 12px 0;
@@ -160,37 +165,16 @@ const NavItem = styled.div<{ $disabled: boolean }>`
   opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
 `;
 
+// 아이콘 래퍼 배경 호버 색변경, 비활성 제외
 const IconWrapper = styled.div<{ $isActive: boolean; $disabled: boolean }>`
   position: relative;
   width: 48px;
   height: 48px;
 
-  background: ${({ $isActive }) =>
-    $isActive ? '#fff' : 'rgba(255,255,255,0.1)'};
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.2s ease;
-
-  ${({ $disabled }) =>
-    $disabled &&
-    css`
-      background: rgba(255, 255, 255, 0.05);
-    `}
-
-  ${({ $disabled, $isActive }) =>
-    !$disabled &&
-    css`
-      &:hover {
-        background: ${$isActive ? '#fff' : 'rgba(255,255,255,0.2)'};
-      }
-    `}
-
-  img {
-    filter: ${({ $isActive }) =>
-      $isActive ? 'none' : 'brightness(0) invert(1)'};
-  }
 
   &::before {
     content: '';
@@ -199,30 +183,30 @@ const IconWrapper = styled.div<{ $isActive: boolean; $disabled: boolean }>`
     left: 50%;
     transform: translateX(-50%);
     width: 60px;
-    height: 20px;
-    background: rgba(250, 234, 6, 0.4);
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
     filter: blur(16px);
-    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0 100%);
     opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
     transition: opacity 0.3s ease;
     pointer-events: none;
   }
 `;
 
-const Icon = styled.img`
-  width: 24px;
-  height: 24px;
+const Icon = styled.img<{ $isActive: boolean }>`
+  width: auto;
+  height: auto;
+  /* 활성 시 흰색, 비활성 시 회색 */
+  filter: ${({ $isActive }) =>
+    $isActive ? 'brightness(0) invert(1)' : 'brightness(0) invert(0.7)'};
 `;
 
 const Label = styled.span<{ $isActive: boolean; $disabled: boolean }>`
-  margin-top: 6px;
   font-size: 11px;
-  color: ${({ $isActive, $disabled }) =>
-    $disabled
-      ? 'rgba(255,255,255,0.5)'
-      : $isActive
-        ? '#fff'
-        : 'rgba(255,255,255,0.7)'};
+  color: ${({ $isActive, $disabled }) => {
+    if ($disabled) return 'rgba(255,255,255,0.5)';
+    return $isActive ? '#fff' : 'rgba(200,200,200,0.7)';
+  }};
   transition: color 0.2s ease;
 
   @media (max-width: 768px) {
