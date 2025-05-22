@@ -116,7 +116,7 @@ const SubHeader: React.FC<SubHeaderProps> = ({
             </ArrowButtonWrapper>
 
             <IconsWrapper ref={iconsRef}>
-              <BottomLine />
+              {/* <BottomLine /> */}
               {homeIcons.map((icon, idx) => {
                 const isSelected = icon.category === selectedCategory;
                 return (
@@ -186,15 +186,6 @@ const IconsWrapper = styled.div`
   }
 `;
 
-const BottomLine = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: #eeeeee;
-`;
-
 const IconContainer = styled.div<{ selected: boolean }>`
   flex: 0 0 auto;
   width: ${ICON_WIDTH}px;
@@ -230,5 +221,11 @@ const Indicator = styled.div<{ position: number }>`
 `;
 
 const Divider = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  max-width: 900px;
+  margin: auto;
   border-bottom: 1px solid #eeeeee;
 `;
