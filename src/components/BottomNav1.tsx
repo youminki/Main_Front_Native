@@ -131,7 +131,7 @@ const DockContainer = styled.nav<{ $visible: boolean }>`
     translateY(${({ $visible }) => ($visible ? '0' : '100%')});
   transition: transform 0.3s ease;
   width: 100%;
-  max-width: 400px;
+
   padding: 0 16px;
   z-index: 1000;
 
@@ -148,6 +148,7 @@ const Dock = styled.div`
   backdrop-filter: blur(16px);
   border-radius: 32px;
   padding: 12px 0;
+
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 
   @media (max-width: 768px) {
