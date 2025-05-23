@@ -1,5 +1,3 @@
-// src/pages/UsageHistory.tsx
-
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
@@ -9,6 +7,7 @@ import ServiceInfoIcon from '../../../assets/Basket/ServiceInfoIcon.svg';
 import ProductInfoIcon from '../../../assets/Basket/ProductInfoIcon.svg';
 import PriceIcon from '../../../assets/Basket/PriceIcon.svg';
 import sampleImage from '../../../assets/sample-dress.svg';
+import userHistoryEmptyIcon from '../../../assets/userHistoryEmptyIcon.svg';
 import HomeDetail from '../../Home/HomeDetail';
 import {
   getMyRentalSchedule,
@@ -21,6 +20,7 @@ const hoverScale = keyframes`
   from { transform: scale(1); }
   to   { transform: scale(1.05); }
 `;
+
 interface BasketItem {
   id: number;
   productId: number;
@@ -188,103 +188,113 @@ const UsageHistory: React.FC = () => {
           setSelectedPeriod={setSelectedPeriod}
         />
 
-        <ItemList>
-          {filteredItems.map((item) => (
-            <Item key={item.id}>
-              <ContentWrapper>
-                <ItemDetails>
-                  <Brand>{item.brand}</Brand>
-                  <ItemName>
-                    <Code>{item.nameCode}</Code>
-                    <Slash>/</Slash>
-                    <Name>{item.nameType}</Name>
-                  </ItemName>
+        {filteredItems.length === 0 ? (
+          <EmptyContainer>
+            <EmptyIcon src={userHistoryEmptyIcon} alt='내역 없음' />
+            <EmptyText>이용하신 내역이 없습니다.</EmptyText>
+          </EmptyContainer>
+        ) : (
+          <ItemList>
+            {filteredItems.map((item) => (
+              <Item key={item.id}>
+                <ContentWrapper>
+                  {/* ...Item Details and Image... */}
+                  <ItemDetails>
+                    <Brand>{item.brand}</Brand>
+                    <ItemName>
+                      <Code>{item.nameCode}</Code>
+                      <Slash>/</Slash>
+                      <Name>{item.nameType}</Name>
+                    </ItemName>
 
-                  <InfoRowFlex>
-                    <IconArea>
-                      <Icon src={ServiceInfoIcon} alt='Service Info' />
-                    </IconArea>
-                    <TextContainer>
-                      <RowText>
-                        <LabelDetailText>진행 서비스 - </LabelDetailText>
-                        <DetailHighlight>{item.rentalDays}</DetailHighlight>
-                      </RowText>
-                      {item.servicePeriod && (
-                        <AdditionalText>
-                          <DetailText>{item.servicePeriod}</DetailText>
-                        </AdditionalText>
-                      )}
-                      {item.deliveryDate && (
-                        <AdditionalText>
-                          <DetailText>{item.deliveryDate}</DetailText>
-                        </AdditionalText>
-                      )}
-                    </TextContainer>
-                  </InfoRowFlex>
+                    <InfoRowFlex>
+                      <IconArea>
+                        <IconArea src={ServiceInfoIcon} alt='Service Info' />
+                      </IconArea>
+                      <TextContainer>
+                        <RowText>
+                          <LabelDetailText>진행 서비스 - </LabelDetailText>
+                          <DetailHighlight>{item.rentalDays}</DetailHighlight>
+                        </RowText>
+                        {item.servicePeriod && (
+                          <AdditionalText>
+                            <DetailText>{item.servicePeriod}</DetailText>
+                          </AdditionalText>
+                        )}
+                        {item.deliveryDate && (
+                          <AdditionalText>
+                            <DetailText>{item.deliveryDate}</DetailText>
+                          </AdditionalText>
+                        )}
+                      </TextContainer>
+                    </InfoRowFlex>
 
-                  <InfoRowFlex>
-                    <IconArea>
-                      <Icon src={ProductInfoIcon} alt='Product Info' />
-                    </IconArea>
-                    <TextContainer>
-                      <RowText>
-                        <LabelDetailText>제품 정보</LabelDetailText>
-                      </RowText>
-                      <AdditionalText>
+                    <InfoRowFlex>
+                      <IconArea>
+                        <Icon src={ProductInfoIcon} alt='Product Info' />
+                      </IconArea>
+                      <TextContainer>
+                        <RowText>
+                          <LabelDetailText>제품 정보</LabelDetailText>
+                        </RowText>
+                        <AdditionalText>
+                          <DetailText>
+                            사이즈 -{' '}
+                            <DetailHighlight>{item.size}</DetailHighlight>
+                          </DetailText>
+                          <Slash>/</Slash>
+                        </AdditionalText>
                         <DetailText>
-                          사이즈 -{' '}
-                          <DetailHighlight>{item.size}</DetailHighlight>
+                          색상 - <DetailHighlight>{item.color}</DetailHighlight>
                         </DetailText>
-                        <Slash>/</Slash>
-                      </AdditionalText>
-                      <DetailText>
-                        색상 - <DetailHighlight>{item.color}</DetailHighlight>
-                      </DetailText>
-                    </TextContainer>
-                  </InfoRowFlex>
+                      </TextContainer>
+                    </InfoRowFlex>
 
-                  <InfoRowFlex>
-                    <IconArea>
-                      <Icon src={PriceIcon} alt='Price' />
-                    </IconArea>
-                    <TextContainer>
-                      <RowText>
-                        <LabelDetailText>결제방식 - </LabelDetailText>
-                        <DetailHighlight>
-                          {typeof item.price === 'number'
-                            ? item.price.toLocaleString()
-                            : item.price}
-                        </DetailHighlight>
-                      </RowText>
-                    </TextContainer>
-                  </InfoRowFlex>
-                </ItemDetails>
+                    <InfoRowFlex>
+                      <IconArea>
+                        <Icon src={PriceIcon} alt='Price' />
+                      </IconArea>
+                      <TextContainer>
+                        <RowText>
+                          <LabelDetailText>결제방식 - </LabelDetailText>
+                          <DetailHighlight>
+                            {typeof item.price === 'number'
+                              ? item.price.toLocaleString()
+                              : item.price}
+                          </DetailHighlight>
+                        </RowText>
+                      </TextContainer>
+                    </InfoRowFlex>
+                  </ItemDetails>
 
-                <RightSection>
-                  <ItemImageContainer>
-                    <ItemImage src={item.imageUrl} alt={item.nameCode} />
-                  </ItemImageContainer>
-                </RightSection>
-              </ContentWrapper>
+                  <RightSection>
+                    <ItemImageContainer>
+                      <ItemImage src={item.imageUrl} alt={item.nameCode} />
+                    </ItemImageContainer>
+                  </RightSection>
+                </ContentWrapper>
 
-              <ButtonContainer>
-                <DeleteButton onClick={() => handleOpenDetail(item.productId)}>
-                  제품상세
-                </DeleteButton>
-                <PurchaseButton
-                  onClick={() => handleCancel(item)}
-                  disabled={cancelingId === item.id}
-                >
-                  {cancelingId === item.id
-                    ? '요청중...'
-                    : item.paymentStatus === '취소요청'
-                      ? '요청취소'
-                      : '취소'}
-                </PurchaseButton>
-              </ButtonContainer>
-            </Item>
-          ))}
-        </ItemList>
+                <ButtonContainer>
+                  <DeleteButton
+                    onClick={() => handleOpenDetail(item.productId)}
+                  >
+                    제품상세
+                  </DeleteButton>
+                  <PurchaseButton
+                    onClick={() => handleCancel(item)}
+                    disabled={cancelingId === item.id}
+                  >
+                    {cancelingId === item.id
+                      ? '요청중...'
+                      : item.paymentStatus === '취소요청'
+                        ? '요청취소'
+                        : '취소'}
+                  </PurchaseButton>
+                </ButtonContainer>
+              </Item>
+            ))}
+          </ItemList>
+        )}
       </Section>
 
       {isModalOpen && selectedProductId !== null && (
@@ -673,4 +683,27 @@ const CancelIcon = styled.img`
   width: 24px;
   height: 24px;
   cursor: pointer;
+`;
+
+const EmptyContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+`;
+
+const EmptyIcon = styled.img`
+  width: 80px;
+  height: 80px;
+`;
+
+const EmptyText = styled.div`
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  /* identical to box height, or 157% */
+  text-align: center;
+
+  color: #aaaaaa;
+  margin-top: 16px;
 `;
