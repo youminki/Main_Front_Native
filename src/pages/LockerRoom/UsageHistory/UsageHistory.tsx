@@ -12,6 +12,7 @@ import HomeDetail from '../../Home/HomeDetail';
 import {
   getMyRentalSchedule,
   cancelRentalSchedule,
+  RentalScheduleItem,
 } from '../../../api/RentalSchedule/RentalSchedule';
 import CancleIconIcon from '../../../assets/Header/CancleIcon.svg';
 
@@ -21,22 +22,14 @@ const hoverScale = keyframes`
   to   { transform: scale(1.05); }
 `;
 
-interface BasketItem {
-  id: number;
-  productId: number;
-  brand: string;
-  nameCode: string;
-  nameType: string;
+interface BasketItem extends RentalScheduleItem {
   type: 'rental' | 'purchase';
   servicePeriod?: string;
   deliveryDate?: string;
-  size: string;
-  color: string;
   price: number | string;
   imageUrl: string;
   $isSelected: boolean;
   rentalDays?: string;
-  paymentStatus?: string;
 }
 
 const UsageHistory: React.FC = () => {
@@ -50,6 +43,7 @@ const UsageHistory: React.FC = () => {
     null
   );
 
+  // 모달 열릴 때 스크롤 잠금
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? 'hidden' : '';
     return () => {
@@ -57,36 +51,31 @@ const UsageHistory: React.FC = () => {
     };
   }, [isModalOpen]);
 
+  // 초기 데이터 로드
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
         const data = await getMyRentalSchedule();
-        const mapped = data.rentals.map((rental) => {
-          const isRental = rental.serviceType === '대여';
-          const servicePeriod = `${rental.startDate} ~ ${rental.endDate}`;
+        const mapped: BasketItem[] = data.rentals.map((r) => {
+          const isRental = r.serviceType === '대여';
           return {
-            id: rental.id,
-            productId: rental.productId,
-            brand: rental.brand,
-            nameCode: rental.productNum,
-            nameType: rental.category,
+            ...r,
             type: isRental ? 'rental' : 'purchase',
-            servicePeriod: isRental ? servicePeriod : undefined,
-            deliveryDate: !isRental ? rental.endDate : undefined,
-            size: rental.size,
-            color: rental.color,
-            price: rental.ticketName,
-            imageUrl: rental.mainImage || sampleImage,
+            servicePeriod: isRental
+              ? `${r.startDate} ~ ${r.endDate}`
+              : undefined,
+            deliveryDate: !isRental ? r.endDate : undefined,
+            price: r.ticketName,
+            imageUrl: r.mainImage || sampleImage,
             $isSelected: true,
             rentalDays: isRental
-              ? `대여 (${calculateDays(rental.startDate, rental.endDate)}일)`
+              ? `대여 (${calculateDays(r.startDate, r.endDate)}일)`
               : '구매',
-            paymentStatus: (rental as any).paymentStatus || undefined,
-          } as BasketItem;
+          };
         });
         setItems(mapped);
-      } catch (e: any) {
-        console.error(e);
+      } catch (err) {
+        console.error(err);
         setError('대여/구매 내역을 불러오는 데 실패했습니다.');
       } finally {
         setLoading(false);
@@ -95,28 +84,29 @@ const UsageHistory: React.FC = () => {
     fetchSchedule();
   }, []);
 
+  // 날짜 차이 계산
   const calculateDays = (start: string, end: string): number => {
     const s = new Date(start);
     const e = new Date(end);
-    const diff = (e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24) + 1;
-    return Math.round(diff);
+    return Math.round((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24) + 1);
   };
 
+  // 취소 요청 / 최종 취소
   const handleCancel = async (item: BasketItem) => {
     const isRequested = item.paymentStatus === '취소요청';
     const confirmMsg = isRequested
-      ? '정말 취소요청을 확정하시겠습니까?'
+      ? '정말 최종 취소하시겠습니까?'
       : '정말 예약을 취소 요청하시겠습니까?';
     if (!window.confirm(confirmMsg)) return;
 
     try {
       setCancelingId(item.id);
       const result = await cancelRentalSchedule(item.id);
-      const newStatus =
-        result.paymentStatus ?? (isRequested ? '취소' : '취소요청');
       setItems((prev) =>
         prev.map((it) =>
-          it.id === item.id ? { ...it, paymentStatus: newStatus } : it
+          it.id === item.id
+            ? { ...it, paymentStatus: result.paymentStatus }
+            : it
         )
       );
       alert(
@@ -124,46 +114,43 @@ const UsageHistory: React.FC = () => {
           ? '최종 취소가 완료되었습니다.'
           : '취소 요청이 완료되었습니다.'
       );
-    } catch (e: any) {
-      console.error(e);
-      const msg =
-        e.response?.data?.message ||
-        (isRequested
+    } catch (err) {
+      console.error(err);
+      alert(
+        isRequested
           ? '최종 취소에 실패했습니다. 다시 시도해주세요.'
-          : '취소 요청에 실패했습니다. 다시 시도해주세요.');
-      alert(msg);
+          : '취소 요청에 실패했습니다. 다시 시도해주세요.'
+      );
     } finally {
       setCancelingId(null);
     }
   };
 
+  // 상세 모달 열기/닫기
   const handleOpenDetail = (productId: number) => {
     setSelectedProductId(productId);
     setIsModalOpen(true);
   };
-
   const handleCloseDetail = () => {
     setIsModalOpen(false);
     setSelectedProductId(null);
   };
 
+  // 3개월 / 6개월 필터
   const filteredItems = selectedPeriod === 3 ? items.slice(0, 3) : items;
 
-  if (loading) {
+  if (loading)
     return (
       <UsageHistoryContainer>
         <Spinner />
       </UsageHistoryContainer>
     );
-  }
-
-  if (error) {
+  if (error)
     return (
       <UsageHistoryContainer>
         <ErrorText>{error}</ErrorText>
       </UsageHistoryContainer>
     );
-  }
 
   return (
     <UsageHistoryContainer>
@@ -198,18 +185,17 @@ const UsageHistory: React.FC = () => {
             {filteredItems.map((item) => (
               <Item key={item.id}>
                 <ContentWrapper>
-                  {/* ...Item Details and Image... */}
                   <ItemDetails>
                     <Brand>{item.brand}</Brand>
                     <ItemName>
-                      <Code>{item.nameCode}</Code>
+                      <Code>{item.productNum}</Code>
                       <Slash>/</Slash>
-                      <Name>{item.nameType}</Name>
+                      <Name>{item.category}</Name>
                     </ItemName>
 
                     <InfoRowFlex>
                       <IconArea>
-                        <IconArea src={ServiceInfoIcon} alt='Service Info' />
+                        <Icon src={ServiceInfoIcon} alt='Service Info' />
                       </IconArea>
                       <TextContainer>
                         <RowText>
@@ -269,7 +255,7 @@ const UsageHistory: React.FC = () => {
 
                   <RightSection>
                     <ItemImageContainer>
-                      <ItemImage src={item.imageUrl} alt={item.nameCode} />
+                      <ItemImage src={item.imageUrl} alt={item.productNum} />
                     </ItemImageContainer>
                   </RightSection>
                 </ContentWrapper>
@@ -282,13 +268,19 @@ const UsageHistory: React.FC = () => {
                   </DeleteButton>
                   <PurchaseButton
                     onClick={() => handleCancel(item)}
-                    disabled={cancelingId === item.id}
+                    disabled={
+                      cancelingId === item.id ||
+                      item.paymentStatus === '취소요청' ||
+                      item.paymentStatus === '취소완료'
+                    }
                   >
                     {cancelingId === item.id
                       ? '요청중...'
                       : item.paymentStatus === '취소요청'
-                        ? '요청취소'
-                        : '취소'}
+                        ? '취소요청'
+                        : item.paymentStatus === '취소완료'
+                          ? '취소완료'
+                          : '취소'}
                   </PurchaseButton>
                 </ButtonContainer>
               </Item>
@@ -328,6 +320,8 @@ export default UsageHistory;
 // ────────────────────────────────────────────────────────────
 // Styled Components
 // ────────────────────────────────────────────────────────────
+
+// (이하 기존 스타일 컴포넌트 그대로)
 
 const UsageHistoryContainer = styled.div`
   display: flex;
@@ -543,6 +537,7 @@ const ItemImage = styled.img`
 const ButtonContainer = styled.div`
   display: flex;
   gap: 10px;
+
   margin-top: 20px;
   align-self: flex-end;
 
@@ -560,6 +555,7 @@ const DeleteButton = styled.button`
   border: 1px solid #ddd;
   font-weight: 800;
   font-size: 14px;
+
   cursor: pointer;
   transition:
     transform 0.2s ease,
@@ -571,7 +567,7 @@ const DeleteButton = styled.button`
   }
 
   @media (max-width: 600px) {
-    width: 60px;
+    width: 70px;
     height: 40px;
   }
 `;
@@ -601,7 +597,7 @@ const PurchaseButton = styled.button`
   }
 
   @media (max-width: 600px) {
-    width: 60px;
+    width: 70px;
     height: 40px;
   }
 `;
