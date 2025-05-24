@@ -2,11 +2,16 @@
 
 @font-face {
   font-family: 'NanumSquare Neo';
-  src:
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: 
+    /* 먼저 woff2 */
     url('/fonts/woff2/NanumSquareNeo-Variable.woff2') format('woff2'),
-    url('/fonts/woff/NanumSquareNeo-Variable.woff') format('woff'),
-    url('/fonts/TTF/NanumSquareNeo-aLt.ttf') format('ttf'),
-    url('/fonts/OTF/NanumSquareB.otf') format('otf'),
+    /* 다음 woff */ url('/fonts/woff/NanumSquareNeo-Variable.woff')
+      format('woff'),
+    /* 이후 TTF (TrueType) */ url('/fonts/TTF/NanumSquareNeo-aLt.ttf')
+      format('truetype'),
     url('/fonts/TTF/NanumSquare_acB.ttf') format('truetype'),
     url('/fonts/TTF/NanumSquare_acEB.ttf') format('truetype'),
     url('/fonts/TTF/NanumSquare_acL.ttf') format('truetype'),
@@ -15,18 +20,11 @@
     url('/fonts/TTF/NanumSquareEB.ttf') format('truetype'),
     url('/fonts/TTF/NanumSquareL.ttf') format('truetype'),
     url('/fonts/TTF/NanumSquareR.ttf') format('truetype'),
-    url('/fonts/OTF/NanumSquareB.otf') format('opentype'),
+    /* 마지막으로 OTF (OpenType) */ url('/fonts/OTF/NanumSquareB.otf')
+      format('opentype'),
     url('/fonts/OTF/NanumSquareEB.otf') format('opentype'),
     url('/fonts/OTF/NanumSquareL.otf') format('opentype'),
-    url('/fonts/OTF/NanumSquareOTF_acB.otf') format('opentype'),
-    url('/fonts/OTF/NanumSquareOTF_acEB.otf') format('opentype'),
-    url('/fonts/OTF/NanumSquareOTF_acL.otf') format('opentype'),
-    url('/fonts/OTF/NanumSquareOTF_acR.otf') format('opentype'),
     url('/fonts/OTF/NanumSquareR.otf') format('opentype');
-
-  font-weight: 100 900;
-
-  font-display: swap;
 }
 
 #root {
@@ -76,4 +74,6 @@ body {
   box-sizing: border-box;
 
   touch-action: pan-x pan-y;
+
+  font-family: 'NanumSquare Neo', 'Malgun Gothic', 'Segoe UI', sans-serif;
 }

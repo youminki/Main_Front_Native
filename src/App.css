@@ -2,17 +2,29 @@
 
 @font-face {
   font-family: 'NanumSquare Neo';
-  src:
-    url('/fonts/woff2/NanumSquareNeo-Variable.woff2') format('woff2'),
-    url('/fonts/woff/NanumSquareNeo-Variable.woff') format('woff'),
-    url('/fonts/TTF/NanumSquareNeo-aLt.ttf') format('ttf'),
-    url('/fonts/OTF/NanumSquareNeoOTF-Bd.otf') format('otf'),
-    url('/fonts/TTF/NanumSquareNeo-aLt.ttf') format('truetype'),
-    url('/fonts/OTF/NanumSquareNeoOTF-Bd.otf') format('opentype');
-
+  font-style: normal;
   font-weight: 100 900;
-
   font-display: swap;
+  src: 
+    /* 먼저 woff2 */
+    url('/fonts/woff2/NanumSquareNeo-Variable.woff2') format('woff2'),
+    /* 다음 woff */ url('/fonts/woff/NanumSquareNeo-Variable.woff')
+      format('woff'),
+    /* 이후 TTF (TrueType) */ url('/fonts/TTF/NanumSquareNeo-aLt.ttf')
+      format('truetype'),
+    url('/fonts/TTF/NanumSquare_acB.ttf') format('truetype'),
+    url('/fonts/TTF/NanumSquare_acEB.ttf') format('truetype'),
+    url('/fonts/TTF/NanumSquare_acL.ttf') format('truetype'),
+    url('/fonts/TTF/NanumSquare_acR.ttf') format('truetype'),
+    url('/fonts/TTF/NanumSquareB.ttf') format('truetype'),
+    url('/fonts/TTF/NanumSquareEB.ttf') format('truetype'),
+    url('/fonts/TTF/NanumSquareL.ttf') format('truetype'),
+    url('/fonts/TTF/NanumSquareR.ttf') format('truetype'),
+    /* 마지막으로 OTF (OpenType) */ url('/fonts/OTF/NanumSquareB.otf')
+      format('opentype'),
+    url('/fonts/OTF/NanumSquareEB.otf') format('opentype'),
+    url('/fonts/OTF/NanumSquareL.otf') format('opentype'),
+    url('/fonts/OTF/NanumSquareR.otf') format('opentype');
 }
 
 html,
