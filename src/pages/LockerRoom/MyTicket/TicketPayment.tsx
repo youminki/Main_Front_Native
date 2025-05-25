@@ -32,7 +32,6 @@ const TicketPayment: React.FC = () => {
   const name = searchParams.get('name') || '';
   const discountedPriceParam = searchParams.get('discountedPrice') || '0';
   const discountedPrice = parseFloat(discountedPriceParam);
-
   const roundedPrice = isNaN(discountedPrice) ? 0 : Math.round(discountedPrice);
   const formattedDiscountedPrice = roundedPrice.toLocaleString();
 
@@ -40,6 +39,7 @@ const TicketPayment: React.FC = () => {
   const [cards, setCards] = useState<CardItem[]>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>('');
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   const today = new Date();
   const formattedToday = format(today, 'yyyy.MM.dd');
@@ -99,9 +99,13 @@ const TicketPayment: React.FC = () => {
   };
 
   const handlePaymentClick = async () => {
+    if (isProcessing) return; // 중복 클릭 방지
+    setIsProcessing(true);
+
     const payerId = extractPayerId(selectedPaymentMethod);
     if (!payerId) {
       alert('결제할 카드를 선택해주세요.');
+      setIsProcessing(false);
       return;
     }
 
@@ -109,17 +113,14 @@ const TicketPayment: React.FC = () => {
 
     try {
       if (name === '1회 이용권') {
-        // ✅ 1회 결제: Payple 팝업 호출
         const response = await postInitPayment(requestData);
         (window as any).PaypleCpayAuthCheck(response.data);
       } else if (
         name === '정기 구독권(4회권)' ||
         name === '정기 구독권(무제한)'
       ) {
-        // ✅ 정기결제: 성공/실패에 따라 리다이렉트
         const response = await postRecurringPayment(requestData);
         const payResult = response.data.PCD_PAY_RST;
-
         if (payResult === 'success') {
           navigate('/payment-complete');
         } else {
@@ -127,6 +128,7 @@ const TicketPayment: React.FC = () => {
         }
       } else {
         alert('알 수 없는 이용권 유형입니다.');
+        setIsProcessing(false);
       }
     } catch (error: any) {
       console.error('결제 실패:', error);
@@ -157,7 +159,7 @@ const TicketPayment: React.FC = () => {
                   시즌 -<RowValue> 2025 SPRING</RowValue>
                 </RowLabel>
                 <RowPeriod>
-                  {`${formattedToday} ~ ${formattedOneMonthLater}`}
+                  {`$ {formattedToday} ~ ${formattedOneMonthLater}`}
                 </RowPeriod>
               </RowTextContainer>
             </Row>
@@ -204,9 +206,10 @@ const TicketPayment: React.FC = () => {
       </Section>
 
       <FixedBottomBar
-        text='결제하기'
+        text={isProcessing ? '결제중...' : '결제하기'}
         color='yellow'
         onClick={handlePaymentClick}
+        disabled={isProcessing}
       />
     </Container>
   );
@@ -214,7 +217,7 @@ const TicketPayment: React.FC = () => {
 
 export default TicketPayment;
 
-// styled-components 정의 (생략 없이 동일)
+// styled-components 정의
 const Container = styled.div`
   position: relative;
   background: #ffffff;
