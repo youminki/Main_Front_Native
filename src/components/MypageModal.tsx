@@ -171,15 +171,18 @@ const Overlay = styled.div`
 `;
 
 const ModalContainer = styled.div<ModalContainerProps>`
+  position: fixed;
+  bottom: 0;
+
+  transform: translateX(-50%);
+  width: 90%;
   max-width: 600px;
-  width: 100%;
-  min-height: 400px;
-  padding: 40px;
+  min-height: 350px;
+  padding: 1rem;
   background: #fff;
   border-radius: 20px 20px 0 0;
   display: flex;
   flex-direction: column;
-  position: relative;
   animation: ${({ $isClosing }) =>
     $isClosing
       ? css`
