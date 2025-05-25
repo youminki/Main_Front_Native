@@ -23,6 +23,7 @@ export interface SignupRequest {
   chestCircumference?: number;
   waistCircumference?: number;
   sleeveLength?: number;
+  membershipCode?: string;
 }
 
 export interface SignupResponse {

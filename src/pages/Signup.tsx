@@ -44,6 +44,7 @@ export type SignupFormData = {
   chest?: string | null;
   waist?: string | null;
   sleeve?: string | null;
+  mebershipCode?: string | null;
 };
 
 const Signup: React.FC = () => {
@@ -73,6 +74,7 @@ const Signup: React.FC = () => {
       chest: '',
       waist: '',
       sleeve: '',
+      mebershipCode: '',
     },
   });
 
@@ -867,6 +869,17 @@ const Signup: React.FC = () => {
                 {...register('sleeve')}
               />
             </RowLabel>
+            <InputField
+              label='맴버십 코드 (선택)'
+              id='mebershipCode'
+              type='mebershipCode'
+              placeholder='맴버쉽 코드를 입력하세요'
+              error={errors.mebershipCode}
+              {...register('mebershipCode')}
+              required
+              maxLength={20}
+              autoComplete='current-mebershipCode'
+            />
 
             {!isKeyboardOpen && (
               <FixedBottomBar
