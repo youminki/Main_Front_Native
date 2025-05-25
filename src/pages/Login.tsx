@@ -1,4 +1,3 @@
-// src/pages/Login.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
@@ -7,6 +6,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import LoginButton from '../components/Button01';
 import InputField from '../components/InputField';
 import Theme from '../styles/Theme';
+import { LoginPost } from '../api/auth/LoginPost';
+import { getMembershipInfo, MembershipInfo } from '../api/user/userApi';
 import MelpikLogo from '../assets/LoginLogo.svg';
 import { schemaLogin } from '../hooks/ValidationYup';
 import ReusableModal from '../components/ReusableModal';
@@ -16,9 +17,15 @@ type LoginFormValues = {
   password: string;
 };
 
+type LoginResponse = {
+  accessToken: string;
+  refreshToken: string;
+};
+
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const {
     control,
@@ -32,9 +39,33 @@ const Login: React.FC = () => {
 
   const handleModalClose = () => setIsModalOpen(false);
 
-  const handleLoginClick = async (_: LoginFormValues) => {
-    // 점검중 모달만 띄우고 로그인 자체는 하지 않음
-    setIsModalOpen(true);
+  const handleLoginClick = async (data: LoginFormValues) => {
+    try {
+      // 1) 로그인 요청
+      const response = (await LoginPost(
+        data.email,
+        data.password
+      )) as LoginResponse;
+      const { accessToken, refreshToken } = response;
+
+      // 2) 토큰 로컬 저장
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+
+      // 3) 멤버십 정보 조회
+      const membership: MembershipInfo = await getMembershipInfo();
+
+      navigate('/home', {
+        replace: true,
+        state: {
+          showNotice: true,
+          membership,
+        },
+      });
+    } catch (error: any) {
+      setModalMessage(error?.message || '로그인 실패. 다시 시도해주세요.');
+      setIsModalOpen(true);
+    }
   };
 
   return (
@@ -42,6 +73,8 @@ const Login: React.FC = () => {
       <Container>
         <LoginContainer>
           <Logo src={MelpikLogo} alt='멜픽 로고' />
+
+          {/* ... 로고 아래 설명 영역 생략 ... */}
 
           <LoginForm onSubmit={handleSubmit(handleLoginClick)}>
             <InputFieldRow>
@@ -99,9 +132,9 @@ const Login: React.FC = () => {
         <ReusableModal
           isOpen={isModalOpen}
           onClose={handleModalClose}
-          title='점검중입니다'
+          title='로그인 실패'
         >
-          현재 서비스 점검 중입니다. 잠시 후 다시 시도해주세요.
+          {modalMessage}
         </ReusableModal>
       </Container>
     </ThemeProvider>
