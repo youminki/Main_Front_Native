@@ -158,9 +158,7 @@ const TicketPayment: React.FC = () => {
                 <RowLabel>
                   시즌 -<RowValue> 2025 SPRING</RowValue>
                 </RowLabel>
-                <RowPeriod>
-                  {`$ {formattedToday} ~ ${formattedOneMonthLater}`}
-                </RowPeriod>
+                <RowPeriod>{`${formattedToday} ~ ${formattedOneMonthLater}`}</RowPeriod>
               </RowTextContainer>
             </Row>
 
