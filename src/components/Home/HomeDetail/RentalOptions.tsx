@@ -18,23 +18,66 @@ registerLocale('ko', ko);
 const hd = new Holidays('KR');
 
 const GlobalStyle = createGlobalStyle`
-  .react-datepicker__day--outside-month { visibility: hidden !important; }
-  .day-today { background-color: #FFA726 !important; color: #000 !important; }
-  .day-holiday, .day-sunday { color: red !important; }
-  .day-reserved, .react-datepicker__day--disabled, .day-past {
+  /* 달력 외곽일 숨김 */
+  .react-datepicker__day--outside-month {
+    visibility: hidden !important;
+  }
+
+  /* 오늘 표시 */
+  .day-today {
+    background-color: #FFA726 !important;
+    color: #000 !important;
+  }
+
+  /* 일요일·공휴일 */
+  .day-holiday,
+  .day-sunday {
+    color: red !important;
+  }
+
+  /* 선택 불가(예약·과거) */
+  .day-reserved,
+  .react-datepicker__day--disabled,
+  .day-past {
     color: #ccc !important;
     pointer-events: none !important;
   }
-  .day-start, .day-end {
+
+  /* 선택 범위 시작/종료 */
+  .react-datepicker__day.day-start,
+  .react-datepicker__day.day-end {
     background: #fff !important;
     color: #000 !important;
     border: 1px solid #F6AE24 !important;
     border-radius: .25rem !important;
   }
-  .day-between { background: #F6AE24 !important; color: #000 !important; }
-  .day-blue { color: #000 !important; }
-`;
 
+  /* 선택 범위 내부 */
+  .day-between {
+    background: #F6AE24 !important;
+    color: #000 !important;
+  }
+
+  /* Override 기본 파란색 선택박스 컬러 (#3d91ff → #FFA726) */
+  .react-datepicker__day--selected,
+  .react-datepicker__day--in-range,
+  .react-datepicker__day--keyboard-selected,
+  .react-datepicker__day--selecting-range-start,
+  .react-datepicker__day--selecting-range-end {
+    background-color: #FFA726 !important;
+    border-color: #FFA726 !important;
+    color: #000 !important;
+  }
+
+  /* 선택박스 hover 덮어쓰기 */
+  .react-datepicker__day--selected:hover,
+  .react-datepicker__day--in-range:hover {
+    background-color: #FFA726 !important;
+    border-color: #FFA726 !important;
+  }
+
+
+`;
 interface RentalOptionsProps {
   productId: number;
   selectedSize: string;
@@ -270,6 +313,12 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
                     onChange={handleDateChange}
                     excludeDates={reservedDates}
                     dayClassName={(date) => {
+                      if (
+                        date.getFullYear() === 2025 &&
+                        date.getMonth() === 5 &&
+                        date.getDate() === 3
+                      )
+                        return 'day-past';
                       if (isBefore(date, today)) return 'day-past';
                       if (
                         isAfter(date, today) &&
