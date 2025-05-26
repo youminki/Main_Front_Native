@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink, LinkProps } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -41,26 +41,20 @@ const Login: React.FC = () => {
 
   const handleLoginClick = async (data: LoginFormValues) => {
     try {
-      // 1) 로그인 요청
       const response = (await LoginPost(
         data.email,
         data.password
       )) as LoginResponse;
       const { accessToken, refreshToken } = response;
 
-      // 2) 토큰 로컬 저장
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
 
-      // 3) 멤버십 정보 조회
       const membership: MembershipInfo = await getMembershipInfo();
 
       navigate('/home', {
         replace: true,
-        state: {
-          showNotice: true,
-          membership,
-        },
+        state: { showNotice: true, membership },
       });
     } catch (error: any) {
       setModalMessage(error?.message || '로그인 실패. 다시 시도해주세요.');
@@ -73,8 +67,6 @@ const Login: React.FC = () => {
       <Container>
         <LoginContainer>
           <Logo src={MelpikLogo} alt='멜픽 로고' />
-
-          {/* ... 로고 아래 설명 영역 생략 ... */}
 
           <LoginForm onSubmit={handleSubmit(handleLoginClick)}>
             <InputFieldRow>
@@ -121,11 +113,11 @@ const Login: React.FC = () => {
           </LoginForm>
 
           <ExtraLinks>
-            <Link onClick={() => navigate('/findid')}>아이디 찾기</Link>
+            <StyledLink to='/findid'>아이디 찾기</StyledLink>
             <LinkSeparator>|</LinkSeparator>
-            <Link onClick={() => navigate('/findpassword')}>비밀번호 찾기</Link>
+            <StyledLink to='/findpassword'>비밀번호 찾기</StyledLink>
             <LinkSeparator>|</LinkSeparator>
-            <Link onClick={() => navigate('/signup')}>회원가입</Link>
+            <StyledLink to='/signup'>회원가입</StyledLink>
           </ExtraLinks>
         </LoginContainer>
 
@@ -144,6 +136,7 @@ const Login: React.FC = () => {
 export default Login;
 
 // --- styled-components ---
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -152,41 +145,52 @@ const Container = styled.div`
   margin: 0 auto;
   max-width: 600px;
   padding: 1rem;
-`;
-const LoginContainer = styled.div`
+  background: #ffffff;
   border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+`;
+
+const LoginContainer = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
 `;
+
 const Logo = styled.img`
   width: 150px;
-  margin: 50px 0 21px;
+  margin: 50px 0 20px;
 `;
+
 const LoginForm = styled.form`
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 1rem;
 `;
+
 const InputFieldRow = styled.div`
   width: 100%;
 `;
+
 const CheckboxWrapper = styled.div`
   width: 100%;
-  margin-bottom: 20px;
   display: flex;
   align-items: center;
 `;
+
 const CheckboxLabel = styled.label`
   display: flex;
   align-items: center;
+  cursor: pointer;
 `;
+
 const CheckboxInput = styled.input`
-  width: 20px;
-  height: 20px;
-  border: 1px solid lightgray;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   appearance: none;
   position: relative;
   cursor: pointer;
@@ -196,36 +200,37 @@ const CheckboxInput = styled.input`
     position: absolute;
     top: 3px;
     left: 3px;
-    width: 10px;
+    width: 8px;
     height: 5px;
-    border-left: 3px solid orange;
-    border-bottom: 3px solid orange;
+    border-left: 2px solid #0050b3;
+    border-bottom: 2px solid #0050b3;
     transform: rotate(-45deg);
   }
 `;
-const CheckboxText = styled.div`
-  font-size: 12px;
-  font-weight: 700;
-  margin-left: 8px;
+
+const CheckboxText = styled.span`
+  font-size: 0.9rem;
+  color: ${({ theme }) => theme.colors.gray1};
 `;
+
 const ExtraLinks = styled.div`
   display: flex;
-  justify-content: space-around;
-  width: 100%;
-  min-width: 264px;
-  margin-top: 30px;
+  gap: 16px;
+  margin-top: 24px;
 `;
-const Link = styled.a`
-  color: ${({ theme }) => theme.colors.black};
-  padding: 5px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
+
+const LinkSeparator = styled.span`
+  color: ${({ theme }) => theme.colors.gray3};
+  font-size: 1rem;
+`;
+
+const StyledLink = styled(RouterLink)<LinkProps>`
+  font-size: 0.9rem;
+  color: black;
+  text-decoration: none;
+  font-weight: 600;
+
   &:hover {
     text-decoration: underline;
   }
-`;
-const LinkSeparator = styled.span`
-  color: ${({ theme }) => theme.colors.gray2};
-  font-size: 15px;
 `;
