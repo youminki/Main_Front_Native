@@ -1,3 +1,4 @@
+// src/page/Login.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
@@ -41,18 +42,15 @@ const Login: React.FC = () => {
 
   const handleLoginClick = async (data: LoginFormValues) => {
     try {
-      // 1) 로그인 요청
       const response = (await LoginPost(
         data.email,
         data.password
       )) as LoginResponse;
       const { accessToken, refreshToken } = response;
 
-      // 2) 토큰 로컬 저장
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
 
-      // 3) 멤버십 정보 조회
       const membership: MembershipInfo = await getMembershipInfo();
 
       navigate('/home', {
@@ -74,9 +72,10 @@ const Login: React.FC = () => {
         <LoginContainer>
           <Logo src={MelpikLogo} alt='멜픽 로고' />
 
-          {/* ... 로고 아래 설명 영역 생략 ... */}
-
-          <LoginForm onSubmit={handleSubmit(handleLoginClick)}>
+          <LoginForm
+            onSubmit={handleSubmit(handleLoginClick)}
+            autoComplete='on'
+          >
             <InputFieldRow>
               <Controller
                 control={control}
@@ -87,6 +86,7 @@ const Login: React.FC = () => {
                     type='text'
                     placeholder='이메일을 입력하세요'
                     error={error}
+                    autoComplete='username'
                     {...field}
                   />
                 )}
@@ -102,6 +102,7 @@ const Login: React.FC = () => {
                     type='password'
                     placeholder='비밀번호를 입력하세요'
                     error={error}
+                    autoComplete='current-password'
                     {...field}
                   />
                 )}
