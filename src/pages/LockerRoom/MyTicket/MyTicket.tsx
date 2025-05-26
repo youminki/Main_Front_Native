@@ -229,9 +229,6 @@ const TicketCard = styled.div`
 const TicketCardAdd = styled(TicketCard)`
   justify-content: center;
   position: relative;
-  display: flex;
-  width: 100%;
-  height: 160px;
   &:hover {
     transform: scale(1.02);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
