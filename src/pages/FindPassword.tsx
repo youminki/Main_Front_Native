@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, FieldErrors } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import styled from 'styled-components';
@@ -8,7 +8,7 @@ import InputField from '../components/InputField';
 import ReusableModal from '../components/ReusableModal';
 import { resetPassword } from '../api/user/userApi';
 
-// Validation schema: 이름, 이메일, 전화번호, 새 비밀번호, 비밀번호 확인
+// Validation schema
 const schemaFindPassword = yup.object().shape({
   name: yup
     .string()
@@ -59,6 +59,11 @@ const FindPassword: React.FC = () => {
     },
   });
 
+  // 유효성 에러 시 호출
+  const onError = (_errors: FieldErrors<FormValues>) => {
+    setErrorMessage('입력하신 내용을 다시 확인해주세요.');
+  };
+
   const onSubmit = async (data: FormValues) => {
     setErrorMessage('');
     try {
@@ -83,7 +88,7 @@ const FindPassword: React.FC = () => {
 
   return (
     <Container>
-      <Form onSubmit={handleSubmit(onSubmit)}>
+      <Form onSubmit={handleSubmit(onSubmit, onError)}>
         <Row>
           <Controller
             name='name'
@@ -91,8 +96,9 @@ const FindPassword: React.FC = () => {
             render={({ field }) => (
               <InputField
                 label='이름'
+                id='name'
                 placeholder='홍길동'
-                error={errors.name?.message}
+                error={errors.name}
                 {...field}
                 onInput={(e: React.FormEvent<HTMLInputElement>) => {
                   const onlyKorean = e.currentTarget.value.replace(
@@ -110,8 +116,9 @@ const FindPassword: React.FC = () => {
             render={({ field }) => (
               <InputField
                 label='이메일'
+                id='email'
                 placeholder='user@example.com'
-                error={errors.email?.message}
+                error={errors.email}
                 {...field}
               />
             )}
@@ -124,8 +131,9 @@ const FindPassword: React.FC = () => {
           render={({ field }) => (
             <InputField
               label='전화번호'
+              id='phone'
               placeholder='010-1234-5678'
-              error={errors.phone?.message}
+              error={errors.phone}
               value={field.value}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
@@ -147,9 +155,10 @@ const FindPassword: React.FC = () => {
           render={({ field }) => (
             <InputField
               label='새 비밀번호'
+              id='newPassword'
               type='password'
               placeholder='새 비밀번호를 입력하세요'
-              error={errors.newPassword?.message}
+              error={errors.newPassword}
               {...field}
             />
           )}
@@ -161,18 +170,20 @@ const FindPassword: React.FC = () => {
           render={({ field }) => (
             <InputField
               label='비밀번호 확인'
+              id='confirmPassword'
               type='password'
               placeholder='비밀번호를 다시 입력하세요'
-              error={errors.confirmPassword?.message}
+              error={errors.confirmPassword}
               {...field}
             />
           )}
         />
 
+        {/* API 에러 메시지 */}
         {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
 
         <Button type='submit' disabled={!isValid || isSubmitting}>
-          {isSubmitting ? '조회 중...' : '비밀번호 찾기'}
+          {isSubmitting ? '조회 중...' : '비밀번호 변경'}
         </Button>
       </Form>
 
