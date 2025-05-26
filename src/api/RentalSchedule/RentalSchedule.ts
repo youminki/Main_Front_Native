@@ -18,7 +18,6 @@ export interface RentalScheduleItem {
 }
 
 export interface RentalScheduleResponse {
-  count: number;
   rentals: RentalScheduleItem[];
 }
 

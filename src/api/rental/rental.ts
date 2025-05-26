@@ -10,7 +10,6 @@ export interface RentalItem {
   startDate: string; // YYYY-MM-DD
   endDate: string; // YYYY-MM-DD
   quantity: number;
-  count: number;
 }
 
 /**

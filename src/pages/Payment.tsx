@@ -203,7 +203,6 @@ const PaymentPage: React.FC = () => {
         startDate: startRaw.replace(/\./g, '-'),
         endDate: endRaw.replace(/\./g, '-'),
         quantity: 1,
-        count: 1,
       };
     });
     const orderBody: RentalOrderRequest = {
