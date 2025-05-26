@@ -124,7 +124,7 @@ const Login: React.FC = () => {
           <ExtraLinks>
             <Link onClick={() => navigate('/findid')}>아이디 찾기</Link>
             <LinkSeparator>|</LinkSeparator>
-            <Link onClick={() => navigate('/findpassword')}>비밀번호 찾기</Link>
+            <Link onClick={() => navigate('/findPassword')}>비밀번호 찾기</Link>
             <LinkSeparator>|</LinkSeparator>
             <Link onClick={() => navigate('/signup')}>회원가입</Link>
           </ExtraLinks>
