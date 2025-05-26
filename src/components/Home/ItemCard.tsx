@@ -199,7 +199,7 @@ const LikeButton = styled.div<{ $animating: boolean }>`
 `;
 
 const Brand = styled.h3`
-  margin: 4px 0 2px;
+  margin: 10px 0 0 0;
   font-size: 10px;
   font-weight: 900;
   overflow: hidden;
@@ -208,6 +208,7 @@ const Brand = styled.h3`
 `;
 
 const Description = styled.p`
+  margin: 5px 0 0 0;
   font-size: 11px;
   color: #999;
   margin-bottom: 4px;
