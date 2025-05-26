@@ -1,3 +1,4 @@
+// src/page/RentalOptions.tsx
 import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import DatePicker, { registerLocale } from 'react-datepicker';
@@ -75,9 +76,8 @@ const GlobalStyle = createGlobalStyle`
     background-color: #FFA726 !important;
     border-color: #FFA726 !important;
   }
-
-
 `;
+
 interface RentalOptionsProps {
   productId: number;
   selectedSize: string;
@@ -104,7 +104,8 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
   const maxDays = 10;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const minSelectableDate = _addDays(today, 3);
+  // ← 여기만 4로 변경
+  const minSelectableDate = _addDays(today, 4);
 
   const getTotalDays = (s: Date, e: Date) =>
     Math.floor((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1;
@@ -141,8 +142,9 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
     const [start, end] = dates;
     if (start) {
       if (isBefore(start, minSelectableDate)) {
+        // ← 안내 문구도 4일로 변경
         setErrorMessage(
-          '대여 시작일은 오늘 기준 3일 이후부터 선택 가능합니다.'
+          '대여 시작일은 오늘 기준 4일 이후부터 선택 가능합니다.'
         );
         return setErrorModalOpen(true);
       }
@@ -357,10 +359,10 @@ const RentalOptions: React.FC<RentalOptionsProps> = ({
                   </LegendItem>
                   <LegendItem>
                     <Dot color='#ccc' /> 예약 불가 날짜 / 오늘 이전 & 오늘 이후
-                    3일
+                    4일
                   </LegendItem>
                   <LegendItem>
-                    <Dot color='#FFA726' /> 오늘 기준 3일 이후부터 선택 가능
+                    <Dot color='#FFA726' /> 오늘 기준 4일 이후부터 선택 가능
                   </LegendItem>
                 </Legend>
                 <Notice>
