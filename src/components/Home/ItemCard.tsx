@@ -221,11 +221,12 @@ const PriceWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
+  margin-top: 5px;
+  margin-left: 10px;
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
+    margin-top: 5px;
+    margin-left: 5px;
   }
 `;
 
