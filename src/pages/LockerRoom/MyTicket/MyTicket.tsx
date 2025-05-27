@@ -7,7 +7,7 @@ import StatsSection from '../../../components/StatsSection';
 import Spinner from '../../../components/Spinner';
 import TicketIllustration from '../../../assets/LockerRoom/TicketIllustration.svg';
 import AddTicketIllustration from '../../../assets/LockerRoom/AddTicketIllustration.svg';
-import CardIcon from '../../../assets/LockerRoom/ClosetIcon.svg';
+import CardIcon from '../../../assets/LockerRoom/AddTicketIllustrations.svg';
 import BarcodeImg from '../../../assets/LockerRoom/barcodeIcon.svg';
 import { getUserTickets, TicketItem } from '../../../api/ticket/ticket';
 
@@ -229,6 +229,12 @@ const TicketCard = styled.div`
 const TicketCardAdd = styled(TicketCard)`
   justify-content: center;
   position: relative;
+  display: flex;
+  width: 100%;
+  height: 160px;
+  border: 1px solid #ddd;
+  overflow: hidden;
+  cursor: pointer;
   &:hover {
     transform: scale(1.02);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
