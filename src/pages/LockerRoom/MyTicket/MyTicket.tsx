@@ -85,7 +85,9 @@ const MyTicket: React.FC = () => {
                   </RemainingBadge>
                   <Left>
                     <SeasonRow>
-                      <SeasonText>2025 SPRING</SeasonText>
+                      <SeasonText>
+                        2025 <YellowText>SPRING</YellowText>
+                      </SeasonText>
                       <CardIconImg src={CardIcon} alt='card icon' />
                     </SeasonRow>
                     <TicketTitle>{name}</TicketTitle>
@@ -283,6 +285,16 @@ const SeasonText = styled.span`
   font-size: 12px;
   font-weight: 700;
   color: #000;
+
+  @media (min-width: 1024px) {
+    font-size: 14px;
+  }
+`;
+
+const YellowText = styled.span`
+  font-size: 12px;
+  font-weight: 700;
+  color: #f6ae24;
 
   @media (min-width: 1024px) {
     font-size: 14px;
