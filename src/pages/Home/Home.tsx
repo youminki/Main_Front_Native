@@ -204,7 +204,6 @@ const Home: React.FC = () => {
           <li>이용권 결제</li>
           <li>대여제품 신청</li>
         </InfoList>
-        <p>Error : 브랜드 목록 오류로 인한 수정 중입니다.</p>
       </ReusableModal>
 
       {/* 공유 링크 복사 안내 모달 */}
