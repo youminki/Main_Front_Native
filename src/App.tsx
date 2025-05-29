@@ -79,6 +79,8 @@ import PaymentComplete from './pages/PaymentComplete';
 import PaymentFail from './pages/Paymentfail.tsx';
 import TicketDetail from './pages/LockerRoom/MyTicket/TicketDetail';
 
+import Link from './pages/Link';
+
 const App: React.FC = () => (
   <Router>
     <Routes>
@@ -211,6 +213,7 @@ const App: React.FC = () => (
         <Route path='/payment-fail' element={<PaymentFail />} />
 
         <Route path='/ticketDetail/:ticketId' element={<TicketDetail />} />
+        <Route path='/Link' element={<Link />} />
       </Route>
     </Routes>
   </Router>
