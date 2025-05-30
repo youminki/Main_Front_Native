@@ -1,5 +1,6 @@
 // src/components/Link.tsx
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import phoneMock from '../assets/Link/phone-mock.png';
 import melpikLogo from '../assets/Link/melpik-logo.svg';
@@ -7,6 +8,8 @@ import couponCard from '../assets/Link/coupon.svg';
 import CheckIcon from '../assets/Link/CheckIcon.svg';
 
 const Link: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <Container>
       <Hero>
@@ -75,7 +78,9 @@ const Link: React.FC = () => {
           </CardText>
           <CouponImage src={couponCard} alt='membership coupon' />
         </CardWrapper>
-        <SubscribeButton>멜픽 구독하러 가기</SubscribeButton>
+        <SubscribeButton onClick={() => navigate('/landing')}>
+          멜픽 구독하러 가기
+        </SubscribeButton>
       </CardSection>
     </Container>
   );
@@ -145,19 +150,18 @@ const Highlight = styled.span`
   font-weight: 800;
 `;
 
-// 여기부터 추가된 DotChar
 const DotChar = styled.span`
   position: relative;
   display: inline-block;
   &::before {
     content: '';
     position: absolute;
-    top: -15px; /* 글자 위로 위치 */
-    left: 50%; /* 가운데 정렬 */
+    top: -15px;
+    left: 50%;
     transform: translateX(-50%);
     width: 12px;
     height: 12px;
-    background: #f6ac36; /* YellowHighlight 색상과 동일 */
+    background: #f6ac36;
     border-radius: 50%;
   }
 `;
@@ -172,11 +176,13 @@ const PinkHighlight = styled.span`
   color: #fd7f61;
   font-weight: 800;
 `;
+
 const SevenHighlight = styled.span`
   color: #000;
   font-weight: 700;
   margin-left: 2px;
 `;
+
 const MiddleHighlight = styled.span`
   color: #000000;
   font-weight: 400;
@@ -187,7 +193,6 @@ const MiddleHighlight = styled.span`
 const SubTitle = styled.h2`
   font-size: 0.8rem;
   font-weight: 500;
-
   color: #555;
 `;
 
@@ -243,7 +248,6 @@ const CheckIconImage = styled.img`
 
 const CardSection = styled.section`
   background: #fff;
-
   border-top-right-radius: 30px;
   margin: auto;
   padding: 40px;
