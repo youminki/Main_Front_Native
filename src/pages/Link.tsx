@@ -88,8 +88,8 @@ export default Link;
 const Container = styled.div`
   max-width: 600px;
   margin: 0 auto;
-  padding: 40px 20px;
-  background-color: #fcf9f1;
+  padding: 5rem 1rem;
+  background-color: #f6efe5;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -187,7 +187,7 @@ const MiddleHighlight = styled.span`
 const SubTitle = styled.h2`
   font-size: 0.8rem;
   font-weight: 500;
-  margin: 0 0 16px;
+
   color: #555;
 `;
 
@@ -244,12 +244,12 @@ const CheckIconImage = styled.img`
 const CardSection = styled.section`
   background: #fff;
 
-  border-top-right-radius: 12px;
+  border-top-right-radius: 30px;
   margin: auto;
   padding: 40px;
 
   @media (min-width: 600px) {
-    padding: 40px;
+    padding: 100px;
   }
 `;
 

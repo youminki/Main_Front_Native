@@ -90,10 +90,10 @@ const App: React.FC = () => (
       <Route path='/login' element={<Login />} />
       <Route path='/ladyLogin' element={<ReadyLogin />} />
       <Route path='/TestLogin' element={<TestLogin />} />
-
       <Route path='/PersonalLink' element={<PersonalLink />} />
       <Route path='/test/payple' element={<PaypleTest />} />
       <Route path='/test/AddCardPayple' element={<AddCardPayple />} />
+      <Route path='/Link' element={<Link />} />
 
       <Route element={<AppLayout />}>
         <Route path='/signup' element={<Signup />} />
@@ -213,7 +213,6 @@ const App: React.FC = () => (
         <Route path='/payment-fail' element={<PaymentFail />} />
 
         <Route path='/ticketDetail/:ticketId' element={<TicketDetail />} />
-        <Route path='/Link' element={<Link />} />
       </Route>
     </Routes>
   </Router>
