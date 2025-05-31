@@ -2,6 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+
 import phoneMock from '../assets/Link/phone-mock.png';
 import melpikLogo from '../assets/Link/melpik-logo.svg';
 import couponCard from '../assets/Link/coupon.svg';
@@ -10,8 +11,19 @@ import CheckIcon from '../assets/Link/CheckIcon.svg';
 const Link: React.FC = () => {
   const navigate = useNavigate();
 
+  // 복사할 코드(예시)
+  const couponCode = 'ABC2QWR345';
+
+  // 클립보드 복사 함수
+  const handleCopy = () => {
+    navigator.clipboard.writeText(couponCode).then(() => {
+      // 복사가 완료되면 간단히 alert을 띄우거나, 원하는 피드백을 줄 수 있습니다.
+    });
+  };
+
   return (
     <Container>
+      {/* ─── 히어로 섹션 ───────────────────────────────────────────────────────────────────── */}
       <Hero>
         <PhoneContainer>
           <PhoneImage src={phoneMock} alt='phone mock' />
@@ -33,6 +45,7 @@ const Link: React.FC = () => {
         </HeroText>
       </Hero>
 
+      {/* ─── 기능 소개 섹션 ───────────────────────────────────────────────────────────────── */}
       <FeatureSection>
         <FeatureTitle>
           브랜드를{' '}
@@ -55,7 +68,7 @@ const Link: React.FC = () => {
           <FeatureItem>
             <CheckIconImage src={CheckIcon} alt='check icon' />
             컨템포러리 브랜드를 다양하게 즐긴 후
-            <SevenHighlight>구매까지</SevenHighlight>
+            <SevenHighlight> 구매까지</SevenHighlight>
           </FeatureItem>
           <FeatureItem>
             <CheckIconImage src={CheckIcon} alt='check icon' />
@@ -65,6 +78,7 @@ const Link: React.FC = () => {
         </FeatureList>
       </FeatureSection>
 
+      {/* ─── 카드 & 구독 섹션 ───────────────────────────────────────────────────────────────── */}
       <CardSection>
         <CardWrapper>
           <CardText>
@@ -78,6 +92,17 @@ const Link: React.FC = () => {
           </CardText>
           <CouponImage src={couponCard} alt='membership coupon' />
         </CardWrapper>
+
+        {/* ─── 코드 입력 레이블 + 읽기 전용 인풋 + 복사 버튼 ─────────────────────────────── */}
+        <CodeInputRow>
+          <CodeLabel>코드 입력</CodeLabel>
+          <InputContainer>
+            <CodeInput type='text' value={couponCode} readOnly />
+            <CopyButton onClick={handleCopy}>복사</CopyButton>
+          </InputContainer>
+        </CodeInputRow>
+        {/* ──────────────────────────────────────────────────────────────────────────────── */}
+
         <SubscribeButton onClick={() => navigate('/landing')}>
           멜픽 구독하러 가기
         </SubscribeButton>
@@ -298,6 +323,76 @@ const CouponImage = styled.img`
   width: 100%;
   max-width: 300px;
 `;
+
+/* ─── 멜픽 구독 코드 입력란 레이블 + 인풋 + 복사 버튼 ───────────────────────────── */
+const CodeInputRow = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+`;
+
+const CodeLabel = styled.label`
+  font-size: 1rem;
+  font-weight: 700;
+  color: #333;
+  width: 80px;
+  text-align: left;
+`;
+
+const InputContainer = styled.div`
+  position: relative;
+
+  max-width: 400px;
+`;
+
+const CodeInput = styled.input`
+  height: 48px;
+  padding: 0 48px 0 12px; /* 오른쪽에 복사 버튼 공간(약 48px) 확보 */
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  background-color: #fdfdfd;
+  color: #333;
+
+  /* readonly 스타일 강조 */
+  &::placeholder {
+    color: #999;
+  }
+
+  /* 포커스 시 테두리 강조 (readonly여도 포커스 가능) */
+  &:focus {
+    border-color: #f6ac36;
+    box-shadow: 0 0 0 2px rgba(246, 172, 54, 0.2);
+  }
+`;
+
+const CopyButton = styled.button`
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 32px;
+  padding: 0 12px;
+  font-size: 0.875rem;
+  background-color: #282828;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.1s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+  &:active {
+    opacity: 0.6;
+  }
+`;
+/* ────────────────────────────────────────────────────────────────────────── */
 
 const SubscribeButton = styled.button`
   width: 100%;
