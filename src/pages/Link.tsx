@@ -359,7 +359,7 @@ const CodeInput = styled.input`
   height: 48px;
   padding: 0 48px 0 12px; /* 오른쪽에 복사 버튼 공간 확보 */
   font-size: 1.3rem;
-  border: 1px solid #ccc;
+  border: 1px solid #000000;
   border-radius: 4px;
   outline: none;
   background-color: #fdfdfd;
