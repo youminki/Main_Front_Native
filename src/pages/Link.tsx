@@ -1,5 +1,5 @@
 // src/components/Link.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -14,10 +14,17 @@ const Link: React.FC = () => {
   // 복사할 코드(예시)
   const couponCode = 'ABC2QWR345';
 
+  // 복사 상태 관리
+  const [isCopied, setIsCopied] = useState(false);
+
   // 클립보드 복사 함수
   const handleCopy = () => {
     navigator.clipboard.writeText(couponCode).then(() => {
-      // 복사가 완료되면 간단히 alert을 띄우거나, 원하는 피드백을 줄 수 있습니다.
+      setIsCopied(true);
+      // 2초 후에 원래 상태로 돌려놓고 싶다면 아래 주석 해제
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
     });
   };
 
@@ -98,7 +105,9 @@ const Link: React.FC = () => {
           <CodeLabel>코드 입력</CodeLabel>
           <InputContainer>
             <CodeInput type='text' value={couponCode} readOnly />
-            <CopyButton onClick={handleCopy}>복사</CopyButton>
+            <CopyButton copied={isCopied} onClick={handleCopy}>
+              {isCopied ? '복사됨' : '복사'}
+            </CopyButton>
           </InputContainer>
         </CodeInputRow>
         {/* ──────────────────────────────────────────────────────────────────────────────── */}
@@ -278,7 +287,7 @@ const CardSection = styled.section`
   padding: 40px;
 
   @media (min-width: 600px) {
-    padding: 100px;
+    padding: 60px;
   }
 `;
 
@@ -334,7 +343,7 @@ const CodeInputRow = styled.div`
 `;
 
 const CodeLabel = styled.label`
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #333;
   width: 80px;
@@ -343,33 +352,41 @@ const CodeLabel = styled.label`
 
 const InputContainer = styled.div`
   position: relative;
-
   max-width: 400px;
 `;
 
 const CodeInput = styled.input`
   height: 48px;
-  padding: 0 48px 0 12px; /* 오른쪽에 복사 버튼 공간(약 48px) 확보 */
-  font-size: 1rem;
+  padding: 0 48px 0 12px; /* 오른쪽에 복사 버튼 공간 확보 */
+  font-size: 1.3rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   outline: none;
   background-color: #fdfdfd;
-  color: #333;
+  font-weight: 400;
+  line-height: 45px;
+  letter-spacing: -0.5px;
+  color: #282828;
 
-  /* readonly 스타일 강조 */
   &::placeholder {
     color: #999;
   }
 
-  /* 포커스 시 테두리 강조 (readonly여도 포커스 가능) */
   &:focus {
     border-color: #f6ac36;
     box-shadow: 0 0 0 2px rgba(246, 172, 54, 0.2);
   }
+
+  @media (max-width: 600px) {
+    font-size: 1rem;
+  }
 `;
 
-const CopyButton = styled.button`
+/**
+ * CopyButton에 `copied`라는 boolean prop을 받아서
+ * 복사 완료 시 배경색을 바꿔줍니다.
+ */
+const CopyButton = styled.button<{ copied: boolean }>`
   position: absolute;
   right: 8px;
   top: 50%;
@@ -377,13 +394,16 @@ const CopyButton = styled.button`
   height: 32px;
   padding: 0 12px;
   font-size: 0.875rem;
-  background-color: #282828;
+  font-weight: 700;
+  background-color: ${({ copied }) => (copied ? '#4caf50' : '#282828')};
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   white-space: nowrap;
-  transition: opacity 0.1s;
+  transition:
+    background-color 0.2s,
+    opacity 0.1s;
 
   &:hover {
     opacity: 0.8;
