@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import phoneMock from '../assets/Link/phone-mock.png';
 import melpikLogo from '../assets/Link/melpik-logo.svg';
-import couponCard from '../assets/Link/coupon.svg';
+import couponCard from '../assets/Link/couponCard.svg';
 import CheckIcon from '../assets/Link/CheckIcon.svg';
 
 const Link: React.FC = () => {
