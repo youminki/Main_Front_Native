@@ -1,4 +1,5 @@
 // src/pages/Home.tsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
@@ -71,6 +72,18 @@ const Home: React.FC = () => {
   const modalId = searchParams.get('id');
   const isModalOpen = Boolean(modalId);
   const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
+
+  // 모달이 열릴 때 body 스크롤 잠금, 닫힐 때 해제
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isModalOpen]);
 
   // 홈 진입 시 로그인 안내 모달 열기
   useEffect(() => {
@@ -313,9 +326,8 @@ const Home: React.FC = () => {
 
 export default Home;
 
-// …styled components (변경 필요 없음)
+// styled components 전체
 
-// styled components…
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -373,6 +385,8 @@ const ModalOverlay = styled.div`
   align-items: center;
   justify-content: center;
   z-index: 2000;
+  /* 모달 바깥으로 스크롤 전파되지 않도록 */
+  overscroll-behavior: contain;
 `;
 
 const ModalBox = styled.div`
@@ -382,6 +396,8 @@ const ModalBox = styled.div`
   height: 100%;
   overflow-y: auto;
   position: relative;
+  /* 모달 내 스크롤이 바깥으로 전파되지 않도록 막음 */
+  overscroll-behavior: contain;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -478,6 +494,7 @@ const OptionNumber = styled.span`
 const OptionText = styled.span`
   margin-left: 4px;
 `;
+
 const InfoList = styled.ol`
   margin: 12px 0 0 16px;
   padding: 0;
