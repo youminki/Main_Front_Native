@@ -24,7 +24,7 @@ const Brand: React.FC = () => {
   const [brands, setBrands] = useState<LocalBrand[]>([]);
 
   // ControlSection, BrandList를 위한 상태
-  const [filter, setFilter] = useState<string>(''); // category 필터
+  const [filter] = useState<string>('');
   const [sortBy, setSortBy] = useState<'group' | 'category'>('group');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -106,9 +106,6 @@ const Brand: React.FC = () => {
           sortBy={sortBy}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          // 만약 category 필터를 UI에서 쓰려면 아래 prop 추가
-          filter={filter}
-          setFilter={setFilter}
         />
 
         {/* BrandList: 그룹핑된 결과를 넘겨줌 */}
