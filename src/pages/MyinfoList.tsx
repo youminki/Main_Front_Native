@@ -6,6 +6,7 @@ import passwordIcon from '../assets/Myinfo/PasswordChangeIcon.svg';
 import deliveryIcon from '../assets/Myinfo/DeliveryAdminIcon.svg';
 import { FaPlus, FaUserCircle, FaLongArrowAltRight } from 'react-icons/fa';
 import ReusableModal2 from '../components/ReusableModal2';
+import ChangePasswordModal from '../components/Myinfo/ChangePasswordModal';
 
 type ModalType = 'info' | 'password' | 'address' | null;
 
@@ -100,19 +101,28 @@ const MyinfoList: React.FC = () => {
         </SectionBody>
       </Section>
 
-      {/* MODAL */}
+      {/* 회원정보 변경 모달 (간단 예시) */}
       <ReusableModal2
-        isOpen={modalType !== null}
+        isOpen={modalType === 'info'}
         onClose={() => setModalType(null)}
-        title={
-          modalType === 'info'
-            ? '회원정보 변경'
-            : modalType === 'password'
-              ? '비밀번호 변경'
-              : '배송지 관리'
-        }
+        title='회원정보 변경'
       >
-        <p>여기에 {modalType} 폼 콘텐츠</p>
+        <p>여기에 회원정보 변경 폼을 구현하세요.</p>
+      </ReusableModal2>
+
+      {/* 비밀번호 변경 모달 (분리된 컴포넌트) */}
+      <ChangePasswordModal
+        isOpen={modalType === 'password'}
+        onClose={() => setModalType(null)}
+      />
+
+      {/* 배송지 관리 모달 (간단 예시) */}
+      <ReusableModal2
+        isOpen={modalType === 'address'}
+        onClose={() => setModalType(null)}
+        title='배송지 관리'
+      >
+        <p>여기에 배송지 관리 폼을 구현하세요.</p>
       </ReusableModal2>
     </PageContainer>
   );
@@ -120,7 +130,7 @@ const MyinfoList: React.FC = () => {
 
 export default MyinfoList;
 
-/* Styled Components */
+/* ─────────────────── Styled Components ─────────────────── */
 const PageContainer = styled.div`
   max-width: 430px;
   margin: 0 auto;
