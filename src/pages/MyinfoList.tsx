@@ -7,6 +7,7 @@ import deliveryIcon from '../assets/Myinfo/DeliveryAdminIcon.svg';
 import { FaPlus, FaUserCircle, FaLongArrowAltRight } from 'react-icons/fa';
 import ReusableModal2 from '../components/ReusableModal2';
 import ChangePasswordModal from '../components/Myinfo/ChangePasswordModal';
+import ChangeAddressModal from '../components/Myinfo/ChangeAddressModal';
 
 type ModalType = 'info' | 'password' | 'address' | null;
 
@@ -116,14 +117,11 @@ const MyinfoList: React.FC = () => {
         onClose={() => setModalType(null)}
       />
 
-      {/* 배송지 관리 모달 (간단 예시) */}
-      <ReusableModal2
+      {/* 배송지 관리 모달 (새로 만든 컴포넌트) */}
+      <ChangeAddressModal
         isOpen={modalType === 'address'}
         onClose={() => setModalType(null)}
-        title='배송지 관리'
-      >
-        <p>여기에 배송지 관리 폼을 구현하세요.</p>
-      </ReusableModal2>
+      />
     </PageContainer>
   );
 };

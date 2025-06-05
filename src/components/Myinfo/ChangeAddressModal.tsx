@@ -1,59 +1,41 @@
-// src/components/ChangePasswordModal.tsx
+// src/components/ChangeAddressModal.tsx
 import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaTimes } from 'react-icons/fa';
 
-interface ChangePasswordModalProps {
+interface ChangeAddressModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
+const ChangeAddressModal: React.FC<ChangeAddressModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  // 입력 상태 관리
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [addressName, setAddressName] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [detailAddress, setDetailAddress] = useState('');
 
-  // 입력값 핸들러
-  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
+  const handleAddressNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setAddressName(e.target.value);
   };
-  const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPhone(e.target.value);
+  const handlePostalCodeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPostalCode(e.target.value);
   };
-  const handleNewPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setNewPassword(e.target.value);
-  };
-  const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setConfirmPassword(e.target.value);
+  const handleDetailAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setDetailAddress(e.target.value);
   };
 
-  // 폼 제출 핸들러
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-
-    // 비밀번호 일치 여부 확인
-    if (newPassword !== confirmPassword) {
-      alert('새 비밀번호와 확인용 비밀번호가 일치하지 않습니다.');
-      return;
-    }
-
-    // TODO: API 연동 로직 (이름, 전화번호, newPassword) 추가
-    console.log({ name, phone, newPassword });
-
-    // 제출 후 모달 닫고 입력 초기화
+    // TODO: API 연동 로직 (배송지명, 우편번호, 상세주소) 추가
+    console.log({ addressName, postalCode, detailAddress });
     onClose();
-    setName('');
-    setPhone('');
-    setNewPassword('');
-    setConfirmPassword('');
+    setAddressName('');
+    setPostalCode('');
+    setDetailAddress('');
   };
 
-  // Esc 키 누르면 모달 닫기
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -72,57 +54,46 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
     <Overlay onClick={onClose}>
       <ModalWrapper onClick={(e) => e.stopPropagation()}>
         <Header>
-          <Title>비밀번호 변경</Title>
+          <Title>배송지 관리</Title>
           <CloseButton onClick={onClose}>
             <FaTimes />
           </CloseButton>
         </Header>
         <Body>
           <FormContainer onSubmit={handleSubmit}>
-            <Label htmlFor='cp-name'>이름</Label>
+            <Label htmlFor='addr-name'>배송지명</Label>
             <Input
-              id='cp-name'
+              id='addr-name'
               type='text'
-              value={name}
-              onChange={handleNameChange}
-              placeholder='이름을 입력하세요'
+              value={addressName}
+              onChange={handleAddressNameChange}
+              placeholder='배송지명을 입력하세요'
               required
             />
 
-            <Label htmlFor='cp-phone'>전화번호</Label>
+            <Label htmlFor='addr-postal'>우편번호</Label>
             <Input
-              id='cp-phone'
-              type='tel'
-              value={phone}
-              onChange={handlePhoneChange}
-              placeholder='휴대전화 번호를 입력하세요'
+              id='addr-postal'
+              type='text'
+              value={postalCode}
+              onChange={handlePostalCodeChange}
+              placeholder='우편번호를 입력하세요'
               required
             />
 
-            <Label htmlFor='cp-new-password'>새 비밀번호</Label>
+            <Label htmlFor='addr-detail'>상세주소</Label>
             <Input
-              id='cp-new-password'
-              type='password'
-              value={newPassword}
-              onChange={handleNewPasswordChange}
-              placeholder='새 비밀번호를 입력하세요'
+              id='addr-detail'
+              type='text'
+              value={detailAddress}
+              onChange={handleDetailAddressChange}
+              placeholder='상세주소를 입력하세요'
               required
             />
 
-            <Label htmlFor='cp-confirm-password'>새 비밀번호 확인</Label>
-            <Input
-              id='cp-confirm-password'
-              type='password'
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
-              placeholder='비밀번호를 한 번 더 입력하세요'
-              required
-            />
-
-            {/* Divider 추가: 버튼 위에 경계선 */}
             <Divider />
 
-            <SubmitBtn type='submit'>비밀번호 재설정</SubmitBtn>
+            <SubmitBtn type='submit'>주소 저장</SubmitBtn>
           </FormContainer>
         </Body>
       </ModalWrapper>
@@ -130,7 +101,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   );
 };
 
-export default ChangePasswordModal;
+export default ChangeAddressModal;
 
 /* ───────────────────────── Styled Components ───────────────────────── */
 
@@ -151,6 +122,7 @@ const ModalWrapper = styled.div`
   width: 100%;
   max-width: 400px;
   background: #fff;
+
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 `;
@@ -192,8 +164,6 @@ const Body = styled.div`
 const FormContainer = styled.form`
   display: flex;
   flex-direction: column;
-  /* 버튼 영역과 위쪽 필드를 분리하기 위한 여백 조절 */
-  margin-bottom: 0;
   gap: 5px;
 `;
 
@@ -208,8 +178,7 @@ const Label = styled.label`
 const Input = styled.input`
   padding: 10px 12px;
   font-size: 14px;
-  border: 1px solid #000000;
-
+  border: 1px solid #000;
   outline: none;
 
   &:focus {
@@ -217,18 +186,16 @@ const Input = styled.input`
   }
 `;
 
-/* 버튼 위에 검은색 경계선을 그어주는 Divider */
 const Divider = styled.div`
   margin: 50px 0 0 0;
   border-top: 1px solid #ccc;
 `;
 
-/* 검은색 테두리를 버튼 위에 추가 */
 const SubmitBtn = styled.button`
   margin-top: 12px;
   width: 100%;
   padding: 12px 0;
-  background: #000000;
+  background: #000;
   color: #fff;
   font-size: 14px;
   font-weight: 800;
