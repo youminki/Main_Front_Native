@@ -10,6 +10,7 @@ import ChangeAddressModal from '../components/Myinfo/ChangeAddressModal';
 import ChangeInfoModal from '../components/Myinfo/ChangeInfoModal';
 import ChangeNicknameModal from '../components/Myinfo/ChangeNicknameModal';
 import ChangeProfileImageModal from '../components/Myinfo/ChangeProfileImageModal';
+import ChangeRefundAccountModal from '../components/Myinfo/ChangeRefundAccountModal';
 
 type ModalType =
   | 'info'
@@ -17,6 +18,7 @@ type ModalType =
   | 'address'
   | 'nickname'
   | 'profileImage'
+  | 'refundAccount'
   | null;
 
 const MENU_ITEMS = [
@@ -94,7 +96,9 @@ const MyinfoList: React.FC = () => {
         <SectionHeader>환불 계좌정보</SectionHeader>
         <SectionBody>
           <AccountText>{account}</AccountText>
-          <ActionBtn>변경</ActionBtn>
+          <ActionBtn onClick={() => setModalType('refundAccount')}>
+            변경
+          </ActionBtn>
         </SectionBody>
       </Section>
 
@@ -143,13 +147,19 @@ const MyinfoList: React.FC = () => {
         isOpen={modalType === 'profileImage'}
         onClose={() => setModalType(null)}
       />
+
+      {/* 환불 계좌정보 변경 모달 */}
+      <ChangeRefundAccountModal
+        isOpen={modalType === 'refundAccount'}
+        onClose={() => setModalType(null)}
+      />
     </PageContainer>
   );
 };
 
 export default MyinfoList;
 
-/* Styled Components for MyinfoList */
+/* ─────────────────── Styled Components for MyinfoList ─────────────────── */
 const PageContainer = styled.div`
   max-width: 430px;
   margin: 0 auto;
@@ -213,15 +223,20 @@ const Nickname = styled.div`
   color: #000;
   margin-top: 4px;
 `;
-const NicknameChange = styled.span`
-  margin-left: 8px;
-  font-size: 11px;
-  color: #007bff;
+const ActionBtn = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 69px;
+  height: 34px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 800;
   cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
 `;
 
 const ContentDivider = styled.div`
@@ -313,21 +328,6 @@ const AccountText = styled.div`
   font-size: 13px;
   font-weight: 800;
   color: #000;
-`;
-const ActionBtn = styled.button`
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  transform: translateY(-50%);
-  width: 69px;
-  height: 34px;
-  background: #000;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
 `;
 
 const StatusText = styled.div`
