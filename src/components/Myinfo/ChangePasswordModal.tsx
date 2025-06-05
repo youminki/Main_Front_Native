@@ -149,7 +149,7 @@ const Overlay = styled.div`
 
 const ModalWrapper = styled.div`
   width: 100%;
-  max-width: 400px;
+  max-width: 300px;
   background: #fff;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);

@@ -5,9 +5,9 @@ import userInfoIcon from '../assets/Myinfo/UserInfoChangeIcon.svg';
 import passwordIcon from '../assets/Myinfo/PasswordChangeIcon.svg';
 import deliveryIcon from '../assets/Myinfo/DeliveryAdminIcon.svg';
 import { FaPlus, FaUserCircle, FaLongArrowAltRight } from 'react-icons/fa';
-import ReusableModal2 from '../components/ReusableModal2';
 import ChangePasswordModal from '../components/Myinfo/ChangePasswordModal';
 import ChangeAddressModal from '../components/Myinfo/ChangeAddressModal';
+import ChangeInfoModal from '../components/Myinfo/ChangeInfoModal';
 
 type ModalType = 'info' | 'password' | 'address' | null;
 
@@ -15,7 +15,7 @@ const MENU_ITEMS = [
   {
     key: 'info',
     title: '회원정보 변경',
-    desc: '이름, 생년, 성별, 휴대전화, 서비스 지역',
+    desc: '이름, 생년월일, 성별, 휴대전화, 서비스 지역',
     iconSrc: userInfoIcon,
   },
   {
@@ -102,22 +102,19 @@ const MyinfoList: React.FC = () => {
         </SectionBody>
       </Section>
 
-      {/* 회원정보 변경 모달 (간단 예시) */}
-      <ReusableModal2
+      {/* 회원정보 변경 모달 */}
+      <ChangeInfoModal
         isOpen={modalType === 'info'}
         onClose={() => setModalType(null)}
-        title='회원정보 변경'
-      >
-        <p>여기에 회원정보 변경 폼을 구현하세요.</p>
-      </ReusableModal2>
+      />
 
-      {/* 비밀번호 변경 모달 (분리된 컴포넌트) */}
+      {/* 비밀번호 변경 모달 */}
       <ChangePasswordModal
         isOpen={modalType === 'password'}
         onClose={() => setModalType(null)}
       />
 
-      {/* 배송지 관리 모달 (새로 만든 컴포넌트) */}
+      {/* 배송지 관리 모달 */}
       <ChangeAddressModal
         isOpen={modalType === 'address'}
         onClose={() => setModalType(null)}

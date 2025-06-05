@@ -1,39 +1,50 @@
-// src/components/ChangeAddressModal.tsx
+// src/components/ChangeInfoModal.tsx
 import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaTimes } from 'react-icons/fa';
 
-interface ChangeAddressModalProps {
+interface ChangeInfoModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const ChangeAddressModal: React.FC<ChangeAddressModalProps> = ({
+const ChangeInfoModal: React.FC<ChangeInfoModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [addressName, setAddressName] = useState('');
-  const [postalCode, setPostalCode] = useState('');
-  const [detailAddress, setDetailAddress] = useState('');
+  const [name, setName] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [gender, setGender] = useState<'male' | 'female' | 'other'>('male');
+  const [phone, setPhone] = useState('');
+  const [serviceArea, setServiceArea] = useState('');
 
-  const handleAddressNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setAddressName(e.target.value);
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
   };
-  const handlePostalCodeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPostalCode(e.target.value);
+  const handleBirthDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setBirthDate(e.target.value);
   };
-  const handleDetailAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setDetailAddress(e.target.value);
+  const handleGenderChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value as 'male' | 'female' | 'other';
+    setGender(val);
+  };
+  const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPhone(e.target.value);
+  };
+  const handleServiceAreaChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setServiceArea(e.target.value);
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    // TODO: API 연동 로직 (배송지명, 우편번호, 상세주소) 추가
-    console.log({ addressName, postalCode, detailAddress });
+    // TODO: API 연동 로직 (이름, 생년일, 성별, 휴대전화, 서비스 지역) 추가
+    console.log({ name, birthDate, gender, phone, serviceArea });
     onClose();
-    setAddressName('');
-    setPostalCode('');
-    setDetailAddress('');
+    setName('');
+    setBirthDate('');
+    setGender('male');
+    setPhone('');
+    setServiceArea('');
   };
 
   useEffect(() => {
@@ -54,46 +65,66 @@ const ChangeAddressModal: React.FC<ChangeAddressModalProps> = ({
     <Overlay onClick={onClose}>
       <ModalWrapper onClick={(e) => e.stopPropagation()}>
         <Header>
-          <Title>배송지 관리</Title>
+          <Title>회원정보 변경</Title>
           <CloseButton onClick={onClose}>
             <FaTimes />
           </CloseButton>
         </Header>
         <Body>
           <FormContainer onSubmit={handleSubmit}>
-            <Label htmlFor='addr-name'>배송지명</Label>
+            <Label htmlFor='info-name'>이름</Label>
             <Input
-              id='addr-name'
+              id='info-name'
               type='text'
-              value={addressName}
-              onChange={handleAddressNameChange}
-              placeholder='배송지명을 입력하세요'
+              value={name}
+              onChange={handleNameChange}
+              placeholder='이름을 입력하세요'
               required
             />
 
-            <Label htmlFor='addr-postal'>우편번호</Label>
+            <Label htmlFor='info-birth'>생년월일</Label>
             <Input
-              id='addr-postal'
-              type='text'
-              value={postalCode}
-              onChange={handlePostalCodeChange}
-              placeholder='우편번호를 입력하세요'
+              id='info-birth'
+              type='date'
+              value={birthDate}
+              onChange={handleBirthDateChange}
               required
             />
 
-            <Label htmlFor='addr-detail'>상세주소</Label>
+            <Label htmlFor='info-gender'>성별</Label>
+            <Select
+              id='info-gender'
+              value={gender}
+              onChange={handleGenderChange}
+            >
+              <option value='male'>남성</option>
+              <option value='female'>여성</option>
+              <option value='other'>기타</option>
+            </Select>
+
+            <Label htmlFor='info-phone'>휴대전화</Label>
             <Input
-              id='addr-detail'
+              id='info-phone'
+              type='tel'
+              value={phone}
+              onChange={handlePhoneChange}
+              placeholder='휴대전화 번호를 입력하세요'
+              required
+            />
+
+            <Label htmlFor='info-area'>서비스 지역</Label>
+            <Input
+              id='info-area'
               type='text'
-              value={detailAddress}
-              onChange={handleDetailAddressChange}
-              placeholder='상세주소를 입력하세요'
+              value={serviceArea}
+              onChange={handleServiceAreaChange}
+              placeholder='서비스 지역을 입력하세요'
               required
             />
 
             <Divider />
 
-            <SubmitBtn type='submit'>주소 저장</SubmitBtn>
+            <SubmitBtn type='submit'>정보 저장</SubmitBtn>
           </FormContainer>
         </Body>
       </ModalWrapper>
@@ -101,7 +132,7 @@ const ChangeAddressModal: React.FC<ChangeAddressModalProps> = ({
   );
 };
 
-export default ChangeAddressModal;
+export default ChangeInfoModal;
 
 /* ───────────────────────── Styled Components ───────────────────────── */
 
@@ -179,6 +210,19 @@ const Input = styled.input`
   padding: 10px 12px;
   font-size: 14px;
   border: 1px solid #000;
+
+  outline: none;
+
+  &:focus {
+    border-color: #f6ae24;
+  }
+`;
+
+const Select = styled.select`
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #000;
+
   outline: none;
 
   &:focus {
