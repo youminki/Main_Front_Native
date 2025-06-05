@@ -8,8 +8,16 @@ import { FaPlus, FaUserCircle, FaLongArrowAltRight } from 'react-icons/fa';
 import ChangePasswordModal from '../components/Myinfo/ChangePasswordModal';
 import ChangeAddressModal from '../components/Myinfo/ChangeAddressModal';
 import ChangeInfoModal from '../components/Myinfo/ChangeInfoModal';
+import ChangeNicknameModal from '../components/Myinfo/ChangeNicknameModal';
+import ChangeProfileImageModal from '../components/Myinfo/ChangeProfileImageModal';
 
-type ModalType = 'info' | 'password' | 'address' | null;
+type ModalType =
+  | 'info'
+  | 'password'
+  | 'address'
+  | 'nickname'
+  | 'profileImage'
+  | null;
 
 const MENU_ITEMS = [
   {
@@ -41,7 +49,7 @@ const MyinfoList: React.FC = () => {
     <PageContainer>
       {/* PROFILE */}
       <ProfileSection>
-        <AvatarWrapper onClick={() => setModalType('info')}>
+        <AvatarWrapper onClick={() => setModalType('profileImage')}>
           <FaUserCircle size={70} color='#999' />
           <PlusBadge>
             <FaPlus size={12} />
@@ -50,9 +58,13 @@ const MyinfoList: React.FC = () => {
         <ProfileBox>
           <ProfileText>
             <Email>goodxx21@styleweex.com</Email>
-            <Nickname>닉네임 : 퍼시몬</Nickname>
+            <Nickname>
+              닉네임 : 퍼시몬{' '}
+              <ActionBtn onClick={() => setModalType('nickname')}>
+                변경
+              </ActionBtn>
+            </Nickname>
           </ProfileText>
-          <ChangeBtn onClick={() => setModalType('info')}>변경</ChangeBtn>
         </ProfileBox>
       </ProfileSection>
 
@@ -119,13 +131,25 @@ const MyinfoList: React.FC = () => {
         isOpen={modalType === 'address'}
         onClose={() => setModalType(null)}
       />
+
+      {/* 닉네임 변경 모달 */}
+      <ChangeNicknameModal
+        isOpen={modalType === 'nickname'}
+        onClose={() => setModalType(null)}
+      />
+
+      {/* 프로필 이미지 변경 모달 */}
+      <ChangeProfileImageModal
+        isOpen={modalType === 'profileImage'}
+        onClose={() => setModalType(null)}
+      />
     </PageContainer>
   );
 };
 
 export default MyinfoList;
 
-/* ─────────────────── Styled Components ─────────────────── */
+/* Styled Components for MyinfoList */
 const PageContainer = styled.div`
   max-width: 430px;
   margin: 0 auto;
@@ -189,20 +213,15 @@ const Nickname = styled.div`
   color: #000;
   margin-top: 4px;
 `;
-const ChangeBtn = styled.button`
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  transform: translateY(-50%);
-  width: 69px;
-  height: 34px;
-  background: #000;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 12px;
-  font-weight: 800;
+const NicknameChange = styled.span`
+  margin-left: 8px;
+  font-size: 11px;
+  color: #007bff;
   cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const ContentDivider = styled.div`
@@ -295,8 +314,20 @@ const AccountText = styled.div`
   font-weight: 800;
   color: #000;
 `;
-const ActionBtn = styled(ChangeBtn)`
+const ActionBtn = styled.button`
+  position: absolute;
+  top: 50%;
   right: 12px;
+  transform: translateY(-50%);
+  width: 69px;
+  height: 34px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
 `;
 
 const StatusText = styled.div`
