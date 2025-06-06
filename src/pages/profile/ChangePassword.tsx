@@ -155,12 +155,6 @@ const Container = styled.div`
   padding: 1rem;
 `;
 
-const Header = styled.h2`
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 24px;
-`;
-
 const Form = styled.form`
   display: flex;
   flex-direction: column;

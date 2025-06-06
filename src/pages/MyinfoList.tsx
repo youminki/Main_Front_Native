@@ -9,8 +9,6 @@ import { FaPlus, FaUserCircle, FaLongArrowAltRight } from 'react-icons/fa';
 import ReusableModal from '../components/ReusableModal';
 import { useNavigate } from 'react-router-dom';
 
-type ModalType = 'refundAccount' | null;
-
 const MENU_ITEMS = [
   {
     key: 'info',
@@ -34,7 +32,6 @@ const MENU_ITEMS = [
 
 const MyinfoList: React.FC = () => {
   const navigate = useNavigate();
-  const [modalType, setModalType] = useState<ModalType>(null);
   const [notifyOn, setNotifyOn] = useState(false);
 
   // 프로필 이미지 클릭 시 “미구현” 모달을 띄우기 위한 상태
@@ -50,8 +47,6 @@ const MyinfoList: React.FC = () => {
     } else if (key === 'address') {
       // 배송지 관리는 비활성화되어 있으므로 클릭 무시
       return;
-    } else {
-      setModalType(key as ModalType);
     }
   };
 
@@ -114,7 +109,7 @@ const MyinfoList: React.FC = () => {
         </SectionBody>
       </Section>
 
-      {/* 프로필 이미지 변경 모달 대신 미구현 메시지 모달 */}
+      {/* 프로필 이미지 클릭 시 미구현 모달 */}
       {isProfilePlaceholderOpen && (
         <ReusableModal
           isOpen={isProfilePlaceholderOpen}

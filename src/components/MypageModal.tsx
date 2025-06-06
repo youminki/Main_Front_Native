@@ -1,4 +1,4 @@
-// src/pages/MypageModal.tsx
+// src/components/MypageModal.tsx
 
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import MypageBox from '../assets/MypageBox.svg';
 import MystyleBox from '../assets/MystyleBox.svg';
-import ReusableModal from '../components/ReusableModal';
 import ReusableModal2 from '../components/ReusableModal2';
 import { logoutUser } from '../api/user/userApi';
 import { Axios } from '../api/Axios';
@@ -31,7 +30,6 @@ type MypageModalProps = {
 const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
-  const [isPlaceholderOpen, setPlaceholderOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -75,15 +73,6 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const handlePlaceholderOpen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setPlaceholderOpen(true);
-  };
-
-  const handlePlaceholderClose = () => {
-    setPlaceholderOpen(false);
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -100,7 +89,7 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
           <Divider />
 
           <ModalContentArea>
-            {/* 첫 번째 이미지: 클릭 시 /MyInfoList로 이동하도록 수정 */}
+            {/* 첫 번째 이미지 클릭 시 /MyInfoList로 이동 */}
             <PlaceholderImage
               src={MypageBox}
               alt='마이페이지 이미지'
@@ -111,7 +100,7 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
               }}
             />
 
-            {/* 두 번째 이미지: 기존처럼 /Mystyle로 이동 */}
+            {/* 두 번째 이미지 클릭 시 /Mystyle로 이동 */}
             <PlaceholderImage
               src={MystyleBox}
               alt='마이스타일 이미지'
@@ -138,16 +127,6 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
         >
           로그아웃을 하시겠습니까?
         </ReusableModal2>
-      )}
-
-      {isPlaceholderOpen && (
-        <ReusableModal
-          isOpen={isPlaceholderOpen}
-          onClose={handlePlaceholderClose}
-          title='준비 중입니다'
-        >
-          아직 구현 전인 기능이에요.
-        </ReusableModal>
       )}
     </>
   );
@@ -186,7 +165,6 @@ const Overlay = styled.div`
 const ModalContainer = styled.div<ModalContainerProps>`
   position: fixed;
   bottom: 0;
-
   transform: translateX(-50%);
   width: 90%;
   max-width: 600px;
@@ -196,6 +174,7 @@ const ModalContainer = styled.div<ModalContainerProps>`
   border-radius: 20px 20px 0 0;
   display: flex;
   flex-direction: column;
+
   animation: ${({ $isClosing }) =>
     $isClosing
       ? css`
