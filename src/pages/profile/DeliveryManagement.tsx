@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom'; // useNavigate import 추가
 import FixedBottomBar from '../../components/FixedBottomBar';
 
 interface AddressItem {
@@ -13,6 +14,8 @@ interface AddressItem {
 const DELIVERY_COUNT = 5;
 
 const DeliveryManagement: React.FC = () => {
+  const navigate = useNavigate(); // navigate 훅 생성
+
   // 5개의 빈 배송지 항목 초기화
   const [addresses, setAddresses] = useState<AddressItem[]>(
     Array.from({ length: DELIVERY_COUNT }, (_, i) => ({
@@ -44,9 +47,11 @@ const DeliveryManagement: React.FC = () => {
     );
   };
 
-  // 수정 버튼 클릭 시 (예: API 호출 혹은 알림)
-  const handleEdit = (item: AddressItem) => {
-    alert(`주소가 수정되었습니다:\n${item.address} ${item.detail}`);
+  // 수정 버튼 클릭 시 /EditAddress로 이동
+  const handleEdit = (index: number) => {
+    // 예시로 AddressItem 데이터나 index를 전달하고 싶다면 state 또는 쿼리 파라미터로 넘길 수 있습니다.
+    // 여기서는 단순히 경로로 이동만 처리합니다.
+    navigate('/EditAddress');
   };
 
   // 모바일 키보드 열림 감지 (BottomBar 숨김 위함)
@@ -101,7 +106,7 @@ const DeliveryManagement: React.FC = () => {
               />
             </InputGroup>
             <ButtonRow>
-              <EditButton onClick={() => handleEdit(item)}>수정</EditButton>
+              <EditButton onClick={() => handleEdit(idx)}>수정</EditButton>
               <DeleteButton onClick={() => clearAddress(idx)}>
                 삭제
               </DeleteButton>
