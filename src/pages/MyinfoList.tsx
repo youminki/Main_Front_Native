@@ -8,7 +8,6 @@ import { FaPlus, FaUserCircle, FaLongArrowAltRight } from 'react-icons/fa';
 import ChangePasswordModal from '../components/Myinfo/ChangePasswordModal';
 import ChangeAddressModal from '../components/Myinfo/ChangeAddressModal';
 import ChangeInfoModal from '../components/Myinfo/ChangeInfoModal';
-import ChangeNicknameModal from '../components/Myinfo/ChangeNicknameModal';
 import ChangeProfileImageModal from '../components/Myinfo/ChangeProfileImageModal';
 import ChangeRefundAccountModal from '../components/Myinfo/ChangeRefundAccountModal';
 
@@ -60,12 +59,7 @@ const MyinfoList: React.FC = () => {
         <ProfileBox>
           <ProfileText>
             <Email>goodxx21@styleweex.com</Email>
-            <Nickname>
-              닉네임 : 퍼시몬{' '}
-              <ActionBtn onClick={() => setModalType('nickname')}>
-                변경
-              </ActionBtn>
-            </Nickname>
+            <Nickname>닉네임 : 퍼시몬 </Nickname>
           </ProfileText>
         </ProfileBox>
       </ProfileSection>
@@ -136,12 +130,6 @@ const MyinfoList: React.FC = () => {
         onClose={() => setModalType(null)}
       />
 
-      {/* 닉네임 변경 모달 */}
-      <ChangeNicknameModal
-        isOpen={modalType === 'nickname'}
-        onClose={() => setModalType(null)}
-      />
-
       {/* 프로필 이미지 변경 모달 */}
       <ChangeProfileImageModal
         isOpen={modalType === 'profileImage'}
@@ -161,10 +149,9 @@ export default MyinfoList;
 
 /* ─────────────────── Styled Components for MyinfoList ─────────────────── */
 const PageContainer = styled.div`
-  max-width: 430px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 16px;
-  font-family: 'NanumSquare Neo OTF';
+  padding: 1rem;
   background: #fff;
 `;
 
