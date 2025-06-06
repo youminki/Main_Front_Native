@@ -5,15 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
 
-import InputField from '../components/InputField';
-import { CustomSelect } from '../components/CustomSelect';
-import Theme from '../styles/Theme';
-import FixedBottomBar from '../components/FixedBottomBar';
-import ReusableModal from '../components/ReusableModal';
-import { regionDistrictData } from '../components/Signup/regionDistrictData';
+import InputField from '../../components/InputField';
+import { CustomSelect } from '../../components/CustomSelect';
+import Theme from '../../styles/Theme';
+import FixedBottomBar from '../../components/FixedBottomBar';
+import ReusableModal from '../../components/ReusableModal';
+import { regionDistrictData } from '../../components/Signup/regionDistrictData';
 
 // userApi에서 가져올 함수들
-import { getMyInfo, updateMyInfo } from '../api/user/userApi';
+import { getMyInfo, updateMyInfo } from '../../api/user/userApi';
 
 export type UpdateProfileFormData = {
   emailId: string;

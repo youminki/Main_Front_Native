@@ -6,18 +6,10 @@ import userInfoIcon from '../assets/Myinfo/UserInfoChangeIcon.svg';
 import passwordIcon from '../assets/Myinfo/PasswordChangeIcon.svg';
 import deliveryIcon from '../assets/Myinfo/DeliveryAdminIcon.svg';
 import { FaPlus, FaUserCircle, FaLongArrowAltRight } from 'react-icons/fa';
-import ChangePasswordModal from '../components/Myinfo/ChangePasswordModal';
-import ChangeAddressModal from '../components/Myinfo/ChangeAddressModal';
-import ChangeProfileImageModal from '../components/Myinfo/ChangeProfileImageModal';
-import ChangeRefundAccountModal from '../components/Myinfo/ChangeRefundAccountModal';
+import ReusableModal from '../components/ReusableModal';
 import { useNavigate } from 'react-router-dom';
 
-type ModalType =
-  | 'password'
-  | 'address'
-  | 'profileImage'
-  | 'refundAccount'
-  | null;
+type ModalType = 'refundAccount' | null;
 
 const MENU_ITEMS = [
   {
@@ -43,13 +35,21 @@ const MENU_ITEMS = [
 const MyinfoList: React.FC = () => {
   const navigate = useNavigate();
   const [modalType, setModalType] = useState<ModalType>(null);
-
   const [notifyOn, setNotifyOn] = useState(false);
+
+  // 프로필 이미지 클릭 시 “미구현” 모달을 띄우기 위한 상태
+  const [isProfilePlaceholderOpen, setProfilePlaceholderOpen] = useState(false);
 
   const handleMenuClick = (key: string) => {
     if (key === 'info') {
-      // 회원정보 변경 메뉴 클릭 시 모달이 아닌 /updateprofile로 이동
+      // 회원정보 변경 클릭 시 /updateprofile로 이동
       navigate('/updateprofile');
+    } else if (key === 'password') {
+      // 비밀번호 변경 클릭 시 /ChangePassword로 이동
+      navigate('/ChangePassword');
+    } else if (key === 'address') {
+      // 배송지 관리는 비활성화되어 있으므로 클릭 무시
+      return;
     } else {
       setModalType(key as ModalType);
     }
@@ -59,7 +59,7 @@ const MyinfoList: React.FC = () => {
     <PageContainer>
       {/* PROFILE */}
       <ProfileSection>
-        <AvatarWrapper onClick={() => setModalType('profileImage')}>
+        <AvatarWrapper onClick={() => setProfilePlaceholderOpen(true)}>
           <FaUserCircle size={70} color='#999' />
           <PlusBadge>
             <FaPlus size={12} />
@@ -78,16 +78,20 @@ const MyinfoList: React.FC = () => {
       {/* MENU LIST */}
       <MenuList>
         {MENU_ITEMS.map(({ key, title, desc, iconSrc }) => (
-          <MenuItem key={key} onClick={() => handleMenuClick(key)}>
+          <MenuItem
+            key={key}
+            onClick={() => handleMenuClick(key)}
+            disabled={key === 'address'}
+          >
             <IconBox>
               <IconImg src={iconSrc} alt={title} />
             </IconBox>
             <TextBox>
-              <MenuTitle>{title}</MenuTitle>
-              <MenuDesc>{desc}</MenuDesc>
+              <MenuTitle disabled={key === 'address'}>{title}</MenuTitle>
+              <MenuDesc disabled={key === 'address'}>{desc}</MenuDesc>
             </TextBox>
-            <Panel>
-              <PickText>PICK</PickText>
+            <Panel disabled={key === 'address'}>
+              <PickText disabled={key === 'address'}>PICK</PickText>
               <FaLongArrowAltRight size={24} />
             </Panel>
           </MenuItem>
@@ -110,29 +114,16 @@ const MyinfoList: React.FC = () => {
         </SectionBody>
       </Section>
 
-      {/* 비밀번호 변경 모달 */}
-      <ChangePasswordModal
-        isOpen={modalType === 'password'}
-        onClose={() => setModalType(null)}
-      />
-
-      {/* 배송지 관리 모달 */}
-      <ChangeAddressModal
-        isOpen={modalType === 'address'}
-        onClose={() => setModalType(null)}
-      />
-
-      {/* 프로필 이미지 변경 모달 */}
-      <ChangeProfileImageModal
-        isOpen={modalType === 'profileImage'}
-        onClose={() => setModalType(null)}
-      />
-
-      {/* 환불 계좌정보 변경 모달 */}
-      <ChangeRefundAccountModal
-        isOpen={modalType === 'refundAccount'}
-        onClose={() => setModalType(null)}
-      />
+      {/* 프로필 이미지 변경 모달 대신 미구현 메시지 모달 */}
+      {isProfilePlaceholderOpen && (
+        <ReusableModal
+          isOpen={isProfilePlaceholderOpen}
+          onClose={() => setProfilePlaceholderOpen(false)}
+          title='준비 중입니다'
+        >
+          아직 구현 전인 기능이에요.
+        </ReusableModal>
+      )}
     </PageContainer>
   );
 };
@@ -207,7 +198,7 @@ const ContentDivider = styled.div`
   width: 100%;
   height: 1px;
   background: #ddd;
-  margin-bottom: 16px;
+  margin: 30px 0;
 `;
 
 const MenuList = styled.div`
@@ -215,15 +206,19 @@ const MenuList = styled.div`
   flex-direction: column;
   gap: 16px;
 `;
-const MenuItem = styled.div`
+
+/** MenuItem 수정: disabled props에 따라 시각/동작 비활성화 */
+const MenuItem = styled.div<{ disabled?: boolean }>`
   display: grid;
   grid-template-columns: 70px 1fr 124px;
   align-items: center;
-  border: 1px solid #ccc;
+  border: 1px solid ${({ disabled }) => (disabled ? '#eee' : '#ccc')};
   border-radius: 0 0 30px 0;
   overflow: hidden;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 `;
+
 const IconBox = styled.div`
   width: 70px;
   height: 100px;
@@ -238,36 +233,39 @@ const IconImg = styled.img`
 const TextBox = styled.div`
   padding: 16px;
 `;
-const MenuTitle = styled.div`
+
+/** MenuTitle과 MenuDesc도 disabled 시 색상을 회색으로 변경 */
+const MenuTitle = styled.div<{ disabled?: boolean }>`
   font-size: 14px;
   font-weight: 700;
-  color: #000;
+  color: ${({ disabled }) => (disabled ? '#aaa' : '#000')};
 `;
-const MenuDesc = styled.div`
+const MenuDesc = styled.div<{ disabled?: boolean }>`
   font-size: 9px;
-  color: #ccc;
+  color: ${({ disabled }) => (disabled ? '#ccc' : '#ccc')};
   margin-top: 4px;
 `;
 
-const Panel = styled.div`
+const Panel = styled.div<{ disabled?: boolean }>`
   width: 124px;
   height: 100px;
-  background: #f6ae24;
+  background: ${({ disabled }) => (disabled ? '#f0f0f0' : '#f6ae24')};
   border-radius: 0 0 30px 0;
   display: flex;
   flex-direction: row;
   align-items: flex-end;
   justify-content: center;
   padding-bottom: 12px;
-  color: #fff;
+  color: ${({ disabled }) => (disabled ? '#999' : '#fff')};
   letter-spacing: 1px;
 `;
-const PickText = styled.div`
+const PickText = styled.div<{ disabled?: boolean }>`
   font-weight: 900;
   font-size: 10px;
   line-height: 11px;
   margin-left: 40px;
   margin-bottom: 6px;
+  color: ${({ disabled }) => (disabled ? '#999' : '#fff')};
 `;
 
 const Section = styled.section`

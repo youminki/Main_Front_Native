@@ -1,3 +1,5 @@
+// src/pages/MypageModal.tsx
+
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -91,16 +93,25 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
           <ModalHandle>
             <HandleBar />
           </ModalHandle>
+
           <ModalHeader>
             <Title>마이페이지</Title>
           </ModalHeader>
           <Divider />
+
           <ModalContentArea>
+            {/* 첫 번째 이미지: 클릭 시 /MyInfoList로 이동하도록 수정 */}
             <PlaceholderImage
               src={MypageBox}
               alt='마이페이지 이미지'
-              onClick={handlePlaceholderOpen}
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+                navigate('/MyInfoList');
+              }}
             />
+
+            {/* 두 번째 이미지: 기존처럼 /Mystyle로 이동 */}
             <PlaceholderImage
               src={MystyleBox}
               alt='마이스타일 이미지'
@@ -111,7 +122,9 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
               }}
             />
           </ModalContentArea>
+
           <Divider />
+
           <LogoutButton onClick={handleLogoutOpen}>로그아웃</LogoutButton>
         </ModalContainer>
       </Overlay>
