@@ -76,6 +76,7 @@ const headerRules: {
       '/ticketDetail/:id',
       '/updateprofile',
       '/ChangePassword',
+      '/DeliveryManagement',
     ],
     variant: 'threeDepth',
     getTitle: getThreeDepthTitle,
@@ -151,6 +152,7 @@ function getThreeDepthTitle(path: string): string {
     'ticketDetail/:id': '이용권 상세',
     '/updateprofile': '내 정보 - 회원정보 변경',
     '/ChangePassword': '내 정보 - 비밀번호 변경',
+    '/DeliveryManagement': '내 정보 - 배송지 관리',
   };
   for (const pattern in map) {
     if (matchPath(pattern, path)) return map[pattern];

@@ -82,6 +82,7 @@ import TicketDetail from './pages/LockerRoom/MyTicket/TicketDetail';
 import Link from './pages/Link';
 import UpdateProfile from './pages/profile/UpdateProfile';
 import ChangePassword from './pages/profile/ChangePassword';
+import DeliveryManagement from './pages/profile/DeliveryManagement';
 
 const App: React.FC = () => (
   <Router>
@@ -100,6 +101,8 @@ const App: React.FC = () => (
       <Route element={<AppLayout />}>
         <Route path='/UpdateProfile' element={<UpdateProfile />} />
         <Route path='/ChangePassword' element={<ChangePassword />} />
+        <Route path='/DeliveryManagement' element={<DeliveryManagement />} />
+
         <Route path='/signup' element={<Signup />} />
         <Route path='/findid' element={<FindId />} />
         <Route path='/findPassword' element={<FindPassword />} />
