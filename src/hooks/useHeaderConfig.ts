@@ -59,6 +59,7 @@ const headerRules: {
       '/customerService/PersonalInformationProcessingPolicyDetail',
       '/customerService/TermsAndConditionsOfUseDetail',
       '/payment/:id',
+      '/EditAddress',
     ],
     variant: 'twoDepth',
     getTitle: getTwoDepthTitle,
@@ -122,6 +123,7 @@ function getTwoDepthTitle(path: string): string {
     '/schedule/reservation1': '스케줄 예약하기',
     '/schedule/reservation2': '스케줄 예약하기',
     '/schedule/reservation3': '스케줄 예약하기',
+    '/EditAddress': '내 정보 - 배송지 관리',
   };
   for (const pattern in map) {
     if (matchPath(pattern, path)) return map[pattern];

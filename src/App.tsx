@@ -83,6 +83,7 @@ import Link from './pages/Link';
 import UpdateProfile from './pages/profile/UpdateProfile';
 import ChangePassword from './pages/profile/ChangePassword';
 import DeliveryManagement from './pages/profile/DeliveryManagement';
+import EditAddress from './pages/profile/EditAddress';
 
 const App: React.FC = () => (
   <Router>
@@ -102,6 +103,7 @@ const App: React.FC = () => (
         <Route path='/UpdateProfile' element={<UpdateProfile />} />
         <Route path='/ChangePassword' element={<ChangePassword />} />
         <Route path='/DeliveryManagement' element={<DeliveryManagement />} />
+        <Route path='/EditAddress' element={<EditAddress />} />
 
         <Route path='/signup' element={<Signup />} />
         <Route path='/findid' element={<FindId />} />
