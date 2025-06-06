@@ -271,3 +271,76 @@ export const getMembershipInfo = async (): Promise<MembershipInfo> => {
   const response = await Axios.get<MembershipInfo>('/user/me/membership');
   return response.data;
 };
+
+/** ────────────────────────────────────────────────────────────────────────── */
+/** 신규 추가: /user/my-info 조회 · 수정, 비밀번호 변경 API 적용 */
+/** ────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * 내 개인정보 조회 응답 타입
+ */
+export interface MyInfoResponse {
+  email: string;
+  nickname: string;
+  birthYear: number;
+  address: string;
+  phoneNumber: string;
+  gender: 'male' | 'female';
+  instagramId: string;
+  name: string;
+  personalWebpage: string;
+}
+
+/**
+ * 내 개인정보 조회
+ * GET /user/my-info
+ */
+export const getMyInfo = async (): Promise<MyInfoResponse> => {
+  const response = await Axios.get<MyInfoResponse>('/user/my-info');
+  return response.data;
+};
+
+/**
+ * 내 개인정보 수정 요청 타입
+ * PATCH /user/my-info
+ * - 수정 가능한 필드: nickname, address, password
+ */
+export interface UpdateMyInfoRequest {
+  nickname?: string;
+  address?: string;
+  password?: string;
+}
+
+/**
+ * 내 개인정보 수정
+ * PATCH /user/my-info
+ */
+export const updateMyInfo = async (
+  data: UpdateMyInfoRequest
+): Promise<MessageResponse> => {
+  const response = await Axios.patch<MessageResponse>('/user/my-info', data);
+  return response.data;
+};
+
+/**
+ * 비밀번호 변경 요청 타입
+ * PATCH /user/change-password
+ */
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+/**
+ * 비밀번호 변경
+ * PATCH /user/change-password
+ */
+export const changePassword = async (
+  data: ChangePasswordRequest
+): Promise<MessageResponse> => {
+  const response = await Axios.patch<MessageResponse>(
+    '/user/change-password',
+    data
+  );
+  return response.data;
+};

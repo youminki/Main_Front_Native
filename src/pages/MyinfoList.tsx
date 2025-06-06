@@ -1,4 +1,5 @@
 // src/pages/MyinfoList.tsx
+
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import userInfoIcon from '../assets/Myinfo/UserInfoChangeIcon.svg';
@@ -7,15 +8,14 @@ import deliveryIcon from '../assets/Myinfo/DeliveryAdminIcon.svg';
 import { FaPlus, FaUserCircle, FaLongArrowAltRight } from 'react-icons/fa';
 import ChangePasswordModal from '../components/Myinfo/ChangePasswordModal';
 import ChangeAddressModal from '../components/Myinfo/ChangeAddressModal';
-import ChangeInfoModal from '../components/Myinfo/ChangeInfoModal';
+// import ChangeInfoModal from '../components/Myinfo/ChangeInfoModal';  // 더 이상 사용하지 않음
 import ChangeProfileImageModal from '../components/Myinfo/ChangeProfileImageModal';
 import ChangeRefundAccountModal from '../components/Myinfo/ChangeRefundAccountModal';
+import { useNavigate } from 'react-router-dom';
 
 type ModalType =
-  | 'info'
   | 'password'
   | 'address'
-  | 'nickname'
   | 'profileImage'
   | 'refundAccount'
   | null;
@@ -42,9 +42,19 @@ const MENU_ITEMS = [
 ];
 
 const MyinfoList: React.FC = () => {
+  const navigate = useNavigate();
   const [modalType, setModalType] = useState<ModalType>(null);
   const [account] = useState('4532**-**-***544 (국민)');
   const [notifyOn, setNotifyOn] = useState(false);
+
+  const handleMenuClick = (key: string) => {
+    if (key === 'info') {
+      // 회원정보 변경 메뉴 클릭 시 모달이 아닌 /updateprofile로 이동
+      navigate('/updateprofile');
+    } else {
+      setModalType(key as ModalType);
+    }
+  };
 
   return (
     <PageContainer>
@@ -59,7 +69,7 @@ const MyinfoList: React.FC = () => {
         <ProfileBox>
           <ProfileText>
             <Email>goodxx21@styleweex.com</Email>
-            <Nickname>닉네임 : 퍼시몬 </Nickname>
+            <Nickname>닉네임 : 퍼시몬</Nickname>
           </ProfileText>
         </ProfileBox>
       </ProfileSection>
@@ -69,7 +79,7 @@ const MyinfoList: React.FC = () => {
       {/* MENU LIST */}
       <MenuList>
         {MENU_ITEMS.map(({ key, title, desc, iconSrc }) => (
-          <MenuItem key={key} onClick={() => setModalType(key as ModalType)}>
+          <MenuItem key={key} onClick={() => handleMenuClick(key)}>
             <IconBox>
               <IconImg src={iconSrc} alt={title} />
             </IconBox>
@@ -111,12 +121,6 @@ const MyinfoList: React.FC = () => {
           </ToggleWrapper>
         </SectionBody>
       </Section>
-
-      {/* 회원정보 변경 모달 */}
-      <ChangeInfoModal
-        isOpen={modalType === 'info'}
-        onClose={() => setModalType(null)}
-      />
 
       {/* 비밀번호 변경 모달 */}
       <ChangePasswordModal

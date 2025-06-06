@@ -1,4 +1,5 @@
 // src/components/InputField.tsx
+
 import React, { useState, forwardRef } from 'react';
 import styled from 'styled-components';
 import Button02 from './Button02';
@@ -14,14 +15,14 @@ type InputFieldProps = {
   onButtonClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   prefix?: string;
   prefixcontent?: string | React.ReactNode;
-  suffixcontent?: string | React.ReactNode; // suffixcontent prop 추가
+  suffixcontent?: string | React.ReactNode;
   as?: React.ElementType;
   useToggle?: boolean;
   options?: string[];
   onSelectChange?: (value: string) => void;
   readOnly?: boolean;
-  [key: string]: any;
   disabledOptions?: string[];
+  [key: string]: any;
 };
 
 function parsePrefixContent(content: string) {
@@ -57,7 +58,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       onButtonClick,
       prefix,
       prefixcontent,
-      suffixcontent, // 비구조화
+      suffixcontent,
       as,
       useToggle = false,
       options,
@@ -106,11 +107,11 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
 
         <InputRow>
           {prefix && <PrefixText>{prefix}</PrefixText>}
-          <InputWrapper>
+          <InputWrapper $readOnly={readOnly}>
             {prefixcontent && renderPrefixContent()}
 
             {options ? (
-              <CustomSelect
+              <StyledSelect
                 id={id}
                 value={selectedOption}
                 onChange={handleSelectChange}
@@ -126,21 +127,21 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                     {option}
                   </option>
                 ))}
-              </CustomSelect>
+              </StyledSelect>
             ) : (
               <Input
                 as={as}
                 type={type}
                 id={id}
                 ref={ref}
-                disabled={readOnly}
+                readOnly={readOnly}
                 {...rest}
               />
             )}
 
             {suffixcontent && renderSuffixContent()}
 
-            {buttonLabel && onButtonClick && (
+            {buttonLabel && onButtonClick && !readOnly && (
               <ButtonWrapper>
                 <Button02 onClick={onButtonClick} color={buttonColor}>
                   {buttonLabel}
@@ -216,7 +217,7 @@ const GraySpan = styled.span`
   color: #999999;
 `;
 
-const InputWrapper = styled.div`
+const InputWrapper = styled.div<{ $readOnly: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -224,6 +225,7 @@ const InputWrapper = styled.div`
   border-radius: 4px;
   height: 57px;
   flex: 1;
+  background-color: ${({ $readOnly }) => ($readOnly ? '#f5f5f5' : 'white')};
 `;
 
 const ButtonWrapper = styled.div`
@@ -242,17 +244,35 @@ const ToggleWrapper = styled.div`
   height: 100%;
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ readOnly?: boolean }>`
   flex: 1;
   height: 100%;
   border: none;
   padding: 0 11px;
   font-size: 13px;
-  background-color: white;
-  color: #000000;
+  background-color: ${({ readOnly }) => (readOnly ? '#f5f5f5' : 'white')};
+  color: ${({ readOnly }) => (readOnly ? '#999999' : '#000000')};
 
   &:disabled {
     color: #999999;
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const StyledSelect = styled(CustomSelect)<{ disabled?: boolean }>`
+  flex: 1;
+  height: 100%;
+  border: none;
+  padding: 0 11px;
+  font-size: 13px;
+  background-color: ${({ disabled }) => (disabled ? '#f5f5f5' : 'white')};
+  color: ${({ disabled }) => (disabled ? '#999999' : '#000000')};
+
+  &:disabled {
     cursor: not-allowed;
   }
 

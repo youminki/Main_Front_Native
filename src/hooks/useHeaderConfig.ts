@@ -74,6 +74,7 @@ const headerRules: {
       '/MyStyle',
       '/MyInfoList',
       '/ticketDetail/:id',
+      '/updateprofile',
     ],
     variant: 'threeDepth',
     getTitle: getThreeDepthTitle,
@@ -147,6 +148,7 @@ function getThreeDepthTitle(path: string): string {
     '/MyStyle': '내 스타일',
     '/MyInfoList': '내 정보',
     'ticketDetail/:id': '이용권 상세',
+    '/updateprofile': '내 정보 - 회원정보 변경',
   };
   for (const pattern in map) {
     if (matchPath(pattern, path)) return map[pattern];
