@@ -121,7 +121,7 @@ const UpdateProfile: React.FC = () => {
 
   // region이 바뀌면 district를 초기화
   useEffect(() => {
-    const subscription = watch((value, { name }) => {
+    const subscription = watch(({ name }) => {
       if (name === 'region') {
         setValue('district', '');
       }

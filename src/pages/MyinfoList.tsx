@@ -8,7 +8,6 @@ import deliveryIcon from '../assets/Myinfo/DeliveryAdminIcon.svg';
 import { FaPlus, FaUserCircle, FaLongArrowAltRight } from 'react-icons/fa';
 import ChangePasswordModal from '../components/Myinfo/ChangePasswordModal';
 import ChangeAddressModal from '../components/Myinfo/ChangeAddressModal';
-// import ChangeInfoModal from '../components/Myinfo/ChangeInfoModal';  // 더 이상 사용하지 않음
 import ChangeProfileImageModal from '../components/Myinfo/ChangeProfileImageModal';
 import ChangeRefundAccountModal from '../components/Myinfo/ChangeRefundAccountModal';
 import { useNavigate } from 'react-router-dom';
@@ -44,7 +43,7 @@ const MENU_ITEMS = [
 const MyinfoList: React.FC = () => {
   const navigate = useNavigate();
   const [modalType, setModalType] = useState<ModalType>(null);
-  const [account] = useState('4532**-**-***544 (국민)');
+
   const [notifyOn, setNotifyOn] = useState(false);
 
   const handleMenuClick = (key: string) => {
@@ -94,17 +93,6 @@ const MyinfoList: React.FC = () => {
           </MenuItem>
         ))}
       </MenuList>
-
-      {/* 환불 계좌정보 */}
-      <Section>
-        <SectionHeader>환불 계좌정보</SectionHeader>
-        <SectionBody>
-          <AccountText>{account}</AccountText>
-          <ActionBtn onClick={() => setModalType('refundAccount')}>
-            변경
-          </ActionBtn>
-        </SectionBody>
-      </Section>
 
       {/* 알림 설정 */}
       <Section>
@@ -214,21 +202,6 @@ const Nickname = styled.div`
   color: #000;
   margin-top: 4px;
 `;
-const ActionBtn = styled.button`
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  transform: translateY(-50%);
-  width: 69px;
-  height: 34px;
-  background: #000;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-`;
 
 const ContentDivider = styled.div`
   width: 100%;
@@ -313,12 +286,6 @@ const SectionBody = styled.div`
   border: 1px solid #eee;
   border-radius: 4px;
   padding: 20px 12px;
-`;
-const AccountText = styled.div`
-  flex: 1;
-  font-size: 13px;
-  font-weight: 800;
-  color: #000;
 `;
 
 const StatusText = styled.div`
