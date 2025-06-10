@@ -2,59 +2,97 @@
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom'; // useNavigate import 추가
+import { useNavigate } from 'react-router-dom';
 import FixedBottomBar from '../../components/FixedBottomBar';
-
-interface AddressItem {
-  id: number;
-  address: string;
-  detail: string;
-}
-
-const DELIVERY_COUNT = 5;
+import {
+  AddressApi,
+  Address,
+  UpdateAddressRequest,
+} from '../../api/address/address';
 
 const DeliveryManagement: React.FC = () => {
-  const navigate = useNavigate(); // navigate 훅 생성
+  const navigate = useNavigate();
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editAddress, setEditAddress] = useState<string>('');
+  const [editDetail, setEditDetail] = useState<string>('');
 
-  // 5개의 빈 배송지 항목 초기화
-  const [addresses, setAddresses] = useState<AddressItem[]>(
-    Array.from({ length: DELIVERY_COUNT }, (_, i) => ({
-      id: i,
-      address: '',
-      detail: '',
-    }))
-  );
-
-  // 입력값 변경 핸들러
-  const updateField = (
-    index: number,
-    field: 'address' | 'detail',
-    value: string
-  ) => {
-    setAddresses((prev) =>
-      prev.map((item, idx) =>
-        idx === index ? { ...item, [field]: value } : item
-      )
-    );
+  // 주소 목록 조회
+  const fetchAddresses = async () => {
+    try {
+      setLoading(true);
+      const list = await AddressApi.getAddresses();
+      setAddresses(list);
+    } catch (err) {
+      console.error('주소 조회 실패:', err);
+      alert('주소 조회 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 해당 인덱스 배송지 초기화
-  const clearAddress = (index: number) => {
-    setAddresses((prev) =>
-      prev.map((item, idx) =>
-        idx === index ? { ...item, address: '', detail: '' } : item
-      )
-    );
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  // 인라인 수정 시작
+  const handleStartEdit = (item: Address) => {
+    setEditingId(item.id);
+    setEditAddress(item.address);
+    setEditDetail(item.addressDetail);
   };
 
-  // 수정 버튼 클릭 시 /EditAddress로 이동
-  const handleEdit = (index: number) => {
-    // 예시로 AddressItem 데이터나 index를 전달하고 싶다면 state 또는 쿼리 파라미터로 넘길 수 있습니다.
-    // 여기서는 단순히 경로로 이동만 처리합니다.
+  // 수정 취소
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditAddress('');
+    setEditDetail('');
+  };
+
+  // 수정 저장
+  const handleSaveEdit = async (id: number) => {
+    if (!editAddress.trim() || !editDetail.trim()) {
+      alert('주소와 상세주소를 모두 입력해주세요.');
+      return;
+    }
+
+    const payload: UpdateAddressRequest = {
+      address: editAddress,
+      addressDetail: editDetail,
+    };
+
+    try {
+      await AddressApi.updateAddress(id, payload);
+      alert('배송지가 업데이트 되었습니다.');
+      setEditingId(null);
+      fetchAddresses();
+    } catch (err) {
+      console.error('주소 수정 실패:', err);
+      alert('배송지 수정 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 주소 삭제
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('정말 이 배송지를 삭제하시겠습니까?')) return;
+
+    try {
+      await AddressApi.deleteAddress(id);
+      alert('배송지가 삭제되었습니다.');
+      fetchAddresses();
+    } catch (err) {
+      console.error('주소 삭제 실패:', err);
+      alert('배송지 삭제 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 신규 등록 페이지로 이동
+  const handleRegister = () => {
     navigate('/EditAddress');
   };
 
-  // 모바일 키보드 열림 감지 (BottomBar 숨김 위함)
+  // 모바일 키보드 열림 감지
   const initialHeight = window.visualViewport
     ? window.visualViewport.height
     : window.innerHeight;
@@ -66,54 +104,74 @@ const DeliveryManagement: React.FC = () => {
         : window.innerHeight;
       setIsKeyboardOpen(vh < initialHeight - 50);
     };
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleResize);
-    } else {
-      window.addEventListener('resize', handleResize);
-    }
-    return () => {
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', handleResize);
-      } else {
-        window.removeEventListener('resize', handleResize);
-      }
-    };
+    const viewport = window.visualViewport ?? window;
+    viewport.addEventListener('resize', handleResize);
+    return () => viewport.removeEventListener('resize', handleResize);
   }, [initialHeight]);
-
-  // 배송지 등록 버튼 클릭 핸들러
-  const handleRegister = () => {
-    alert('배송지가 등록되었습니다.');
-  };
 
   return (
     <>
       <Container>
-        {addresses.map((item, idx) => (
-          <Block key={item.id}>
-            <Title>{idx === 0 ? '배송지 (기본)' : `배송지 ${idx + 1}`}</Title>
-            <InputGroup>
-              <CustomInput
-                type='text'
-                placeholder='도로명/지번을 입력하세요'
-                value={item.address}
-                onChange={(e) => updateField(idx, 'address', e.target.value)}
-              />
-              <CustomInput
-                type='text'
-                placeholder='상세주소를 입력하세요'
-                value={item.detail}
-                onChange={(e) => updateField(idx, 'detail', e.target.value)}
-              />
-            </InputGroup>
-            <ButtonRow>
-              <EditButton onClick={() => handleEdit(idx)}>수정</EditButton>
-              <DeleteButton onClick={() => clearAddress(idx)}>
-                삭제
-              </DeleteButton>
-            </ButtonRow>
-            {idx < DELIVERY_COUNT - 1 && <Separator />}
-          </Block>
-        ))}
+        {loading ? (
+          <p>주소를 불러오는 중...</p>
+        ) : addresses.length === 0 ? (
+          <p>등록된 배송지가 없습니다.</p>
+        ) : (
+          addresses.map((item, idx) => {
+            const isEditing = editingId === item.id;
+            return (
+              <Block key={item.id}>
+                <Title>
+                  {item.isDefault ? '배송지 (기본)' : `배송지 ${idx + 1}`}
+                </Title>
+
+                <InputGroup>
+                  {isEditing ? (
+                    <>
+                      <TextInput
+                        value={editAddress}
+                        onChange={(e) => setEditAddress(e.target.value)}
+                      />
+                      <TextInput
+                        value={editDetail}
+                        onChange={(e) => setEditDetail(e.target.value)}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <ReadOnlyInput readOnly value={item.address} />
+                      <ReadOnlyInput readOnly value={item.addressDetail} />
+                    </>
+                  )}
+                </InputGroup>
+
+                <ButtonRow>
+                  {isEditing ? (
+                    <>
+                      <SaveButton onClick={() => handleSaveEdit(item.id)}>
+                        저장
+                      </SaveButton>
+                      <CancelButton onClick={handleCancelEdit}>
+                        취소
+                      </CancelButton>
+                    </>
+                  ) : (
+                    <>
+                      <EditButton onClick={() => handleStartEdit(item)}>
+                        수정
+                      </EditButton>
+                      <DeleteButton onClick={() => handleDelete(item.id)}>
+                        삭제
+                      </DeleteButton>
+                    </>
+                  )}
+                </ButtonRow>
+
+                {idx < addresses.length - 1 && <Separator />}
+              </Block>
+            );
+          })
+        )}
       </Container>
 
       {!isKeyboardOpen && (
@@ -160,7 +218,20 @@ const InputGroup = styled.div`
   gap: 4px;
 `;
 
-const CustomInput = styled.input`
+const ReadOnlyInput = styled.input`
+  width: 100%;
+  height: 57px;
+  padding-left: 16px;
+  box-sizing: border-box;
+  background: #f9f9f9;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 14px;
+  color: #000000;
+`;
+
+const TextInput = styled.input`
   width: 100%;
   height: 57px;
   padding-left: 16px;
@@ -171,11 +242,6 @@ const CustomInput = styled.input`
   font-size: 13px;
   line-height: 14px;
   color: #000000;
-
-  &::placeholder {
-    font-weight: 400;
-    color: #999999;
-  }
 
   &:focus {
     outline: none;
@@ -212,6 +278,32 @@ const DeleteButton = styled.button`
   font-size: 14px;
   line-height: 15px;
   color: #000000;
+  cursor: pointer;
+`;
+
+const SaveButton = styled.button`
+  width: 91px;
+  height: 46px;
+  background: #28a745;
+  border: none;
+  border-radius: 5px;
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 15px;
+  color: #ffffff;
+  cursor: pointer;
+`;
+
+const CancelButton = styled.button`
+  width: 91px;
+  height: 46px;
+  background: #dc3545;
+  border: none;
+  border-radius: 5px;
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 15px;
+  color: #ffffff;
   cursor: pointer;
 `;
 

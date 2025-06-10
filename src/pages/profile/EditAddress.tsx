@@ -4,24 +4,43 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import FixedBottomBar from '../../components/FixedBottomBar';
+import { AddressApi, CreateAddressRequest } from '../../api/address/address';
 
 const EditAddress: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
   const [deliveryMessage, setDeliveryMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = () => {
-    // TODO: 주소 검색 API 호출 로직 추가
+    // TODO: 주소 검색 API 호출 로직 추가 (예: Daum 우편번호 서비스)
     alert(`주소 검색: ${searchQuery}`);
   };
 
-  const handleSave = () => {
-    // TODO: 저장 로직 추가
-    alert(
-      `저장된 주소:\n${searchQuery}\n상세: ${detailAddress}\n메시지: ${deliveryMessage}`
-    );
-    navigate(-1);
+  const handleSave = async () => {
+    if (!searchQuery.trim() || !detailAddress.trim()) {
+      alert('주소와 상세주소를 모두 입력해주세요.');
+      return;
+    }
+
+    setLoading(true);
+    const payload: CreateAddressRequest = {
+      address: searchQuery,
+      addressDetail: detailAddress,
+    };
+
+    try {
+      const result = await AddressApi.createAddress(payload);
+      // 필요하다면 deliveryMessage는 로컬 상태나 다른 API로 저장 처리
+      alert(`주소가 등록되었습니다!\nID: ${result.id}`);
+      navigate(-1);
+    } catch (error: any) {
+      console.error('주소 등록 실패:', error);
+      alert('주소 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,9 +86,10 @@ const EditAddress: React.FC = () => {
       {/* 하단 고정 바: 저장 버튼 */}
       <FixedBottomBar
         type='button'
-        text='등록하기'
+        text={loading ? '등록 중...' : '등록하기'}
         color='black'
         onClick={handleSave}
+        disabled={loading}
       />
     </Container>
   );
@@ -79,10 +99,6 @@ export default EditAddress;
 
 /* Styled Components */
 
-/**
- * Container: 페이지 전체를 감싸는 컨테이너.
- * 화면 상단부터 세로로 쌓이며, 하단 FixedBottomBar와 겹치지 않도록 padding-bottom 확보
- */
 const Container = styled.div`
   max-width: 600px;
   margin: 0 auto;
@@ -92,18 +108,12 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-/**
- * ContentWrapper: 주요 입력 폼 요소들을 세로로 쌓아주는 래퍼
- */
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
 `;
 
-/**
- * FieldTitle: "배송지 입력 *" 타이틀
- */
 const FieldTitle = styled.div`
   font-weight: 700;
   font-size: 10px;
@@ -112,11 +122,6 @@ const FieldTitle = styled.div`
   margin-bottom: 8px;
 `;
 
-/**
- * SearchWrapper: 검색 입력 + 버튼을 하나의 테두리로 감싸는 컨테이너
- *  – flex로 input과 button을 가로로 배치
- *  – 부모에만 border, border-radius를 주어 하나의 박스처럼 보이게 함
- */
 const SearchWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -125,17 +130,12 @@ const SearchWrapper = styled.div`
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin-bottom: 16px; /* 다음 요소와 간격 */
+  margin-bottom: 16px;
 `;
 
-/**
- * SearchInput: SearchWrapper 안의 실제 텍스트 입력란
- *  – 테두리 제거 (부모에서 테두리를 대신 담당)
- *  – 좌측 패딩만 줌
- */
 const SearchInput = styled.input`
   flex: 1;
-  height: 100%; /* 부모 높이(57px)에 맞춤 */
+  height: 100%;
   padding-left: 16px;
   box-sizing: border-box;
   background: transparent;
@@ -155,13 +155,9 @@ const SearchInput = styled.input`
   }
 `;
 
-/**
- * SearchButton: SearchWrapper 안의 버튼
- *  – 테두리 제거, 배경색, 오른쪽만 둥글게
- */
 const SearchButton = styled.button`
   width: 69px;
-  height: 34px; /* 부모 높이(57px)에 맞춤 */
+  height: 34px;
   margin-right: 20px;
   background: #f6ae24;
   border: none;
@@ -177,10 +173,6 @@ const SearchButton = styled.button`
   }
 `;
 
-/**
- * DetailInput: 상세주소 입력란
- *  – SearchWrapper와 같은 높이(57px), 회색 테두리, 둥근 모서리
- */
 const DetailInput = styled.input`
   width: 100%;
   height: 57px;
@@ -193,7 +185,7 @@ const DetailInput = styled.input`
   font-size: 13px;
   line-height: 14px;
   color: #000;
-  margin-bottom: 24px; /* 다음 요소와 간격 */
+  margin-bottom: 24px;
 
   &::placeholder {
     color: #ddd;
@@ -205,9 +197,6 @@ const DetailInput = styled.input`
   }
 `;
 
-/**
- * MessageTitle: "배송 메세지 (선택)" 타이틀
- */
 const MessageTitle = styled.div`
   font-weight: 700;
   font-size: 10px;
@@ -216,10 +205,6 @@ const MessageTitle = styled.div`
   margin-bottom: 8px;
 `;
 
-/**
- * MessageInput: 배송 메시지 입력란
- *  – 높이 57px, 회색 테두리, 둥근 모서리
- */
 const MessageInput = styled.input`
   width: 100%;
   height: 57px;
@@ -244,9 +229,6 @@ const MessageInput = styled.input`
   }
 `;
 
-/**
- * Separator: 구분선
- */
 const Separator = styled.div`
   width: 100%;
   height: 1px;
