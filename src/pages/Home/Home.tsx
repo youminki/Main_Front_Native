@@ -1,5 +1,3 @@
-// src/pages/Home.tsx
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
@@ -27,26 +25,21 @@ const ITEMS_PER_LOAD = 20;
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const [searchParams, setSearchParams] = useSearchParams();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // 로그인 후 안내 모달
+  // 로그인·공유 모달
   const [isLoginNoticeOpen, setLoginNoticeOpen] = useState(false);
+  const [isShareModalOpen, setShareModalOpen] = useState(false);
   const showNotice = location.state?.showNotice;
 
-  // 공유 모달 상태
-  const [isShareModalOpen, setShareModalOpen] = useState(false);
-
-  // 모바일 뷰 여부
+  // 뷰포트 & 컬럼
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
   useEffect(() => {
     const onResize = () => setIsMobileView(window.innerWidth < 768);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
-
-  // 컬럼 수
   const [viewCols, setViewCols] = useState(isMobileView ? 2 : 4);
   useEffect(() => {
     setViewCols(isMobileView ? 2 : 4);
@@ -63,7 +56,8 @@ const Home: React.FC = () => {
     searchParams.get('search') || ''
   );
 
-  // 제품 & 페이징
+  // 제품 데이터
+  const [allProducts, setAllProducts] = useState<ProductListItem[]>([]);
   const [products, setProducts] = useState<ProductListItem[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -73,24 +67,46 @@ const Home: React.FC = () => {
   const isModalOpen = Boolean(modalId);
   const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
 
-  // 모달이 열릴 때 body 스크롤 잠금, 닫힐 때 해제
+  // 최초 진입 시 전체 제품 한 번만 불러오기
   useEffect(() => {
-    if (isModalOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isModalOpen]);
+    setIsLoading(true);
+    (async () => {
+      try {
+        const prods = await getProducts('all');
+        setAllProducts(prods);
+        setProducts(prods);
+      } catch (err) {
+        console.error('제품 데이터를 불러오는데 실패했습니다:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, []);
 
-  // 홈 진입 시 로그인 안내 모달 열기
+  // 카테고리 변경 시 로컬 필터링
   useEffect(() => {
-    if (showNotice) {
-      setLoginNoticeOpen(true);
-    }
-  }, [showNotice]);
+    if (allProducts.length === 0) return;
+    const key = selectedCategory === 'Entire' ? 'all' : selectedCategory;
+    const filtered =
+      key === 'all'
+        ? allProducts
+        : allProducts.filter((p) => p.category === key);
+    setProducts(filtered);
+    setPage(1);
+  }, [selectedCategory, allProducts]);
+
+  // 스크롤 최상단 이동: 카테고리 변경 또는 검색 초기화 시
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [selectedCategory, searchQuery]);
+
+  // 이미지 프리로딩
+  useEffect(() => {
+    allProducts.forEach((p) => {
+      const img = new Image();
+      img.src = p.image;
+    });
+  }, [allProducts]);
 
   // URL 동기화
   useEffect(() => {
@@ -100,30 +116,20 @@ const Home: React.FC = () => {
     setSearchQuery(s);
   }, [searchParams]);
 
-  // 제품 로드 (카테고리 변경 시)
+  // body 스크롤 잠금
   useEffect(() => {
-    const categoryKey =
-      selectedCategory === 'Entire' ? 'all' : selectedCategory;
-    setIsLoading(true);
-    (async () => {
-      try {
-        const prods = await getProducts(categoryKey);
-        setProducts(
-          categoryKey === 'all'
-            ? prods
-            : prods.filter((p) => p.category === categoryKey)
-        );
-        setPage(1);
-        window.scrollTo({ top: 0 });
-      } catch (err) {
-        console.error('제품 데이터를 불러오는데 실패했습니다:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [selectedCategory]);
+    document.body.style.overflow = isModalOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isModalOpen]);
 
-  // 필터 & 무한스크롤 준비
+  // 로그인 안내 모달
+  useEffect(() => {
+    if (showNotice) setLoginNoticeOpen(true);
+  }, [showNotice]);
+
+  // 필터 & 무한스크롤
   const filtered = products.filter(
     (item) =>
       item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -139,7 +145,7 @@ const Home: React.FC = () => {
         window.innerHeight + window.scrollY >=
         document.documentElement.scrollHeight - 100
       ) {
-        setPage((prev) => prev + 1);
+        setPage((p) => p + 1);
       }
     };
     window.addEventListener('scroll', onScroll);
@@ -156,9 +162,7 @@ const Home: React.FC = () => {
     isLiked: p.isLiked,
   }));
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  // 상세 모달 핸들러
+  // 모달 핸들러
   const handleOpenModal = (id: string) => {
     const params: any = {
       ...(searchParams.get('categori') && { categori: selectedCategory }),
@@ -181,37 +185,33 @@ const Home: React.FC = () => {
   };
   const colOptions = isMobileView ? [1, 2, 3] : [4, 5, 6];
 
-  // 공유하기 핸들러
+  // 공유하기
   const handleShare = async () => {
-    const shareData = {
-      title: document.title,
-      url: window.location.href,
-    };
+    const shareData = { title: document.title, url: window.location.href };
     if (navigator.share) {
       try {
         await navigator.share(shareData);
-      } catch (err) {
-        console.error('공유 실패', err);
+      } catch {
+        console.error('공유 실패');
       }
     } else {
       try {
         await navigator.clipboard.writeText(shareData.url);
         setShareModalOpen(true);
-      } catch (err) {
-        console.error('클립보드 복사 실패', err);
+      } catch {
+        console.error('클립보드 복사 실패');
       }
     }
   };
 
   return (
     <MainContainer>
-      {/* 로그인 안내 모달 */}
+      {/* 로그인 안내 */}
       <ReusableModal
         isOpen={isLoginNoticeOpen}
         onClose={() => setLoginNoticeOpen(false)}
         title='멜픽 - 이용안내'
       >
-        <p>멜픽 서비스에서 대여 이용 시 아래 순서로 진행하세요:</p>
         <InfoList>
           <li>결제카드 등록</li>
           <li>이용권 결제</li>
@@ -219,7 +219,7 @@ const Home: React.FC = () => {
         </InfoList>
       </ReusableModal>
 
-      {/* 공유 링크 복사 안내 모달 */}
+      {/* 공유 안내 */}
       <ReusableModal
         isOpen={isShareModalOpen}
         onClose={() => setShareModalOpen(false)}
@@ -235,10 +235,13 @@ const Home: React.FC = () => {
           setSearchQuery('');
           setSearchParams({ categori: cat }, { replace: true });
         }}
-        onCategoryClick={() => setSearchQuery('')}
+        onCategoryClick={() => {
+          setSearchQuery('');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
       />
 
-      {/* 필터 및 열 선택 */}
+      {/* 필터 & 열 선택 */}
       <ControlsContainer ref={menuRef}>
         <DropdownToggle onClick={() => setMenuOpen((o) => !o)}>
           <FaTh size={20} />
@@ -260,7 +263,7 @@ const Home: React.FC = () => {
         )}
       </ControlsContainer>
 
-      {/* 제품 리스트 or 로딩 스피너 */}
+      {/* 리스트 또는 스피너 */}
       <ContentWrapper>
         {isLoading ? (
           <Spinner />
@@ -273,11 +276,11 @@ const Home: React.FC = () => {
         )}
       </ContentWrapper>
 
-      {/* 푸터 */}
       <Footer />
 
-      {/* 스크롤 탑 버튼 */}
-      <ScrollToTopButton onClick={scrollToTop}>
+      <ScrollToTopButton
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      >
         <ArrowIconImg src={ArrowIconSvg} alt='위로 이동' />
       </ScrollToTopButton>
 
@@ -325,7 +328,6 @@ const Home: React.FC = () => {
 };
 
 export default Home;
-
 // styled components 전체
 
 const MainContainer = styled.div`
