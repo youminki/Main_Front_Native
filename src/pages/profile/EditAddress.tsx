@@ -1,9 +1,8 @@
-// src/pages/Profile/EditAddress.tsx
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import FixedBottomBar from '../../components/FixedBottomBar';
+import AddressSearchModal from '../../components/AddressSearchModal';
 import { AddressApi, CreateAddressRequest } from '../../api/address/address';
 
 const EditAddress: React.FC = () => {
@@ -13,9 +12,10 @@ const EditAddress: React.FC = () => {
   const [deliveryMessage, setDeliveryMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+
   const handleSearch = () => {
-    // TODO: 주소 검색 API 호출 로직 추가 (예: Daum 우편번호 서비스)
-    alert(`주소 검색: ${searchQuery}`);
+    setSearchModalOpen(true);
   };
 
   const handleSave = async () => {
@@ -32,7 +32,6 @@ const EditAddress: React.FC = () => {
 
     try {
       const result = await AddressApi.createAddress(payload);
-      // 필요하다면 deliveryMessage는 로컬 상태나 다른 API로 저장 처리
       alert(`주소가 등록되었습니다!\nID: ${result.id}`);
       navigate(-1);
     } catch (error: any) {
@@ -49,13 +48,14 @@ const EditAddress: React.FC = () => {
         {/* 타이틀 */}
         <FieldTitle>배송지 입력 *</FieldTitle>
 
-        {/* 검색 입력+버튼: SearchWrapper 안에서 input과 button을 flex로 배치 */}
+        {/* 검색 입력+버튼 */}
         <SearchWrapper>
           <SearchInput
             type='text'
             placeholder='주소를 검색 하세요'
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            readOnly
+            onClick={handleSearch}
           />
           <SearchButton onClick={handleSearch}>검색</SearchButton>
         </SearchWrapper>
@@ -79,9 +79,18 @@ const EditAddress: React.FC = () => {
           onChange={(e) => setDeliveryMessage(e.target.value)}
         />
 
-        {/* 구분선 */}
         <Separator />
       </ContentWrapper>
+
+      {/* 주소 검색 모달 */}
+      <AddressSearchModal
+        isOpen={searchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+        onSelect={(addr: string) => {
+          setSearchQuery(addr);
+          setSearchModalOpen(false);
+        }}
+      />
 
       {/* 하단 고정 바: 저장 버튼 */}
       <FixedBottomBar
@@ -98,7 +107,6 @@ const EditAddress: React.FC = () => {
 export default EditAddress;
 
 /* Styled Components */
-
 const Container = styled.div`
   max-width: 600px;
   margin: 0 auto;

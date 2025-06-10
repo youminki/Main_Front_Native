@@ -1,9 +1,8 @@
-// src/pages/DeliveryManagement.tsx
-
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import FixedBottomBar from '../../components/FixedBottomBar';
+import AddressSearchModal from '../../components/AddressSearchModal';
 import {
   AddressApi,
   Address,
@@ -17,6 +16,10 @@ const DeliveryManagement: React.FC = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editAddress, setEditAddress] = useState<string>('');
   const [editDetail, setEditDetail] = useState<string>('');
+  const [editMessage, setEditMessage] = useState<string>('');
+
+  // 주소 검색 모달 state
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
 
   // 주소 목록 조회
   const fetchAddresses = async () => {
@@ -41,6 +44,7 @@ const DeliveryManagement: React.FC = () => {
     setEditingId(item.id);
     setEditAddress(item.address);
     setEditDetail(item.addressDetail);
+    setEditMessage((item as any).deliveryMessage || '');
   };
 
   // 수정 취소
@@ -48,6 +52,7 @@ const DeliveryManagement: React.FC = () => {
     setEditingId(null);
     setEditAddress('');
     setEditDetail('');
+    setEditMessage('');
   };
 
   // 수정 저장
@@ -57,9 +62,10 @@ const DeliveryManagement: React.FC = () => {
       return;
     }
 
-    const payload: UpdateAddressRequest = {
+    const payload: UpdateAddressRequest & { deliveryMessage?: string } = {
       address: editAddress,
       addressDetail: editDetail,
+      deliveryMessage: editMessage,
     };
 
     try {
@@ -109,6 +115,11 @@ const DeliveryManagement: React.FC = () => {
     return () => viewport.removeEventListener('resize', handleResize);
   }, [initialHeight]);
 
+  // 주소 검색 실행
+  const handleSearch = () => {
+    setSearchModalOpen(true);
+  };
+
   return (
     <>
       <Container>
@@ -128,19 +139,33 @@ const DeliveryManagement: React.FC = () => {
                 <InputGroup>
                   {isEditing ? (
                     <>
-                      <TextInput
-                        value={editAddress}
-                        onChange={(e) => setEditAddress(e.target.value)}
-                      />
-                      <TextInput
+                      <SearchWrapper>
+                        <SearchInput
+                          value={editAddress}
+                          readOnly
+                          onClick={handleSearch}
+                        />
+                        <SearchButton onClick={handleSearch}>검색</SearchButton>
+                      </SearchWrapper>
+                      <DetailInput
                         value={editDetail}
                         onChange={(e) => setEditDetail(e.target.value)}
+                      />
+                      <MessageTitle>배송 메시지 (선택)</MessageTitle>
+                      <MessageInput
+                        value={editMessage}
+                        placeholder='배송 시 전달할 내용을 입력하세요'
+                        onChange={(e) => setEditMessage(e.target.value)}
                       />
                     </>
                   ) : (
                     <>
                       <ReadOnlyInput readOnly value={item.address} />
                       <ReadOnlyInput readOnly value={item.addressDetail} />
+                      <ReadOnlyInput
+                        readOnly
+                        value={(item as any).deliveryMessage || ''}
+                      />
                     </>
                   )}
                 </InputGroup>
@@ -174,6 +199,16 @@ const DeliveryManagement: React.FC = () => {
         )}
       </Container>
 
+      {/* 주소 검색 모달 */}
+      <AddressSearchModal
+        isOpen={searchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+        onSelect={(addr: string) => {
+          setEditAddress(addr);
+          setSearchModalOpen(false);
+        }}
+      />
+
       {!isKeyboardOpen && (
         <FixedBottomBar
           type='button'
@@ -189,7 +224,6 @@ const DeliveryManagement: React.FC = () => {
 export default DeliveryManagement;
 
 /* Styled Components */
-
 const Container = styled.div`
   max-width: 600px;
   margin: 0 auto;
@@ -209,7 +243,7 @@ const Title = styled.div`
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
-  color: #000000;
+  color: #000;
 `;
 
 const InputGroup = styled.div`
@@ -224,28 +258,100 @@ const ReadOnlyInput = styled.input`
   padding-left: 16px;
   box-sizing: border-box;
   background: #f9f9f9;
-  border: 1px solid #dddddd;
+  border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 13px;
   line-height: 14px;
-  color: #000000;
+  color: #000;
 `;
 
-const TextInput = styled.input`
+const SearchWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 57px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+`;
+
+const SearchInput = styled.input`
+  flex: 1;
+  height: 100%;
+  padding-left: 16px;
+  background: transparent;
+  border: none;
+  font-size: 13px;
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const SearchButton = styled.button`
+  width: 69px;
+  height: 34px;
+  margin-right: 20px;
+  background: #f6ae24;
+  border: none;
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: 12px;
+  color: #fff;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+  }
+`;
+
+const DetailInput = styled.input`
   width: 100%;
   height: 57px;
   padding-left: 16px;
   box-sizing: border-box;
-  background: #ffffff;
-  border: 1px solid #dddddd;
+  background: #fff;
+  border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 13px;
   line-height: 14px;
-  color: #000000;
 
   &:focus {
     outline: none;
-    border-color: #000000;
+    border-color: #000;
+  }
+`;
+
+const MessageTitle = styled.div`
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 11px;
+  color: #000;
+  margin: 10px 0;
+`;
+
+const MessageInput = styled.input`
+  width: 100%;
+  height: 57px;
+  padding-left: 16px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: #000;
+  }
+`;
+
+const buttonHover = css`
+  &:hover {
+    transform: translateY(-2px) scale(1.03);
+    transition: transform 0.2s;
   }
 `;
 
@@ -258,58 +364,57 @@ const ButtonRow = styled.div`
 const EditButton = styled.button`
   width: 91px;
   height: 46px;
-  background: #000000;
+  background: #000;
+  color: #fff;
   border: none;
   border-radius: 5px;
   font-weight: 800;
   font-size: 14px;
-  line-height: 15px;
-  color: #ffffff;
   cursor: pointer;
+  ${buttonHover}
 `;
 
 const DeleteButton = styled.button`
   width: 91px;
   height: 46px;
-  background: #ffffff;
-  border: 1px solid #dddddd;
+  background: #fff;
+  border: 1px solid #ddd;
   border-radius: 5px;
   font-weight: 800;
   font-size: 14px;
-  line-height: 15px;
-  color: #000000;
   cursor: pointer;
+  ${buttonHover}
 `;
 
 const SaveButton = styled.button`
   width: 91px;
   height: 46px;
   background: #28a745;
+  color: #fff;
   border: none;
   border-radius: 5px;
   font-weight: 800;
   font-size: 14px;
-  line-height: 15px;
-  color: #ffffff;
   cursor: pointer;
+  ${buttonHover}
 `;
 
 const CancelButton = styled.button`
   width: 91px;
   height: 46px;
   background: #dc3545;
+  color: #fff;
   border: none;
   border-radius: 5px;
   font-weight: 800;
   font-size: 14px;
-  line-height: 15px;
-  color: #ffffff;
   cursor: pointer;
+  ${buttonHover}
 `;
 
 const Separator = styled.div`
   width: 100%;
   height: 1px;
-  background: #eeeeee;
+  background: #eee;
   margin: 30px 0;
 `;
