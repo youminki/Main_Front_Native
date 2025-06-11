@@ -272,7 +272,7 @@ const UpdateProfile: React.FC = () => {
                 {...register('region')}
               >
                 <option value='' disabled>
-                  시/도 선택
+                  시 선택
                 </option>
                 {Object.keys(regionDistrictData).map((reg) => (
                   <option key={reg} value={reg}>
