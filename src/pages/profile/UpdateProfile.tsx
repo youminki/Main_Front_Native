@@ -77,47 +77,96 @@ const UpdateProfile: React.FC = () => {
     };
   }, [initialHeight]);
 
+  // region 변경 시 district 초기화: watch로 region 값 관찰
+  const watchedRegion = watch('region');
+  useEffect(() => {
+    // region이 바뀔 때마다 district를 빈값으로
+    setValue('district', '');
+  }, [watchedRegion, setValue]);
+
   // 백엔드에서 /user/my-info 가져와서 폼 초기화
   useEffect(() => {
     (async () => {
       try {
         const info = await getMyInfo();
 
-        // address 문자열에 여러 공백 종류나 특수 구분자 등이 있을 수 있으므로
-        // 1) non-breaking space(\u00A0) 등을 일반 공백으로 교체
-        // 2) 쉼표, 슬래시 등으로 구분되어 온다면 이들도 공백으로 대체
-        // 3) 연속된 공백이나 탭 등을 하나의 공백으로 축소
-        // 4) 양쪽 trim
-        const rawAddress = info.address || '';
+        // 1) 주소 normalization: 각종 공백 문자와 구분자 제거/통일
+        const rawAddress: string = info.address || '';
         const normalized = rawAddress
-          .replace(/\u00A0/g, ' ') // non-breaking space -> 일반 공백
-          .replace(/[\u2002-\u200B\uFEFF]/g, ' ') // 기타 공백 문자 범위도 대체
-          .replace(/[,/]/g, ' ') // 쉼표, 슬래시 등을 공백으로
-          .replace(/\s+/g, ' ') // 여러 공백/탭/줄바꿈 등을 하나로
+          // non-breaking space 등 다양한 공백 문자를 일반 공백으로
+          .replace(/[\u00A0\u2000-\u200B\uFEFF]/g, ' ')
+          // 쉼표, 슬래시 등도 공백으로
+          .replace(/[,/]/g, ' ')
+          // 여러 공백을 하나로
+          .replace(/\s+/g, ' ')
           .trim();
 
-        // split by 한 칸 공백
-        const parts = normalized.split(' ');
-        const regionPart = parts[0] || '';
-        const districtPart = parts.slice(1).join(' ');
+        // 2) 정규식으로 “시/도”와 “그 이후(구/군 등)” 분리
+        //    한국 행정구역 패턴 중 “도”, “특별시”, “광역시”, “자치시” 등을 포괄.
+        //    예: "경기도 안양시 동안구", "서울특별시 강남구", "부산광역시 해운대구" 등.
+        let regionPart = '';
+        let districtPart = '';
+        const addrMatch = normalized.match(
+          /^(.*?(?:도|특별시|광역시|자치시))\s+(.*)$/
+        );
+        if (addrMatch) {
+          regionPart = addrMatch[1].trim(); // ex: "경기도"
+          districtPart = addrMatch[2].trim(); // ex: "안양시 동안구"
+        } else {
+          // 매칭 못 되면, fallback: 첫 단어를 region으로, 나머지를 district로
+          const parts = normalized.split(' ');
+          regionPart = parts[0] || '';
+          districtPart = parts.slice(1).join(' ') || '';
+        }
 
-        // 이메일 처리
-        const [idPart, domainPart] = info.email.split('@');
-        // 전화번호 숫자만 추출
-        const rawPhone = info.phoneNumber.replace(/-/g, '');
-        const birthYearStr = String(info.birthYear);
-        const genderKor = info.gender === 'female' ? '여성' : '남성';
+        // 3) 이메일 처리
+        const email = info.email || '';
+        const [idPart, domainPart] = email.split('@');
+        // 4) 전화번호 숫자만 추출
+        const rawPhone = (info.phoneNumber || '').replace(/-/g, '');
+        const birthYearStr =
+          info.birthYear != null ? String(info.birthYear) : '';
+        const genderKor =
+          info.gender === 'female'
+            ? '여성'
+            : info.gender === 'male'
+              ? '남성'
+              : '여성';
 
-        // regionPart가 regionDistrictData에 없는 경우를 대비해, 없으면 빈 문자열로 두거나
-        // 백엔드 포맷에 맞추어 선택 유도할 수 있음
-        const finalRegion = regionDistrictData[regionPart] ? regionPart : '';
+        // 5) regionDistrictData에 실제 키로 존재하는지 확인
+        //    regionDistrictData 구조: { [region: string]: string[] } 형태라고 가정
+        const finalRegion = regionDistrictData.hasOwnProperty(regionPart)
+          ? regionPart
+          : '';
+        let finalDistrict = '';
+        if (
+          finalRegion &&
+          Array.isArray(regionDistrictData[finalRegion]) &&
+          districtPart
+        ) {
+          // 배열에 정확히 일치하는 항목이 있는지 확인
+          const matched = regionDistrictData[finalRegion].find(
+            (d: string) => d.trim() === districtPart
+          );
+          if (matched) {
+            finalDistrict = matched;
+          } else {
+            // districtPart가 “안양시 동안구” 형태인데 regionDistrictData[finalRegion]에 “동안구”만 있을 수도 있음
+            // 필요 시 추가 로직: “안양시 동안구”에서 시 이름 제거 후 “동안구”만 비교
+            const subParts = districtPart.split(' ');
+            const lastPart = subParts[subParts.length - 1];
+            const matched2 = regionDistrictData[finalRegion].find(
+              (d: string) => d.trim() === lastPart
+            );
+            if (matched2) {
+              finalDistrict = matched2;
+            }
+          }
+        }
+        // 만약 finalRegion 또는 finalDistrict가 비어있다면, select 기본값은 ''로 남겨두어
+        // 사용자가 직접 올바른 값을 다시 선택하게 유도할 수 있음.
 
-        // districtPart가 region에 속하지 않으면 빈 문자열 또는 기본값
-        const finalDistrict =
-          finalRegion && regionDistrictData[finalRegion].includes(districtPart)
-            ? districtPart
-            : '';
-
+        // 6) reset 폼 초기화
         reset({
           emailId: idPart || '',
           emailDomain: domainPart || '',
@@ -134,16 +183,6 @@ const UpdateProfile: React.FC = () => {
       }
     })();
   }, [reset]);
-
-  // region이 바뀌면 district를 초기화
-  useEffect(() => {
-    const subscription = watch(({ name }) => {
-      if (name === 'region') {
-        setValue('district', '');
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [watch, setValue]);
 
   // 제출 핸들러: 닉네임과 주소만 PATCH 요청
   const [signupResult, setSignupResult] = useState<React.ReactNode>('');
@@ -304,19 +343,18 @@ const UpdateProfile: React.FC = () => {
                 id='district'
                 as={CustomSelect}
                 {...register('district')}
+                disabled={!watchedRegion}
               >
                 <option value='' disabled>
-                  구/군 선택
+                  {watchedRegion ? '구/군 선택' : '시/도 먼저 선택'}
                 </option>
-                {watch('region') && regionDistrictData[watch('region')] ? (
-                  regionDistrictData[watch('region')].map((dist: string) => (
+                {watchedRegion &&
+                  Array.isArray(regionDistrictData[watchedRegion]) &&
+                  regionDistrictData[watchedRegion].map((dist: string) => (
                     <option key={dist} value={dist}>
                       {dist}
                     </option>
-                  ))
-                ) : (
-                  <option value=''>지역 먼저 선택</option>
-                )}
+                  ))}
               </InputField>
             </RowLabel>
           </Form>
