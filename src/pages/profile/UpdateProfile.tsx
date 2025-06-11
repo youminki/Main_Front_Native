@@ -27,9 +27,6 @@ export type UpdateProfileFormData = {
 };
 
 const UpdateProfile: React.FC = () => {
-  // navigate 사용하지 않으면 제거
-  // const navigate = useNavigate();
-
   const methods = useForm<UpdateProfileFormData>({
     mode: 'all',
     defaultValues: {
@@ -54,7 +51,7 @@ const UpdateProfile: React.FC = () => {
     setValue,
   } = methods;
 
-  // 모바일 키보드 열림 감지 (원래 로직 그대로 유지)
+  // 모바일 키보드 열림 감지
   const initialHeight = window.visualViewport
     ? window.visualViewport.height
     : window.innerHeight;
@@ -120,14 +117,11 @@ const UpdateProfile: React.FC = () => {
   }, [reset]);
 
   // region이 바뀌면 district를 초기화
+  const watchedRegion = watch('region');
   useEffect(() => {
-    const subscription = watch(({ name }) => {
-      if (name === 'region') {
-        setValue('district', '');
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [watch, setValue]);
+    // region이 변경될 때마다 district 필드를 빈 문자열로 초기화
+    setValue('district', '');
+  }, [watchedRegion, setValue]);
 
   // 제출 핸들러: 닉네임과 주소만 PATCH 요청
   const [resultMessage, setResultMessage] = useState<string>('');
@@ -138,12 +132,11 @@ const UpdateProfile: React.FC = () => {
       // PATCH /user/my-info: nickname, address
       const payload = {
         nickname: data.nickname,
-        address: `${data.region} ${data.district}`,
+        address: `${data.region} ${data.district}`.trim(),
       };
       await updateMyInfo(payload);
       setResultMessage('✅ 회원정보가 성공적으로 업데이트되었습니다.');
       setShowResultModal(true);
-      // 필요 시: 모달 닫힌 뒤 뒤로 가기 등 동작을 추가할 수 있음
     } catch (err: any) {
       console.error('회원정보 수정 오류:', err);
       const msg =
@@ -161,7 +154,6 @@ const UpdateProfile: React.FC = () => {
   const handleResultModalClose = () => {
     setShowResultModal(false);
     // 필요 시: 성공 시 뒤로가기나 리다이렉트 등을 수행
-    // 예: if 성공이었다면 navigate(-1);
   };
 
   return (
