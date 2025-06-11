@@ -162,9 +162,6 @@ const UpdateProfile: React.FC = () => {
 
   const handleResultModalClose = () => {
     setShowResultModal(false);
-    if (isSignupSuccess) {
-      navigate('/MyInfoList');
-    }
   };
 
   return (
