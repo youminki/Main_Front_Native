@@ -16,6 +16,7 @@ import { getUserTickets, TicketItem } from '../api/ticket/ticket';
 import { createRentalOrder, RentalOrderRequest } from '../api/rental/rental';
 import { AddressApi, Address } from '../api/address/address';
 import DeliveryListModal from '../components/DeliveryListModal';
+
 declare global {
   interface Window {
     daum: any;
@@ -82,6 +83,7 @@ const PaymentPage: React.FC = () => {
         ? name
         : `${name} (${t.remainingRentals}회 남음)`;
     }),
+    '이용권 구매하기',
   ];
   const [selectedMethod, setSelectedMethod] = useState(paymentOptions[0]);
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
@@ -102,17 +104,22 @@ const PaymentPage: React.FC = () => {
 
   // 수령인/반납인 & 배송지
   const [recipient, setRecipient] = useState('');
+  // deliveryInfo에 message 필드 추가
   const [deliveryInfo, setDeliveryInfo] = useState({
     address: '',
     detailAddress: '',
     contact: '010',
+    message: '',
   });
+  // returnInfo에도 message 필드 추가
   const [returnInfo, setReturnInfo] = useState({
     address: '',
     detailAddress: '',
     contact: '010',
+    message: '',
   });
-  const [isSameAsDelivery, setIsSameAsDelivery] = useState(false);
+  // 기본값은 동일 모드 켜둠
+  const [isSameAsDelivery, setIsSameAsDelivery] = useState(true);
 
   // 주소검색/목록 모달
   const [modalField, setModalField] = useState<'delivery' | 'return'>(
@@ -121,6 +128,7 @@ const PaymentPage: React.FC = () => {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
 
   // 저장된 배송지 조회
+  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
   const fetchSavedAddresses = async () => {
     try {
       const list = await AddressApi.getAddresses();
@@ -133,6 +141,18 @@ const PaymentPage: React.FC = () => {
     fetchSavedAddresses();
   }, []);
 
+  // deliveryInfo 변경 시, isSameAsDelivery가 true면 returnInfo 동기화
+  useEffect(() => {
+    if (isSameAsDelivery) {
+      setReturnInfo({
+        address: deliveryInfo.address,
+        detailAddress: deliveryInfo.detailAddress,
+        contact: deliveryInfo.contact,
+        message: deliveryInfo.message,
+      });
+    }
+  }, [deliveryInfo, isSameAsDelivery]);
+
   // 각종 핸들러
   const handleAddressSearch = (field: 'delivery' | 'return') => {
     setModalField(field);
@@ -143,38 +163,54 @@ const PaymentPage: React.FC = () => {
     if (!v.startsWith('010')) v = '010' + v;
     v = v.slice(0, 11);
     if (v.length === 11) v = v.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-    field === 'delivery'
-      ? setDeliveryInfo((info) => ({ ...info, contact: v }))
-      : setReturnInfo((info) => ({ ...info, contact: v }));
+    if (field === 'delivery') {
+      setDeliveryInfo((info) => ({ ...info, contact: v }));
+    } else {
+      setReturnInfo((info) => ({ ...info, contact: v }));
+    }
   };
   const handleUseSame = () => {
-    setReturnInfo({ ...deliveryInfo });
     setIsSameAsDelivery(true);
+    // useEffect에서 동기화 처리됨
   };
   const handleNewReturn = () => {
-    setReturnInfo({ address: '', detailAddress: '', contact: '010' });
     setIsSameAsDelivery(false);
+    setReturnInfo({
+      address: '',
+      detailAddress: '',
+      contact: '010',
+      message: '',
+    });
   };
+  const [listModalOpen, setListModalOpen] = useState(false);
+  const [selectedAddr, setSelectedAddr] = useState<Address | null>(null);
   const handleListOpen = () => {
     fetchSavedAddresses();
     setListModalOpen(true);
   };
-  // 배송목록 모달 관련 state
-  const [listModalOpen, setListModalOpen] = useState(false);
-  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
-  const [selectedAddr, setSelectedAddr] = useState<Address | null>(null);
 
   const confirmList = () => {
     if (selectedAddr) {
-      const { address, addressDetail } = selectedAddr;
+      const { address, addressDetail, deliveryMessage } = selectedAddr;
       if (modalField === 'delivery') {
         setDeliveryInfo((i) => ({
           ...i,
           address,
           detailAddress: addressDetail,
+          message: deliveryMessage || '',
         }));
+        // isSameAsDelivery true라면 useEffect에서 returnInfo도 따라감
       } else {
-        setReturnInfo((i) => ({ ...i, address, detailAddress: addressDetail }));
+        if (isSameAsDelivery) {
+          // 동일 모드라면 deliveryInfo에 반영된 후 useEffect로 sync
+        } else {
+          setReturnInfo((i) => ({
+            ...i,
+            address,
+            detailAddress: addressDetail,
+            message: deliveryMessage || '',
+          }));
+        }
       }
     }
     setListModalOpen(false);
@@ -188,7 +224,8 @@ const PaymentPage: React.FC = () => {
     if (
       !recipient.trim() ||
       !deliveryInfo.address ||
-      !deliveryInfo.detailAddress
+      !deliveryInfo.detailAddress ||
+      (!isSameAsDelivery && (!returnInfo.address || !returnInfo.detailAddress))
     ) {
       setModalAlert({
         isOpen: true,
@@ -233,7 +270,7 @@ const PaymentPage: React.FC = () => {
         phone: deliveryInfo.contact,
         receiver: recipient,
         deliveryMethod: selectedMethod,
-        message: '',
+        message: deliveryInfo.message || '',
       },
       return: {
         address: returnInfo.address,
@@ -380,8 +417,7 @@ const PaymentPage: React.FC = () => {
             <InputField
               id='delivery-method'
               label='배송방법 *'
-              options={['택배 배송', '매니저 배송(준비중)']}
-              disabledOptions={['매니저 배송(준비중)']}
+              options={paymentOptions}
               value={selectedMethod}
               onSelectChange={handlePaymentSelect}
             />
@@ -431,18 +467,33 @@ const PaymentPage: React.FC = () => {
             }
           />
         </Row>
+        {/* 배송 메시지 입력란 */}
         <Row>
           <InputField
-            id='contact'
-            label='연락처'
-            placeholder='나머지 8자리 입력'
-            value={deliveryInfo.contact}
+            id='delivery-message'
+            label='배송 메시지 (선택)'
+            placeholder='예: 문 앞에 두고 벨 눌러주세요.'
+            value={deliveryInfo.message}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleContactChange('delivery', e.target.value)
+              setDeliveryInfo((info) => ({
+                ...info,
+                message: e.target.value,
+              }))
             }
           />
         </Row>
       </Section>
+      <Row>
+        <InputField
+          id='contact'
+          label='연락처'
+          placeholder='나머지 8자리 입력'
+          value={deliveryInfo.contact}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            handleContactChange('delivery', e.target.value)
+          }
+        />
+      </Row>
 
       {/* 반납지 입력 */}
       <ReturnSection>
@@ -483,11 +534,31 @@ const PaymentPage: React.FC = () => {
           <DetailAddressInput
             disabled={isSameAsDelivery}
             placeholder='상세주소를 입력 하세요'
-            value={returnInfo.detailAddress}
+            value={
+              isSameAsDelivery
+                ? deliveryInfo.detailAddress
+                : returnInfo.detailAddress
+            }
             onChange={(e) =>
               setReturnInfo((info) => ({
                 ...info,
                 detailAddress: e.target.value,
+              }))
+            }
+          />
+        </Row>
+        {/* 반납지 배송 메시지: 동일 모드면 disabled, value는 deliveryInfo.message */}
+        <Row>
+          <InputField
+            id='return-delivery-message'
+            label='배송 메시지 (선택)'
+            placeholder='예: 문 앞에 두고 벨 눌러주세요.'
+            value={isSameAsDelivery ? deliveryInfo.message : returnInfo.message}
+            disabled={isSameAsDelivery}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setReturnInfo((info) => ({
+                ...info,
+                message: e.target.value,
               }))
             }
           />
@@ -498,7 +569,7 @@ const PaymentPage: React.FC = () => {
             label='연락처'
             placeholder='나머지 8자리 입력'
             disabled={isSameAsDelivery}
-            value={returnInfo.contact}
+            value={isSameAsDelivery ? deliveryInfo.contact : returnInfo.contact}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               handleContactChange('return', e.target.value)
             }
@@ -506,14 +577,14 @@ const PaymentPage: React.FC = () => {
         </Row>
       </ReturnSection>
 
-      {/* 우편번호 검색 모달 */}
+      {/* 우편번호 검색 모달 등... */}
       <AddressSearchModal
         isOpen={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}
         onSelect={(addr) => {
           if (modalField === 'delivery') {
             setDeliveryInfo((info) => ({ ...info, address: addr }));
-          } else {
+          } else if (!isSameAsDelivery) {
             setReturnInfo((info) => ({ ...info, address: addr }));
           }
         }}
@@ -528,7 +599,7 @@ const PaymentPage: React.FC = () => {
         onConfirm={confirmList}
       />
 
-      {/* 결제방식 선택 */}
+      {/* 결제방식 선택, 총 결제금액, 결제 버튼 등... */}
       <PaymentAndCouponContainer>
         <PaymentSection>
           <InputGroup>
@@ -543,7 +614,6 @@ const PaymentPage: React.FC = () => {
         </PaymentSection>
       </PaymentAndCouponContainer>
 
-      {/* 총 결제금액 */}
       <TotalPaymentSection>
         <SectionTitle>총 결제금액 (VAT 포함)</SectionTitle>
         <TotalAmount>
@@ -556,7 +626,6 @@ const PaymentPage: React.FC = () => {
         </TotalAmount>
       </TotalPaymentSection>
 
-      {/* 결제 버튼 */}
       <FixedBottomBar
         text='결제하기'
         color='yellow'
@@ -567,6 +636,9 @@ const PaymentPage: React.FC = () => {
 };
 
 export default PaymentPage;
+
+/* ── styled-components ── */
+/* 기존 스타일 유지 */
 
 // ── styled-components ──
 const Container = styled.div`
