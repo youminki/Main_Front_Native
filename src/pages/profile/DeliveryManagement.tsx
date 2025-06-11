@@ -44,7 +44,7 @@ const DeliveryManagement: React.FC = () => {
     setEditingId(item.id);
     setEditAddress(item.address);
     setEditDetail(item.addressDetail);
-    setEditMessage((item as any).deliveryMessage || '');
+    setEditMessage(item.deliveryMessage || '');
   };
 
   // 수정 취소
@@ -62,7 +62,7 @@ const DeliveryManagement: React.FC = () => {
       return;
     }
 
-    const payload: UpdateAddressRequest & { deliveryMessage?: string } = {
+    const payload: UpdateAddressRequest = {
       address: editAddress,
       addressDetail: editDetail,
       deliveryMessage: editMessage,
@@ -72,6 +72,9 @@ const DeliveryManagement: React.FC = () => {
       await AddressApi.updateAddress(id, payload);
       alert('배송지가 업데이트 되었습니다.');
       setEditingId(null);
+      setEditAddress('');
+      setEditDetail('');
+      setEditMessage('');
       fetchAddresses();
     } catch (err) {
       console.error('주소 수정 실패:', err);
@@ -93,12 +96,28 @@ const DeliveryManagement: React.FC = () => {
     }
   };
 
+  // 기본 주소 설정
+  const handleSetDefault = async (id: number) => {
+    try {
+      await AddressApi.setDefaultAddress(id);
+      alert('기본 주소로 설정되었습니다.');
+      fetchAddresses();
+    } catch (err: any) {
+      console.error('기본 주소 설정 실패:', err);
+      if (err.response?.status === 404) {
+        alert('해당 주소를 찾을 수 없습니다.');
+      } else {
+        alert('기본 주소 설정 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
   // 신규 등록 페이지로 이동
   const handleRegister = () => {
     navigate('/EditAddress');
   };
 
-  // 모바일 키보드 열림 감지
+  // 모바일 키보드 열림 감지 (기존 코드 유지)
   const initialHeight = window.visualViewport
     ? window.visualViewport.height
     : window.innerHeight;
@@ -150,11 +169,12 @@ const DeliveryManagement: React.FC = () => {
                       <DetailInput
                         value={editDetail}
                         onChange={(e) => setEditDetail(e.target.value)}
+                        placeholder='상세주소를 입력하세요'
                       />
                       <MessageTitle>배송 메시지 (선택)</MessageTitle>
                       <MessageInput
                         value={editMessage}
-                        placeholder='배송 시 전달할 내용을 입력하세요'
+                        placeholder='문 앞에 두고 벨 눌러주세요.'
                         onChange={(e) => setEditMessage(e.target.value)}
                       />
                     </>
@@ -164,32 +184,47 @@ const DeliveryManagement: React.FC = () => {
                       <ReadOnlyInput readOnly value={item.addressDetail} />
                       <ReadOnlyInput
                         readOnly
-                        value={(item as any).deliveryMessage || ''}
+                        value={item.deliveryMessage || ''}
+                        placeholder='배송 메시지가 없습니다.'
                       />
                     </>
                   )}
                 </InputGroup>
 
                 <ButtonRow>
+                  {/* 왼쪽: 기본주소설정 혹은 현재 기본주소 표시 */}
                   {isEditing ? (
-                    <>
-                      <SaveButton onClick={() => handleSaveEdit(item.id)}>
-                        저장
-                      </SaveButton>
-                      <CancelButton onClick={handleCancelEdit}>
-                        취소
-                      </CancelButton>
-                    </>
+                    <div /> /* 편집중에는 왼쪽 공간 비워둡니다 */
+                  ) : item.isDefault ? (
+                    <DefaultLabel>기본주소</DefaultLabel>
                   ) : (
-                    <>
-                      <EditButton onClick={() => handleStartEdit(item)}>
-                        수정
-                      </EditButton>
-                      <DeleteButton onClick={() => handleDelete(item.id)}>
-                        삭제
-                      </DeleteButton>
-                    </>
+                    <DefaultButton onClick={() => handleSetDefault(item.id)}>
+                      기본 주소설정
+                    </DefaultButton>
                   )}
+
+                  {/* 오른쪽: 수정/삭제 혹은 저장/취소 */}
+                  <RightButtons>
+                    {isEditing ? (
+                      <>
+                        <SaveButton onClick={() => handleSaveEdit(item.id)}>
+                          저장
+                        </SaveButton>
+                        <CancelButton onClick={handleCancelEdit}>
+                          취소
+                        </CancelButton>
+                      </>
+                    ) : (
+                      <>
+                        <EditButton onClick={() => handleStartEdit(item)}>
+                          수정
+                        </EditButton>
+                        <DeleteButton onClick={() => handleDelete(item.id)}>
+                          삭제
+                        </DeleteButton>
+                      </>
+                    )}
+                  </RightButtons>
                 </ButtonRow>
 
                 {idx < addresses.length - 1 && <Separator />}
@@ -213,7 +248,7 @@ const DeliveryManagement: React.FC = () => {
         <FixedBottomBar
           type='button'
           text='배송지 등록'
-          color='black'
+          color='yellow'
           onClick={handleRegister}
         />
       )}
@@ -328,7 +363,7 @@ const MessageTitle = styled.div`
   font-size: 10px;
   line-height: 11px;
   color: #000;
-  margin: 10px 0;
+  margin: 10px 0 4px;
 `;
 
 const MessageInput = styled.input`
@@ -348,17 +383,49 @@ const MessageInput = styled.input`
   }
 `;
 
+// ButtonRow: 왼쪽 기본설정 영역 + 오른쪽 버튼 그룹
+const ButtonRow = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+`;
+
+// 왼쪽 기본주소설정 버튼
+const DefaultButton = styled.button`
+  background: #000000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0 12px;
+  height: 46px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 600;
+  &:hover {
+    background: #3d3d3d;
+    transition: background 0.2s;
+  }
+`;
+
+// 기본주소일 때 표시용 라벨
+const DefaultLabel = styled.div`
+  font-size: 13px;
+  color: #28a745;
+  font-weight: 600;
+`;
+
+// 오른쪽 버튼 그룹: margin-left: auto 로 오른쪽 끝으로 밀기
+const RightButtons = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+`;
+
 const buttonHover = css`
   &:hover {
     transform: translateY(-2px) scale(1.03);
     transition: transform 0.2s;
   }
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
 `;
 
 const EditButton = styled.button`

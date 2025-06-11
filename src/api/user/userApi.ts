@@ -173,11 +173,6 @@ export interface HeaderInfoResponse {
   nickname: string;
 }
 
-export const getHeaderInfo = async (): Promise<HeaderInfoResponse> => {
-  const response = await Axios.get('/user/header-info');
-  return response.data;
-};
-
 export const logoutUser = async (email: string): Promise<MessageResponse> => {
   const response = await Axios.post<MessageResponse>('/auth/logout', { email });
   return response.data;
@@ -342,5 +337,24 @@ export const changePassword = async (
     '/user/change-password',
     data
   );
+  return response.data;
+};
+
+/**
+ * 헤더용 유저 정보 조회 응답 타입
+ * GET /user/my-info/header
+ * 반환: { nickname: string; email: string; }
+ */
+export interface HeaderInfoResponse {
+  nickname: string;
+  email: string;
+}
+
+/**
+ * 로그인한 유저의 닉네임과 이메일 조회
+ * GET /user/my-info/header
+ */
+export const getHeaderInfo = async (): Promise<HeaderInfoResponse> => {
+  const response = await Axios.get<HeaderInfoResponse>('/user/my-info/header');
   return response.data;
 };

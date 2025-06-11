@@ -28,11 +28,13 @@ const EditAddress: React.FC = () => {
     const payload: CreateAddressRequest = {
       address: searchQuery,
       addressDetail: detailAddress,
+      deliveryMessage,
     };
 
     try {
-      const result = await AddressApi.createAddress(payload);
-      alert(`주소가 등록되었습니다!\nID: ${result.id}`);
+      // result 변수를 제거하여 unused 에러 방지
+      await AddressApi.createAddress(payload);
+      alert('주소가 등록되었습니다.');
       navigate(-1);
     } catch (error: any) {
       console.error('주소 등록 실패:', error);
@@ -96,7 +98,7 @@ const EditAddress: React.FC = () => {
       <FixedBottomBar
         type='button'
         text={loading ? '등록 중...' : '등록하기'}
-        color='black'
+        color='yellow'
         onClick={handleSave}
         disabled={loading}
       />

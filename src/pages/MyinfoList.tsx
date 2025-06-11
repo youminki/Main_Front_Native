@@ -1,6 +1,6 @@
 // src/pages/MyinfoList.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import userInfoIcon from '../assets/Myinfo/UserInfoChangeIcon.svg';
 import passwordIcon from '../assets/Myinfo/PasswordChangeIcon.svg';
@@ -8,6 +8,9 @@ import deliveryIcon from '../assets/Myinfo/DeliveryAdminIcon.svg';
 import { FaPlus, FaUserCircle, FaLongArrowAltRight } from 'react-icons/fa';
 import ReusableModal from '../components/ReusableModal';
 import { useNavigate } from 'react-router-dom';
+
+// 추가: API import
+import { getHeaderInfo, HeaderInfoResponse } from '../api/user/userApi';
 
 const MENU_ITEMS = [
   {
@@ -34,19 +37,38 @@ const MyinfoList: React.FC = () => {
   const navigate = useNavigate();
   const [notifyOn, setNotifyOn] = useState(false);
 
-  // 프로필 이미지 클릭 시 “미구현” 모달을 띄우기 위한 상태
+  // 프로필 관련: API 호출 결과 저장
+  const [headerInfo, setHeaderInfo] = useState<HeaderInfoResponse | null>(null);
+  const [loadingHeader, setLoadingHeader] = useState<boolean>(true);
+
+  // 프로필 이미지 클릭 시 “미구현” 모달
   const [isProfilePlaceholderOpen, setProfilePlaceholderOpen] = useState(false);
+
+  // 마운트 시 헤더 정보 조회
+  useEffect(() => {
+    const fetchHeader = async () => {
+      try {
+        setLoadingHeader(true);
+        const data = await getHeaderInfo();
+        setHeaderInfo(data);
+      } catch (err) {
+        console.error('헤더 정보 조회 실패:', err);
+        // 필요시 사용자에게 알림: 예를 들어:
+        // alert('회원 정보를 가져오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoadingHeader(false);
+      }
+    };
+    fetchHeader();
+  }, []);
 
   const handleMenuClick = (key: string) => {
     if (key === 'info') {
-      // 회원정보 변경 클릭 시 /updateprofile로 이동
       navigate('/updateprofile');
     } else if (key === 'password') {
-      // 비밀번호 변경 클릭 시 /ChangePassword로 이동
       navigate('/ChangePassword');
     } else if (key === 'address') {
-      // 배송지 관리는 비활성화되어 있으므로 클릭 무시
-      return;
+      navigate('/deliveryManagement');
     }
   };
 
@@ -62,8 +84,22 @@ const MyinfoList: React.FC = () => {
         </AvatarWrapper>
         <ProfileBox>
           <ProfileText>
-            <Email>goodxx21@styleweex.com</Email>
-            <Nickname>닉네임 : 퍼시몬</Nickname>
+            {loadingHeader ? (
+              <>
+                <Email>로딩 중...</Email>
+                <Nickname>닉네임 불러오는 중</Nickname>
+              </>
+            ) : headerInfo ? (
+              <>
+                <Email>{headerInfo.email}</Email>
+                <Nickname>닉네임: {headerInfo.nickname}</Nickname>
+              </>
+            ) : (
+              <>
+                <Email>정보를 가져올 수 없습니다.</Email>
+                <Nickname>닉네임: -</Nickname>
+              </>
+            )}
           </ProfileText>
         </ProfileBox>
       </ProfileSection>
@@ -73,20 +109,16 @@ const MyinfoList: React.FC = () => {
       {/* MENU LIST */}
       <MenuList>
         {MENU_ITEMS.map(({ key, title, desc, iconSrc }) => (
-          <MenuItem
-            key={key}
-            onClick={() => handleMenuClick(key)}
-            disabled={key === 'address'}
-          >
+          <MenuItem key={key} onClick={() => handleMenuClick(key)}>
             <IconBox>
               <IconImg src={iconSrc} alt={title} />
             </IconBox>
             <TextBox>
-              <MenuTitle disabled={key === 'address'}>{title}</MenuTitle>
-              <MenuDesc disabled={key === 'address'}>{desc}</MenuDesc>
+              <MenuTitle>{title}</MenuTitle>
+              <MenuDesc>{desc}</MenuDesc>
             </TextBox>
-            <Panel disabled={key === 'address'}>
-              <PickText disabled={key === 'address'}>PICK</PickText>
+            <Panel>
+              <PickText>PICK</PickText>
               <FaLongArrowAltRight size={24} />
             </Panel>
           </MenuItem>
@@ -137,7 +169,6 @@ const ProfileSection = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  margin: 24px 0;
 `;
 const AvatarWrapper = styled.div`
   width: 70px;
@@ -202,7 +233,6 @@ const MenuList = styled.div`
   gap: 16px;
 `;
 
-/** MenuItem 수정: disabled props에 따라 시각/동작 비활성화 */
 const MenuItem = styled.div<{ disabled?: boolean }>`
   display: grid;
   grid-template-columns: 70px 1fr 124px;
@@ -229,7 +259,6 @@ const TextBox = styled.div`
   padding: 16px;
 `;
 
-/** MenuTitle과 MenuDesc도 disabled 시 색상을 회색으로 변경 */
 const MenuTitle = styled.div<{ disabled?: boolean }>`
   font-size: 14px;
   font-weight: 700;
@@ -264,7 +293,7 @@ const PickText = styled.div<{ disabled?: boolean }>`
 `;
 
 const Section = styled.section`
-  margin-top: 32px;
+  margin-top: 50px;
 `;
 const SectionHeader = styled.div`
   font-size: 10px;

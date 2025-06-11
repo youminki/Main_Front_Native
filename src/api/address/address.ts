@@ -9,6 +9,7 @@ export interface Address {
   isDefault: boolean;
   createdAt: string; // ISO 8601
   updatedAt: string; // ISO 8601
+  deliveryMessage: string; // 배송 메시지
 }
 
 /**
@@ -17,15 +18,17 @@ export interface Address {
 export interface CreateAddressRequest {
   address: string;
   addressDetail: string;
+  deliveryMessage: string;
 }
 
 /**
  * 주소 수정 요청 타입
- * address 혹은 addressDetail 중 하나 또는 둘 다 보낼 수 있습니다.
+ * address, addressDetail, deliveryMessage 중 하나 또는 여러 개 보낼 수 있습니다.
  */
 export interface UpdateAddressRequest {
   address?: string;
   addressDetail?: string;
+  deliveryMessage?: string;
 }
 
 export const AddressApi = {
@@ -65,5 +68,15 @@ export const AddressApi = {
    */
   async deleteAddress(id: number): Promise<void> {
     await Axios.delete(`/user-address/${id}`);
+  },
+
+  /**
+   * 기본 주소로 설정
+   * PATCH /user-address/{id}/set-default
+   * - 200: 기본 주소 설정 완료
+   * - 404: 해당 주소가 없을 때
+   */
+  async setDefaultAddress(id: number): Promise<void> {
+    await Axios.patch(`/user-address/${id}/set-default`);
   },
 };
