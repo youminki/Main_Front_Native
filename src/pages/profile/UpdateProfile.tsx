@@ -1,7 +1,6 @@
 // src/pages/Profile/UpdateProfile.tsx
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
 
@@ -28,7 +27,9 @@ export type UpdateProfileFormData = {
 };
 
 const UpdateProfile: React.FC = () => {
-  const navigate = useNavigate();
+  // navigate 사용하지 않으면 제거
+  // const navigate = useNavigate();
+
   const methods = useForm<UpdateProfileFormData>({
     mode: 'all',
     defaultValues: {
@@ -87,19 +88,18 @@ const UpdateProfile: React.FC = () => {
         // 이메일을 아이디/도메인으로 분리
         const [idPart, domainPart] = info.email.split('@');
 
-        // 주소(info.address)가 "시/도 구/군"뿐 아니라 "경기도 안양시 만안구"처럼
-        // 공백이 여러 개일 수 있으므로 첫 요소만 region으로, 나머지를 모두 district로 조합
+        // 주소(info.address)가 여러 공백일 수 있으므로 첫 요소만 region으로, 나머지를 district로
         const parts = info.address.split(' ');
         const regionPart = parts[0];
-        const districtPart = parts.slice(1).join(' '); // "안양시 만안구" 전체
+        const districtPart = parts.slice(1).join(' ');
 
-        // 전화번호는 "010-1234-5678" 형태, 이 중 숫자만 추출
+        // 전화번호는 "010-1234-5678" 형태, 숫자만 추출
         const rawPhone = info.phoneNumber.replace(/-/g, '');
 
-        // 생년(birthYear)은 숫자 => 문자열로 변환
+        // 생년(birthYear)은 숫자 => 문자열
         const birthYearStr = String(info.birthYear);
 
-        // 성별 변환: 'male' => '남성', 'female' => '여성'
+        // 성별 변환
         const genderKor = info.gender === 'female' ? '여성' : '남성';
 
         reset({
@@ -130,28 +130,26 @@ const UpdateProfile: React.FC = () => {
   }, [watch, setValue]);
 
   // 제출 핸들러: 닉네임과 주소만 PATCH 요청
-  const [signupResult, setSignupResult] = useState<React.ReactNode>('');
-  const [isSignupSuccess, setIsSignupSuccess] = useState<boolean>(false);
+  const [resultMessage, setResultMessage] = useState<string>('');
   const [showResultModal, setShowResultModal] = useState<boolean>(false);
 
   const onSubmit: SubmitHandler<UpdateProfileFormData> = async (data) => {
     try {
-      // PATCH /user/my-info 에 요청: nickname, address(시/도 + " " + 구/군)
+      // PATCH /user/my-info: nickname, address
       const payload = {
         nickname: data.nickname,
         address: `${data.region} ${data.district}`,
       };
       await updateMyInfo(payload);
-      setSignupResult('✅ 회원정보가 성공적으로 업데이트되었습니다.');
-      setIsSignupSuccess(true);
+      setResultMessage('✅ 회원정보가 성공적으로 업데이트되었습니다.');
       setShowResultModal(true);
+      // 필요 시: 모달 닫힌 뒤 뒤로 가기 등 동작을 추가할 수 있음
     } catch (err: any) {
       console.error('회원정보 수정 오류:', err);
       const msg =
         err?.response?.data?.message ||
         (err instanceof Error ? err.message : '알 수 없는 오류');
-      setSignupResult(`❌ 업데이트 중 오류가 발생했습니다: ${msg}`);
-      setIsSignupSuccess(false);
+      setResultMessage(`❌ 업데이트 중 오류가 발생했습니다: ${msg}`);
       setShowResultModal(true);
     }
   };
@@ -162,6 +160,8 @@ const UpdateProfile: React.FC = () => {
 
   const handleResultModalClose = () => {
     setShowResultModal(false);
+    // 필요 시: 성공 시 뒤로가기나 리다이렉트 등을 수행
+    // 예: if 성공이었다면 navigate(-1);
   };
 
   return (
@@ -322,7 +322,7 @@ const UpdateProfile: React.FC = () => {
           onClose={handleResultModalClose}
           title='회원정보 수정 결과'
         >
-          {signupResult}
+          {resultMessage}
         </ReusableModal>
       )}
     </ThemeProvider>
