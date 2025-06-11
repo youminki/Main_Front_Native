@@ -51,7 +51,7 @@ const UpdateProfile: React.FC = () => {
     setValue,
   } = methods;
 
-  // 모바일 키보드 열림 감지
+  // 모바일 키보드 열림 감지 (원래 로직 그대로 유지)
   const initialHeight = window.visualViewport
     ? window.visualViewport.height
     : window.innerHeight;
@@ -82,45 +82,51 @@ const UpdateProfile: React.FC = () => {
     (async () => {
       try {
         const info = await getMyInfo();
-        // 이메일을 아이디/도메인으로 분리
+
+        // address 문자열에 여러 공백 종류나 특수 구분자 등이 있을 수 있으므로
+        // 1) non-breaking space(\u00A0) 등을 일반 공백으로 교체
+        // 2) 쉼표, 슬래시 등으로 구분되어 온다면 이들도 공백으로 대체
+        // 3) 연속된 공백이나 탭 등을 하나의 공백으로 축소
+        // 4) 양쪽 trim
+        const rawAddress = info.address || '';
+        const normalized = rawAddress
+          .replace(/\u00A0/g, ' ') // non-breaking space -> 일반 공백
+          .replace(/[\u2002-\u200B\uFEFF]/g, ' ') // 기타 공백 문자 범위도 대체
+          .replace(/[,/]/g, ' ') // 쉼표, 슬래시 등을 공백으로
+          .replace(/\s+/g, ' ') // 여러 공백/탭/줄바꿈 등을 하나로
+          .trim();
+
+        // split by 한 칸 공백
+        const parts = normalized.split(' ');
+        const regionPart = parts[0] || '';
+        const districtPart = parts.slice(1).join(' ');
+
+        // 이메일 처리
         const [idPart, domainPart] = info.email.split('@');
-
-        // 전체 주소 문자열
-        const addr = info.address || '';
-
-        // regionDistrictData의 키 중에서 info.address가 시작하는 키를 찾아 region으로 사용
-        let regionPart = '';
-        let districtPart = '';
-        for (const regKey of Object.keys(regionDistrictData)) {
-          if (addr.startsWith(regKey)) {
-            regionPart = regKey;
-            // 공백 이후 나머지를 district로
-            districtPart = addr.slice(regKey.length).trim();
-            break;
-          }
-        }
-        // 만약 매칭되는 regionKey가 없으면, 기존 split 방식 fallback
-        if (!regionPart) {
-          const parts = addr.split(' ');
-          regionPart = parts[0] || '';
-          districtPart = parts.slice(1).join(' ');
-        }
-        // 전화번호는 "010-1234-5678" 형태, 숫자만 추출
+        // 전화번호 숫자만 추출
         const rawPhone = info.phoneNumber.replace(/-/g, '');
-        // 생년(birthYear)은 숫자 => 문자열
         const birthYearStr = String(info.birthYear);
-        // 성별 변환
         const genderKor = info.gender === 'female' ? '여성' : '남성';
 
+        // regionPart가 regionDistrictData에 없는 경우를 대비해, 없으면 빈 문자열로 두거나
+        // 백엔드 포맷에 맞추어 선택 유도할 수 있음
+        const finalRegion = regionDistrictData[regionPart] ? regionPart : '';
+
+        // districtPart가 region에 속하지 않으면 빈 문자열 또는 기본값
+        const finalDistrict =
+          finalRegion && regionDistrictData[finalRegion].includes(districtPart)
+            ? districtPart
+            : '';
+
         reset({
-          emailId: idPart,
-          emailDomain: domainPart,
-          nickname: info.nickname,
-          name: info.name,
+          emailId: idPart || '',
+          emailDomain: domainPart || '',
+          nickname: info.nickname || '',
+          name: info.name || '',
           birthYear: birthYearStr,
-          phoneNumber: rawPhone,
-          region: regionPart,
-          district: districtPart,
+          phoneNumber: rawPhone || '',
+          region: finalRegion,
+          district: finalDistrict,
           gender: genderKor,
         });
       } catch (err) {
@@ -130,32 +136,40 @@ const UpdateProfile: React.FC = () => {
   }, [reset]);
 
   // region이 바뀌면 district를 초기화
-  const watchedRegion = watch('region');
   useEffect(() => {
-    setValue('district', '');
-  }, [watchedRegion, setValue]);
+    const subscription = watch(({ name }) => {
+      if (name === 'region') {
+        setValue('district', '');
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setValue]);
 
-  // 제출 핸들러: 닉네임과 combined address만 PATCH 요청
-  const [resultMessage, setResultMessage] = useState<string>('');
+  // 제출 핸들러: 닉네임과 주소만 PATCH 요청
+  const [signupResult, setSignupResult] = useState<React.ReactNode>('');
   const [showResultModal, setShowResultModal] = useState<boolean>(false);
 
   const onSubmit: SubmitHandler<UpdateProfileFormData> = async (data) => {
     try {
-      // region + district를 합쳐 하나의 address로 전송
-      const combinedAddress = `${data.region} ${data.district}`.trim();
+      // 주소 조합: region + ' ' + district
+      const addressPayload =
+        data.region && data.district
+          ? `${data.region} ${data.district}`
+          : data.region || data.district || '';
+
       const payload = {
         nickname: data.nickname,
-        address: combinedAddress,
+        address: addressPayload,
       };
       await updateMyInfo(payload);
-      setResultMessage('✅ 회원정보가 성공적으로 업데이트되었습니다.');
+      setSignupResult('✅ 회원정보가 성공적으로 업데이트되었습니다.');
       setShowResultModal(true);
     } catch (err: any) {
       console.error('회원정보 수정 오류:', err);
       const msg =
         err?.response?.data?.message ||
         (err instanceof Error ? err.message : '알 수 없는 오류');
-      setResultMessage(`❌ 업데이트 중 오류가 발생했습니다: ${msg}`);
+      setSignupResult(`❌ 업데이트 중 오류가 발생했습니다: ${msg}`);
       setShowResultModal(true);
     }
   };
@@ -166,7 +180,7 @@ const UpdateProfile: React.FC = () => {
 
   const handleResultModalClose = () => {
     setShowResultModal(false);
-    // 필요 시: 성공 시 뒤로가기나 리다이렉트 등을 수행
+    // 필요 시, 성공 후 다른 동작(ex: 뒤로 이동 등)을 이곳에 추가 가능
   };
 
   return (
@@ -217,7 +231,6 @@ const UpdateProfile: React.FC = () => {
                 id='birthYear'
                 as={CustomSelect}
                 disabled
-                readOnly
                 {...register('birthYear')}
               >
                 <option value='' disabled>
@@ -278,7 +291,7 @@ const UpdateProfile: React.FC = () => {
                 {...register('region')}
               >
                 <option value='' disabled>
-                  시 선택
+                  시/도 선택
                 </option>
                 {Object.keys(regionDistrictData).map((reg) => (
                   <option key={reg} value={reg}>
@@ -328,7 +341,7 @@ const UpdateProfile: React.FC = () => {
           onClose={handleResultModalClose}
           title='회원정보 수정 결과'
         >
-          {resultMessage}
+          {signupResult}
         </ReusableModal>
       )}
     </ThemeProvider>
