@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { useLocation, useNavigate } from 'react-router-dom';
 import FixedBottomBar from '../components/FixedBottomBar';
 import InputField from '../components/InputField';
-import { YellowButton } from '../components/ButtonWrapper';
+import { YellowButton, BlackButton } from '../components/ButtonWrapper';
 import ReusableModal from '../components/ReusableModal';
 import ReusableModal2 from '../components/ReusableModal2';
 import AddressSearchModal from '../components/AddressSearchModal';
@@ -155,10 +155,10 @@ const PaymentPage: React.FC = () => {
     setReturnInfo({ address: '', detailAddress: '', contact: '010' });
     setIsSameAsDelivery(false);
   };
-  // const handleListOpen = () => {
-  //   fetchSavedAddresses();
-  //   setListModalOpen(true);
-  // };
+  const handleListOpen = () => {
+    fetchSavedAddresses();
+    setListModalOpen(true);
+  };
   // 배송목록 모달 관련 state
   const [listModalOpen, setListModalOpen] = useState(false);
   const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
@@ -415,9 +415,9 @@ const PaymentPage: React.FC = () => {
               검색
             </SearchBtn>
           </AddressInputWrapper>
-          {/* <DeliveryListButton onClick={handleListOpen}>
+          <DeliveryListButton onClick={handleListOpen}>
             배송목록
-          </DeliveryListButton> */}
+          </DeliveryListButton>
         </Row>
         <Row>
           <DetailAddressInput
@@ -475,9 +475,9 @@ const PaymentPage: React.FC = () => {
               검색
             </SearchBtn>
           </AddressInputWrapper>
-          {/* <DeliveryListButton onClick={handleListOpen}>
+          <DeliveryListButton onClick={handleListOpen}>
             배송목록
-          </DeliveryListButton> */}
+          </DeliveryListButton>
         </Row>
         <Row>
           <DetailAddressInput
@@ -635,10 +635,10 @@ const SearchBtn = styled(YellowButton)<{ disabled?: boolean }>`
   padding: 0 15px;
 `;
 
-// const DeliveryListButton = styled(BlackButton)`
-//   height: 57px;
-//   padding: 0 15px;
-// `;
+const DeliveryListButton = styled(BlackButton)`
+  height: 57px;
+  padding: 0 15px;
+`;
 
 const DetailAddressInput = styled.input`
   flex: 1;
