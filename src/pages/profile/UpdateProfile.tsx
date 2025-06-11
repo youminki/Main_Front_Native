@@ -85,17 +85,30 @@ const UpdateProfile: React.FC = () => {
         // 이메일을 아이디/도메인으로 분리
         const [idPart, domainPart] = info.email.split('@');
 
-        // 주소(info.address)가 여러 공백일 수 있으므로 첫 요소만 region으로, 나머지를 district로
-        const parts = info.address.split(' ');
-        const regionPart = parts[0];
-        const districtPart = parts.slice(1).join(' ');
+        // 전체 주소 문자열
+        const addr = info.address || '';
 
+        // regionDistrictData의 키 중에서 info.address가 시작하는 키를 찾아 region으로 사용
+        let regionPart = '';
+        let districtPart = '';
+        for (const regKey of Object.keys(regionDistrictData)) {
+          if (addr.startsWith(regKey)) {
+            regionPart = regKey;
+            // 공백 이후 나머지를 district로
+            districtPart = addr.slice(regKey.length).trim();
+            break;
+          }
+        }
+        // 만약 매칭되는 regionKey가 없으면, 기존 split 방식 fallback
+        if (!regionPart) {
+          const parts = addr.split(' ');
+          regionPart = parts[0] || '';
+          districtPart = parts.slice(1).join(' ');
+        }
         // 전화번호는 "010-1234-5678" 형태, 숫자만 추출
         const rawPhone = info.phoneNumber.replace(/-/g, '');
-
         // 생년(birthYear)은 숫자 => 문자열
         const birthYearStr = String(info.birthYear);
-
         // 성별 변환
         const genderKor = info.gender === 'female' ? '여성' : '남성';
 
@@ -106,8 +119,8 @@ const UpdateProfile: React.FC = () => {
           name: info.name,
           birthYear: birthYearStr,
           phoneNumber: rawPhone,
-          region: regionPart || '',
-          district: districtPart || '',
+          region: regionPart,
+          district: districtPart,
           gender: genderKor,
         });
       } catch (err) {
@@ -119,20 +132,20 @@ const UpdateProfile: React.FC = () => {
   // region이 바뀌면 district를 초기화
   const watchedRegion = watch('region');
   useEffect(() => {
-    // region이 변경될 때마다 district 필드를 빈 문자열로 초기화
     setValue('district', '');
   }, [watchedRegion, setValue]);
 
-  // 제출 핸들러: 닉네임과 주소만 PATCH 요청
+  // 제출 핸들러: 닉네임과 combined address만 PATCH 요청
   const [resultMessage, setResultMessage] = useState<string>('');
   const [showResultModal, setShowResultModal] = useState<boolean>(false);
 
   const onSubmit: SubmitHandler<UpdateProfileFormData> = async (data) => {
     try {
-      // PATCH /user/my-info: nickname, address
+      // region + district를 합쳐 하나의 address로 전송
+      const combinedAddress = `${data.region} ${data.district}`.trim();
       const payload = {
         nickname: data.nickname,
-        address: `${data.region} ${data.district}`.trim(),
+        address: combinedAddress,
       };
       await updateMyInfo(payload);
       setResultMessage('✅ 회원정보가 성공적으로 업데이트되었습니다.');
@@ -204,6 +217,7 @@ const UpdateProfile: React.FC = () => {
                 id='birthYear'
                 as={CustomSelect}
                 disabled
+                readOnly
                 {...register('birthYear')}
               >
                 <option value='' disabled>
