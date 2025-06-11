@@ -35,7 +35,7 @@ const EditAddress: React.FC = () => {
       // result 변수를 제거하여 unused 에러 방지
       await AddressApi.createAddress(payload);
       alert('주소가 등록되었습니다.');
-      navigate(-1);
+      navigate('/deliveryManagement');
     } catch (error: any) {
       console.error('주소 등록 실패:', error);
       alert('주소 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
