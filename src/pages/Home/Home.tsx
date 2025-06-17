@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import Spinner from '../../components/Spinner';
 import ItemList, { UIItem } from '../../components/Home/ItemList';
 import Footer from '../../components/Home/Footer';
@@ -15,6 +15,11 @@ import HomeIcon from '../../assets/Header/HomeIcon.svg';
 import ArrowIconSvg from '../../assets/ArrowIcon.svg';
 import ReusableModal from '../../components/ReusableModal';
 import FilterContainer from '../../components/Home/FilterContainer';
+
+const fadeInDown = keyframes`
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
 
 const ITEMS_PER_LOAD = 20;
 
