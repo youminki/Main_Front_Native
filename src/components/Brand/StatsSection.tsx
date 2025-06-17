@@ -1,25 +1,40 @@
-// src/components/LockerRoom/StatsSection.tsx
-
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { getBrandList, Brand as ApiBrand } from '../../api/brand/brandApi';
 
 interface Props {
   BrandIcon: string;
+  brandCount?: number;
+  productCount?: number;
 }
 
-const StatsSection: React.FC<Props> = ({ BrandIcon }) => {
-  const [brandCount, setBrandCount] = useState<number>(0);
-  const [productCount, setProductCount] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(true);
+const StatsSection: React.FC<Props> = ({
+  BrandIcon,
+  brandCount: propBrandCount,
+  productCount: propProductCount,
+}) => {
+  const [brandCount, setBrandCount] = useState<number | null>(
+    propBrandCount ?? null
+  );
+  const [productCount, setProductCount] = useState<number | null>(
+    propProductCount ?? null
+  );
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    const fetchStats = async () => {
+    // props로 두 값이 모두 주어지면 API 호출 생략
+    if (
+      typeof propBrandCount === 'number' &&
+      typeof propProductCount === 'number'
+    ) {
+      return;
+    }
+    setLoading(true);
+    (async () => {
       try {
         const data: ApiBrand[] = await getBrandList();
         setBrandCount(data.length);
-        // ApiBrand.productCount 필드가 있으면 합산, 없으면 0 처리
         const total = data.reduce((sum, b) => sum + (b.productCount || 0), 0);
         setProductCount(total);
       } catch (err) {
@@ -28,9 +43,8 @@ const StatsSection: React.FC<Props> = ({ BrandIcon }) => {
       } finally {
         setLoading(false);
       }
-    };
-    fetchStats();
-  }, []);
+    })();
+  }, [propBrandCount, propProductCount]);
 
   if (loading) {
     return (
@@ -51,19 +65,26 @@ const StatsSection: React.FC<Props> = ({ BrandIcon }) => {
     );
   }
 
+  const displayBrandCount =
+    typeof propBrandCount === 'number' ? propBrandCount : (brandCount ?? 0);
+  const displayProductCount =
+    typeof propProductCount === 'number'
+      ? propProductCount
+      : (productCount ?? 0);
+
   return (
     <Container>
       <StatsContainer>
         <StatBox $white>
           <Row>
             <StatLabel>종류</StatLabel>
-            <StatNumber>{brandCount}</StatNumber>
+            <StatNumber>{displayBrandCount}</StatNumber>
           </Row>
         </StatBox>
         <StatBox $gray>
           <Row>
             <StatLabel>등록 상품수</StatLabel>
-            <StatNumber>{productCount}</StatNumber>
+            <StatNumber>{displayProductCount}</StatNumber>
           </Row>
         </StatBox>
       </StatsContainer>
@@ -75,8 +96,6 @@ const StatsSection: React.FC<Props> = ({ BrandIcon }) => {
 };
 
 export default StatsSection;
-
-// styled-components
 
 const Container = styled.div`
   display: flex;
@@ -105,7 +124,6 @@ const StatsContainer = styled.div`
   width: 100%;
 `;
 
-// StatBox 스타일은 기존과 동일
 const StatBox = styled.div<{
   $white?: boolean;
   $gray?: boolean;

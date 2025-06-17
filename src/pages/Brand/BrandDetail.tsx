@@ -14,6 +14,7 @@ interface Brand {
   productCount: number;
 }
 
+// 예시 데이터: 실제 API 호출로 대체 필요
 const brands: Brand[] = [
   {
     name: 'SANDRO',
@@ -115,8 +116,10 @@ const BrandDetail: React.FC = () => {
 
   const filteredItems =
     selectedCategory === 'all'
-      ? items
-      : items.filter((it) => it.category === selectedCategory);
+      ? items.filter((it) => it.brand === brand.name)
+      : items.filter(
+          (it) => it.brand === brand.name && it.category === selectedCategory
+        );
 
   const uiItems: UIItem[] = filteredItems.map((it) => ({
     id: it.id.toString(),
@@ -135,10 +138,11 @@ const BrandDetail: React.FC = () => {
         <Subtitle>새로운 시즌 제품들을 내 손안에!</Subtitle>
       </Header>
 
+      {/* StatsSection: 상세 페이지이므로 brandCount=1, productCount=해당 브랜드 상품수 */}
       <StatsSection
-        brandCount={brands.length}
-        productCount={brand.productCount}
         BrandIcon={BrandIcon}
+        brandCount={1}
+        productCount={brand.productCount}
       />
       <Divider />
 

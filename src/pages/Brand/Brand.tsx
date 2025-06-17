@@ -1,5 +1,3 @@
-// src/pages/Brand/Brand.tsx
-
 import React, { useState, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import Theme from '../../styles/Theme';
@@ -14,7 +12,7 @@ interface LocalBrand {
   name: string;
   category: string; // API의 brand_category
   group: string; // API의 groupName
-  company: string; // 검색 필드에 포함하려면 매핑; 예시에선 빈 문자열
+  company: string; // 필요 시 매핑
 }
 
 const Brand: React.FC = () => {
@@ -43,7 +41,7 @@ const Brand: React.FC = () => {
       name: b.brandName,
       category: b.brand_category || '',
       group: b.groupName || '',
-      company: '', // 필요 시 b.companyName 등 실제 필드를 사용
+      company: '', // 필요 시 실제 필드 사용
     }));
     setBrands(mapped);
   }, [apiBrands]);
@@ -63,9 +61,7 @@ const Brand: React.FC = () => {
   const groupedBrands: Record<string, LocalBrand[]> = filteredBrands.reduce(
     (acc: Record<string, LocalBrand[]>, brand) => {
       const key =
-        sortBy === 'group'
-          ? brand.group || '기타' // group이 빈 문자열이면 '기타' 등으로 묶음
-          : brand.category || '기타'; // category 빈 문자열 시
+        sortBy === 'group' ? brand.group || '기타' : brand.category || '기타';
       if (!acc[key]) acc[key] = [];
       acc[key].push(brand);
       return acc;
@@ -73,7 +69,7 @@ const Brand: React.FC = () => {
     {}
   );
 
-  // 정렬: 그룹 키를 알파벳/한글 순으로 정렬하고, 그룹 내 브랜드도 이름순 정렬
+  // 정렬: 그룹 키와 그룹 내 브랜드 정렬
   const sortedGroupedBrands: Record<string, LocalBrand[]> = {};
   Object.keys(groupedBrands)
     .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
@@ -99,7 +95,7 @@ const Brand: React.FC = () => {
           <Subtitle>새로운 시즌 제품들을 내 손안에!</Subtitle>
         </Header>
 
-        {/* StatsSection: brandCount와 productCount */}
+        {/* StatsSection: 전체 통계 */}
         <StatsSection BrandIcon={BrandIcon} />
 
         <Divider />
