@@ -1,25 +1,23 @@
+// src/components/Brand/BrandList.tsx
+
 import React from 'react';
 import styled from 'styled-components';
-import BrandItem from './BrandItem';
-
-interface Brand {
-  name: string;
-  category: string;
-  company: string;
-}
+import BrandItem, { Brand as BrandType } from './BrandItem';
 
 interface BrandListProps {
-  groupedBrands: Record<string, Brand[]>;
+  groupedBrands: Record<string, BrandType[]>;
 }
 
 export const BrandList: React.FC<BrandListProps> = ({ groupedBrands }) => {
+  const keys = Object.keys(groupedBrands);
   return (
     <Container>
-      {Object.keys(groupedBrands).map((group) => (
-        <GroupSection key={group}>
-          <GroupTitle>{group}</GroupTitle>
-          {groupedBrands[group].map((brand, index) => (
-            <BrandItem key={index} brand={brand} />
+      {keys.map((groupKey) => (
+        <GroupSection key={groupKey}>
+          <GroupTitle>{groupKey}</GroupTitle>
+          {groupedBrands[groupKey].map((brand, index) => (
+            // key: 실제 id가 있으면 그걸로 바꾸세요.
+            <BrandItem key={brand.name + index} brand={brand} />
           ))}
         </GroupSection>
       ))}

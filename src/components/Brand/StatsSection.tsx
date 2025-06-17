@@ -1,18 +1,56 @@
 // src/components/LockerRoom/StatsSection.tsx
-import React from 'react';
+
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { getBrandList, Brand as ApiBrand } from '../../api/brand/brandApi';
 
 interface Props {
-  brandCount: number;
-  productCount: number;
   BrandIcon: string;
 }
 
-const StatsSection: React.FC<Props> = ({
-  brandCount,
-  productCount,
-  BrandIcon,
-}) => {
+const StatsSection: React.FC<Props> = ({ BrandIcon }) => {
+  const [brandCount, setBrandCount] = useState<number>(0);
+  const [productCount, setProductCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data: ApiBrand[] = await getBrandList();
+        setBrandCount(data.length);
+        // ApiBrand.productCount 필드가 있으면 합산, 없으면 0 처리
+        const total = data.reduce((sum, b) => sum + (b.productCount || 0), 0);
+        setProductCount(total);
+      } catch (err) {
+        console.error('StatsSection API 호출 실패:', err);
+        setError('통계 정보를 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <Container>
+        <StatsContainer>
+          <StatText>로딩 중...</StatText>
+        </StatsContainer>
+      </Container>
+    );
+  }
+  if (error) {
+    return (
+      <Container>
+        <StatsContainer>
+          <StatText>{error}</StatText>
+        </StatsContainer>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <StatsContainer>
@@ -37,6 +75,8 @@ const StatsSection: React.FC<Props> = ({
 };
 
 export default StatsSection;
+
+// styled-components
 
 const Container = styled.div`
   display: flex;
@@ -65,6 +105,7 @@ const StatsContainer = styled.div`
   width: 100%;
 `;
 
+// StatBox 스타일은 기존과 동일
 const StatBox = styled.div<{
   $white?: boolean;
   $gray?: boolean;
@@ -103,4 +144,10 @@ const StatLabel = styled.div`
   color: #000;
   margin-right: 5px;
   width: 100%;
+`;
+
+const StatText = styled.div`
+  font-size: 14px;
+  color: #666;
+  padding: 15px 20px;
 `;

@@ -12,23 +12,18 @@ import { getBrandList, Brand as ApiBrand } from '../../api/brand/brandApi';
 interface LocalBrand {
   id: number;
   name: string;
-  category: string;
-  group: string;
-  company: string;
+  category: string; // API의 brand_category
+  group: string; // API의 groupName
+  company: string; // 검색 필드에 포함하려면 매핑; 예시에선 빈 문자열
 }
 
 const Brand: React.FC = () => {
-  // API에서 받아온 원본 데이터
   const [apiBrands, setApiBrands] = useState<ApiBrand[]>([]);
-  // UI에서 사용하는 형태로 매핑한 로컬 상태
   const [brands, setBrands] = useState<LocalBrand[]>([]);
-
-  // ControlSection, BrandList를 위한 상태
-  const [filter] = useState<string>('');
-  const [sortBy, setSortBy] = useState<'group' | 'category'>('group');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [sortBy, setSortBy] = useState<'group' | 'category'>('group');
 
-  // 1) 컴포넌트가 마운트될 때 API 호출
+  // API 호출
   useEffect(() => {
     const fetchBrands = async () => {
       try {
@@ -38,39 +33,39 @@ const Brand: React.FC = () => {
         console.error('브랜드 리스트 조회 실패:', err);
       }
     };
-
     fetchBrands();
   }, []);
 
-  // 2) apiBrands가 바뀔 때, LocalBrand 형태로 매핑
+  // 매핑: ApiBrand → LocalBrand
   useEffect(() => {
     const mapped: LocalBrand[] = apiBrands.map((b) => ({
       id: b.id,
       name: b.brandName,
-      // 백엔드에서 category, company 정보가 없다면 임시로 빈 문자열('')을 넣거나,
-      // 실제 내려주는 필드명으로 변경해 주세요.
-      category: '',
-      group: b.groupName,
-      company: '',
+      category: b.brand_category || '',
+      group: b.groupName || '',
+      company: '', // 필요 시 b.companyName 등 실제 필드를 사용
     }));
     setBrands(mapped);
   }, [apiBrands]);
 
-  // 3) 필터링 & 검색어 적용
-  const filteredBrands: LocalBrand[] = brands.filter(
-    (brand) =>
-      // category 필터가 비어있거나(category가 '')
-      (!filter || brand.category === filter) &&
-      // 검색어가 비어있거나(name 또는 company에 검색어 포함)
-      (!searchTerm ||
-        brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        brand.company.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // 검색: name, group, category 포함 여부로 필터링
+  const filteredBrands = brands.filter((brand) => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      brand.name.toLowerCase().includes(term) ||
+      brand.group.toLowerCase().includes(term) ||
+      brand.category.toLowerCase().includes(term)
+    );
+  });
 
-  // 4) 그룹핑 (sortBy에 따라 'group' 또는 'category'로 묶음)
+  // 그룹핑: sortBy에 따라 groupName별 또는 category별로 묶기
   const groupedBrands: Record<string, LocalBrand[]> = filteredBrands.reduce(
     (acc: Record<string, LocalBrand[]>, brand) => {
-      const key = brand[sortBy]; // 'group' 또는 'category'
+      const key =
+        sortBy === 'group'
+          ? brand.group || '기타' // group이 빈 문자열이면 '기타' 등으로 묶음
+          : brand.category || '기타'; // category 빈 문자열 시
       if (!acc[key]) acc[key] = [];
       acc[key].push(brand);
       return acc;
@@ -78,7 +73,20 @@ const Brand: React.FC = () => {
     {}
   );
 
-  // 5) sort 기준 토글 함수
+  // 정렬: 그룹 키를 알파벳/한글 순으로 정렬하고, 그룹 내 브랜드도 이름순 정렬
+  const sortedGroupedBrands: Record<string, LocalBrand[]> = {};
+  Object.keys(groupedBrands)
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+    .forEach((key) => {
+      const arr = groupedBrands[key]
+        .slice()
+        .sort((x, y) =>
+          x.name.localeCompare(y.name, undefined, { sensitivity: 'base' })
+        );
+      sortedGroupedBrands[key] = arr;
+    });
+
+  // 정렬 토글 함수
   const toggleSort = () => {
     setSortBy((prev) => (prev === 'group' ? 'category' : 'group'));
   };
@@ -91,16 +99,12 @@ const Brand: React.FC = () => {
           <Subtitle>새로운 시즌 제품들을 내 손안에!</Subtitle>
         </Header>
 
-        {/* StatsSection: total 브랜드 개수(로컬 매핑 후)와 예시 productCount 전달 */}
-        <StatsSection
-          brandCount={brands.length}
-          productCount={9480}
-          BrandIcon={BrandIcon}
-        />
+        {/* StatsSection: brandCount와 productCount */}
+        <StatsSection BrandIcon={BrandIcon} />
 
         <Divider />
 
-        {/* ControlSection: 정렬 토글, 검색어 입력 */}
+        {/* ControlSection: 검색어와 정렬 토글 */}
         <ControlSection
           toggleSort={toggleSort}
           sortBy={sortBy}
@@ -108,8 +112,8 @@ const Brand: React.FC = () => {
           setSearchTerm={setSearchTerm}
         />
 
-        {/* BrandList: 그룹핑된 결과를 넘겨줌 */}
-        <BrandList groupedBrands={groupedBrands} />
+        {/* BrandList: 그룹핑된 결과 */}
+        <BrandList groupedBrands={sortedGroupedBrands} />
       </Container>
     </ThemeProvider>
   );

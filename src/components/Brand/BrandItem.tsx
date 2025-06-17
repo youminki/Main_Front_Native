@@ -1,14 +1,22 @@
+// src/components/Brand/BrandItem.tsx
+
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-interface Brand {
+// Brand 인터페이스 정의
+export interface Brand {
   name: string;
-  category: string;
-  company: string;
+  category: string; // API의 brand_category
+  group: string; // API의 groupName
+  // company 등 추가 필드가 필요하면 여기에 선언
 }
 
-const BrandItem: React.FC<{ brand: Brand }> = ({ brand }) => {
+interface BrandItemProps {
+  brand: Brand;
+}
+
+const BrandItem: React.FC<BrandItemProps> = ({ brand }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -19,22 +27,26 @@ const BrandItem: React.FC<{ brand: Brand }> = ({ brand }) => {
     <Container onClick={handleClick}>
       <BrandDetails>
         <BrandName>{brand.name}</BrandName>
-        <BrandCompany>{brand.company}</BrandCompany>
+        {brand.group && <GroupName>{brand.group}</GroupName>}
       </BrandDetails>
-      <BrandCategoryWrapper>
-        <BrandCategory>{brand.category}</BrandCategory>
-      </BrandCategoryWrapper>
+      {brand.category ? (
+        <BrandCategoryWrapper>
+          <BrandCategory>{brand.category}</BrandCategory>
+        </BrandCategoryWrapper>
+      ) : null}
     </Container>
   );
 };
 
 export default BrandItem;
 
+// styled-components
+
 const Container = styled.div`
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   padding: 16px 20px;
-  border: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
   cursor: pointer;
   transition: background 0.2s;
 
@@ -48,6 +60,7 @@ const BrandDetails = styled.div`
   flex-direction: column;
 `;
 
+// 브랜드 이름
 const BrandName = styled.span`
   font-weight: 900;
   font-size: 15px;
@@ -55,21 +68,23 @@ const BrandName = styled.span`
   margin-bottom: 4px;
 `;
 
-const BrandCompany = styled.span`
+// 이름 아래 groupName
+const GroupName = styled.span`
   font-weight: 400;
-  font-size: 11px;
-  color: #999;
+  font-size: 12px;
+  color: #666;
 `;
 
+// 오른쪽 끝에 배치: margin-left:auto
 const BrandCategoryWrapper = styled.div`
+  margin-left: auto;
   display: flex;
   align-items: center;
-  justify-content: right;
-  flex: 1;
 `;
 
 const BrandCategory = styled.span`
   font-weight: 400;
   font-size: 13px;
   color: #999;
+  white-space: nowrap;
 `;
