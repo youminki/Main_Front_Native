@@ -1,11 +1,16 @@
 // src/pages/Brand/BrandDetail.tsx
 
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
+import {
+  useParams,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import { FaTh } from 'react-icons/fa';
 
-import UnifiedHeader from '../../components/UnifiedHeader'; // UnifiedHeader import 경로를 실제 경로에 맞춰 조정
+import UnifiedHeader from '../../components/UnifiedHeader';
 import StatsSection from '../../components/Brand/StatsSection';
 import SubHeader from '../../components/Home/SubHeader';
 import ItemList, { UIItem } from '../../components/Home/ItemList';
@@ -16,6 +21,11 @@ import {
   getProductsByBrand,
   Product as ApiProduct,
 } from '../../api/product/product';
+
+import HomeDetail from '../Home/HomeDetail'; // HomeDetail 경로 확인
+import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
+import ShareIcon from '../../assets/Header/ShareIcon.svg';
+import HomeIcon from '../../assets/Header/HomeIcon.svg';
 
 const fadeInDown = keyframes`
   from { opacity: 0; transform: translateY(-10px); }
@@ -35,6 +45,8 @@ const BrandDetail: React.FC = () => {
   const { brandId } = useParams<{ brandId: string }>();
   const idNum = brandId ? parseInt(brandId, 10) : NaN;
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [brand, setBrand] = useState<LocalBrand | null>(null);
   const [loadingBrand, setLoadingBrand] = useState<boolean>(true);
@@ -44,8 +56,9 @@ const BrandDetail: React.FC = () => {
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
   const [errorProducts, setErrorProducts] = useState<string>('');
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  // 카테고리 필터 (URL 쿼리의 categori 반영)
+  const initialCat = searchParams.get('categori') || 'all';
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCat);
 
   // 열 선택 관련 상태
   const [viewCols, setViewCols] = useState<number>(4);
@@ -63,7 +76,34 @@ const BrandDetail: React.FC = () => {
     setViewCols(isMobileView ? 2 : 4);
   }, [isMobileView]);
 
-  // 브랜드 상세 정보 로드
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // 쿼리의 brandScroll 혹은 fromBrand 복원 로직이 필요하면 여기에 추가 가능
+  // (여기서는 모달로 띄우는 부분만 구현)
+
+  // URL 쿼리의 categori가 바뀌면 selectedCategory에 반영
+  useEffect(() => {
+    const cat = searchParams.get('categori');
+    if (cat) {
+      setSelectedCategory(cat);
+    } else {
+      setSelectedCategory('all');
+    }
+  }, [searchParams]);
+
+  // selectedCategory 변경 시 URL 동기화
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (selectedCategory && selectedCategory !== 'all') {
+      params.set('categori', selectedCategory);
+    } else {
+      params.delete('categori');
+    }
+    setSearchParams(params, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory]);
+
+  // 브랜드 정보 로드
   useEffect(() => {
     if (isNaN(idNum)) {
       setErrorBrand('유효하지 않은 브랜드 ID입니다.');
@@ -114,6 +154,53 @@ const BrandDetail: React.FC = () => {
     })();
   }, [brand, selectedCategory]);
 
+  // 상세 모달 ID
+  const modalId = searchParams.get('id');
+  const isModalOpen = Boolean(modalId);
+
+  // 제품 클릭: 모달 열기 (URL에 id 설정)
+  const handleItemClick = (prodId: string) => {
+    // 현재 scroll 위치를 보존하려면 query에 brandScroll 추가 가능
+    // const scrollY = window.scrollY;
+    const params = new URLSearchParams();
+    // 기존 카테고리 유지
+    if (selectedCategory && selectedCategory !== 'all') {
+      params.set('categori', selectedCategory);
+    }
+    // set id for modal
+    params.set('id', prodId);
+    setSearchParams(params, { replace: true });
+  };
+
+  // 모달 닫기: query에서 id 제거
+  const handleCloseModal = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete('id');
+    setSearchParams(params, { replace: true });
+  };
+
+  // 공유 핸들러 (모달 내부에서도 사용 가능)
+  const handleShare = async () => {
+    const shareData = {
+      title: document.title,
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error('공유 실패', err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareData.url);
+        // 간단히 alert 혹은 ReusableModal로 알림
+      } catch (err) {
+        console.error('클립보드 복사 실패', err);
+      }
+    }
+  };
+
   // 로딩/오류 처리
   if (loadingBrand) {
     return (
@@ -134,7 +221,7 @@ const BrandDetail: React.FC = () => {
     return null;
   }
 
-  // UIItem 매핑: UIItem.imageurl 필드에 API의 imageUrl 또는 실제 필드명을 매핑
+  // UIItem 매핑
   const uiItems: UIItem[] = products.map((it) => ({
     id: it.id.toString(),
     image: it.image || '',
@@ -154,14 +241,12 @@ const BrandDetail: React.FC = () => {
 
   return (
     <>
-      {/* UnifiedHeader에 onBack prop 지정: 뒤로가기 시 /brand 로 이동 */}
       <UnifiedHeader
         variant='oneDepth'
         title={brand.name}
         onBack={() => navigate('/brand')}
       />
 
-      {/* Header가 fixed 되어 있다면, 아래 Container에 padding-top을 주어 내용이 겹치지 않도록 조정 */}
       <Container>
         <Header>
           <Title>{brand.name}</Title>
@@ -186,7 +271,7 @@ const BrandDetail: React.FC = () => {
 
         {/* 필터 및 열 선택 */}
         <ControlsContainer ref={menuRef}>
-          <DropdownToggle onClick={() => setMenuOpen((o) => !o)}>
+          <DropdownToggle onClick={() => setMenuOpen((prev) => !prev)}>
             <FaTh size={20} />
           </DropdownToggle>
           <FilterContainer />
@@ -217,12 +302,7 @@ const BrandDetail: React.FC = () => {
             <ItemList
               items={uiItems}
               columns={viewCols}
-              onDelete={() => {
-                /* 필요시 구현 */
-              }}
-              onItemClick={() => {
-                /* 필요시 구현 */
-              }}
+              onItemClick={handleItemClick}
             />
           )}
         </Content>
@@ -233,6 +313,39 @@ const BrandDetail: React.FC = () => {
           </ArrowIcon>
         </ScrollToTopButton>
       </Container>
+
+      {/* 상세 모달 */}
+      {isModalOpen && modalId && (
+        <>
+          <ModalOverlay>
+            <ModalBox>
+              <ModalHeaderWrapper>
+                <ModalHeaderContainer>
+                  <LeftSection>
+                    <CancleIcon
+                      src={CancleIconIcon}
+                      alt='취소'
+                      onClick={handleCloseModal}
+                    />
+                  </LeftSection>
+                  <CenterSection />
+                  <RightSection>
+                    <Icon src={ShareIcon} alt='공유' onClick={handleShare} />
+                    <Icon
+                      src={HomeIcon}
+                      alt='홈'
+                      onClick={() => navigate('/home')}
+                    />
+                  </RightSection>
+                </ModalHeaderContainer>
+              </ModalHeaderWrapper>
+              <ModalBody>
+                <HomeDetail id={modalId} />
+              </ModalBody>
+            </ModalBox>
+          </ModalOverlay>
+        </>
+      )}
     </>
   );
 };
@@ -380,4 +493,67 @@ const StatText = styled.div`
   font-size: 14px;
   color: #666;
   padding: 15px 20px;
+`;
+
+// 모달 스타일 (Home과 동일 구조)
+const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  overscroll-behavior: contain;
+`;
+
+const ModalBox = styled.div`
+  background: #fff;
+  width: 100%;
+  max-width: 1000px;
+  height: 100%;
+  overflow-y: auto;
+  position: relative;
+  overscroll-behavior: contain;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const ModalHeaderWrapper = styled.div`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #fff;
+  z-index: 2100;
+`;
+
+const ModalHeaderContainer = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+`;
+
+const ModalBody = styled.div`
+  padding-top: 70px; /* 헤더 높이만큼 여백 */
+`;
+
+const LeftSection = styled.div`
+  cursor: pointer;
+`;
+const CenterSection = styled.div`
+  flex: 1;
+`;
+const RightSection = styled.div`
+  display: flex;
+  gap: 19px;
+`;
+
+const CancleIcon = styled.img`
+  cursor: pointer;
+`;
+const Icon = styled.img`
+  cursor: pointer;
 `;
