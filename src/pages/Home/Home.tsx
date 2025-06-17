@@ -15,6 +15,7 @@ import HomeIcon from '../../assets/Header/HomeIcon.svg';
 import ArrowIconSvg from '../../assets/ArrowIcon.svg';
 import ReusableModal from '../../components/ReusableModal';
 import FilterContainer from '../../components/Home/FilterContainer';
+import { FaTh } from 'react-icons/fa';
 
 const fadeInDown = keyframes`
   from { opacity: 0; transform: translateY(-10px); }
@@ -45,11 +46,14 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // 열 고정: 모바일 2열, PC 4열
+  // 컬럼 수
   const [viewCols, setViewCols] = useState(isMobileView ? 2 : 4);
   useEffect(() => {
     setViewCols(isMobileView ? 2 : 4);
   }, [isMobileView]);
+
+  // 메뉴 열림 토글
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // 카테고리/검색
   const [selectedCategory, setSelectedCategory] = useState(
@@ -170,6 +174,13 @@ const Home: React.FC = () => {
     setFeatureModalOpen(false);
   };
 
+  // 컬럼 옵션 선택
+  const selectCols = (n: number) => {
+    setViewCols(n);
+    setMenuOpen(false);
+  };
+  const colOptions = isMobileView ? [1, 2, 3] : [4, 5, 6];
+
   // 공유하기 핸들러
   const handleShare = async () => {
     const shareData = {
@@ -227,9 +238,26 @@ const Home: React.FC = () => {
         onCategoryClick={() => setSearchQuery('')}
       />
 
-      {/* 필터 */}
+      {/* 필터 및 열 선택 */}
       <ControlsContainer ref={menuRef}>
+        <DropdownToggle onClick={() => setMenuOpen((o) => !o)}>
+          <FaTh size={20} />
+        </DropdownToggle>
         <FilterContainer />
+        {menuOpen && (
+          <DropdownMenu>
+            {colOptions.map((n) => (
+              <DropdownItem
+                key={n}
+                active={viewCols === n}
+                onClick={() => selectCols(n)}
+              >
+                <OptionNumber>{n}</OptionNumber>
+                <OptionText>열로 보기</OptionText>
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        )}
       </ControlsContainer>
 
       {/* 제품 리스트 or 로딩 스피너 */}
@@ -315,7 +343,9 @@ const ControlsContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 10px;
   margin: 8px 0;
+  position: relative;
 `;
 
 const ContentWrapper = styled.div`
@@ -358,6 +388,7 @@ const ModalOverlay = styled.div`
   align-items: center;
   justify-content: center;
   z-index: 2000;
+  /* 모달 바깥으로 스크롤 전파되지 않도록 */
   overscroll-behavior: contain;
 `;
 
@@ -368,6 +399,7 @@ const ModalBox = styled.div`
   height: 100%;
   overflow-y: auto;
   position: relative;
+  /* 모달 내 스크롤이 바깥으로 전파되지 않도록 막음 */
   overscroll-behavior: contain;
   &::-webkit-scrollbar {
     display: none;
@@ -411,6 +443,59 @@ const CancleIcon = styled.img`
 `;
 const Icon = styled.img`
   cursor: pointer;
+`;
+
+const DropdownToggle = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background-color: #e6e6e6;
+  }
+`;
+
+const DropdownMenu = styled.ul`
+  position: absolute;
+  right: calc(50px + 0);
+  top: calc(5px + 36px);
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 140px;
+  z-index: 10;
+  animation: ${fadeInDown} 0.25s ease-out;
+`;
+
+const DropdownItem = styled.li<{ active: boolean }>`
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  color: ${({ active }) => (active ? '#ff9d00' : '#333')};
+  background: ${({ active }) => (active ? '#fff7e6' : 'transparent')};
+  &:hover {
+    background: #f5f5f5;
+  }
+`;
+
+const OptionNumber = styled.span`
+  padding: 0 4px;
+  font-weight: 700;
+`;
+
+const OptionText = styled.span`
+  margin-left: 4px;
 `;
 
 const InfoList = styled.ol`
