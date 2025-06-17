@@ -123,7 +123,7 @@ const App: React.FC = () => (
 
         {/* Brand */}
         <Route path='/brand' element={<Brand />} />
-        <Route path='/brand/:brandName' element={<BrandDetail />} />
+        <Route path='/brand/:brandId' element={<BrandDetail />} />
 
         {/* Melpik */}
         <Route path='/melpik' element={<Melpik />} />

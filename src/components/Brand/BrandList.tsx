@@ -15,9 +15,9 @@ export const BrandList: React.FC<BrandListProps> = ({ groupedBrands }) => {
       {keys.map((groupKey) => (
         <GroupSection key={groupKey}>
           <GroupTitle>{groupKey}</GroupTitle>
-          {groupedBrands[groupKey].map((brand, index) => (
-            // key: 실제 id가 있으면 그걸로 바꾸세요.
-            <BrandItem key={brand.name + index} brand={brand} />
+          {groupedBrands[groupKey].map((brand) => (
+            // brand.id가 고유하므로 key로 사용
+            <BrandItem key={brand.id} brand={brand} />
           ))}
         </GroupSection>
       ))}

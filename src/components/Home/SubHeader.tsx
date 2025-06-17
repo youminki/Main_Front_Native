@@ -1,4 +1,5 @@
 // src/components/Header/SubHeader.tsx
+
 import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSearchParams } from 'react-router-dom';
@@ -116,7 +117,6 @@ const SubHeader: React.FC<SubHeaderProps> = ({
             </ArrowButtonWrapper>
 
             <IconsWrapper ref={iconsRef}>
-              {/* <BottomLine /> */}
               {homeIcons.map((icon, idx) => {
                 const isSelected = icon.category === selectedCategory;
                 return (
@@ -147,16 +147,19 @@ const SubHeader: React.FC<SubHeaderProps> = ({
 
 export default SubHeader;
 
+// Styled Components
 const SubHeaderWrapper = styled.div`
-  position: fixed;
-  top: 50px;
-  left: 0;
-  right: 0;
-  height: 130px;
-  z-index: 100;
+  /* position: fixed 제거하여 자연 흐름에 따르도록 함 */
+  /* 필요 시 position: sticky; top:0; 등을 사용할 수 있음 */
+  position: relative;
+  width: 100%;
   background: #fff;
-  display: flex;
-  justify-content: center;
+  /* StatsSection 하단에 붙이려면 BrandDetail 쪽에서 SubHeader가 렌더된 위치가 그대로 반영됩니다. */
+  /* 만약 스크롤 시 상단에 고정되길 원하면 아래처럼 바꿔주세요:
+     position: sticky;
+     top: 0; 
+     z-index: 100;
+  */
 `;
 
 const ContentWrapper = styled.div`
@@ -164,6 +167,7 @@ const ContentWrapper = styled.div`
   align-items: center;
   width: 100%;
   max-width: 1000px;
+  margin: 0 auto; /* 가운데 정렬 */
 `;
 
 const ArrowButtonWrapper = styled.div`
@@ -221,11 +225,7 @@ const Indicator = styled.div<{ position: number }>`
 `;
 
 const Divider = styled.div`
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  right: 20px;
-  max-width: 900px;
-  margin: auto;
+  width: 100%;
   border-bottom: 1px solid #eeeeee;
+  margin-top: 4px;
 `;

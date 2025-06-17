@@ -333,10 +333,9 @@ const MainContainer = styled.div`
   flex-direction: column;
   position: relative;
 
-  padding-top: calc(70px + 2rem);
   margin: auto;
   max-width: 1000px;
-  width: 95%;
+  padding: 1rem;
 `;
 
 const ControlsContainer = styled.div`
