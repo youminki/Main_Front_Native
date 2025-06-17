@@ -27,6 +27,8 @@ export const BrandList: React.FC<BrandListProps> = ({ groupedBrands }) => {
 
 const Container = styled.div`
   width: 100%;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
 `;
 
 const GroupSection = styled.section`
