@@ -1,14 +1,15 @@
 // src/pages/Brand/BrandDetail.tsx
 
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
 import styled, { keyframes } from 'styled-components';
 import { FaTh } from 'react-icons/fa';
 
+import UnifiedHeader from '../../components/UnifiedHeader'; // UnifiedHeader import 경로를 실제 경로에 맞춰 조정
 import StatsSection from '../../components/Brand/StatsSection';
 import SubHeader from '../../components/Home/SubHeader';
 import ItemList, { UIItem } from '../../components/Home/ItemList';
-import FilterContainer from '../../components/Home/FilterContainer'; // 추가
+import FilterContainer from '../../components/Home/FilterContainer';
 import BrandIcon from '/src/assets/BrandIcon.svg';
 import { getBrandList, Brand as ApiBrand } from '../../api/brand/brandApi';
 import {
@@ -33,6 +34,7 @@ interface LocalBrand {
 const BrandDetail: React.FC = () => {
   const { brandId } = useParams<{ brandId: string }>();
   const idNum = brandId ? parseInt(brandId, 10) : NaN;
+  const navigate = useNavigate();
 
   const [brand, setBrand] = useState<LocalBrand | null>(null);
   const [loadingBrand, setLoadingBrand] = useState<boolean>(true);
@@ -132,7 +134,7 @@ const BrandDetail: React.FC = () => {
     return null;
   }
 
-  // UIItem 매핑
+  // UIItem 매핑: UIItem.imageurl 필드에 API의 imageUrl 또는 실제 필드명을 매핑
   const uiItems: UIItem[] = products.map((it) => ({
     id: it.id.toString(),
     image: it.image || '',
@@ -151,69 +153,87 @@ const BrandDetail: React.FC = () => {
   };
 
   return (
-    <Container>
-      <Header>
-        <Title>{brand.name}</Title>
-        <Subtitle>새로운 시즌 제품들을 내 손안에!</Subtitle>
-      </Header>
-
-      <StatsSection
-        BrandIcon={BrandIcon}
-        brandCount={1}
-        productCount={brand.productCount}
-      />
-      <Divider />
-
-      <SubHeader
-        selectedCategory={selectedCategory}
-        setSelectedCategory={(cat) => {
-          setSelectedCategory(cat);
-          scrollToTop();
-        }}
-        onCategoryClick={scrollToTop}
+    <>
+      {/* UnifiedHeader에 onBack prop 지정: 뒤로가기 시 /brand 로 이동 */}
+      <UnifiedHeader
+        variant='oneDepth'
+        title={brand.name}
+        onBack={() => navigate('/brand')}
       />
 
-      {/* 필터 및 열 선택 */}
-      <ControlsContainer ref={menuRef}>
-        <DropdownToggle onClick={() => setMenuOpen((o) => !o)}>
-          <FaTh size={20} />
-        </DropdownToggle>
-        {/* FilterContainer 추가 */}
-        <FilterContainer />
-        {menuOpen && (
-          <DropdownMenu>
-            {colOptions.map((n) => (
-              <DropdownItem
-                key={n}
-                active={viewCols === n}
-                onClick={() => selectCols(n)}
-              >
-                <OptionNumber>{n}</OptionNumber>
-                <OptionText>열로 보기</OptionText>
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        )}
-      </ControlsContainer>
+      {/* Header가 fixed 되어 있다면, 아래 Container에 padding-top을 주어 내용이 겹치지 않도록 조정 */}
+      <Container>
+        <Header>
+          <Title>{brand.name}</Title>
+          <Subtitle>새로운 시즌 제품들을 내 손안에!</Subtitle>
+        </Header>
 
-      <Content>
-        {loadingProducts ? (
-          <StatText>제품 목록을 불러오는 중...</StatText>
-        ) : errorProducts ? (
-          <StatText>{errorProducts}</StatText>
-        ) : products.length === 0 ? (
-          <StatText>해당 조건의 제품이 없습니다.</StatText>
-        ) : (
-          <ItemList items={uiItems} columns={viewCols} />
-        )}
-      </Content>
+        <StatsSection
+          BrandIcon={BrandIcon}
+          brandCount={1}
+          productCount={brand.productCount}
+        />
+        <Divider />
 
-      <ScrollToTopButton onClick={scrollToTop}>
-        <ArrowIcon viewBox='0 0 24 24'>
-          <path d='M12 4l-8 8h6v8h4v-8h6z' />
-        </ArrowIcon>
-      </ScrollToTopButton>
-    </Container>
+        <SubHeader
+          selectedCategory={selectedCategory}
+          setSelectedCategory={(cat) => {
+            setSelectedCategory(cat);
+            scrollToTop();
+          }}
+          onCategoryClick={scrollToTop}
+        />
+
+        {/* 필터 및 열 선택 */}
+        <ControlsContainer ref={menuRef}>
+          <DropdownToggle onClick={() => setMenuOpen((o) => !o)}>
+            <FaTh size={20} />
+          </DropdownToggle>
+          <FilterContainer />
+          {menuOpen && (
+            <DropdownMenu>
+              {colOptions.map((n) => (
+                <DropdownItem
+                  key={n}
+                  active={viewCols === n}
+                  onClick={() => selectCols(n)}
+                >
+                  <OptionNumber>{n}</OptionNumber>
+                  <OptionText>열로 보기</OptionText>
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          )}
+        </ControlsContainer>
+
+        <Content>
+          {loadingProducts ? (
+            <StatText>제품 목록을 불러오는 중...</StatText>
+          ) : errorProducts ? (
+            <StatText>{errorProducts}</StatText>
+          ) : products.length === 0 ? (
+            <StatText>해당 조건의 제품이 없습니다.</StatText>
+          ) : (
+            <ItemList
+              items={uiItems}
+              columns={viewCols}
+              onDelete={() => {
+                /* 필요시 구현 */
+              }}
+              onItemClick={() => {
+                /* 필요시 구현 */
+              }}
+            />
+          )}
+        </Content>
+
+        <ScrollToTopButton onClick={scrollToTop}>
+          <ArrowIcon viewBox='0 0 24 24'>
+            <path d='M12 4l-8 8h6v8h4v-8h6z' />
+          </ArrowIcon>
+        </ScrollToTopButton>
+      </Container>
+    </>
   );
 };
 
