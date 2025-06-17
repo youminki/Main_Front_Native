@@ -1,15 +1,9 @@
 // src/pages/Brand/BrandDetail.tsx
 
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  useParams,
-  useNavigate,
-  useLocation,
-  useSearchParams,
-} from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import { FaTh } from 'react-icons/fa';
-
 import UnifiedHeader from '../../components/UnifiedHeader';
 import StatsSection from '../../components/Brand/StatsSection';
 import SubHeader from '../../components/Home/SubHeader';
@@ -45,7 +39,7 @@ const BrandDetail: React.FC = () => {
   const { brandId } = useParams<{ brandId: string }>();
   const idNum = brandId ? parseInt(brandId, 10) : NaN;
   const navigate = useNavigate();
-  const location = useLocation();
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [brand, setBrand] = useState<LocalBrand | null>(null);
