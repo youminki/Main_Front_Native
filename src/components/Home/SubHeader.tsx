@@ -1,12 +1,11 @@
 // src/components/Header/SubHeader.tsx
-
 import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSearchParams } from 'react-router-dom';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import Spinner from '../Spinner';
 
-import Entire from '../../assets/SubHeader/Entire.svg';
+import All from '../../assets/SubHeader/Entire.svg';
 import MiniDress from '../../assets/SubHeader/MiniDress.svg';
 import MidiDress from '../../assets/SubHeader/MidiDress.svg';
 import LongDress from '../../assets/SubHeader/LongDress.svg';
@@ -28,7 +27,7 @@ import Best from '../../assets/SubHeader/Best.svg';
 import Padding from '../../assets/SubHeader/Padding.svg';
 
 const homeIcons = [
-  { src: Entire, alt: '전체', category: 'Entire' },
+  { src: All, alt: '전체', category: 'All' },
   { src: MiniDress, alt: '미니원피스', category: 'MiniDress' },
   { src: MidiDress, alt: '미디원피스', category: 'MidiDress' },
   { src: LongDress, alt: '롱 원피스', category: 'LongDress' },
@@ -89,9 +88,15 @@ const SubHeader: React.FC<SubHeaderProps> = ({
 
   const handleClick = (category: string) => {
     const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set('categori', category);
+    // 'All' 선택 시에는 category 파라미터 제거
+    if (category === 'All') {
+      newParams.delete('category');
+    } else {
+      newParams.set('category', category);
+    }
+    // 검색어는 초기화
     newParams.delete('search');
-    setSearchParams(newParams);
+    setSearchParams(newParams, { replace: true });
     setSelectedCategory(category);
     onCategoryClick();
   };
@@ -149,27 +154,17 @@ export default SubHeader;
 
 // Styled Components
 const SubHeaderWrapper = styled.div`
-  /* position: fixed 제거하여 자연 흐름에 따르도록 함 */
-  /* 필요 시 position: sticky; top:0; 등을 사용할 수 있음 */
   position: relative;
   width: 100%;
   background: #fff;
-  /* StatsSection 하단에 붙이려면 BrandDetail 쪽에서 SubHeader가 렌더된 위치가 그대로 반영됩니다. */
-  /* 만약 스크롤 시 상단에 고정되길 원하면 아래처럼 바꿔주세요:
-     position: sticky;
-     top: 0; 
-     z-index: 100;
-  */
 `;
-
 const ContentWrapper = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
   max-width: 1000px;
-  margin: 0 auto; /* 가운데 정렬 */
+  margin: 0 auto;
 `;
-
 const ArrowButtonWrapper = styled.div`
   display: none;
   @media (min-width: 1024px) {
@@ -179,7 +174,6 @@ const ArrowButtonWrapper = styled.div`
     padding: 0 8px;
   }
 `;
-
 const IconsWrapper = styled.div`
   position: relative;
   display: flex;
@@ -189,7 +183,6 @@ const IconsWrapper = styled.div`
     display: none;
   }
 `;
-
 const IconContainer = styled.div<{ selected: boolean }>`
   flex: 0 0 auto;
   width: ${ICON_WIDTH}px;
@@ -200,19 +193,16 @@ const IconContainer = styled.div<{ selected: boolean }>`
   padding: 10px 0;
   opacity: ${({ selected }) => (selected ? 1 : 0.6)};
 `;
-
 const Icon = styled.img`
   width: auto;
   height: auto;
   object-fit: contain;
   margin-bottom: 5px;
 `;
-
 const IconText = styled.span<{ selected: boolean }>`
   font-size: 11px;
   color: ${({ selected }) => (selected ? '#000' : '#666')};
 `;
-
 const Indicator = styled.div<{ position: number }>`
   position: absolute;
   bottom: 0;
@@ -223,7 +213,6 @@ const Indicator = styled.div<{ position: number }>`
   border-radius: 3px;
   transition: left 0.3s ease-in-out;
 `;
-
 const Divider = styled.div`
   width: 100%;
   border-bottom: 1px solid #eeeeee;

@@ -57,7 +57,7 @@ const Home: React.FC = () => {
 
   // 카테고리/검색
   const [selectedCategory, setSelectedCategory] = useState(
-    searchParams.get('categori') || 'Entire'
+    searchParams.get('category') || 'All'
   );
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get('search') || ''
@@ -94,7 +94,7 @@ const Home: React.FC = () => {
 
   // URL 동기화
   useEffect(() => {
-    const c = searchParams.get('categori') || 'Entire';
+    const c = searchParams.get('category') || 'All';
     const s = searchParams.get('search') || '';
     setSelectedCategory(c);
     setSearchQuery(s);
@@ -102,8 +102,7 @@ const Home: React.FC = () => {
 
   // 제품 로드 (카테고리 변경 시)
   useEffect(() => {
-    const categoryKey =
-      selectedCategory === 'Entire' ? 'all' : selectedCategory;
+    const categoryKey = selectedCategory === 'All' ? 'all' : selectedCategory;
     setIsLoading(true);
     (async () => {
       try {
@@ -161,7 +160,7 @@ const Home: React.FC = () => {
   // 상세 모달 핸들러
   const handleOpenModal = (id: string) => {
     const params: any = {
-      ...(searchParams.get('categori') && { categori: selectedCategory }),
+      ...(searchParams.get('category') && { category: selectedCategory }),
       ...(searchParams.get('search') && { search: searchQuery }),
       id,
     };
@@ -233,7 +232,7 @@ const Home: React.FC = () => {
         selectedCategory={selectedCategory}
         setSelectedCategory={(cat) => {
           setSearchQuery('');
-          setSearchParams({ categori: cat }, { replace: true });
+          setSearchParams({ category: cat }, { replace: true });
         }}
         onCategoryClick={() => setSearchQuery('')}
       />
