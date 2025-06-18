@@ -50,8 +50,8 @@ const BrandDetail: React.FC = () => {
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
   const [errorProducts, setErrorProducts] = useState<string>('');
 
-  // 카테고리 필터 (URL 쿼리의 categori 반영)
-  const initialCat = searchParams.get('categori') || 'all';
+  // 카테고리 필터 (URL 쿼리의 category 반영)
+  const initialCat = searchParams.get('category') || 'all';
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCat);
 
   // 열 선택 관련 상태
@@ -75,9 +75,9 @@ const BrandDetail: React.FC = () => {
   // 쿼리의 brandScroll 혹은 fromBrand 복원 로직이 필요하면 여기에 추가 가능
   // (여기서는 모달로 띄우는 부분만 구현)
 
-  // URL 쿼리의 categori가 바뀌면 selectedCategory에 반영
+  // URL 쿼리의 category가 바뀌면 selectedCategory에 반영
   useEffect(() => {
-    const cat = searchParams.get('categori');
+    const cat = searchParams.get('category');
     if (cat) {
       setSelectedCategory(cat);
     } else {
@@ -89,9 +89,9 @@ const BrandDetail: React.FC = () => {
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
     if (selectedCategory && selectedCategory !== 'all') {
-      params.set('categori', selectedCategory);
+      params.set('category', selectedCategory);
     } else {
-      params.delete('categori');
+      params.delete('category');
     }
     setSearchParams(params, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,7 +159,7 @@ const BrandDetail: React.FC = () => {
     const params = new URLSearchParams();
     // 기존 카테고리 유지
     if (selectedCategory && selectedCategory !== 'all') {
-      params.set('categori', selectedCategory);
+      params.set('category', selectedCategory);
     }
     // set id for modal
     params.set('id', prodId);
