@@ -447,7 +447,7 @@ const DropdownToggle = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  padding: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #f9f9f9;

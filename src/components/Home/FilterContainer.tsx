@@ -40,7 +40,7 @@ const FilterIconContainer = styled.div`
   img {
     width: 22px;
     height: 22px;
-    padding: 8px;
+    padding: 6px;
     border-radius: 4px;
     border: 1px solid #ccc;
     background-color: #f9f9f9;
