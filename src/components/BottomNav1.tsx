@@ -96,7 +96,10 @@ const BottomNav: React.FC = () => {
         {TABS.map((tab) => {
           const isActive = tab.key === activeKey && glow;
           // home, lockerRoom 만 활성화 예시
-          const enabled = tab.key === 'home' || tab.key === 'lockerRoom';
+          const enabled =
+            tab.key === 'home' ||
+            tab.key === 'brand' ||
+            tab.key === 'lockerRoom';
           return (
             <NavItem
               key={tab.key}
