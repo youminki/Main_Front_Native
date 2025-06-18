@@ -1,3 +1,5 @@
+// src/components/UnifiedHeader.tsx
+
 import React, { useState, useEffect, useRef, FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -75,7 +77,6 @@ const SearchBox = styled.div<{ open: boolean }>`
   border-radius: 18px;
   padding: 4px;
   padding-right: 0px;
-
   box-shadow: ${({ open }) => (open ? '0 2px 8px rgba(0,0,0,0.15)' : 'none')};
   transition:
     width 0.3s ease,
@@ -86,7 +87,6 @@ const SearchBox = styled.div<{ open: boolean }>`
 `;
 const SearchInput = styled.input<{ open?: boolean }>`
   flex: 1;
-
   margin-left: ${({ open }) => (open ? '8px' : '0')};
   border: none;
   outline: none;
@@ -102,7 +102,6 @@ const SearchIconWrapper = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-
   flex-shrink: 0;
 `;
 
@@ -182,7 +181,7 @@ const Nickname = styled.span`
   font-size: 18px;
   color: #000;
 `;
-const Title = styled.h1`
+const TitleText = styled.h1`
   font-weight: 700;
   font-size: 20px;
   margin: 0;
@@ -211,10 +210,12 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [openSearch, setOpenSearch] = useState(false);
+  // query state 초기화: URL의 search 파라미터가 있으면 반영
   const [query, setQuery] = useState(searchParams.get('search') || '');
   const [historyState, setHistoryState] = useState<string[]>([]);
   const boxRef = useRef<HTMLDivElement>(null);
 
+  // 헤더 정보 조회 (로그인/닉네임 등)
   useEffect(() => {
     if (variant === 'default' || variant === 'oneDepth') {
       const fetchHeaderInfo = async () => {
@@ -237,11 +238,13 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     }
   }, [variant]);
 
+  // 로컬스토리지에서 히스토리 불러오기
   useEffect(() => {
     const stored = localStorage.getItem(HISTORY_KEY);
     if (stored) setHistoryState(JSON.parse(stored));
   }, []);
 
+  // 바깥 클릭 시 검색창 닫기
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
@@ -266,6 +269,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     const term = query.trim();
     if (!term) return;
     saveHistory(term);
+    // URL에 search 파라미터 설정 (기존 다른 쿼리 삭제하고 새로 설정)
     setSearchParams({ search: term });
     setOpenSearch(false);
   };
@@ -289,6 +293,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     setOpenSearch(false);
   };
 
+  // 렌더링: variant별로 공통 검색박스 로직 포함
   if (variant === 'default') {
     return (
       <>
@@ -416,7 +421,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
               <SearchBox open={openSearch} ref={boxRef}>
                 <form
                   onSubmit={handleSearchSubmit}
-                  style={{ flex: 1, display: 'flex' }}
+                  style={{ display: 'flex', flex: 1 }}
                 >
                   <SearchInput
                     open={openSearch}
@@ -425,10 +430,31 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                     placeholder='검색어를 입력하세요'
                   />
                 </form>
+                <SearchIconWrapper onClick={toggleSearch}>
+                  <Icon src={SearchIcon} alt='검색' />
+                </SearchIconWrapper>
+                {openSearch && historyState.length > 0 && (
+                  <Dropdown>
+                    {historyState.map((item, idx) => (
+                      <Item key={idx}>
+                        <HistoryButton onClick={() => handleHistoryClick(item)}>
+                          <BiTime size={16} style={{ marginRight: 8 }} />
+                          <span>{item}</span>
+                        </HistoryButton>
+                      </Item>
+                    ))}
+                    <ClearAll
+                      onClick={() => {
+                        localStorage.removeItem(HISTORY_KEY);
+                        setHistoryState([]);
+                      }}
+                    >
+                      전체 삭제
+                    </ClearAll>
+                  </Dropdown>
+                )}
               </SearchBox>
-              <SearchIconWrapper onClick={toggleSearch}>
-                <Icon src={SearchIcon} alt='검색' />
-              </SearchIconWrapper>
+
               {isLoggedIn ? (
                 <>
                   <Icon
@@ -484,9 +510,11 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
               />
             </LeftSection>
             <CenterSection>
-              <Title>{title}</Title>
+              <TitleText>{title}</TitleText>
             </CenterSection>
             <RightSection>
+              {/* twoDepth에서는 검색창이 필요 없다면 여기서 제외, 
+                  필요하다면 default/oneDepth와 동일하게 SearchBox 코드를 넣으시면 됩니다 */}
               <Icon
                 src={ShareIcon}
                 alt='공유'
@@ -521,7 +549,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
               />
             </LeftSection>
             <CenterSection>
-              <Title>{title}</Title>
+              <TitleText>{title}</TitleText>
             </CenterSection>
           </HeaderContainer>
         </HeaderWrapper>

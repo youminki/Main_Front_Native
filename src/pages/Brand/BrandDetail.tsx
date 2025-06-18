@@ -42,15 +42,21 @@ const BrandDetail: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  // UnifiedHeader 검색창에서 ?search=... 이 설정되면 여기서 읽어옴
+  const searchTerm = searchParams.get('search')?.trim().toLowerCase() || '';
+
+  // 브랜드 정보 상태
   const [brand, setBrand] = useState<LocalBrand | null>(null);
   const [loadingBrand, setLoadingBrand] = useState<boolean>(true);
   const [errorBrand, setErrorBrand] = useState<string>('');
 
-  const [products, setProducts] = useState<ApiProduct[]>([]);
+  // 제품 목록 상태
+  const [allProducts, setAllProducts] = useState<ApiProduct[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<ApiProduct[]>([]);
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
   const [errorProducts, setErrorProducts] = useState<string>('');
 
-  // 카테고리 필터: 기본값은 'All'
+  // 카테고리 필터: 초기값은 URL의 category 파라미터 or 'All'
   const initialCat = searchParams.get('category') || 'All';
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCat);
 
@@ -82,7 +88,7 @@ const BrandDetail: React.FC = () => {
     }
   }, [searchParams]);
 
-  // selectedCategory 변경 시 URL 동기화
+  // selectedCategory 변경 시 URL 동기화 (search 파라미터는 유지)
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
     if (selectedCategory && selectedCategory !== 'All') {
@@ -127,42 +133,59 @@ const BrandDetail: React.FC = () => {
     })();
   }, [idNum]);
 
-  // 제품 목록 로드 (selectedCategory 필터 적용)
+  // 제품 목록 로드 (selectedCategory 및 searchTerm 반영은 이후 useEffect에서)
   useEffect(() => {
     if (!brand) return;
     setLoadingProducts(true);
     setErrorProducts('');
     (async () => {
       try {
-        // 내부적으로 'All'일 땐 'all'로 매핑
         const categoryKey =
           selectedCategory === 'All' ? 'All' : selectedCategory;
         const data = await getProductsByBrand(brand.id, categoryKey);
-        setProducts(data);
+        setAllProducts(data);
       } catch (err) {
         console.error('제품 목록 조회 실패:', err);
         setErrorProducts('제품 목록을 불러오는 중 오류가 발생했습니다.');
+        setAllProducts([]);
       } finally {
         setLoadingProducts(false);
       }
     })();
   }, [brand, selectedCategory]);
 
+  // 검색어(searchTerm) 또는 allProducts 변경 시 filteredProducts 업데이트
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredProducts(allProducts);
+    } else {
+      const filtered = allProducts.filter((p) => {
+        const name = (p.name || '').toLowerCase();
+        const desc = (p.description || '').toLowerCase();
+        return name.includes(searchTerm) || desc.includes(searchTerm);
+      });
+      setFilteredProducts(filtered);
+    }
+  }, [allProducts, searchTerm]);
+
   // 상세 모달 ID
   const modalId = searchParams.get('id');
   const isModalOpen = Boolean(modalId);
 
-  // 제품 클릭: 모달 열기 (URL에 id 설정)
+  // 제품 클릭: 모달 열기 (URL에 id 설정). 기존 category/search 유지
   const handleItemClick = (prodId: string) => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(searchParams);
     if (selectedCategory && selectedCategory !== 'All') {
       params.set('category', selectedCategory);
+    }
+    if (searchTerm) {
+      params.set('search', searchTerm);
     }
     params.set('id', prodId);
     setSearchParams(params, { replace: true });
   };
 
-  // 모달 닫기: query에서 id 제거
+  // 모달 닫기: query에서 id 제거, category/search 유지
   const handleCloseModal = () => {
     const params = new URLSearchParams(searchParams);
     params.delete('id');
@@ -210,8 +233,8 @@ const BrandDetail: React.FC = () => {
     return null;
   }
 
-  // UIItem 매핑
-  const uiItems: UIItem[] = products.map((it) => ({
+  // UIItem 매핑 (filteredProducts 기준)
+  const uiItems: UIItem[] = filteredProducts.map((it) => ({
     id: it.id.toString(),
     image: it.image || '',
     brand: brand.name,
@@ -228,8 +251,10 @@ const BrandDetail: React.FC = () => {
     setMenuOpen(false);
   };
 
+  // UI 렌더링
   return (
     <>
+      {/* UnifiedHeader: 검색어 입력 시 URL의 ?search=... 으로 반영 */}
       <UnifiedHeader
         variant='oneDepth'
         title={brand.name}
@@ -252,6 +277,7 @@ const BrandDetail: React.FC = () => {
         <SubHeader
           selectedCategory={selectedCategory}
           setSelectedCategory={(cat) => {
+            // 카테고리 변경 시 search 파라미터 초기화하거나 유지할지 결정. 여기서는 초기화하지 않고 유지.
             setSelectedCategory(cat);
             scrollToTop();
           }}
@@ -285,8 +311,13 @@ const BrandDetail: React.FC = () => {
             <StatText>제품 목록을 불러오는 중...</StatText>
           ) : errorProducts ? (
             <StatText>{errorProducts}</StatText>
-          ) : products.length === 0 ? (
-            <StatText>해당 조건의 제품이 없습니다.</StatText>
+          ) : filteredProducts.length === 0 ? (
+            // 검색어나 카테고리 필터 결과가 없을 때 메시지
+            searchTerm ? (
+              <StatText>"{searchTerm}"에 대한 결과가 없습니다.</StatText>
+            ) : (
+              <StatText>조건에 맞는 제품이 없습니다.</StatText>
+            )
           ) : (
             <ItemList
               items={uiItems}
