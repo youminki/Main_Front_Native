@@ -1,3 +1,4 @@
+// src/pages/PersonalLink.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
@@ -5,7 +6,15 @@ import personalLinkShareIcon from '../assets/personalLink/personalLinkShareIcon.
 import personalLinkProfileIcon from '../assets/personalLink/personalLinkProfileIcon.svg';
 import personalLinkAlramIcon from '../assets/personalLink/personalLinkAlramIcon.svg';
 
-import ItemList, { UIItem } from '../components/Home/ItemList';
+export interface UIItem {
+  id: string;
+  image: string;
+  brand: string;
+  description: string;
+  price: number;
+  discount: number;
+  isLiked: boolean;
+}
 
 const dummyItems = [
   {
@@ -44,6 +53,7 @@ const dummyItems = [
     price: 1259000,
     discount: 10,
   },
+  // 추가 아이템이 필요하면 더 넣기
 ];
 
 const PersonalLink: React.FC = () => {
@@ -58,6 +68,7 @@ const PersonalLink: React.FC = () => {
     };
   }, []);
 
+  // UIItem 형태로 변환
   const uiDummyItems: UIItem[] = dummyItems.map(
     ({ id, image, brand, description, price, discount }) => ({
       id: id.toString(),
@@ -69,6 +80,12 @@ const PersonalLink: React.FC = () => {
       isLiked: false,
     })
   );
+
+  // 카드 클릭 시 동작 (예: 모달 열기 or 상세 페이지 네비게이트)
+  const handleItemClick = (id: string) => {
+    console.log('아이템 클릭:', id);
+    // TODO: 상세 페이지로 이동 등 구현
+  };
 
   return (
     <Container>
@@ -91,68 +108,78 @@ const PersonalLink: React.FC = () => {
         </TopInner>
       </TopSection>
 
-      <TabSection>
-        <TabItem
-          active={activeTab === 'personalLink'}
-          onClick={() => setActiveTab('personalLink')}
-        >
-          개인링크
-        </TabItem>
-        <TabItem
-          active={activeTab === 'productIntro'}
-          onClick={() => setActiveTab('productIntro')}
-        >
-          제품소개
-        </TabItem>
-      </TabSection>
+      {/* 콘텐츠 영역: flex:1 */}
+      <ContentWrapper>
+        <TabSection>
+          <TabItem
+            active={activeTab === 'personalLink'}
+            onClick={() => setActiveTab('personalLink')}
+          >
+            개인링크
+          </TabItem>
+          <TabItem
+            active={activeTab === 'productIntro'}
+            onClick={() => setActiveTab('productIntro')}
+          >
+            제품소개
+          </TabItem>
+        </TabSection>
 
-      {activeTab === 'personalLink' && (
-        <LinkListWrapper>
-          <LinkItem>
-            <LinkLabelBox>LINK 01</LinkLabelBox>
-            <LinkTextWrapper>
-              <LinkTitle>업무 및 비지니스 제휴 문의</LinkTitle>
-              <LinkDesc>form.naver.com/respon..</LinkDesc>
-            </LinkTextWrapper>
-            <LinkArrow />
-          </LinkItem>
+        {activeTab === 'personalLink' && (
+          <LinkListWrapper>
+            <LinkItem>
+              <LinkLabelBox>LINK 01</LinkLabelBox>
+              <LinkTextWrapper>
+                <LinkTitle>업무 및 비지니스 제휴 문의</LinkTitle>
+                <LinkDesc>form.naver.com/respon..</LinkDesc>
+              </LinkTextWrapper>
+              <LinkArrow />
+            </LinkItem>
+            {/* ... 기타 LinkItem */}
+          </LinkListWrapper>
+        )}
 
-          <LinkItem>
-            <LinkLabelBox>LINK 02</LinkLabelBox>
-            <LinkTextWrapper>
-              <LinkTitle>PMC - 대회 홈페이지 안내</LinkTitle>
-              <LinkDesc>pmckorea.modoo.at..</LinkDesc>
-            </LinkTextWrapper>
-            <LinkArrow />
-          </LinkItem>
+        {activeTab === 'productIntro' && (
+          <ProductListWrapper>
+            <IntroText>
+              👉 직접 입어보고 맘에 드는 것만 소개해드려요 👈
+            </IntroText>
 
-          <LinkItem>
-            <LinkLabelBox>LINK 03</LinkLabelBox>
-            <LinkTextWrapper>
-              <LinkTitle>피엠씨 채널톡 문의하기</LinkTitle>
-              <LinkDesc>pf.kakao.com/_XIWYG..</LinkDesc>
-            </LinkTextWrapper>
-            <LinkArrow />
-          </LinkItem>
-
-          <LinkItem>
-            <LinkLabelBox>LINK 04</LinkLabelBox>
-            <LinkTextWrapper>
-              <LinkTitle>업무 및 비지니스 제휴 문의</LinkTitle>
-              <LinkDesc>링크연결</LinkDesc>
-            </LinkTextWrapper>
-            <LinkArrow />
-          </LinkItem>
-        </LinkListWrapper>
-      )}
-
-      {activeTab === 'productIntro' && (
-        <ProductListWrapper>
-          <IntroText>👉 직접 입어보고 맘에 드는 것만 소개해드려요 👈</IntroText>
-
-          <ItemList items={uiDummyItems} />
-        </ProductListWrapper>
-      )}
+            {/* 직접 그리드 + 카드 구조 삽입 */}
+            <ItemsGrid>
+              {uiDummyItems.map((item) => (
+                <ItemCardWrapper
+                  key={item.id}
+                  onClick={() => handleItemClick(item.id)}
+                >
+                  <ImageWrapper>
+                    {/* 이미지 URL이 # 뒤에 옵션이 붙을 수 있으므로 split 처리 */}
+                    <Image
+                      src={item.image.split('#')[0] || '/default.jpg'}
+                      alt={item.brand}
+                    />
+                  </ImageWrapper>
+                  <BrandText>{item.brand}</BrandText>
+                  <DescriptionText>
+                    {item.description.includes('/')
+                      ? item.description.split('/')[1]
+                      : item.description}
+                  </DescriptionText>
+                  <PriceWrapper>
+                    <OriginalPriceText>
+                      {item.price.toLocaleString()}원
+                    </OriginalPriceText>
+                    <SubPriceWrapper>
+                      <NowLabel>NOW</NowLabel>
+                      <DiscountLabel>{item.discount}%</DiscountLabel>
+                    </SubPriceWrapper>
+                  </PriceWrapper>
+                </ItemCardWrapper>
+              ))}
+            </ItemsGrid>
+          </ProductListWrapper>
+        )}
+      </ContentWrapper>
 
       <Footer>© 2024 ME1PIK.</Footer>
     </Container>
@@ -161,13 +188,14 @@ const PersonalLink: React.FC = () => {
 
 export default PersonalLink;
 
+// Styled-components
 const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* 화면 높이 전체를 차지 */
   max-width: 1000px;
   margin: 0 auto;
   background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  position: relative;
   overflow-x: hidden;
 `;
 
@@ -212,7 +240,6 @@ const IconButton = styled.button`
   }
 `;
 
-/* 프로필 이미지 래퍼 */
 const UserImageWrapper = styled.div`
   width: 96px;
   height: 96px;
@@ -231,7 +258,6 @@ const UserImageWrapper = styled.div`
   }
 `;
 
-/* 사용자 이름 */
 const UserName = styled.div`
   margin-top: 8px;
   font-weight: 700;
@@ -241,15 +267,20 @@ const UserName = styled.div`
   text-align: center;
 `;
 
-/* 탭 영역 */
-const TabSection = styled.div`
-  margin-top: 20px;
-  width: 100%;
+/* 콘텐츠 영역을 감싸서 flex:1 설정 */
+const ContentWrapper = styled.div`
+  flex: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
 `;
 
-/* 탭 아이템 */
+const TabSection = styled.div`
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+`;
+
 const TabItem = styled.div<{ active: boolean }>`
   width: 50%;
   height: 50px;
@@ -277,19 +308,18 @@ const TabItem = styled.div<{ active: boolean }>`
   `}
 `;
 
-/* 개인링크 리스트 래퍼 */
 const LinkListWrapper = styled.div`
-  flex: 1;
+  /* flex: 1; 이미 ContentWrapper가 flex:1이므로 내부는 자연스럽게 차지 */
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
+  padding: 1rem;
 `;
 
-/* 링크 아이템 */
 const LinkItem = styled.div`
   position: relative;
-  width: 376px;
+  width: 100%;
   height: 80px;
   border: 1px solid #dddddd;
   display: flex;
@@ -299,7 +329,6 @@ const LinkItem = styled.div`
   box-sizing: border-box;
 `;
 
-/* 링크 라벨박스 */
 const LinkLabelBox = styled.div`
   display: inline-flex;
   align-items: center;
@@ -313,14 +342,12 @@ const LinkLabelBox = styled.div`
   margin-bottom: 20px;
 `;
 
-/* 링크 텍스트 래퍼 */
 const LinkTextWrapper = styled.div`
   display: flex;
   flex-direction: column;
   margin-left: 12px;
 `;
 
-/* 링크 제목 */
 const LinkTitle = styled.div`
   font-weight: 800;
   font-size: 14px;
@@ -328,7 +355,6 @@ const LinkTitle = styled.div`
   margin-bottom: 5px;
 `;
 
-/* 링크 설명 */
 const LinkDesc = styled.div`
   font-weight: 400;
   font-size: 12px;
@@ -336,7 +362,6 @@ const LinkDesc = styled.div`
   text-decoration: underline;
 `;
 
-/* 오른쪽 화살표 */
 const LinkArrow = styled.div`
   position: absolute;
   right: 16px;
@@ -348,12 +373,10 @@ const LinkArrow = styled.div`
 `;
 
 const ProductListWrapper = styled.div`
-  flex: 1;
-  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-top: 20px;
+  align-items: stretch;
+  padding: 1rem;
 `;
 
 const IntroText = styled.div`
@@ -361,6 +384,96 @@ const IntroText = styled.div`
   font-size: 14px;
   color: #000;
   margin-bottom: 20px;
+`;
+
+// 반응형 그리드: 모바일 2열, 데스크탑 1024px 이상 4열
+const ItemsGrid = styled.div`
+  display: grid;
+  width: 100%;
+  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+`;
+
+// 카드 내부 요소 스타일
+const ItemCardWrapper = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  margin-bottom: 12px;
+  /* 카드 높이를 일정 비율로 유지하고 싶으면 고정 aspect-ratio 사용 가능 */
+`;
+
+const ImageWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2/3;
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  overflow: hidden;
+`;
+
+const Image = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const BrandText = styled.h3`
+  margin: 10px 0 0 0;
+  font-size: 10px;
+  font-weight: 900;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+
+const DescriptionText = styled.p`
+  margin: 5px 0 0 0;
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+
+const PriceWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+  margin-left: 10px;
+
+  @media (max-width: 768px) {
+    margin-top: 5px;
+    margin-left: 5px;
+  }
+`;
+
+const OriginalPriceText = styled.span`
+  font-weight: 900;
+  font-size: 14px;
+`;
+
+const SubPriceWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const NowLabel = styled.span`
+  font-size: 9px;
+`;
+
+const DiscountLabel = styled.span`
+  font-weight: 800;
+  font-size: 11px;
+  color: #f6ae24;
 `;
 
 const Footer = styled.div`
@@ -371,5 +484,6 @@ const Footer = styled.div`
   font-size: 12px;
   line-height: 20px;
   color: #f6ae24;
-  margin-top: 50px;
+  margin-top: auto; /* 남은 공간을 채운 뒤 하단에 위치 */
+  padding: 16px 0; /* 높이가 너무 작으면 보이기 어려우니 padding 추가 가능 */
 `;
