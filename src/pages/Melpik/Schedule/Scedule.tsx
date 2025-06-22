@@ -115,6 +115,8 @@ const ScheduleContainer = styled.div`
 
   background-color: #fff;
   padding: 1rem;
+  max-width: 600px;
+  margin: auto;
 `;
 const Header = styled.div`
   display: flex;
@@ -287,7 +289,7 @@ const BottomBarContainer = styled.div`
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 1000px;
+  max-width: 600px;
   display: flex;
   justify-content: center;
   align-items: center;

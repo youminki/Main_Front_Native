@@ -210,7 +210,6 @@ const FormContainer = styled.div`
   margin-bottom: 30px;
   display: flex;
   gap: 20px; /* 각 Column 간 간격 설정 */
-  padding: 1rem;
 `;
 
 const ColumnWrapper = styled.div`
@@ -269,7 +268,11 @@ const GrayLine = styled.hr`
   margin: 30px 0;
 `;
 
-const Container = styled.div``;
+const Container = styled.div`
+  padding: 1rem;
+  max-width: 600px;
+  margin: auto;
+`;
 
 const Summary = styled.div`
   margin-top: 30px;

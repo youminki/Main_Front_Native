@@ -196,6 +196,8 @@ export default ScheduleReservation2;
 
 const Container = styled.div`
   padding: 1rem;
+  max-width: 600px;
+  margin: auto;
 `;
 
 const Label = styled.label`

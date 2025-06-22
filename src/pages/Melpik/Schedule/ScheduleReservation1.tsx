@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import Calendar from '../../../components/Melpik/Schedule/Reservation1/Calendar';
 import Stepper from '../../../components/Melpik/Schedule/Reservation1/Stepper';
 import Summary from '../../../components/Melpik/Schedule/Reservation1/Summary';
@@ -35,7 +36,7 @@ const ScheduleReservation1: React.FC = () => {
   };
 
   return (
-    <>
+    <Container>
       <Stepper currentStep={1} />
       <DateSelection
         year={year}
@@ -52,8 +53,14 @@ const ScheduleReservation1: React.FC = () => {
       />
       <Summary selectedDates={selectedDates} seasonProgress={seasonProgress} />
       <BottomBar onNext={handleBottomClick} />
-    </>
+    </Container>
   );
 };
 
 export default ScheduleReservation1;
+
+const Container = styled.div`
+  padding: 1rem;
+  max-width: 600px;
+  margin: auto;
+`;
