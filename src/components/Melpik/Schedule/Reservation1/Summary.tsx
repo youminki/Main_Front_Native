@@ -26,13 +26,9 @@ const Summary: React.FC<SummaryProps> = ({ selectedDates, seasonProgress }) => {
         <Label>시즌 진행 회차</Label>
         <InfoText>
           <ProgressText>
-            {seasonProgress.completed} /{' '}
-            <GrayText>{seasonProgress.total}</GrayText> 회
+            {seasonProgress.total} /{' '}
+            <GrayText>{seasonProgress.completed}</GrayText> 회
           </ProgressText>
-          <PendingText>
-            <GrayText>미진행 </GrayText>
-            {seasonProgress.pending}회
-          </PendingText>
         </InfoText>
       </ScheduleInfo>
     </SummaryContainer>
@@ -64,7 +60,7 @@ const Label = styled.label`
 const InfoText = styled.div`
   min-width: 150px;
   height: 57px;
-  padding: 10px;
+  padding: 0 10px;
   border: 1px solid ${Theme.colors.gray4};
   border-radius: 5px;
   display: flex;
@@ -80,10 +76,6 @@ const InfoText = styled.div`
 `;
 
 const ProgressText = styled.div`
-  font-size: 13px;
-`;
-
-const PendingText = styled.div`
   font-size: 13px;
 `;
 

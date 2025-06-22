@@ -9,7 +9,7 @@ import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBa
 
 const ScheduleReservation1: React.FC = () => {
   const [selectedDates, setSelectedDates] = useState<number[]>([]);
-  const [reservedDates] = useState<number[]>([22, 23, 24]);
+  const [reservedDates] = useState<number[]>([]);
   const [year, setYear] = useState<number>(2024);
   const [month, setMonth] = useState<number>(9);
   const seasonProgress = { total: 6, completed: 2, pending: 0 };
