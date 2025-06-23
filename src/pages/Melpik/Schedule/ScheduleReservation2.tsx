@@ -1,4 +1,3 @@
-// src/pages/Melpik/Schedule/Reservation1/ScheduleReservation2.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -7,7 +6,6 @@ import Stepper from '../../../components/Melpik/Schedule/Reservation1/Stepper';
 import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBar';
 
 import ExIMG1 from '../../../assets/ExIMG1.svg';
-
 import checkIcon from '../../../assets/checkIcon.svg';
 
 const MAX_SELECTION = 6;
@@ -51,6 +49,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
     </CardContainer>
   );
 };
+
 const items = [
   {
     id: 1,
@@ -113,20 +112,17 @@ const ItemList: React.FC<ItemListProps> = ({
 
 const ScheduleReservation2: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation<{
-    range?: [string, string] | [Date, Date]; // Reservation1에서 전달한 range
-  }>();
-  // Reservation1에서 전달된 range
-  const prevState = location.state || {};
-  const initialRange = prevState.range as [Date, Date] | undefined;
+  const location = useLocation();
+  // Reservation1에서 전달된 range: location.state가 있을 때 타입 단언
+  const prevState = location.state as { range?: [Date, Date] } | null;
+  const initialRange = prevState?.range;
 
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 선택된 날짜 범위가 없다면, 기본 경고 혹은 이전 페이지로 돌아가도록 처리할 수 있음
+  // 선택된 날짜 범위가 없다면 이전 페이지로 이동
   useEffect(() => {
     if (!initialRange) {
-      // range가 없으면 Reservation1로 이동
       navigate('/schedule/reservation1');
     }
   }, [initialRange, navigate]);
@@ -152,7 +148,7 @@ const ScheduleReservation2: React.FC = () => {
     });
   };
 
-  const ItemContainer = () => (
+  const ItemContainer: React.FC = () => (
     <CustomHeader>
       <div>
         <Label>
@@ -256,6 +252,10 @@ const InfoText = styled.div`
   font-weight: 700;
   font-size: 13px;
   line-height: 14px;
+`;
+
+const GrayText = styled.span`
+  color: ${COLOR_GRAY1};
 `;
 
 const BeenContainer = styled.div`
@@ -402,10 +402,6 @@ const ModalHeader = styled.div`
 const ModalTitle = styled.p`
   font-weight: 800;
   font-size: 16px;
-`;
-
-const GrayText = styled.span`
-  color: ${COLOR_GRAY1};
 `;
 
 const GrayLine = styled.hr`

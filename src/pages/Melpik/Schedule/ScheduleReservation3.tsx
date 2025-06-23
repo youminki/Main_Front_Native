@@ -1,4 +1,3 @@
-// src/pages/Melpik/Schedule/Reservation1/ScheduleReservation3.tsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -91,7 +90,7 @@ const ItemList: React.FC<ItemListProps> = ({
   selectedItems,
   onSelect,
 }) => {
-  // selectedItems에 포함된 아이템만 필터링
+  // 선택된 제품만 필터링
   const filteredItems = items.filter((item) => selectedItems.includes(item.id));
 
   return (
@@ -118,21 +117,22 @@ const ItemList: React.FC<ItemListProps> = ({
 
 const ScheduleReservation3: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation<{
+  const location = useLocation();
+  // Reservation2에서 전달된 state: range와 selectedItems
+  const prevState = location.state as {
     range?: [Date, Date];
     selectedItems?: number[];
-  }>();
-  const prevState = location.state || {};
-  const initialRange = prevState.range as [Date, Date] | undefined;
-  const initialSelectedItems = prevState.selectedItems as number[] | undefined;
+  } | null;
+  const initialRange = prevState?.range;
+  const initialSelectedItems = prevState?.selectedItems;
 
   // selectedItems를 초기 state로 설정
   const [selectedItems, setSelectedItems] = useState<number[]>(
     initialSelectedItems || []
   );
-  const [selectedTime] = useState<string>(''); // 필요시 수정
-  const [selectedDate, setSelectedDate] = useState<string>('선택안함');
-  const [saleMethod, setSaleMethod] = useState<string>('제품판매'); // 기본값 설정
+  // 필요시 시간 선택 등 추가 state 선언
+  // const [selectedDate, setSelectedDate] = useState<string>('선택안함');
+  const [saleMethod, setSaleMethod] = useState<string>('제품판매');
 
   // range가 없으면 이전 단계로 리디렉트
   useEffect(() => {
@@ -148,23 +148,17 @@ const ScheduleReservation3: React.FC = () => {
     navigate(`/item/${id}`);
   };
 
-  const handleDateChange = (event: React.ChangeEvent<HTMLSelectElement>) =>
-    setSelectedDate(event.target.value);
-
   const handleSaleMethodChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => setSaleMethod(event.target.value);
 
   const handleBottomClick = () => {
-    // 다음 단계로 보낼 때도 필요한 state가 있으면 여기에 포함
     console.log('버튼 클릭됨');
     console.log(`Selected Range: ${initialRange?.[0]} ~ ${initialRange?.[1]}`);
     console.log(`Selected Items: ${selectedItems}`);
-    console.log(`Selected Date: ${selectedDate}`);
-    console.log(`Selected Time: ${selectedTime}`);
     console.log(`Sale Method: ${saleMethod}`);
-    // 예: 다음 단계 reservation4가 있을 경우
-    // navigate('/schedule/reservation4', { state: { range: initialRange, selectedItems, selectedDate, saleMethod } });
+    // 다음 단계가 있다면 navigate로 state 전달
+    // navigate('/schedule/reservation4', { state: { range: initialRange, selectedItems, saleMethod } });
   };
 
   // 날짜 범위 포맷 함수
@@ -189,7 +183,9 @@ const ScheduleReservation3: React.FC = () => {
           <Label>예약한 스케줄</Label>
           <InfoText>
             {initialRange
-              ? `${formatKoreanDate(initialRange[0])} ~ ${formatKoreanDate(initialRange[1])}`
+              ? `${formatKoreanDate(initialRange[0])} ~ ${formatKoreanDate(
+                  initialRange[1]
+                )}`
               : '날짜 정보 없음'}
           </InfoText>
         </ScheduleInfo>
