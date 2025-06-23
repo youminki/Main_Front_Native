@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import Theme from '../../../styles/Theme';
 import Stepper from '../../../components/Melpik/Schedule/Reservation1/Stepper';
 import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBar';
 
 import ExIMG1 from '../../../assets/ExIMG1.svg';
-import ImgAdd from '../../../assets/ImgAdd.svg';
 
 interface Item {
   id: number;
@@ -23,34 +21,8 @@ interface ItemCardProps {
   brand: string;
   description: string;
   onSelect: (id: number) => void;
-  $isSelected: boolean;
+  $isSelected?: boolean;
 }
-
-const ItemCard: React.FC<ItemCardProps> = ({
-  id,
-  image,
-  brand,
-  description,
-  onSelect,
-}) => {
-  const navigate = useNavigate();
-
-  const handleSelect = () => {
-    onSelect(id);
-    navigate(`/item/${id}`);
-  };
-
-  return (
-    <CardContainer>
-      <ImageWrapper onClick={handleSelect}>
-        <Image src={image} alt={brand} />
-        <AddButton src={ImgAdd} alt='Add' />
-      </ImageWrapper>
-      <Brand>{brand}</Brand>
-      <Description>{description}</Description>
-    </CardContainer>
-  );
-};
 
 const items: Item[] = [
   {
@@ -81,6 +53,31 @@ const items: Item[] = [
 
 const truncateText = (text: string, limit: number): string =>
   text.length > limit ? text.slice(0, limit) + '...' : text;
+
+const ItemCard: React.FC<ItemCardProps> = ({
+  id,
+  image,
+  brand,
+  description,
+  onSelect,
+}) => {
+  const navigate = useNavigate();
+
+  const handleSelect = () => {
+    onSelect(id);
+    navigate(`/item/${id}`);
+  };
+
+  return (
+    <CardContainer>
+      <ImageWrapper onClick={handleSelect}>
+        <Image src={image} alt={brand} />
+      </ImageWrapper>
+      <Brand>{brand}</Brand>
+      <Description>{description}</Description>
+    </CardContainer>
+  );
+};
 
 interface ItemListProps {
   HeaderContainer: React.FC;
@@ -205,68 +202,14 @@ const ScheduleReservation3: React.FC = () => {
 
 export default ScheduleReservation3;
 
-// Styled Components
-const FormContainer = styled.div`
-  margin-bottom: 30px;
-  display: flex;
-  gap: 20px; /* 각 Column 간 간격 설정 */
-`;
-
-const ColumnWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1; /* 모든 컬럼이 동일한 크기로 확장 */
-`;
-
-const Label = styled.label`
-  margin-bottom: 8px;
-
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-  /* identical to box height */
-
-  color: #000000;
-`;
-
-const StyledSelect = styled.select`
-  padding: 20px;
-  border-radius: 5px;
-  border: 1px solid ${Theme.colors.black};
-
-  font-weight: 800;
-  font-size: 13px;
-  line-height: 14px;
-
-  color: #000000;
-`;
-
-const GrayText = styled.span`
-  color: ${Theme.colors.gray1};
-
-  font-size: 12px;
-`;
-
-const BlackText = styled.span`
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-
-  color: #000000;
-`;
-
-const InfoMessage = styled.p`
-  font-size: 12px;
-  color: ${Theme.colors.gray2};
-  margin-bottom: 20px;
-`;
-
-const GrayLine = styled.hr`
-  border: none;
-  width: 100%;
-  border: 1px solid ${Theme.colors.gray0};
-  margin: 30px 0;
-`;
+// 색상 코드 예시: 프로젝트에 맞춰 변경하세요.
+const COLOR_GRAY4 = '#bdbdbd';
+const COLOR_GRAY3 = '#9e9e9e';
+const COLOR_GRAY2 = '#757575';
+const COLOR_GRAY1 = '#616161';
+const COLOR_GRAY0 = '#e0e0e0';
+const COLOR_WHITE = '#ffffff';
+const COLOR_BLACK = '#000000';
 
 const Container = styled.div`
   padding: 1rem;
@@ -290,7 +233,7 @@ const InfoText = styled.div`
   height: 57px;
   padding: 10px;
   margin-top: 10px;
-  border: 1px solid ${Theme.colors.gray4};
+  border: 1px solid ${COLOR_GRAY4};
   border-radius: 5px;
   display: flex;
   align-items: center;
@@ -300,62 +243,77 @@ const InfoText = styled.div`
   line-height: 14px;
 `;
 
-const BeenContainer = styled.div`
-  height: 300px;
-`;
-
 const Content = styled.div`
   flex: 1;
 `;
 
-const CardContainer = styled.div`
+const GrayLine = styled.hr`
+  border: none;
+  width: 100%;
+  border: 1px solid ${COLOR_GRAY0};
+  margin: 30px 0;
+`;
+
+const FormContainer = styled.div`
+  margin-bottom: 30px;
+  display: flex;
+  gap: 20px;
+`;
+
+const ColumnWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: left;
-
-  margin: 6px;
-  position: relative;
+  flex: 1;
 `;
 
-const ImageWrapper = styled.div`
-  position: relative;
-  width: 140px;
-  height: 210px;
-`;
-
-const Image = styled.img`
-  object-fit: cover;
-  width: 140px;
-  height: 210px;
-`;
-
-const AddButton = styled.img`
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
-  width: 36px;
-  height: 46px;
-  cursor: pointer;
-`;
-
-const CustomHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
-`;
-
-const GrayText2 = styled.span`
-  margin-left: 5px;
-  color: ${Theme.colors.gray3};
+const Label = styled.label`
+  margin-bottom: 8px;
 
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
+
+  color: ${COLOR_BLACK};
+`;
+
+const StyledSelect = styled.select`
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid ${COLOR_BLACK};
+
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 14px;
+
+  color: ${COLOR_BLACK};
+`;
+
+const InfoMessage = styled.p`
+  font-size: 12px;
+  color: ${COLOR_GRAY2};
+  margin-bottom: 20px;
+`;
+
+const GrayText = styled.span`
+  color: ${COLOR_GRAY1};
+
+  font-size: 12px;
+`;
+
+const BlackText = styled.span`
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 13px;
+
+  color: ${COLOR_BLACK};
+`;
+
+const BeenContainer = styled.div`
+  height: 300px;
 `;
 
 const ListContainer = styled.div`
-  background-color: ${Theme.colors.white};
+  background-color: ${COLOR_WHITE};
   overflow: hidden;
   margin-bottom: 40px;
 `;
@@ -372,6 +330,28 @@ const ItemsWrapper = styled.div`
   }
 `;
 
+const CardContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  margin: 6px;
+  position: relative;
+`;
+
+const ImageWrapper = styled.div`
+  position: relative;
+  width: 140px;
+  height: 210px;
+  cursor: pointer;
+`;
+
+const Image = styled.img`
+  object-fit: cover;
+  width: 140px;
+  height: 210px;
+`;
+
 const Brand = styled.h3`
   margin-top: 10px;
   font-size: 14px;
@@ -381,6 +361,22 @@ const Brand = styled.h3`
 const Description = styled.p`
   margin-top: 5px;
   font-size: 12px;
-  ${Theme.fonts.default3}
-  color: ${Theme.colors.gray2};
+  /* 필요시 font-family나 추가 스타일 적용 */
+  color: ${COLOR_GRAY2};
+`;
+
+const CustomHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+`;
+
+const GrayText2 = styled.span`
+  margin-left: 5px;
+  color: ${COLOR_GRAY3};
+
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 11px;
 `;

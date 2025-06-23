@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import Theme from '../../../styles/Theme';
 
 import Stepper from '../../../components/Melpik/Schedule/Reservation1/Stepper';
 import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBar';
 
 import ExIMG1 from '../../../assets/ExIMG1.svg';
-import ImgAdd from '../../../assets/ImgAdd.svg';
+
 import checkIcon from '../../../assets/checkIcon.svg';
 
 const MAX_SELECTION = 6;
@@ -37,7 +36,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
     <CardContainer>
       <ImageWrapper onClick={handleSelect}>
         <Image src={image} alt={brand} />
-        <AddButton src={ImgAdd} alt='Add' />
         {$isSelected && (
           <SelectionOverlay>
             <CircularSelection>
@@ -178,7 +176,9 @@ const ScheduleReservation2: React.FC = () => {
               <ModalTitle>알림</ModalTitle>
               <GrayLine />
             </ModalHeader>
-            <WarningMessage>최대 6개의 제품만 선택 가능합니다.</WarningMessage>
+            <WarningMessage>
+              최대 {MAX_SELECTION}개의 제품만 선택 가능합니다.
+            </WarningMessage>
             <GrayLine />
             <ButtonRow>
               <CancelButton onClick={closeWarningModal}>닫기</CancelButton>
@@ -193,6 +193,15 @@ const ScheduleReservation2: React.FC = () => {
 };
 
 export default ScheduleReservation2;
+
+// 색상 코드 예시 (프로젝트 디자인에 맞춰 변경하세요)
+const COLOR_GRAY4 = '#bdbdbd';
+const COLOR_GRAY3 = '#9e9e9e';
+const COLOR_GRAY2 = '#757575';
+const COLOR_GRAY1 = '#616161';
+const COLOR_GRAY0 = '#e0e0e0';
+const COLOR_WHITE = '#ffffff';
+const COLOR_BLACK = '#000000';
 
 const Container = styled.div`
   padding: 1rem;
@@ -222,7 +231,7 @@ const InfoText = styled.div`
   height: 57px;
   padding: 10px;
   margin-top: 10px;
-  border: 1px solid ${Theme.colors.gray4};
+  border: 1px solid ${COLOR_GRAY4};
   border-radius: 5px;
   display: flex;
   align-items: center;
@@ -249,7 +258,7 @@ const CustomHeader = styled.div`
 
 const GrayText2 = styled.span`
   margin-left: 5px;
-  color: ${Theme.colors.gray3};
+  color: ${COLOR_GRAY3};
 
   font-weight: 700;
   font-size: 10px;
@@ -257,7 +266,7 @@ const GrayText2 = styled.span`
 `;
 
 const ListContainer = styled.div`
-  background-color: ${Theme.colors.white};
+  background-color: ${COLOR_WHITE};
   overflow: hidden;
   margin-bottom: 40px;
 `;
@@ -283,14 +292,14 @@ const Brand = styled.h3`
 const Description = styled.p`
   margin-top: 5px;
   font-size: 12px;
-  ${Theme.fonts.default3}
-  color: ${Theme.colors.gray2};
+  /* 여기에 폰트 스타일이 필요하면 추가 */
+  color: ${COLOR_GRAY2};
 `;
 
 const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: left;
+  align-items: flex-start;
 
   margin: 6px;
   position: relative;
@@ -300,21 +309,13 @@ const ImageWrapper = styled.div`
   position: relative;
   width: 140px;
   height: 210px;
+  cursor: pointer;
 `;
 
 const Image = styled.img`
   object-fit: cover;
   width: 140px;
   height: 210px;
-`;
-
-const AddButton = styled.img`
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
-  width: 36px;
-  height: 46px;
-  cursor: pointer;
 `;
 
 const SelectionOverlay = styled.div`
@@ -333,7 +334,7 @@ const SelectionOverlay = styled.div`
 const CircularSelection = styled.div`
   width: 58px;
   height: 58px;
-  background-color: white;
+  background-color: ${COLOR_WHITE};
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -350,7 +351,7 @@ const SelectText = styled.div`
 
   font-weight: 700;
   font-size: 12px;
-  color: white;
+  color: ${COLOR_WHITE};
 `;
 
 const ModalOverlay = styled.div`
@@ -367,7 +368,7 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-  background-color: ${Theme.colors.white};
+  background-color: ${COLOR_WHITE};
   padding: 20px;
   max-width: 500px;
   width: 100%;
@@ -387,13 +388,13 @@ const ModalTitle = styled.p`
 `;
 
 const GrayText = styled.span`
-  color: ${Theme.colors.gray1};
+  color: ${COLOR_GRAY1};
 `;
 
 const GrayLine = styled.hr`
   border: none;
   width: 100%;
-  border: 1px solid ${Theme.colors.gray0};
+  border: 1px solid ${COLOR_GRAY0};
   margin: 20px 0;
 `;
 
@@ -407,8 +408,8 @@ const ButtonRow = styled.div`
 const CancelButton = styled.button`
   width: 100%;
   height: 56px;
-  background-color: ${Theme.colors.gray1};
-  color: ${Theme.colors.white};
+  background-color: ${COLOR_GRAY1};
+  color: ${COLOR_WHITE};
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -430,7 +431,7 @@ const WarningModalContent = styled(ModalContent)`
 `;
 
 const WarningMessage = styled.p`
-  color: ${Theme.colors.black};
+  color: ${COLOR_BLACK};
 
   font-weight: 400;
   font-size: 14px;
