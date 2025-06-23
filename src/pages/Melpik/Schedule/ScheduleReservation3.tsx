@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+// src/pages/Melpik/Schedule/Reservation1/ScheduleReservation3.tsx
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Stepper from '../../../components/Melpik/Schedule/Reservation1/Stepper';
 import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBar';
 
@@ -89,30 +90,56 @@ const ItemList: React.FC<ItemListProps> = ({
   HeaderContainer,
   selectedItems,
   onSelect,
-}) => (
-  <ListContainer>
-    <HeaderContainer />
-    <ItemsWrapper>
-      {items.map((item) => (
-        <ItemCard
-          key={item.id}
-          {...item}
-          description={truncateText(item.description, 12)}
-          $isSelected={selectedItems.includes(item.id)}
-          onSelect={onSelect}
-        />
-      ))}
-    </ItemsWrapper>
-  </ListContainer>
-);
+}) => {
+  // selectedItems에 포함된 아이템만 필터링
+  const filteredItems = items.filter((item) => selectedItems.includes(item.id));
+
+  return (
+    <ListContainer>
+      <HeaderContainer />
+      {filteredItems.length > 0 ? (
+        <ItemsWrapper>
+          {filteredItems.map((item) => (
+            <ItemCard
+              key={item.id}
+              {...item}
+              description={truncateText(item.description, 12)}
+              $isSelected={selectedItems.includes(item.id)}
+              onSelect={onSelect}
+            />
+          ))}
+        </ItemsWrapper>
+      ) : (
+        <NoItemMessage>선택된 제품이 없습니다.</NoItemMessage>
+      )}
+    </ListContainer>
+  );
+};
 
 const ScheduleReservation3: React.FC = () => {
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [selectedTime] = useState<string>('');
+  const navigate = useNavigate();
+  const location = useLocation<{
+    range?: [Date, Date];
+    selectedItems?: number[];
+  }>();
+  const prevState = location.state || {};
+  const initialRange = prevState.range as [Date, Date] | undefined;
+  const initialSelectedItems = prevState.selectedItems as number[] | undefined;
+
+  // selectedItems를 초기 state로 설정
+  const [selectedItems, setSelectedItems] = useState<number[]>(
+    initialSelectedItems || []
+  );
+  const [selectedTime] = useState<string>(''); // 필요시 수정
   const [selectedDate, setSelectedDate] = useState<string>('선택안함');
   const [saleMethod, setSaleMethod] = useState<string>('제품판매'); // 기본값 설정
 
-  const navigate = useNavigate();
+  // range가 없으면 이전 단계로 리디렉트
+  useEffect(() => {
+    if (!initialRange) {
+      navigate('/schedule/reservation1');
+    }
+  }, [initialRange, navigate]);
 
   const handleSelect = (id: number) => {
     if (!selectedItems.includes(id)) {
@@ -129,11 +156,20 @@ const ScheduleReservation3: React.FC = () => {
   ) => setSaleMethod(event.target.value);
 
   const handleBottomClick = () => {
+    // 다음 단계로 보낼 때도 필요한 state가 있으면 여기에 포함
     console.log('버튼 클릭됨');
+    console.log(`Selected Range: ${initialRange?.[0]} ~ ${initialRange?.[1]}`);
+    console.log(`Selected Items: ${selectedItems}`);
     console.log(`Selected Date: ${selectedDate}`);
     console.log(`Selected Time: ${selectedTime}`);
     console.log(`Sale Method: ${saleMethod}`);
-    navigate('/schedule/reservation3');
+    // 예: 다음 단계 reservation4가 있을 경우
+    // navigate('/schedule/reservation4', { state: { range: initialRange, selectedItems, selectedDate, saleMethod } });
+  };
+
+  // 날짜 범위 포맷 함수
+  const formatKoreanDate = (date: Date) => {
+    return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
   };
 
   const ItemContainer: React.FC = () => (
@@ -151,7 +187,11 @@ const ScheduleReservation3: React.FC = () => {
       <Summary>
         <ScheduleInfo>
           <Label>예약한 스케줄</Label>
-          <InfoText>9월 16일 ~ 9월 27일</InfoText>
+          <InfoText>
+            {initialRange
+              ? `${formatKoreanDate(initialRange[0])} ~ ${formatKoreanDate(initialRange[1])}`
+              : '날짜 정보 없음'}
+          </InfoText>
         </ScheduleInfo>
         <ScheduleInfo>
           <Label>예약한 제품목록</Label>
@@ -170,15 +210,6 @@ const ScheduleReservation3: React.FC = () => {
       <GrayLine />
 
       <FormContainer>
-        <ColumnWrapper>
-          <Label>스케줄 노출일자 (선택)</Label>
-          <StyledSelect value={selectedDate} onChange={handleDateChange}>
-            <option value='선택안함'>선택안함</option>
-            <option value='2024-09-24'>2024년 9월 24일</option>
-            <option value='2024-09-25'>2024년 9월 25일</option>
-          </StyledSelect>
-        </ColumnWrapper>
-
         <ColumnWrapper>
           <Label>판매방식 선택 *</Label>
           <StyledSelect value={saleMethod} onChange={handleSaleMethodChange}>
@@ -328,6 +359,13 @@ const ItemsWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+`;
+
+const NoItemMessage = styled.div`
+  padding: 20px;
+  text-align: center;
+  color: ${COLOR_GRAY2};
+  font-size: 14px;
 `;
 
 const CardContainer = styled.div`

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+// src/pages/Melpik/Schedule/Reservation1/ScheduleReservation2.tsx
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import Stepper from '../../../components/Melpik/Schedule/Reservation1/Stepper';
 import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBar';
@@ -111,9 +112,24 @@ const ItemList: React.FC<ItemListProps> = ({
 };
 
 const ScheduleReservation2: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation<{
+    range?: [string, string] | [Date, Date]; // Reservation1에서 전달한 range
+  }>();
+  // Reservation1에서 전달된 range
+  const prevState = location.state || {};
+  const initialRange = prevState.range as [Date, Date] | undefined;
+
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
+
+  // 선택된 날짜 범위가 없다면, 기본 경고 혹은 이전 페이지로 돌아가도록 처리할 수 있음
+  useEffect(() => {
+    if (!initialRange) {
+      // range가 없으면 Reservation1로 이동
+      navigate('/schedule/reservation1');
+    }
+  }, [initialRange, navigate]);
 
   const handleSelect = (id: number) => {
     if (selectedItems.includes(id)) {
@@ -130,8 +146,9 @@ const ScheduleReservation2: React.FC = () => {
   };
 
   const handleBottomClick = () => {
+    // Reservation3로 range와 selectedItems 전달
     navigate('/schedule/reservation3', {
-      state: { selectedItemCount: selectedItems.length },
+      state: { range: initialRange, selectedItems },
     });
   };
 
