@@ -1,9 +1,9 @@
+// src/components/Melpik/Schedule/Reservation1/Summary.tsx
 import React from 'react';
 import styled from 'styled-components';
-import Theme from '../../../../styles/Theme';
 
 interface SummaryProps {
-  selectedDates: number[];
+  range: [Date, Date] | null;
   seasonProgress: {
     total: number;
     completed: number;
@@ -11,25 +11,32 @@ interface SummaryProps {
   };
 }
 
-const Summary: React.FC<SummaryProps> = ({ selectedDates, seasonProgress }) => {
+const Summary: React.FC<SummaryProps> = ({ range, seasonProgress }) => {
+  const formatRangeText = () => {
+    if (!range) return '날짜 선택 필요';
+    const [start, end] = range;
+    const startMonth = start.getMonth() + 1;
+    const startDay = start.getDate();
+    const endMonth = end.getMonth() + 1;
+    const endDay = end.getDate();
+    return `${startMonth}월 ${startDay}일 ~ ${endMonth}월 ${endDay}일`;
+  };
+
   return (
     <SummaryContainer>
       <ScheduleInfo>
         <Label>선택된 스케줄</Label>
-        <InfoText>
-          {selectedDates.length > 1
-            ? `${selectedDates[0]}일 ~ ${selectedDates[1]}일`
-            : '날짜 선택 필요'}
-        </InfoText>
+        <InfoBox>
+          <InfoText>{formatRangeText()}</InfoText>
+        </InfoBox>
       </ScheduleInfo>
       <ScheduleInfo>
         <Label>시즌 진행 회차</Label>
-        <InfoText>
-          <ProgressText>
-            {seasonProgress.total} /{' '}
-            <GrayText>{seasonProgress.completed}</GrayText> 회
-          </ProgressText>
-        </InfoText>
+        <InfoBox>
+          <InfoText>
+            총 {seasonProgress.total}회 / 완료 {seasonProgress.completed}회
+          </InfoText>
+        </InfoBox>
       </ScheduleInfo>
     </SummaryContainer>
   );
@@ -53,32 +60,22 @@ const Label = styled.label`
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
-
   color: #000000;
+`;
+
+const InfoBox = styled.div`
+  margin-top: 10px;
+  padding: 0 10px;
+  border: 1px solid #cccccc; /* 연회색 테두리 */
+  border-radius: 5px;
+  min-height: 57px;
+  display: flex;
+  align-items: center;
 `;
 
 const InfoText = styled.div`
-  min-width: 150px;
-  height: 57px;
-  padding: 0 10px;
-  border: 1px solid ${Theme.colors.gray4};
-  border-radius: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
-
   color: #000000;
-`;
-
-const ProgressText = styled.div`
-  font-size: 13px;
-`;
-
-const GrayText = styled.span`
-  color: ${Theme.colors.gray3};
 `;

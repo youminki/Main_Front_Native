@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import Theme from '../../../../styles/Theme';
 import { CustomSelect } from '../../../../components/CustomSelect';
 
 interface DateSelectionProps {
@@ -40,7 +39,6 @@ export default DateSelection;
 
 const DateSelectionContainer = styled.div`
   margin-top: 20px;
-
   gap: 10px;
   width: 100%;
 `;
@@ -49,7 +47,6 @@ const Label = styled.label`
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
-
   color: #000000;
 `;
 
@@ -60,21 +57,20 @@ const DateRow = styled.div`
 `;
 
 const DateInput = styled.select`
-  padding: 20px;
-  border: 1px solid ${Theme.colors.gray4};
+  padding: 10px;
+  border: 1px solid #cccccc;
   border-radius: 5px;
   flex: 1;
 
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
-
   color: #000000;
 `;
 
 const DateDropdown = styled.select`
   padding: 10px;
-  border: 1px solid ${Theme.colors.gray4};
+  border: 1px solid #cccccc;
   border-radius: 5px;
   flex: 1;
   margin-left: 10px;
@@ -82,6 +78,5 @@ const DateDropdown = styled.select`
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
-
   color: #000000;
 `;

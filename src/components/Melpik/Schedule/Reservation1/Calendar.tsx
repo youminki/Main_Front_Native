@@ -1,140 +1,233 @@
+// src/components/Melpik/Schedule/Reservation1/Calendar.tsx
 import React from 'react';
 import styled from 'styled-components';
-import Theme from '../../../../styles/Theme';
+import { FaPlus, FaMinus } from 'react-icons/fa';
 
 interface CalendarProps {
   year: number;
   month: number;
-  selectedDates: number[];
-  reservedDates: number[];
+  startDate?: Date;
+  endDate?: Date;
   onDateClick: (day: number) => void;
+  onIncrease: () => void;
+  onDecrease: () => void;
+  today: Date;
 }
 
-const getDaysInMonth = (year: number, month: number): number => {
-  return new Date(year, month, 0).getDate();
-};
-
-const getFirstDayOfMonth = (year: number, month: number): number => {
-  return new Date(year, month - 1, 1).getDay();
-};
+const getDaysInMonth = (y: number, m: number) => new Date(y, m, 0).getDate();
+const getFirstDayOfMonth = (y: number, m: number) =>
+  new Date(y, m - 1, 1).getDay();
 
 const Calendar: React.FC<CalendarProps> = ({
   year,
   month,
-  selectedDates,
-  reservedDates,
+  startDate,
+  endDate,
   onDateClick,
+  onIncrease,
+  onDecrease,
+  today,
 }) => {
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
 
-  const emptyDays = Array.from({ length: firstDay }, (_, i) => (
-    <EmptyDay key={i} />
-  ));
+  const todayZero = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  ).getTime();
 
-  const [startDate, endDate] = selectedDates;
-  const isWithinRange = (day: number): boolean => {
-    return (
-      startDate !== undefined &&
-      endDate !== undefined &&
-      day > startDate &&
-      day < endDate
-    );
+  const isDisabled = (day: number) => {
+    const d = new Date(year, month - 1, day).getTime();
+    return d < todayZero;
+  };
+
+  const isSelected = (day: number) => {
+    if (!startDate || !endDate) return false;
+    const s = startDate.getTime();
+    const e = endDate.getTime();
+    const d = new Date(year, month - 1, day).getTime();
+    return d >= Math.min(s, e) && d <= Math.max(s, e);
   };
 
   return (
-    <CalendarContainer>
-      {['일', '월', '화', '수', '목', '금', '토'].map((name, index) => (
-        <DayName key={index} isWeekend={index === 0 || index === 6}>
-          {name}
-        </DayName>
-      ))}
-      {emptyDays}
-      {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => (
-        <DayBox
-          key={day}
-          selected={selectedDates.includes(day)}
-          reserved={reservedDates.includes(day)}
-          inRange={isWithinRange(day)}
-          onClick={() => onDateClick(day)}
-        >
-          {day}
-        </DayBox>
-      ))}
-    </CalendarContainer>
+    <CalendarWrapper>
+      <Header>
+        <HeaderText>
+          {year}년 {month}월
+        </HeaderText>
+        <IconGroup>
+          <IconButton onClick={onDecrease} title='종료일 -1일'>
+            <FaMinus />
+          </IconButton>
+          <IconButton onClick={onIncrease} title='종료일 +1일'>
+            <FaPlus />
+          </IconButton>
+        </IconGroup>
+      </Header>
+
+      <CalendarContainer>
+        {['일', '월', '화', '수', '목', '금', '토'].map((name, idx) => (
+          <DayName key={idx} isWeekend={idx === 0 || idx === 6}>
+            {name}
+          </DayName>
+        ))}
+
+        {Array.from({ length: firstDay }).map((_, i) => (
+          <EmptyBox key={i} />
+        ))}
+
+        {Array.from({ length: daysInMonth }, (_, idx) => {
+          const day = idx + 1;
+          const disabled = isDisabled(day);
+          const selected = !disabled && isSelected(day);
+          return (
+            <DayBox
+              key={day}
+              disabled={disabled}
+              selected={selected}
+              onClick={() => {
+                if (!disabled) onDateClick(day);
+              }}
+            >
+              <DayNumber>{day}</DayNumber>
+            </DayBox>
+          );
+        })}
+      </CalendarContainer>
+    </CalendarWrapper>
   );
 };
 
 export default Calendar;
 
-const CalendarContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(7, minmax(40px, 1fr));
+const CalendarWrapper = styled.div`
+  position: relative;
+
+  border-radius: 4px;
+  padding-top: 2.5rem;
+`;
+
+const Header = styled.div`
+  position: relative;
+  height: 3rem; /* 높이 약간 늘림 */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 1rem; /* 좌우 여백 확대 */
+  background: #ffffff;
+  border-bottom: 1px solid #cccccc;
+`;
+
+const HeaderText = styled.div`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px; /* 기본 사이즈 증가 */
+  font-weight: bold;
+
+  @media (min-width: 768px) {
+    font-size: 18px;
+  }
+  @media (min-width: 1024px) {
+    font-size: 20px; /* 데스크탑에서 더 키움 */
+  }
+`;
+
+const IconGroup = styled.div`
+  display: flex;
+  gap: 8px; /* 아이콘 간격 확대 */
+`;
+
+const IconButton = styled.button`
+  background: #f6ae24;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  width: 28px; /* 기본 크기 키움 */
+  height: 28px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
-  margin-top: 39px;
-  padding: 10px;
+  cursor: pointer;
+  font-size: 14px; /* 아이콘 크기 키움 */
+  transition: background 0.2s;
+  &:hover {
+    background: #d8921e;
+  }
 
-  @media (max-width: 768px) {
-    max-width: 100%;
-    padding: 5px;
+  @media (min-width: 768px) {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  @media (min-width: 1024px) {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+`;
+
+const CalendarContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  padding: 0.5rem;
+
+  @media (min-width: 1024px) {
+    gap: 6px;
+    padding: 1rem;
   }
 `;
 
 const DayName = styled.div<{ isWeekend: boolean }>`
   text-align: center;
-  font-size: 14px;
   font-weight: bold;
-  padding: 5px;
-  color: ${(props) => (props.isWeekend ? Theme.colors.gray1 : 'black')};
-
-  @media (max-width: 768px) {
-    font-size: 12px;
-  }
-`;
-
-const EmptyDay = styled.div`
-  min-width: 40px;
-  height: 50px;
-
-  @media (max-width: 768px) {
-    height: 40px;
-  }
-`;
-
-const DayBox = styled.div<{
-  selected: boolean;
-  reserved: boolean;
-  inRange: boolean;
-}>`
-  border: 1px solid
-    ${(props) => (props.inRange ? Theme.colors.yellow : Theme.colors.gray4)};
-  background-color: ${(props) =>
-    props.reserved
-      ? Theme.colors.gray3
-      : props.selected
-        ? Theme.colors.yellow
-        : '#fff'};
-  color: ${(props) =>
-    props.selected ? '#fff' : props.reserved ? '#fff' : '#000'};
-  width: 100%;
-  min-width: 40px;
-  height: 50px;
+  color: ${(p) => (p.isWeekend ? '#888888' : '#000000')};
+  aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: ${(props) => (props.reserved ? 'default' : 'pointer')};
-  font-size: 14px;
-  font-weight: bold;
-  transition: all 0.3s ease;
+  font-size: 12px;
+
+  @media (min-width: 768px) {
+    font-size: 14px;
+  }
+  @media (min-width: 1024px) {
+    font-size: 16px;
+  }
+`;
+
+const EmptyBox = styled.div`
+  aspect-ratio: 1;
+`;
+
+const DayBox = styled.div<{ disabled: boolean; selected: boolean }>`
+  cursor: ${(p) => (p.disabled ? 'default' : 'pointer')};
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${(p) =>
+    p.disabled ? '#EEEEEE' : p.selected ? '#F6AE24' : '#FFFFFF'};
+  color: ${(p) =>
+    p.disabled ? '#AAAAAA' : p.selected ? '#FFFFFF' : '#000000'};
+  border: 1px solid
+    ${(p) => (p.disabled ? '#DDDDDD' : p.selected ? '#F6AE24' : '#CCCCCC')};
+  transition: background 0.2s;
 
   &:hover {
-    background-color: ${(props) => (!props.reserved ? Theme.colors.gray2 : '')};
+    background: ${(p) =>
+      p.disabled ? '#EEEEEE' : p.selected ? '#F6AE24' : '#EEEEEE'};
   }
+`;
 
-  @media (max-width: 768px) {
-    height: 40px;
-    font-size: 12px;
+const DayNumber = styled.span`
+  font-size: 12px;
+  @media (min-width: 768px) {
+    font-size: 14px;
+  }
+  @media (min-width: 1024px) {
+    font-size: 16px;
   }
 `;
