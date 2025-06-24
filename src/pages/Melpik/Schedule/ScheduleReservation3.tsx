@@ -8,6 +8,8 @@ import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBa
 import { getMyCloset } from '../../../api/closet/closetApi';
 import Spinner from '../../../components/Spinner';
 import { UIItem } from '../../../components/Home/MyclosetItemList'; // UIItem.id는 string 타입
+import { createSaleSchedule } from '../../../api/sale/SaleSchedule'; // API 호출 함수
+import ReusableModal2 from '../../../components/ReusableModal2';
 
 interface ItemCardProps {
   id: string;
@@ -106,8 +108,14 @@ const ScheduleReservation3: React.FC = () => {
   const [closetItems, setClosetItems] = useState<UIItem[]>([]);
   const [loadingCloset, setLoadingCloset] = useState<boolean>(true);
 
-  // 필요시 시간 선택 등 추가 state 선언
+  // 판매방식 선택 state
   const [saleMethod, setSaleMethod] = useState<string>('제품판매');
+
+  // 예약 생성 중 로딩 상태
+  const [submitting, setSubmitting] = useState<boolean>(false);
+
+  // 모달 오픈 상태
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   // range가 없으면 이전 단계로 리디렉트
   useEffect(() => {
@@ -121,7 +129,6 @@ const ScheduleReservation3: React.FC = () => {
     setLoadingCloset(true);
     getMyCloset()
       .then((res) => {
-        // res.items 요소를 UIItem 형태로 매핑
         const items: UIItem[] = res.items.map((it) => ({
           id: String(it.productId),
           image: it.mainImage,
@@ -129,7 +136,7 @@ const ScheduleReservation3: React.FC = () => {
           description: it.name,
           price: it.price,
           discount: it.discountRate,
-          // it.isLiked이 없으므로 기본값으로 할당
+          // it.isLiked이 없으므로 기본값 할당
           isLiked: true,
         }));
         setClosetItems(items);
@@ -143,27 +150,73 @@ const ScheduleReservation3: React.FC = () => {
   }, []);
 
   const handleSelect = (id: number) => {
-    // ScheduleReservation3에서는 리스트에서 클릭 시 상세로 이동하면서 state 유지
     if (!selectedItems.includes(id)) {
       setSelectedItems([...selectedItems, id]);
     }
-    // navigate는 ItemCard 내부에서 이미 처리
+    // 상세 페이지 이동은 ItemCard 내부 handleSelect에서 처리
   };
 
   const handleSaleMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSaleMethod(e.target.value);
   };
 
-  const handleBottomClick = () => {
-    console.log('버튼 클릭됨');
-    console.log(`Selected Range: ${initialRange?.[0]} ~ ${initialRange?.[1]}`);
-    console.log(`Selected Items: ${selectedItems}`);
-    console.log(`Sale Method: ${saleMethod}`);
-    // 다음 단계가 있다면 navigate로 state 전달
-    // navigate('/schedule/reservation4', { state: { range: initialRange, selectedItems, saleMethod } });
+  // BottomBar onNext에서 호출: 유효성 검사 후 모달 열기
+  const handleOpenModal = () => {
+    if (!initialRange) {
+      alert('날짜 정보가 없습니다.');
+      return;
+    }
+    if (selectedItems.length === 0) {
+      alert('하나 이상의 제품을 선택해주세요.');
+      return;
+    }
+    setIsModalOpen(true);
   };
 
-  // 날짜 범위 포맷 함수
+  // 모달에서 “네” 클릭 시 실제 생성 처리
+  const handleCreateSchedule = async () => {
+    if (!initialRange) {
+      // 보통 여기 오기 전에 검사를 이미 했으므로 거의 발생하지 않음
+      return;
+    }
+    const [start, end] = initialRange;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const startDate = `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(
+      start.getDate()
+    )}`;
+    const endDate = `${end.getFullYear()}-${pad(end.getMonth() + 1)}-${pad(
+      end.getDate()
+    )}`;
+    let apiSaleType = saleMethod;
+    if (saleMethod === '제품대여') {
+      apiSaleType = '제품 대여';
+    }
+    setSubmitting(true);
+    try {
+      const reqBody = {
+        startDate,
+        endDate,
+        saleType: apiSaleType,
+        productIds: selectedItems,
+      };
+      const result = await createSaleSchedule(reqBody);
+      // 성공 시 알림 후 /sales-schedule로 이동
+      alert('판매 스케줄이 생성되었습니다.');
+      navigate('/sales-schedule');
+    } catch (error: any) {
+      console.error('스케줄 생성 실패', error);
+      const msg =
+        error.response?.data?.message ||
+        error.message ||
+        '스케줄 생성 중 오류가 발생했습니다.';
+      alert(`스케줄 생성 실패: ${msg}`);
+    } finally {
+      setSubmitting(false);
+      setIsModalOpen(false);
+    }
+  };
+
+  // 날짜 범위 포맷 함수 (뷰 표시용)
   const formatKoreanDate = (date: Date) => {
     return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
   };
@@ -227,7 +280,25 @@ const ScheduleReservation3: React.FC = () => {
         <BlackText>스케줄 시작일 기준 2일 이내 </BlackText>
         <GrayText>까지 가능합니다.</GrayText>
       </InfoMessage>
-      <BottomBar onNext={handleBottomClick} />
+
+      {/* BottomBar: onNext에서 모달 열기 */}
+      <BottomBar
+        onNext={handleOpenModal}
+        buttonText='예약완료'
+        disabled={submitting}
+      />
+
+      {/* ReusableModal2 */}
+      <ReusableModal2
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleCreateSchedule}
+        title='판매 스케줄 생성'
+      >
+        <ModalMessage>
+          선택하신 기간과 제품으로 판매 스케줄을 생성하시겠습니까?
+        </ModalMessage>
+      </ReusableModal2>
 
       <BeenContainer />
     </Container>
@@ -412,4 +483,11 @@ const GrayText2 = styled.span`
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
+`;
+
+// 모달 내부 메시지 스타일
+const ModalMessage = styled.div`
+  padding: 10px 0;
+  font-size: 14px;
+  text-align: center;
 `;

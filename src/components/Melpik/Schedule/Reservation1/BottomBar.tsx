@@ -1,14 +1,24 @@
+// src/components/Melpik/Schedule/Reservation1/BottomBar.tsx
+
 import React from 'react';
 import styled from 'styled-components';
 
 interface BottomBarProps {
   onNext: () => void;
+  buttonText?: string;
+  disabled?: boolean;
 }
 
-const BottomBar: React.FC<BottomBarProps> = ({ onNext }) => {
+const BottomBar: React.FC<BottomBarProps> = ({
+  onNext,
+  buttonText = '다음',
+  disabled = false,
+}) => {
   return (
     <BottomBarContainer>
-      <OrderButton onClick={onNext}>다음</OrderButton>
+      <ActionButton onClick={onNext} disabled={disabled}>
+        {buttonText}
+      </ActionButton>
     </BottomBarContainer>
   );
 };
@@ -30,15 +40,15 @@ const BottomBarContainer = styled.div`
   z-index: 9999;
 `;
 
-const OrderButton = styled.button`
+const ActionButton = styled.button<{ disabled?: boolean }>`
   width: 100%;
   height: 56px;
-  background-color: black;
+  background-color: ${({ disabled }) => (disabled ? '#bdbdbd' : 'black')};
   border: none;
   border-radius: 6px;
   color: #ffffff;
   font-size: 16px;
   font-weight: 800;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   margin: 0 21px;
 `;
