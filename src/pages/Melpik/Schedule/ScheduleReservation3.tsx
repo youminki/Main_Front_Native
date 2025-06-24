@@ -3,56 +3,18 @@ import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Stepper from '../../../components/Melpik/Schedule/Reservation1/Stepper';
 import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBar';
-
-import ExIMG1 from '../../../assets/ExIMG1.svg';
-
-interface Item {
-  id: number;
-  image: string;
-  brand: string;
-  description: string;
-  price: number;
-  discount: number;
-}
+import { getMyCloset } from '../../../api/closet/closetApi';
+import Spinner from '../../../components/Spinner';
+import { UIItem } from '../../../components/Home/MyclosetItemList'; // UIItem.id는 string 타입
+import ExIMG1 from '../../../assets/ExIMG1.svg'; // 예시: 기본 이미지
 
 interface ItemCardProps {
-  id: number;
+  id: string;
   image: string;
   brand: string;
   description: string;
   onSelect: (id: number) => void;
-  $isSelected?: boolean;
 }
-
-const items: Item[] = [
-  {
-    id: 1,
-    image: ExIMG1,
-    brand: 'SANDRO',
-    description: '언발 플레어 미니원피스',
-    price: 150000,
-    discount: 10,
-  },
-  {
-    id: 2,
-    image: ExIMG1,
-    brand: 'ZOOC',
-    description: '볼륨소매 랩 카라 블라우스',
-    price: 150000,
-    discount: 10,
-  },
-  {
-    id: 3,
-    image: ExIMG1,
-    brand: 'MICHA',
-    description: '테일러드 카라 머메이드 원피스',
-    price: 150000,
-    discount: 10,
-  },
-];
-
-const truncateText = (text: string, limit: number): string =>
-  text.length > limit ? text.slice(0, limit) + '...' : text;
 
 const ItemCard: React.FC<ItemCardProps> = ({
   id,
@@ -64,14 +26,15 @@ const ItemCard: React.FC<ItemCardProps> = ({
   const navigate = useNavigate();
 
   const handleSelect = () => {
-    onSelect(id);
-    navigate(`/item/${id}`);
+    const numId = parseInt(id, 10);
+    onSelect(numId);
+    navigate(`/item/${numId}`);
   };
 
   return (
     <CardContainer>
       <ImageWrapper onClick={handleSelect}>
-        <Image src={image} alt={brand} />
+        <Image src={image || ExIMG1} alt={brand} />
       </ImageWrapper>
       <Brand>{brand}</Brand>
       <Description>{description}</Description>
@@ -81,29 +44,34 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
 interface ItemListProps {
   HeaderContainer: React.FC;
+  items: UIItem[]; // 전체 내 옷장 중 선택된 항목들만 필터링해 전달
   selectedItems: number[];
   onSelect: (id: number) => void;
 }
 
 const ItemList: React.FC<ItemListProps> = ({
   HeaderContainer,
+  items,
   selectedItems,
   onSelect,
 }) => {
-  // 선택된 제품만 필터링
-  const filteredItems = items.filter((item) => selectedItems.includes(item.id));
+  // UIItem.id는 string이므로 숫자로 변환해 비교
+  const filteredItems = items.filter((ui) =>
+    selectedItems.includes(parseInt(ui.id, 10))
+  );
 
   return (
     <ListContainer>
       <HeaderContainer />
       {filteredItems.length > 0 ? (
         <ItemsWrapper>
-          {filteredItems.map((item) => (
+          {filteredItems.map((ui) => (
             <ItemCard
-              key={item.id}
-              {...item}
-              description={truncateText(item.description, 12)}
-              $isSelected={selectedItems.includes(item.id)}
+              key={ui.id}
+              id={ui.id}
+              image={ui.image}
+              brand={ui.brand}
+              description={truncateText(ui.description, 12)}
               onSelect={onSelect}
             />
           ))}
@@ -115,6 +83,9 @@ const ItemList: React.FC<ItemListProps> = ({
   );
 };
 
+const truncateText = (text: string, limit: number): string =>
+  text.length > limit ? text.slice(0, limit) + '...' : text;
+
 const ScheduleReservation3: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -124,14 +95,17 @@ const ScheduleReservation3: React.FC = () => {
     selectedItems?: number[];
   } | null;
   const initialRange = prevState?.range;
-  const initialSelectedItems = prevState?.selectedItems;
+  const initialSelectedItems = prevState?.selectedItems || [];
 
   // selectedItems를 초기 state로 설정
-  const [selectedItems, setSelectedItems] = useState<number[]>(
-    initialSelectedItems || []
-  );
+  const [selectedItems, setSelectedItems] =
+    useState<number[]>(initialSelectedItems);
+
+  // 내 옷장 전체 아이템: UIItem[]
+  const [closetItems, setClosetItems] = useState<UIItem[]>([]);
+  const [loadingCloset, setLoadingCloset] = useState<boolean>(true);
+
   // 필요시 시간 선택 등 추가 state 선언
-  // const [selectedDate, setSelectedDate] = useState<string>('선택안함');
   const [saleMethod, setSaleMethod] = useState<string>('제품판매');
 
   // range가 없으면 이전 단계로 리디렉트
@@ -141,16 +115,42 @@ const ScheduleReservation3: React.FC = () => {
     }
   }, [initialRange, navigate]);
 
+  // 내 옷장 전체 아이템 불러오기
+  useEffect(() => {
+    setLoadingCloset(true);
+    getMyCloset()
+      .then((res) => {
+        // res.items 요소를 UIItem 형태로 매핑
+        const items: UIItem[] = res.items.map((it) => ({
+          id: String(it.productId),
+          image: it.mainImage,
+          brand: it.brand,
+          description: it.name,
+          price: it.price,
+          discount: it.discountRate,
+          isLiked: it.isLiked ?? true,
+        }));
+        setClosetItems(items);
+      })
+      .catch((err) => {
+        console.error('내 옷장 조회 실패', err);
+      })
+      .finally(() => {
+        setLoadingCloset(false);
+      });
+  }, []);
+
   const handleSelect = (id: number) => {
+    // ScheduleReservation3에서는 리스트에서 클릭 시 상세로 이동하면서 state 유지
     if (!selectedItems.includes(id)) {
       setSelectedItems([...selectedItems, id]);
     }
-    navigate(`/item/${id}`);
+    // navigate는 ItemCard 내부에서 이미 처리
   };
 
-  const handleSaleMethodChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => setSaleMethod(event.target.value);
+  const handleSaleMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSaleMethod(e.target.value);
+  };
 
   const handleBottomClick = () => {
     console.log('버튼 클릭됨');
@@ -196,11 +196,16 @@ const ScheduleReservation3: React.FC = () => {
       </Summary>
 
       <Content>
-        <ItemList
-          HeaderContainer={ItemContainer}
-          selectedItems={selectedItems}
-          onSelect={handleSelect}
-        />
+        {loadingCloset ? (
+          <Spinner />
+        ) : (
+          <ItemList
+            HeaderContainer={ItemContainer}
+            items={closetItems}
+            selectedItems={selectedItems}
+            onSelect={handleSelect}
+          />
+        )}
       </Content>
 
       <GrayLine />
@@ -272,6 +277,7 @@ const InfoText = styled.div`
 
 const Content = styled.div`
   flex: 1;
+  margin-bottom: 20px;
 `;
 
 const GrayLine = styled.hr`
@@ -295,11 +301,9 @@ const ColumnWrapper = styled.div`
 
 const Label = styled.label`
   margin-bottom: 8px;
-
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;
-
   color: ${COLOR_BLACK};
 `;
 
@@ -307,11 +311,9 @@ const StyledSelect = styled.select`
   padding: 20px;
   border-radius: 5px;
   border: 1px solid ${COLOR_BLACK};
-
   font-weight: 800;
   font-size: 13px;
   line-height: 14px;
-
   color: ${COLOR_BLACK};
 `;
 
@@ -323,7 +325,6 @@ const InfoMessage = styled.p`
 
 const GrayText = styled.span`
   color: ${COLOR_GRAY1};
-
   font-size: 12px;
 `;
 
@@ -331,7 +332,6 @@ const BlackText = styled.span`
   font-weight: 700;
   font-size: 12px;
   line-height: 13px;
-
   color: ${COLOR_BLACK};
 `;
 
@@ -368,7 +368,6 @@ const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-
   margin: 6px;
   position: relative;
 `;
@@ -395,7 +394,6 @@ const Brand = styled.h3`
 const Description = styled.p`
   margin-top: 5px;
   font-size: 12px;
-  /* 필요시 font-family나 추가 스타일 적용 */
   color: ${COLOR_GRAY2};
 `;
 
@@ -409,7 +407,6 @@ const CustomHeader = styled.div`
 const GrayText2 = styled.span`
   margin-left: 5px;
   color: ${COLOR_GRAY3};
-
   font-weight: 700;
   font-size: 10px;
   line-height: 11px;

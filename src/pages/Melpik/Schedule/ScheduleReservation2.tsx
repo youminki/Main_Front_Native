@@ -2,20 +2,24 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+import { FaTshirt } from 'react-icons/fa'; // 아이콘 import
 import Stepper from '../../../components/Melpik/Schedule/Reservation1/Stepper';
 import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBar';
 
-import ExIMG1 from '../../../assets/ExIMG1.svg';
 import checkIcon from '../../../assets/checkIcon.svg';
+
+import { getMyCloset } from '../../../api/closet/closetApi';
+import Spinner from '../../../components/Spinner';
+import { UIItem } from '../../../components/Home/MyclosetItemList';
 
 const MAX_SELECTION = 6;
 
 interface ItemCardProps {
-  id: number;
+  id: string;
   image: string;
   brand: string;
   description: string;
-  onSelect: (id: number) => void;
+  onSelect: (id: string) => void;
   $isSelected: boolean;
 }
 
@@ -38,7 +42,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
         {$isSelected && (
           <SelectionOverlay>
             <CircularSelection>
-              <CheckIcon src={checkIcon} alt='Check Icon' />
+              <CheckIconImg src={checkIcon} alt='Check Icon' />
             </CircularSelection>
             <SelectText>제품선택</SelectText>
           </SelectionOverlay>
@@ -50,45 +54,20 @@ const ItemCard: React.FC<ItemCardProps> = ({
   );
 };
 
-const items = [
-  {
-    id: 1,
-    image: ExIMG1,
-    brand: 'SANDRO',
-    description: '언발 플레어 미니원피스',
-    price: 150000,
-    discount: 10,
-  },
-  {
-    id: 2,
-    image: ExIMG1,
-    brand: 'ZOOC',
-    description: '볼륨소매 랩 카라 블라우스',
-    price: 150000,
-    discount: 10,
-  },
-  {
-    id: 3,
-    image: ExIMG1,
-    brand: 'MICHA',
-    description: '테일러드 카라 머메이드 원피스',
-    price: 150000,
-    discount: 10,
-  },
-];
-
 const truncateText = (text: string, limit: number): string => {
   return text.length > limit ? text.slice(0, limit) + '...' : text;
 };
 
 interface ItemListProps {
   HeaderContainer: React.FC;
+  items: UIItem[];
   selectedItems: number[];
-  onSelect: (id: number) => void;
+  onSelect: (id: string) => void;
 }
 
 const ItemList: React.FC<ItemListProps> = ({
   HeaderContainer,
+  items,
   selectedItems,
   onSelect,
 }) => {
@@ -96,15 +75,21 @@ const ItemList: React.FC<ItemListProps> = ({
     <ListContainer>
       <HeaderContainer />
       <ItemsWrapper>
-        {items.map((item) => (
-          <ItemCard
-            key={item.id}
-            {...item}
-            description={truncateText(item.description, 12)}
-            $isSelected={selectedItems.includes(item.id)}
-            onSelect={onSelect}
-          />
-        ))}
+        {items.map((item) => {
+          const numericId = Number(item.id);
+          const isSel = selectedItems.includes(numericId);
+          return (
+            <ItemCard
+              key={item.id}
+              id={item.id}
+              image={item.image}
+              brand={item.brand}
+              description={truncateText(item.description, 12)}
+              $isSelected={isSel}
+              onSelect={onSelect}
+            />
+          );
+        })}
       </ItemsWrapper>
     </ListContainer>
   );
@@ -117,8 +102,12 @@ const ScheduleReservation2: React.FC = () => {
   const prevState = location.state as { range?: [Date, Date] } | null;
   const initialRange = prevState?.range;
 
+  // selectedItems를 number[]로 관리
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [closetItems, setClosetItems] = useState<UIItem[]>([]);
+  const [loadingCloset, setLoadingCloset] = useState<boolean>(true);
 
   // 선택된 날짜 범위가 없다면 이전 페이지로 이동
   useEffect(() => {
@@ -127,11 +116,36 @@ const ScheduleReservation2: React.FC = () => {
     }
   }, [initialRange, navigate]);
 
-  const handleSelect = (id: number) => {
-    if (selectedItems.includes(id)) {
-      setSelectedItems(selectedItems.filter((itemId) => itemId !== id));
+  // 내 옷장 아이템 불러오기
+  useEffect(() => {
+    setLoadingCloset(true);
+    getMyCloset()
+      .then((res) => {
+        const items: UIItem[] = res.items.map((it) => ({
+          id: String(it.productId),
+          image: it.mainImage,
+          brand: it.brand,
+          description: it.name,
+          price: it.price,
+          discount: it.discountRate,
+          isLiked: it.isLiked ?? true,
+        }));
+        setClosetItems(items);
+      })
+      .catch((err) => {
+        console.error('내 옷장 조회 실패', err);
+      })
+      .finally(() => {
+        setLoadingCloset(false);
+      });
+  }, []);
+
+  const handleSelect = (id: string) => {
+    const numericId = Number(id);
+    if (selectedItems.includes(numericId)) {
+      setSelectedItems(selectedItems.filter((itemId) => itemId !== numericId));
     } else if (selectedItems.length < MAX_SELECTION) {
-      setSelectedItems([...selectedItems, id]);
+      setSelectedItems([...selectedItems, numericId]);
     } else {
       setIsModalOpen(true);
     }
@@ -142,7 +156,7 @@ const ScheduleReservation2: React.FC = () => {
   };
 
   const handleBottomClick = () => {
-    // Reservation3로 range와 selectedItems 전달
+    // Reservation3로 range와 selectedItems 전달 (number[] 그대로)
     navigate('/schedule/reservation3', {
       state: { range: initialRange, selectedItems },
     });
@@ -152,7 +166,7 @@ const ScheduleReservation2: React.FC = () => {
     <CustomHeader>
       <div>
         <Label>
-          스케줄에 추가할 제품 목록<GrayText2>(선택)</GrayText2>
+          내 옷장 - 제품목록 <GrayText2>(선택)</GrayText2>
         </Label>
       </div>
     </CustomHeader>
@@ -166,18 +180,32 @@ const ScheduleReservation2: React.FC = () => {
         <ScheduleInfo>
           <Label>예약할 제품 목록</Label>
           <InfoText>
+            <GrayText>선택 가능한 갯수 {MAX_SELECTION}개</GrayText>
+            <GrayDivider>/</GrayDivider>
             선택한 제품 수 {selectedItems.length} 개
-            <GrayText> / 선택 가능한 갯수 {MAX_SELECTION}개</GrayText>
           </InfoText>
         </ScheduleInfo>
       </Summary>
 
       <Content>
-        <ItemList
-          HeaderContainer={ItemContainer}
-          selectedItems={selectedItems}
-          onSelect={handleSelect}
-        />
+        {loadingCloset ? (
+          <Spinner />
+        ) : closetItems.length === 0 ? (
+          <EmptyState>
+            <EmptyMessage>내 옷장에 보관한 옷이 없습니다.</EmptyMessage>
+            <AddButton onClick={() => navigate('/home')}>
+              <FaTshirt size={48} />
+              <ButtonText>옷 추가하러 가기</ButtonText>
+            </AddButton>
+          </EmptyState>
+        ) : (
+          <ItemList
+            HeaderContainer={ItemContainer}
+            items={closetItems}
+            selectedItems={selectedItems}
+            onSelect={handleSelect}
+          />
+        )}
       </Content>
 
       <BottomBar onNext={handleBottomClick} />
@@ -255,7 +283,16 @@ const InfoText = styled.div`
 `;
 
 const GrayText = styled.span`
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 14px;
   color: ${COLOR_GRAY1};
+  margin-right: 5px;
+`;
+
+const GrayDivider = styled.span`
+  margin: 0 4px;
+  color: ${COLOR_GRAY4};
 `;
 
 const BeenContainer = styled.div`
@@ -309,7 +346,6 @@ const Brand = styled.h3`
 const Description = styled.p`
   margin-top: 5px;
   font-size: 12px;
-  /* 여기에 폰트 스타일이 필요하면 추가 */
   color: ${COLOR_GRAY2};
 `;
 
@@ -317,7 +353,6 @@ const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-
   margin: 6px;
   position: relative;
 `;
@@ -358,14 +393,13 @@ const CircularSelection = styled.div`
   justify-content: center;
 `;
 
-const CheckIcon = styled.img`
+const CheckIconImg = styled.img`
   width: 30px;
   height: 22px;
 `;
 
 const SelectText = styled.div`
   margin-top: 10px;
-
   font-weight: 700;
   font-size: 12px;
   color: ${COLOR_WHITE};
@@ -445,9 +479,36 @@ const WarningModalContent = styled(ModalContent)`
 
 const WarningMessage = styled.p`
   color: ${COLOR_BLACK};
-
   font-weight: 400;
   font-size: 14px;
   text-align: center;
   margin: 0;
+`;
+
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 1rem;
+`;
+
+const EmptyMessage = styled.p`
+  font-size: 16px;
+  color: #999;
+  margin-bottom: 1.5rem;
+`;
+
+const AddButton = styled.button`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+`;
+
+const ButtonText = styled.span`
+  margin-top: 0.5rem;
+  font-size: 14px;
+  color: #333;
 `;
