@@ -176,7 +176,6 @@ const ScheduleReservation3: React.FC = () => {
   // 모달에서 “네” 클릭 시 실제 생성 처리
   const handleCreateSchedule = async () => {
     if (!initialRange) {
-      // 보통 여기 오기 전에 검사를 이미 했으므로 거의 발생하지 않음
       return;
     }
     const [start, end] = initialRange;
@@ -199,7 +198,7 @@ const ScheduleReservation3: React.FC = () => {
         saleType: apiSaleType,
         productIds: selectedItems,
       };
-      const result = await createSaleSchedule(reqBody);
+      await createSaleSchedule(reqBody); // result 변수 제거
       // 성공 시 알림 후 /sales-schedule로 이동
       alert('판매 스케줄이 생성되었습니다.');
       navigate('/sales-schedule');
