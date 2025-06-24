@@ -1,3 +1,5 @@
+// src/pages/Melpik/Schedule/ScheduleReservation3.tsx
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -6,7 +8,6 @@ import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBa
 import { getMyCloset } from '../../../api/closet/closetApi';
 import Spinner from '../../../components/Spinner';
 import { UIItem } from '../../../components/Home/MyclosetItemList'; // UIItem.id는 string 타입
-import ExIMG1 from '../../../assets/ExIMG1.svg'; // 예시: 기본 이미지
 
 interface ItemCardProps {
   id: string;
@@ -34,7 +35,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
   return (
     <CardContainer>
       <ImageWrapper onClick={handleSelect}>
-        <Image src={image || ExIMG1} alt={brand} />
+        <Image src={image || ''} alt={brand} />
       </ImageWrapper>
       <Brand>{brand}</Brand>
       <Description>{description}</Description>
@@ -44,7 +45,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
 interface ItemListProps {
   HeaderContainer: React.FC;
-  items: UIItem[]; // 전체 내 옷장 중 선택된 항목들만 필터링해 전달
+  items: UIItem[];
   selectedItems: number[];
   onSelect: (id: number) => void;
 }
@@ -128,7 +129,8 @@ const ScheduleReservation3: React.FC = () => {
           description: it.name,
           price: it.price,
           discount: it.discountRate,
-          isLiked: it.isLiked ?? true,
+          // it.isLiked이 없으므로 기본값으로 할당
+          isLiked: true,
         }));
         setClosetItems(items);
       })

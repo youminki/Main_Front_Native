@@ -1,3 +1,5 @@
+// src/pages/Melpik/Schedule/ScheduleReservation2.tsx
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -128,7 +130,8 @@ const ScheduleReservation2: React.FC = () => {
           description: it.name,
           price: it.price,
           discount: it.discountRate,
-          isLiked: it.isLiked ?? true,
+          // it.isLiked이 없으므로 기본값으로 할당
+          isLiked: true,
         }));
         setClosetItems(items);
       })
