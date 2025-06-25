@@ -67,7 +67,7 @@ const PaymentPage: React.FC = () => {
   const itemsData = (location.state as BasketItemForPayment[]) || [];
   const [items] = useState<BasketItemForPayment[]>(itemsData);
 
-  // 티켓 조회
+  // 티켓 조회: 결제방식 옵션에 사용
   const [tickets, setTickets] = useState<TicketItem[]>([]);
   useEffect(() => {
     getUserTickets()
@@ -75,6 +75,8 @@ const PaymentPage: React.FC = () => {
       .catch((err) => console.error('티켓 조회 실패:', err));
   }, []);
   const activeTickets = tickets.filter((t) => t.isActive);
+
+  // 결제방식 선택: paymentOptions에 '결제방식 선택하기', 티켓 옵션, '이용권 구매하기' 포함
   const paymentOptions = [
     '결제방식 선택하기',
     ...activeTickets.map((t) => {
@@ -85,14 +87,17 @@ const PaymentPage: React.FC = () => {
     }),
     '이용권 구매하기',
   ];
-  const [selectedMethod, setSelectedMethod] = useState(paymentOptions[0]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
+    paymentOptions[0]
+  );
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
+
   const handlePaymentSelect = (value: string) => {
     if (value === '이용권 구매하기') {
       navigate('/my-ticket');
       return;
     }
-    setSelectedMethod(value);
+    setSelectedPaymentMethod(value);
     const ticket = activeTickets.find((t) => {
       const label = t.ticketList.isUlimited
         ? t.ticketList.name
@@ -102,23 +107,23 @@ const PaymentPage: React.FC = () => {
     setSelectedTicketId(ticket ? ticket.id : null);
   };
 
+  // 배송방법 고정: "택배배송"
+  const fixedDeliveryMethod = '택배배송';
+
   // 수령인/반납인 & 배송지
   const [recipient, setRecipient] = useState('');
-  // deliveryInfo에 message 필드 추가
   const [deliveryInfo, setDeliveryInfo] = useState({
     address: '',
     detailAddress: '',
     contact: '010',
     message: '',
   });
-  // returnInfo에도 message 필드 추가
   const [returnInfo, setReturnInfo] = useState({
     address: '',
     detailAddress: '',
     contact: '010',
     message: '',
   });
-  // 기본값은 동일 모드 켜둠
   const [isSameAsDelivery, setIsSameAsDelivery] = useState(true);
 
   // 주소검색/목록 모달
@@ -153,7 +158,7 @@ const PaymentPage: React.FC = () => {
     }
   }, [deliveryInfo, isSameAsDelivery]);
 
-  // 각종 핸들러
+  // 주소 검색 핸들러
   const handleAddressSearch = (field: 'delivery' | 'return') => {
     setModalField(field);
     setSearchModalOpen(true);
@@ -171,7 +176,6 @@ const PaymentPage: React.FC = () => {
   };
   const handleUseSame = () => {
     setIsSameAsDelivery(true);
-    // useEffect에서 동기화 처리됨
   };
   const handleNewReturn = () => {
     setIsSameAsDelivery(false);
@@ -182,13 +186,13 @@ const PaymentPage: React.FC = () => {
       message: '',
     });
   };
+
   const [listModalOpen, setListModalOpen] = useState(false);
   const [selectedAddr, setSelectedAddr] = useState<Address | null>(null);
   const handleListOpen = () => {
     fetchSavedAddresses();
     setListModalOpen(true);
   };
-
   const confirmList = () => {
     if (selectedAddr) {
       const { address, addressDetail, deliveryMessage } = selectedAddr;
@@ -199,10 +203,9 @@ const PaymentPage: React.FC = () => {
           detailAddress: addressDetail,
           message: deliveryMessage || '',
         }));
-        // isSameAsDelivery true라면 useEffect에서 returnInfo도 따라감
       } else {
         if (isSameAsDelivery) {
-          // 동일 모드라면 deliveryInfo에 반영된 후 useEffect로 sync
+          // 동기화 useEffect가 처리
         } else {
           setReturnInfo((i) => ({
             ...i,
@@ -221,6 +224,7 @@ const PaymentPage: React.FC = () => {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
   const handlePaymentSubmit = async () => {
+    // 필수 입력 체크: 수령인, 배송지, 상세주소, 반납지 등
     if (
       !recipient.trim() ||
       !deliveryInfo.address ||
@@ -230,6 +234,14 @@ const PaymentPage: React.FC = () => {
       setModalAlert({
         isOpen: true,
         message: '수령인, 주소, 상세주소를 모두 입력해주세요.',
+      });
+      return;
+    }
+    // 결제방식 선택 체크
+    if (selectedPaymentMethod === '결제방식 선택하기') {
+      setModalAlert({
+        isOpen: true,
+        message: '결제방식을 선택해주세요.',
       });
       return;
     }
@@ -262,6 +274,7 @@ const PaymentPage: React.FC = () => {
       };
     });
     const orderBody: RentalOrderRequest = {
+      // 티켓 기반 결제일 경우 selectedTicketId 사용
       ticketId: selectedTicketId ?? 0,
       items: orderItems,
       shipping: {
@@ -269,7 +282,7 @@ const PaymentPage: React.FC = () => {
         detailAddress: deliveryInfo.detailAddress,
         phone: deliveryInfo.contact,
         receiver: recipient,
-        deliveryMethod: selectedMethod,
+        deliveryMethod: fixedDeliveryMethod, // "택배배송"
         message: deliveryInfo.message || '',
       },
       return: {
@@ -292,9 +305,9 @@ const PaymentPage: React.FC = () => {
 
   const closeAlertModal = () => setModalAlert({ isOpen: false, message: '' });
 
-  // 결제금액 계산
+  // 결제금액 계산: baseTotal + 추가비용 (택배배송 고정이면 extra=0)
   const baseTotal = items.reduce((sum, x) => sum + x.price, 0);
-  const extra = selectedMethod === '매니저 배송' ? 15000 : 0;
+  const extra = 0;
   const finalAmount = baseTotal + extra;
 
   return (
@@ -399,7 +412,7 @@ const PaymentPage: React.FC = () => {
         </Item>
       ))}
 
-      {/* 수령인 & 배송방법 */}
+      {/* 수령인 & 배송방법 고정 표시 */}
       <Section>
         <Row>
           <InputGroup>
@@ -416,26 +429,13 @@ const PaymentPage: React.FC = () => {
           <InputGroup>
             <InputField
               id='delivery-method'
-              label='배송방법 *'
-              options={paymentOptions}
-              value={selectedMethod}
-              onSelectChange={handlePaymentSelect}
+              label='배송방법'
+              value={fixedDeliveryMethod}
+              readOnly
             />
           </InputGroup>
         </Row>
       </Section>
-      {selectedMethod === '매니저 배송' && (
-        <DeliveryNotice>
-          <NoticeTitle>※ 매니저 배송이란?</NoticeTitle>
-          <NoticeText>
-            매니저가 직접 고객에게 전달하는 방식으로 당일 배송 가능.
-          </NoticeText>
-          <ServiceArea>
-            서비스 지역 <Highlight>[ 서울 / 경기 일부 ]</Highlight>
-            <SmallText>(결제 시 추가 비용 발생)</SmallText>
-          </ServiceArea>
-        </DeliveryNotice>
-      )}
 
       {/* 배송지 입력 */}
       <Section>
@@ -467,7 +467,6 @@ const PaymentPage: React.FC = () => {
             }
           />
         </Row>
-        {/* 배송 메시지 입력란 */}
         <Row>
           <InputField
             id='delivery-message'
@@ -482,18 +481,18 @@ const PaymentPage: React.FC = () => {
             }
           />
         </Row>
+        <Row>
+          <InputField
+            id='contact'
+            label='연락처'
+            placeholder='나머지 8자리 입력'
+            value={deliveryInfo.contact}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleContactChange('delivery', e.target.value)
+            }
+          />
+        </Row>
       </Section>
-      <Row>
-        <InputField
-          id='contact'
-          label='연락처'
-          placeholder='나머지 8자리 입력'
-          value={deliveryInfo.contact}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            handleContactChange('delivery', e.target.value)
-          }
-        />
-      </Row>
 
       {/* 반납지 입력 */}
       <ReturnSection>
@@ -547,7 +546,6 @@ const PaymentPage: React.FC = () => {
             }
           />
         </Row>
-        {/* 반납지 배송 메시지: 동일 모드면 disabled, value는 deliveryInfo.message */}
         <Row>
           <InputField
             id='return-delivery-message'
@@ -577,7 +575,7 @@ const PaymentPage: React.FC = () => {
         </Row>
       </ReturnSection>
 
-      {/* 우편번호 검색 모달 등... */}
+      {/* 주소검색 모달 */}
       <AddressSearchModal
         isOpen={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}
@@ -599,19 +597,23 @@ const PaymentPage: React.FC = () => {
         onConfirm={confirmList}
       />
 
-      {/* 결제방식 선택, 총 결제금액, 결제 버튼 등... */}
-      <PaymentAndCouponContainer>
-        <PaymentSection>
+      <Section>
+        <Row>
           <InputGroup>
             <InputField
               id='payment-method'
-              label='결제방식 *'
+              label='결제방식'
               options={paymentOptions}
-              value={selectedMethod}
+              value={selectedPaymentMethod}
               onSelectChange={handlePaymentSelect}
             />
           </InputGroup>
-        </PaymentSection>
+        </Row>
+      </Section>
+
+      {/* 총 결제금액 */}
+      <PaymentAndCouponContainer>
+        <PaymentSection>{/* 추가 할인/쿠폰 UI 있으면 여기에 */}</PaymentSection>
       </PaymentAndCouponContainer>
 
       <TotalPaymentSection>
@@ -619,7 +621,7 @@ const PaymentPage: React.FC = () => {
         <TotalAmount>
           {extra > 0 && (
             <AdditionalCost>
-              + 추가비용 ({extra.toLocaleString()})
+              + 추가비용 ({extra.toLocaleString()}원)
             </AdditionalCost>
           )}
           <Amount>{finalAmount.toLocaleString()}원</Amount>
@@ -638,9 +640,6 @@ const PaymentPage: React.FC = () => {
 export default PaymentPage;
 
 /* ── styled-components ── */
-/* 기존 스타일 유지 */
-
-// ── styled-components ──
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -724,6 +723,7 @@ const DetailAddressInput = styled.input`
   &:focus {
     outline: none;
   }
+  margin-bottom: 20px;
 `;
 
 const ReturnOption = styled.div`
@@ -772,8 +772,6 @@ const OptionButtonLeft = styled.button<{ $active: boolean }>`
 
 const PaymentAndCouponContainer = styled.div`
   border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  padding: 30px 0;
 `;
 
 const ReturnSection = styled(Section)`
@@ -923,36 +921,6 @@ const ItemImage = styled.img`
 const Icon = styled.img`
   width: 20px;
   height: 20px;
-`;
-
-const DeliveryNotice = styled.div`
-  background: #fafafa;
-  padding: 10px;
-  border-radius: 4px;
-  margin: 16px 0;
-`;
-
-const NoticeTitle = styled.p`
-  font-size: 12px;
-  font-weight: 700;
-`;
-
-const NoticeText = styled.p`
-  font-size: 12px;
-`;
-
-const ServiceArea = styled.p`
-  font-size: 12px;
-  font-weight: 700;
-`;
-
-const Highlight = styled.span`
-  color: orange;
-`;
-
-const SmallText = styled.span`
-  font-size: 11px;
-  color: #666;
 `;
 
 const ModalBody = styled.div`
