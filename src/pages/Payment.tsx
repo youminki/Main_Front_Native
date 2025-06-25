@@ -108,7 +108,7 @@ const PaymentPage: React.FC = () => {
   };
 
   // 배송방법 고정: "택배배송"
-  const fixedDeliveryMethod = '택배배송';
+  const fixedDeliveryMethod = '일반배송';
 
   // 수령인/반납인 & 배송지
   const [recipient, setRecipient] = useState('');
