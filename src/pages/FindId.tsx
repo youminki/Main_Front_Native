@@ -75,12 +75,11 @@ const FindId: React.FC = () => {
       });
       setUserEmail(maskEmail(email));
       setIsModalOpen(true);
-    } catch (error: any) {
-      if (error.response?.status === 404) {
-        setErrorMessage('입력하신 정보와 일치하는 계정을 찾을 수 없습니다.');
-      } else {
-        setErrorMessage('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-      }
+    } catch (error: unknown) {
+      setErrorMessage(
+        error instanceof Error ? error.message : '이메일 찾기에 실패했습니다.'
+      );
+      setIsModalOpen(true);
     }
   };
 

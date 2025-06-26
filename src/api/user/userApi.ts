@@ -392,3 +392,14 @@ export function useMyInfo() {
     staleTime: 1000 * 60 * 5,
   });
 }
+
+/**
+ * 헤더 정보(닉네임, 이메일)를 react-query로 가져오는 커스텀 훅
+ */
+export function useHeaderInfo() {
+  return useQuery<HeaderInfoResponse>({
+    queryKey: ['headerInfo'],
+    queryFn: getHeaderInfo,
+    staleTime: 1000 * 60 * 5,
+  });
+}

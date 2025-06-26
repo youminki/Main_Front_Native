@@ -1,5 +1,5 @@
 // src/pages/my-ticket/PurchaseOfPasses.tsx
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import InputField from '../../../components/InputField';
@@ -7,8 +7,8 @@ import { CustomSelect } from '../../../components/CustomSelect';
 import FixedBottomBar from '../../../components/FixedBottomBar';
 import ReusableModal2 from '../../../components/ReusableModal2';
 import { format, addMonths } from 'date-fns';
-import { getTicketList, TicketList } from '../../../api/ticket/ticket';
-import { getMembershipInfo, MembershipInfo } from '../../../api/user/userApi';
+import { useTicketList } from '../../../api/ticket/ticket';
+import { useMembershipInfo } from '../../../api/user/userApi';
 
 const PurchaseOfPasses: React.FC = () => {
   const navigate = useNavigate();
@@ -18,33 +18,25 @@ const PurchaseOfPasses: React.FC = () => {
   const searchParams = new URLSearchParams(location.search);
   const initialName = searchParams.get('name') || '';
 
-  // 공개 API로부터 불러온 전체 템플릿 리스트
-  const [templates, setTemplates] = useState<TicketList[]>([]);
+  // react-query로 데이터 패칭
+  const { data: ticketData } = useTicketList();
+  const { data: membershipInfo } = useMembershipInfo();
+
   const [purchaseOption, setPurchaseOption] = useState<string>(initialName);
-  const [discountRate, setDiscountRate] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 공개 이용권 목록 조회
-  useEffect(() => {
-    getTicketList()
-      .then((res) => {
-        setTemplates(res.items);
-        if (!initialName && res.items.length > 0) {
-          setPurchaseOption(res.items[0].name);
-        }
-      })
-      .catch(console.error);
-  }, [initialName]);
+  // 템플릿 목록과 할인율 계산
+  const templates = ticketData?.items ?? [];
+  const discountRate = membershipInfo
+    ? Math.max(0, parseFloat(membershipInfo.discountRate?.toString() || '0'))
+    : 0;
 
-  // 회원 할인율 조회
-  useEffect(() => {
-    getMembershipInfo()
-      .then((info: MembershipInfo) => {
-        const rate = parseFloat(info.discountRate?.toString() || '0');
-        setDiscountRate(Math.max(0, rate));
-      })
-      .catch(() => setDiscountRate(0));
-  }, []);
+  // 초기 구매 옵션 설정
+  React.useEffect(() => {
+    if (!initialName && templates.length > 0) {
+      setPurchaseOption(templates[0].name);
+    }
+  }, [initialName, templates]);
 
   // 오늘 및 한 달 후 날짜 포맷
   const today = new Date();

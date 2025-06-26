@@ -12,7 +12,7 @@ import ReusableModal from '../../components/ReusableModal';
 import { regionDistrictData } from '../../components/Signup/regionDistrictData';
 
 // userApi에서 가져올 함수들
-import { getMyInfo, updateMyInfo } from '../../api/user/userApi';
+import { useMyInfo, updateMyInfo } from '../../api/user/userApi';
 
 export type UpdateProfileFormData = {
   emailId: string;
@@ -51,6 +51,9 @@ const UpdateProfile: React.FC = () => {
     setValue,
   } = methods;
 
+  // react-query로 내 정보 패칭
+  const { data: myInfo, isLoading } = useMyInfo();
+
   // 모바일 키보드 열림 감지 (원래 로직 그대로 유지)
   const initialHeight = window.visualViewport
     ? window.visualViewport.height
@@ -79,38 +82,37 @@ const UpdateProfile: React.FC = () => {
 
   // 백엔드에서 /user/my-info 가져와서 폼 초기화
   useEffect(() => {
-    (async () => {
-      try {
-        const info = await getMyInfo();
-        // address 문자열에 \u00A0 (non-breaking space) 등이 있을 수 있으므로 일반 공백으로 교체 후 trim
-        const normalized = info.address.replace(/\u00A0/g, ' ').trim();
-        // 여러 공백/탭 등이 섞여 있을 경우에도 잘 분리되도록 \s+로 split
-        const parts = normalized.split(/\s+/);
-        const regionPart = parts[0] || '';
-        const districtPart = parts.slice(1).join(' ');
+    if (!myInfo) return;
 
-        // 이하 기존 로직...
-        const [idPart, domainPart] = info.email.split('@');
-        const rawPhone = info.phoneNumber.replace(/-/g, '');
-        const birthYearStr = String(info.birthYear);
-        const genderKor = info.gender === 'female' ? '여성' : '남성';
+    try {
+      // address 문자열에 \u00A0 (non-breaking space) 등이 있을 수 있으므로 일반 공백으로 교체 후 trim
+      const normalized = myInfo.address.replace(/\u00A0/g, ' ').trim();
+      // 여러 공백/탭 등이 섞여 있을 경우에도 잘 분리되도록 \s+로 split
+      const parts = normalized.split(/\s+/);
+      const regionPart = parts[0] || '';
+      const districtPart = parts.slice(1).join(' ');
 
-        reset({
-          emailId: idPart,
-          emailDomain: domainPart,
-          nickname: info.nickname,
-          name: info.name,
-          birthYear: birthYearStr,
-          phoneNumber: rawPhone,
-          region: regionPart,
-          district: districtPart,
-          gender: genderKor,
-        });
-      } catch (err) {
-        console.error('내 정보 조회 오류:', err);
-      }
-    })();
-  }, [reset]);
+      // 이하 기존 로직...
+      const [idPart, domainPart] = myInfo.email.split('@');
+      const rawPhone = myInfo.phoneNumber.replace(/-/g, '');
+      const birthYearStr = String(myInfo.birthYear);
+      const genderKor = myInfo.gender === 'female' ? '여성' : '남성';
+
+      reset({
+        emailId: idPart,
+        emailDomain: domainPart,
+        nickname: myInfo.nickname,
+        name: myInfo.name,
+        birthYear: birthYearStr,
+        phoneNumber: rawPhone,
+        region: regionPart,
+        district: districtPart,
+        gender: genderKor,
+      });
+    } catch (err) {
+      console.error('내 정보 조회 오류:', err);
+    }
+  }, [myInfo, reset]);
 
   // region이 바뀌면 district를 초기화
   useEffect(() => {
@@ -136,11 +138,14 @@ const UpdateProfile: React.FC = () => {
       await updateMyInfo(payload);
       setSignupResult('✅ 회원정보가 성공적으로 업데이트되었습니다.');
       setShowResultModal(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('회원정보 수정 오류:', err);
       const msg =
-        err?.response?.data?.message ||
-        (err instanceof Error ? err.message : '알 수 없는 오류');
+        err instanceof Error && 'response' in err && err.response?.data?.message
+          ? err.response.data.message
+          : err instanceof Error
+            ? err.message
+            : '알 수 없는 오류';
       setSignupResult(`❌ 업데이트 중 오류가 발생했습니다: ${msg}`);
       setShowResultModal(true);
     }
@@ -154,6 +159,16 @@ const UpdateProfile: React.FC = () => {
     setShowResultModal(false);
     // 필요 시, 성공 후 다른 동작(ex: 뒤로 이동 등)을 이곳에 추가 가능
   };
+
+  if (isLoading) {
+    return (
+      <ThemeProvider theme={Theme}>
+        <Container>
+          <div>프로필 정보를 불러오는 중...</div>
+        </Container>
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider theme={Theme}>
@@ -198,124 +213,88 @@ const UpdateProfile: React.FC = () => {
                 readOnly
                 {...register('name')}
               />
+
               <InputField
                 label='태어난 해'
                 id='birthYear'
-                as={CustomSelect}
-                disabled
-                {...register('birthYear')}
-              >
-                <option value='' disabled>
-                  연도 선택
-                </option>
-                {Array.from(
-                  { length: 100 },
-                  (_, i) => new Date().getFullYear() - i
-                ).map((yr) => (
-                  <option key={yr} value={yr}>
-                    {yr}년
-                  </option>
-                ))}
-              </InputField>
-            </RowLabel>
-
-            {/* 성별 (읽기 전용) */}
-            <GenderField>
-              <InputFieldLabel>성별</InputFieldLabel>
-              <GenderRow>
-                <GenderButton
-                  type='button'
-                  selected={watch('gender') === '여성'}
-                  disabled
-                  $isSelected={watch('gender') === '여성'}
-                >
-                  여성
-                </GenderButton>
-                <GenderButton
-                  type='button'
-                  selected={watch('gender') === '남성'}
-                  disabled
-                  $isSelected={watch('gender') === '남성'}
-                >
-                  남성
-                </GenderButton>
-              </GenderRow>
-            </GenderField>
-
-            {/* 휴대폰 번호 (읽기 전용) */}
-            <PhoneField>
-              <InputField
-                label='전화번호'
-                id='phoneNumber'
                 type='text'
                 readOnly
-                {...register('phoneNumber')}
-                maxLength={11}
+                {...register('birthYear')}
               />
-            </PhoneField>
+            </RowLabel>
 
-            {/* 서비스 지역 (시/도, 구/군) — 수정 가능 */}
+            {/* 전화번호 (읽기 전용) */}
+            <InputField
+              label='전화번호'
+              id='phoneNumber'
+              type='text'
+              readOnly
+              {...register('phoneNumber')}
+            />
+
+            {/* 성별 (읽기 전용) */}
+            <InputField
+              label='성별'
+              id='gender'
+              as={CustomSelect}
+              readOnly
+              {...register('gender')}
+            >
+              <option value='여성'>여성</option>
+              <option value='남성'>남성</option>
+            </InputField>
+
+            {/* 시/도 & 구/군 */}
             <RowLabel>
               <InputField
-                label='서비스 지역 (시/도)'
+                label='시/도'
                 id='region'
                 as={CustomSelect}
                 {...register('region')}
               >
-                <option value='' disabled>
-                  시/도 선택
-                </option>
-                {Object.keys(regionDistrictData).map((reg) => (
-                  <option key={reg} value={reg}>
-                    {reg}
+                <option value=''>시/도를 선택하세요</option>
+                {Object.keys(regionDistrictData).map((region) => (
+                  <option key={region} value={region}>
+                    {region}
                   </option>
                 ))}
               </InputField>
+
               <InputField
-                label=''
+                label='구/군'
                 id='district'
                 as={CustomSelect}
                 {...register('district')}
               >
-                <option value='' disabled>
-                  구/군 선택
-                </option>
-                {watch('region') && regionDistrictData[watch('region')] ? (
-                  regionDistrictData[watch('region')].map((dist: string) => (
-                    <option key={dist} value={dist}>
-                      {dist}
+                <option value=''>구/군을 선택하세요</option>
+                {watch('region') &&
+                  regionDistrictData[
+                    watch('region') as keyof typeof regionDistrictData
+                  ]?.map((district) => (
+                    <option key={district} value={district}>
+                      {district}
                     </option>
-                  ))
-                ) : (
-                  <option value=''>지역 먼저 선택</option>
-                )}
+                  ))}
               </InputField>
             </RowLabel>
           </Form>
 
-          {/* BottomBar: 키보드 열렸을 때 숨김 */}
-          {!isKeyboardOpen && (
-            <FixedBottomBar
-              type='button'
-              text={isSubmitting ? '저장 중...' : '정보변경'}
-              color='black'
-              onClick={onSaveClick}
-              disabled={isSubmitting}
-            />
-          )}
+          <FixedBottomBar
+            text='저장'
+            color='black'
+            onClick={onSaveClick}
+            disabled={isSubmitting}
+          />
+
+          <ReusableModal
+            isOpen={showResultModal}
+            onClose={handleResultModalClose}
+            title='회원정보 수정'
+          >
+            {signupResult}
+          </ReusableModal>
         </Container>
       </FormProvider>
-
-      {/* 결과 모달 */}
-      {showResultModal && (
-        <ReusableModal
-          isOpen={showResultModal}
-          onClose={handleResultModalClose}
-          title='회원정보 수정 결과'
-        >
-          {signupResult}
-        </ReusableModal>
-      )}
     </ThemeProvider>
   );
 };

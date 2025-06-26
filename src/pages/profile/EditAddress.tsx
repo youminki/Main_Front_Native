@@ -3,16 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import FixedBottomBar from '../../components/FixedBottomBar';
 import AddressSearchModal from '../../components/AddressSearchModal';
-import { AddressApi, CreateAddressRequest } from '../../api/address/address';
+import { useCreateAddress } from '../../api/address/address';
 
 const EditAddress: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
   const [deliveryMessage, setDeliveryMessage] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const [searchModalOpen, setSearchModalOpen] = useState(false);
+
+  // react-query로 주소 생성 처리
+  const createAddressMutation = useCreateAddress();
 
   const handleSearch = () => {
     setSearchModalOpen(true);
@@ -24,23 +26,19 @@ const EditAddress: React.FC = () => {
       return;
     }
 
-    setLoading(true);
-    const payload: CreateAddressRequest = {
+    const payload = {
       address: searchQuery,
       addressDetail: detailAddress,
       deliveryMessage,
     };
 
     try {
-      // result 변수를 제거하여 unused 에러 방지
-      await AddressApi.createAddress(payload);
+      await createAddressMutation.mutateAsync(payload);
       alert('주소가 등록되었습니다.');
       navigate('/deliveryManagement');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('주소 등록 실패:', error);
       alert('주소 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -97,10 +95,10 @@ const EditAddress: React.FC = () => {
       {/* 하단 고정 바: 저장 버튼 */}
       <FixedBottomBar
         type='button'
-        text={loading ? '등록 중...' : '등록하기'}
+        text={createAddressMutation.isPending ? '등록 중...' : '등록하기'}
         color='yellow'
         onClick={handleSave}
-        disabled={loading}
+        disabled={createAddressMutation.isPending}
       />
     </Container>
   );

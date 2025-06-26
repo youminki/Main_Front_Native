@@ -60,8 +60,12 @@ const Login: React.FC = () => {
           membership,
         },
       });
-    } catch (error: any) {
-      setModalMessage(error?.message || '로그인 실패. 다시 시도해주세요.');
+    } catch (error: unknown) {
+      setModalMessage(
+        error instanceof Error
+          ? error.message
+          : '로그인 실패. 다시 시도해주세요.'
+      );
       setIsModalOpen(true);
     }
   };

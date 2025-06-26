@@ -1,6 +1,7 @@
 // src/api/address.ts
 
 import { Axios } from '../Axios';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export interface Address {
   id: number;
@@ -80,3 +81,78 @@ export const AddressApi = {
     await Axios.patch(`/user-address/${id}/set-default`);
   },
 };
+
+/**
+ * 내 주소 목록을 react-query로 가져오는 커스텀 훅
+ */
+export function useAddresses() {
+  return useQuery<Address[]>({
+    queryKey: ['addresses'],
+    queryFn: AddressApi.getAddresses,
+    staleTime: 1000 * 60 * 5, // 5분 캐싱
+  });
+}
+
+/**
+ * 주소 생성을 react-query useMutation으로 처리하는 커스텀 훅
+ */
+export function useCreateAddress() {
+  const queryClient = useQueryClient();
+
+  return useMutation<Address, unknown, CreateAddressRequest>({
+    mutationFn: AddressApi.createAddress,
+    onSuccess: () => {
+      // 주소 목록 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: ['addresses'] });
+    },
+  });
+}
+
+/**
+ * 주소 수정을 react-query useMutation으로 처리하는 커스텀 훅
+ */
+export function useUpdateAddress() {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    Address,
+    unknown,
+    { id: number; data: UpdateAddressRequest }
+  >({
+    mutationFn: ({ id, data }) => AddressApi.updateAddress(id, data),
+    onSuccess: () => {
+      // 주소 목록 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: ['addresses'] });
+    },
+  });
+}
+
+/**
+ * 주소 삭제를 react-query useMutation으로 처리하는 커스텀 훅
+ */
+export function useDeleteAddress() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, unknown, number>({
+    mutationFn: AddressApi.deleteAddress,
+    onSuccess: () => {
+      // 주소 목록 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: ['addresses'] });
+    },
+  });
+}
+
+/**
+ * 기본 주소 설정을 react-query useMutation으로 처리하는 커스텀 훅
+ */
+export function useSetDefaultAddress() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, unknown, number>({
+    mutationFn: AddressApi.setDefaultAddress,
+    onSuccess: () => {
+      // 주소 목록 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: ['addresses'] });
+    },
+  });
+}

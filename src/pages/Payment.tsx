@@ -12,12 +12,13 @@ import AddressSearchModal from '../components/AddressSearchModal';
 import PriceIcon from '../assets/Basket/PriceIcon.svg';
 import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
 import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
-import { getUserTickets, TicketItem } from '../api/ticket/ticket';
-import { createRentalOrder, RentalOrderRequest } from '../api/rental/rental';
-import { AddressApi, Address } from '../api/address/address';
+import { useUserTickets } from '../api/ticket/ticket';
+import { useCreateRentalOrder, RentalOrderRequest } from '../api/rental/rental';
+import { useAddresses, Address } from '../api/address/address';
 import DeliveryListModal from '../components/DeliveryListModal';
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   interface Window {
     daum: any;
   }
@@ -67,13 +68,8 @@ const PaymentPage: React.FC = () => {
   const itemsData = (location.state as BasketItemForPayment[]) || [];
   const [items] = useState<BasketItemForPayment[]>(itemsData);
 
-  // 티켓 조회: 결제방식 옵션에 사용
-  const [tickets, setTickets] = useState<TicketItem[]>([]);
-  useEffect(() => {
-    getUserTickets()
-      .then((data) => setTickets(data))
-      .catch((err) => console.error('티켓 조회 실패:', err));
-  }, []);
+  // react-query로 티켓 조회
+  const { data: tickets = [] } = useUserTickets();
   const activeTickets = tickets.filter((t) => t.isActive);
 
   // 결제방식 선택: paymentOptions에 '결제방식 선택하기', 티켓 옵션, '이용권 구매하기' 포함
@@ -132,19 +128,8 @@ const PaymentPage: React.FC = () => {
   );
   const [searchModalOpen, setSearchModalOpen] = useState(false);
 
-  // 저장된 배송지 조회
-  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
-  const fetchSavedAddresses = async () => {
-    try {
-      const list = await AddressApi.getAddresses();
-      setSavedAddresses(list);
-    } catch (err) {
-      console.error('배송지 조회 실패:', err);
-    }
-  };
-  useEffect(() => {
-    fetchSavedAddresses();
-  }, []);
+  // react-query로 저장된 배송지 조회
+  const { data: savedAddresses = [] } = useAddresses();
 
   // deliveryInfo 변경 시, isSameAsDelivery가 true면 returnInfo 동기화
   useEffect(() => {
@@ -190,7 +175,6 @@ const PaymentPage: React.FC = () => {
   const [listModalOpen, setListModalOpen] = useState(false);
   const [selectedAddr, setSelectedAddr] = useState<Address | null>(null);
   const handleListOpen = () => {
-    fetchSavedAddresses();
     setListModalOpen(true);
   };
   const confirmList = () => {
@@ -222,6 +206,9 @@ const PaymentPage: React.FC = () => {
   // 결제 모달 & 알림
   const [modalAlert, setModalAlert] = useState({ isOpen: false, message: '' });
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+
+  // react-query로 렌탈 주문 생성
+  const createRentalOrderMutation = useCreateRentalOrder();
 
   const handlePaymentSubmit = async () => {
     // 필수 입력 체크: 수령인, 배송지, 상세주소, 반납지 등
@@ -292,13 +279,25 @@ const PaymentPage: React.FC = () => {
       },
     };
     try {
-      await createRentalOrder(orderBody);
+      await createRentalOrderMutation.mutateAsync(orderBody);
       navigate('/payment-complete');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('렌탈 주문 생성 실패:', err);
+      const errorMessage =
+        err instanceof Error &&
+        'response' in err &&
+        typeof err.response === 'object' &&
+        err.response &&
+        'data' in err.response &&
+        typeof err.response.data === 'object' &&
+        err.response.data &&
+        'message' in err.response.data &&
+        typeof err.response.data.message === 'string'
+          ? err.response.data.message
+          : '주문 중 오류가 발생했습니다.';
       setModalAlert({
         isOpen: true,
-        message: err.response?.data?.message || '주문 중 오류가 발생했습니다.',
+        message: errorMessage,
       });
     }
   };
@@ -629,9 +628,10 @@ const PaymentPage: React.FC = () => {
       </TotalPaymentSection>
 
       <FixedBottomBar
-        text='결제하기'
+        text={createRentalOrderMutation.isPending ? '결제 중...' : '결제하기'}
         color='yellow'
         onClick={handlePaymentSubmit}
+        disabled={createRentalOrderMutation.isPending}
       />
     </Container>
   );

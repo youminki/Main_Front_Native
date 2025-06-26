@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import Cookies from 'js-cookie';
 import { BiTime } from 'react-icons/bi';
 import { FaUserCircle } from 'react-icons/fa';
+import { useHeaderInfo } from '../api/user/userApi';
 
 import AlarmIcon from '../assets/Header/AlarmIcon.svg';
 import BasketIcon from '../assets/Header/BasketIcon.svg';
@@ -19,7 +20,6 @@ import SearchIcon from '../assets/Header/SearchIcon.svg';
 
 import MypageModal from '../components/MypageModal';
 import ReusableModal from '../components/ReusableModal';
-import { getHeaderInfo } from '../api/user/userApi';
 
 interface HeaderContainerProps {
   variant?: 'default' | 'oneDepth' | 'twoDepth' | 'threeDepth';
@@ -215,28 +215,23 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   const [historyState, setHistoryState] = useState<string[]>([]);
   const boxRef = useRef<HTMLDivElement>(null);
 
+  // react-query로 헤더 정보 패칭
+  const { data: headerInfo } = useHeaderInfo();
+
   // 헤더 정보 조회 (로그인/닉네임 등)
   useEffect(() => {
     if (variant === 'default' || variant === 'oneDepth') {
-      const fetchHeaderInfo = async () => {
-        const token = Cookies.get('accessToken');
-        setIsLoggedIn(!!token);
+      const token = Cookies.get('accessToken');
+      setIsLoggedIn(!!token);
 
-        const imgFromCookie = Cookies.get('profileImageUrl');
-        setProfileImageUrl(imgFromCookie || null);
+      const imgFromCookie = Cookies.get('profileImageUrl');
+      setProfileImageUrl(imgFromCookie || null);
 
-        if (token) {
-          try {
-            const { nickname: nick } = await getHeaderInfo();
-            setNickname(nick);
-          } catch {
-            console.error('헤더 닉네임 조회 실패');
-          }
-        }
-      };
-      fetchHeaderInfo();
+      if (token && headerInfo) {
+        setNickname(headerInfo.nickname);
+      }
     }
-  }, [variant]);
+  }, [variant, headerInfo]);
 
   // 로컬스토리지에서 히스토리 불러오기
   useEffect(() => {

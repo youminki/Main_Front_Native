@@ -4,7 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 import Spinner from '../../../components/Spinner';
-import { getMyCards, CardItem } from '../../../api/default/payment';
+import { useNavigate } from 'react-router-dom';
+import { useMyCards, CardItem } from '../../../api/default/payment';
 
 interface UserInfo {
   userId: string;
@@ -40,28 +41,22 @@ const fadeIn = keyframes`
 `;
 
 const PaymentMethod: React.FC = () => {
-  const [cards, setCards] = useState<CardData[]>([]);
-  const [loading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const count = cards.length;
+  // react-query로 카드 데이터 패칭
+  const { data: cardsData, isLoading } = useMyCards();
 
-  useEffect(() => {
-    getMyCards()
-      .then((res) => {
-        const list = res.data.items.map((item: CardItem) => ({
-          registerDate: item.createdAt
-            ? `등록일 ${new Date(item.createdAt).toISOString().slice(0, 10)}`
-            : '등록일 알 수 없음',
-          brand: item.cardName || '알 수 없음',
-          cardNumber: item.cardNumber || '**** **** **** ****',
-        }));
-        setCards(list);
-      })
-      .catch((err) => console.error('카드 목록 조회 실패', err))
-      .finally(() => setLoading(false));
-  }, []);
+  const cards: CardData[] =
+    cardsData?.items.map((item: CardItem) => ({
+      registerDate: item.createdAt
+        ? `등록일 ${new Date(item.createdAt).toISOString().slice(0, 10)}`
+        : '등록일 알 수 없음',
+      brand: item.cardName || '알 수 없음',
+      cardNumber: item.cardNumber || '**** **** **** ****',
+    })) ?? [];
+
+  const count = cards.length;
 
   useEffect(() => {
     (async () => {
@@ -78,9 +73,9 @@ const PaymentMethod: React.FC = () => {
           userName: data.name,
           userEmail: data.email,
         });
-      } catch (e: any) {
+      } catch (e: unknown) {
         console.error('유저 정보 로딩 실패', e);
-        setError(e.message);
+        setError(e instanceof Error ? e.message : '알 수 없는 오류');
       }
     })();
   }, []);
@@ -137,7 +132,7 @@ const PaymentMethod: React.FC = () => {
 
       <Divider />
 
-      {loading ? (
+      {isLoading ? (
         <SpinnerWrapper>
           <Spinner />
         </SpinnerWrapper>

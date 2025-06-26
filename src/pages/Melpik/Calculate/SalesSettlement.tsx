@@ -4,19 +4,22 @@ import { useNavigate } from 'react-router-dom';
 import StatsSection from '../../../components/StatsSection';
 import FixedBottomBar from '../../../components/FixedBottomBar';
 import PeriodSection from '../../../components/PeriodSection';
+import { useQuery } from '@tanstack/react-query';
 
-const SalesSettlement: React.FC = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState(6);
-  const navigate = useNavigate();
+// 정산 내역 타입
+export interface Settlement {
+  id: number;
+  status: 'pending' | 'confirmed';
+  date: string;
+  subDate: string;
+  amount: string;
+  deduction: string;
+}
 
-  const visits = '230,400';
-  const sales = '02.07';
-  const dateRange = '정산금 정보';
-
-  const visitLabel = '미정산금';
-  const salesLabel = '다음 정산일';
-
-  const settlements = [
+// mock fetch 함수
+async function fetchSettlements(): Promise<Settlement[]> {
+  // 실제 API 연동 시 이 부분만 교체
+  return [
     {
       id: 1,
       status: 'pending',
@@ -74,6 +77,30 @@ const SalesSettlement: React.FC = () => {
       deduction: '공제 6,000원',
     },
   ];
+}
+
+// react-query 훅
+function useSettlements() {
+  return useQuery<Settlement[]>({
+    queryKey: ['settlements'],
+    queryFn: fetchSettlements,
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+const SalesSettlement: React.FC = () => {
+  const [selectedPeriod, setSelectedPeriod] = useState(6);
+  const navigate = useNavigate();
+
+  const visits = '230,400';
+  const sales = '02.07';
+  const dateRange = '정산금 정보';
+
+  const visitLabel = '미정산금';
+  const salesLabel = '다음 정산일';
+
+  // react-query로 정산 내역 패칭
+  const { data: settlements = [], isLoading } = useSettlements();
 
   const filteredSettlements =
     selectedPeriod === 3 ? settlements.slice(0, 3) : settlements;
@@ -104,36 +131,42 @@ const SalesSettlement: React.FC = () => {
         />
 
         <SettlementList>
-          {filteredSettlements.map((settlement) => (
-            <SettlementItem
-              key={settlement.id}
-              onClick={() =>
-                navigate(`/sales-settlement-detail/${settlement.id}`)
-              }
-            >
-              <LeftSection>
-                <StatusDate>
-                  <StatusTag
-                    pending={settlement.status === 'pending'}
-                    confirmed={settlement.status === 'confirmed'}
-                  >
-                    {settlement.status === 'pending' ? '정산예정' : '정산확정'}
-                  </StatusTag>
-                  <Date>{settlement.date}</Date>
-                </StatusDate>
-                <SubDate>{settlement.subDate}</SubDate>
-              </LeftSection>
-              <RightSection>
-                <AmountWrapper>
-                  {settlement.status === 'pending' && (
-                    <PendingLabel>예정</PendingLabel>
-                  )}
-                  <Amount>{settlement.amount}</Amount>
-                </AmountWrapper>
-                <Deduction>{settlement.deduction}</Deduction>
-              </RightSection>
-            </SettlementItem>
-          ))}
+          {isLoading ? (
+            <div>로딩 중...</div>
+          ) : (
+            filteredSettlements.map((settlement) => (
+              <SettlementItem
+                key={settlement.id}
+                onClick={() =>
+                  navigate(`/sales-settlement-detail/${settlement.id}`)
+                }
+              >
+                <LeftSection>
+                  <StatusDate>
+                    <StatusTag
+                      pending={settlement.status === 'pending'}
+                      confirmed={settlement.status === 'confirmed'}
+                    >
+                      {settlement.status === 'pending'
+                        ? '정산예정'
+                        : '정산확정'}
+                    </StatusTag>
+                    <Date>{settlement.date}</Date>
+                  </StatusDate>
+                  <SubDate>{settlement.subDate}</SubDate>
+                </LeftSection>
+                <RightSection>
+                  <AmountWrapper>
+                    {settlement.status === 'pending' && (
+                      <PendingLabel>예정</PendingLabel>
+                    )}
+                    <Amount>{settlement.amount}</Amount>
+                  </AmountWrapper>
+                  <Deduction>{settlement.deduction}</Deduction>
+                </RightSection>
+              </SettlementItem>
+            ))
+          )}
         </SettlementList>
       </Section>
       <FixedBottomBar

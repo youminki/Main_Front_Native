@@ -1,11 +1,30 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 
-const SalesSettlementDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+// 타입 정의
+interface Sale {
+  product: string;
+  buyer: string;
+  price: string;
+  settlement: string;
+}
 
-  const settlements = [
+interface SettlementDetail {
+  id: number;
+  date: string;
+  time: string;
+  amount: string;
+  deduction: string;
+  salesList: Sale[];
+}
+
+// mock fetch 함수
+async function fetchSettlementDetail(
+  id: string
+): Promise<SettlementDetail | null> {
+  const settlements: SettlementDetail[] = [
     {
       id: 1,
       date: '2025-01-15',
@@ -40,9 +59,24 @@ const SalesSettlementDetail: React.FC = () => {
       ],
     },
   ];
+  return settlements.find((s) => s.id.toString() === id) ?? null;
+}
 
-  const settlement = settlements.find((s) => s.id.toString() === id);
+// react-query 훅
+function useSettlementDetail(id: string) {
+  return useQuery<SettlementDetail | null>({
+    queryKey: ['settlementDetail', id],
+    queryFn: () => fetchSettlementDetail(id),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!id,
+  });
+}
 
+const SalesSettlementDetail: React.FC = () => {
+  const { id = '' } = useParams<{ id: string }>();
+  const { data: settlement, isLoading } = useSettlementDetail(id);
+
+  if (isLoading) return <Container>로딩 중...</Container>;
   if (!settlement) {
     return <Container>정산 내역을 찾을 수 없습니다.</Container>;
   }

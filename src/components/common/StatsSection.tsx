@@ -1,32 +1,36 @@
 import React from 'react';
 import styled from 'styled-components';
 
-interface Props {
-  brandCount: number;
-  productCount: number;
-  brandLabel?: string;
-  productLabel?: string;
+interface StatsSectionProps {
+  visits: string | number;
+  sales: string | number;
+  dateRange?: string;
+  visitLabel: string;
+  salesLabel: string;
+  showDateLabel?: boolean;
 }
 
-const StatsSection: React.FC<Props> = ({
-  brandCount,
-  productCount,
-  brandLabel = '브랜드',
-  productLabel = '상품',
+const StatsSection: React.FC<StatsSectionProps> = ({
+  visits,
+  sales,
+  dateRange,
+  visitLabel,
+  salesLabel,
+  showDateLabel = true,
 }) => (
   <StatsContainer>
     <StatBox $white>
       <Row>
-        <StatLabel>{brandLabel}</StatLabel>
-        <StatNumber>{brandCount}</StatNumber>
+        <StatLabel>{visitLabel}</StatLabel>
+        <StatNumber>{visits}</StatNumber>
       </Row>
     </StatBox>
     <StatBox $gray>
       <Row>
-        <StatLabel>{productLabel}</StatLabel>
-        <StatNumber>{productCount}</StatNumber>
+        <StatLabel>{salesLabel}</StatLabel>
+        <StatNumber>{sales}</StatNumber>
       </Row>
-      <DateLabel>Now</DateLabel>
+      {showDateLabel && dateRange && <DateLabel>{dateRange}</DateLabel>}
     </StatBox>
   </StatsContainer>
 );
@@ -56,6 +60,7 @@ const StatBox = styled.div<{
   position: relative;
   margin-right: 0px;
   white-space: nowrap;
+  flex: 1;
 `;
 
 const Row = styled.div`

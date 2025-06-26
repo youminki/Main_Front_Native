@@ -10,7 +10,6 @@ import StatsSection from '../../components/Brand/StatsSection';
 import SubHeader from '../../components/Home/SubHeader';
 import ItemList, { UIItem } from '../../components/Home/ItemList';
 import FilterContainer from '../../components/Home/FilterContainer';
-import BrandIcon from '/src/assets/BrandIcon.svg';
 import { getBrandList, Brand as ApiBrand } from '../../api/brand/brandApi';
 import {
   getProductsByBrand,
@@ -266,11 +265,7 @@ const BrandDetail: React.FC = () => {
           <Subtitle>새로운 시즌 제품들을 내 손안에!</Subtitle>
         </Header>
 
-        <StatsSection
-          BrandIcon={BrandIcon}
-          brandCount={1}
-          productCount={brand.productCount}
-        />
+        <StatsSection brandCount={1} productCount={brand.productCount} />
         <Divider />
 
         <SubHeader

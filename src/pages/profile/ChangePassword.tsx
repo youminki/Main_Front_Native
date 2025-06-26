@@ -47,11 +47,21 @@ const ChangePassword: React.FC = () => {
       });
       setModalMessage('✅ 비밀번호가 성공적으로 변경되었습니다.');
       setShowModal(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('비밀번호 변경 오류:', err);
       const msg =
-        err?.response?.data?.message ||
-        (err instanceof Error ? err.message : '알 수 없는 오류입니다.');
+        err instanceof Error &&
+        'response' in err &&
+        typeof err.response === 'object' &&
+        err.response &&
+        'data' in err.response &&
+        typeof err.response.data === 'object' &&
+        err.response.data &&
+        'message' in err.response.data
+          ? String(err.response.data.message)
+          : err instanceof Error
+            ? err.message
+            : '알 수 없는 오류';
       setModalMessage(`❌ 비밀번호 변경 중 오류가 발생했습니다: ${msg}`);
       setShowModal(true);
     }

@@ -4,15 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import FixedBottomBar from '../../components/FixedBottomBar';
 import AddressSearchModal from '../../components/AddressSearchModal';
 import {
-  AddressApi,
+  useAddresses,
+  useUpdateAddress,
+  useDeleteAddress,
+  useSetDefaultAddress,
   Address,
   UpdateAddressRequest,
 } from '../../api/address/address';
 
 const DeliveryManagement: React.FC = () => {
   const navigate = useNavigate();
-  const [addresses, setAddresses] = useState<Address[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editAddress, setEditAddress] = useState<string>('');
   const [editDetail, setEditDetail] = useState<string>('');
@@ -21,23 +22,11 @@ const DeliveryManagement: React.FC = () => {
   // 주소 검색 모달 state
   const [searchModalOpen, setSearchModalOpen] = useState(false);
 
-  // 주소 목록 조회
-  const fetchAddresses = async () => {
-    try {
-      setLoading(true);
-      const list = await AddressApi.getAddresses();
-      setAddresses(list);
-    } catch (err) {
-      console.error('주소 조회 실패:', err);
-      alert('주소 조회 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchAddresses();
-  }, []);
+  // react-query로 주소 데이터 패칭
+  const { data: addresses = [], isLoading } = useAddresses();
+  const updateAddressMutation = useUpdateAddress();
+  const deleteAddressMutation = useDeleteAddress();
+  const setDefaultAddressMutation = useSetDefaultAddress();
 
   // 인라인 수정 시작
   const handleStartEdit = (item: Address) => {
@@ -69,13 +58,12 @@ const DeliveryManagement: React.FC = () => {
     };
 
     try {
-      await AddressApi.updateAddress(id, payload);
+      await updateAddressMutation.mutateAsync({ id, data: payload });
       alert('배송지가 업데이트 되었습니다.');
       setEditingId(null);
       setEditAddress('');
       setEditDetail('');
       setEditMessage('');
-      fetchAddresses();
     } catch (err) {
       console.error('주소 수정 실패:', err);
       alert('배송지 수정 중 오류가 발생했습니다.');
@@ -87,9 +75,8 @@ const DeliveryManagement: React.FC = () => {
     if (!window.confirm('정말 이 배송지를 삭제하시겠습니까?')) return;
 
     try {
-      await AddressApi.deleteAddress(id);
+      await deleteAddressMutation.mutateAsync(id);
       alert('배송지가 삭제되었습니다.');
-      fetchAddresses();
     } catch (err) {
       console.error('주소 삭제 실패:', err);
       alert('배송지 삭제 중 오류가 발생했습니다.');
@@ -99,12 +86,18 @@ const DeliveryManagement: React.FC = () => {
   // 기본 주소 설정
   const handleSetDefault = async (id: number) => {
     try {
-      await AddressApi.setDefaultAddress(id);
+      await setDefaultAddressMutation.mutateAsync(id);
       alert('기본 주소로 설정되었습니다.');
-      fetchAddresses();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('기본 주소 설정 실패:', err);
-      if (err.response?.status === 404) {
+      if (
+        err instanceof Error &&
+        'response' in err &&
+        typeof err.response === 'object' &&
+        err.response &&
+        'status' in err.response &&
+        err.response.status === 404
+      ) {
         alert('해당 주소를 찾을 수 없습니다.');
       } else {
         alert('기본 주소 설정 중 오류가 발생했습니다.');
@@ -142,7 +135,7 @@ const DeliveryManagement: React.FC = () => {
   return (
     <>
       <Container>
-        {loading ? (
+        {isLoading ? (
           <p>주소를 불러오는 중...</p>
         ) : addresses.length === 0 ? (
           <p>등록된 배송지가 없습니다.</p>
@@ -199,59 +192,68 @@ const DeliveryManagement: React.FC = () => {
                     <DefaultLabel>기본주소</DefaultLabel>
                   ) : (
                     <DefaultButton onClick={() => handleSetDefault(item.id)}>
-                      기본 주소설정
+                      기본주소로 설정
                     </DefaultButton>
                   )}
 
-                  {/* 오른쪽: 수정/삭제 혹은 저장/취소 */}
-                  <RightButtons>
+                  {/* 오른쪽: 편집/삭제 버튼 */}
+                  <ActionButtons>
                     {isEditing ? (
                       <>
-                        <SaveButton onClick={() => handleSaveEdit(item.id)}>
-                          저장
-                        </SaveButton>
-                        <CancelButton onClick={handleCancelEdit}>
+                        <ActionButton
+                          onClick={() => handleSaveEdit(item.id)}
+                          disabled={updateAddressMutation.isPending}
+                        >
+                          {updateAddressMutation.isPending
+                            ? '저장 중...'
+                            : '저장'}
+                        </ActionButton>
+                        <ActionButton onClick={handleCancelEdit}>
                           취소
-                        </CancelButton>
+                        </ActionButton>
                       </>
                     ) : (
                       <>
-                        <EditButton onClick={() => handleStartEdit(item)}>
-                          수정
-                        </EditButton>
-                        <DeleteButton onClick={() => handleDelete(item.id)}>
-                          삭제
-                        </DeleteButton>
+                        <ActionButton onClick={() => handleStartEdit(item)}>
+                          편집
+                        </ActionButton>
+                        <ActionButton
+                          onClick={() => handleDelete(item.id)}
+                          disabled={deleteAddressMutation.isPending}
+                        >
+                          {deleteAddressMutation.isPending
+                            ? '삭제 중...'
+                            : '삭제'}
+                        </ActionButton>
                       </>
                     )}
-                  </RightButtons>
+                  </ActionButtons>
                 </ButtonRow>
-
-                {idx < addresses.length - 1 && <Separator />}
               </Block>
             );
           })
         )}
-      </Container>
 
-      {/* 주소 검색 모달 */}
-      <AddressSearchModal
-        isOpen={searchModalOpen}
-        onClose={() => setSearchModalOpen(false)}
-        onSelect={(addr: string) => {
-          setEditAddress(addr);
-          setSearchModalOpen(false);
-        }}
-      />
-
-      {!isKeyboardOpen && (
-        <FixedBottomBar
-          type='button'
-          text='배송지 등록'
-          color='yellow'
-          onClick={handleRegister}
+        {/* 주소 검색 모달 */}
+        <AddressSearchModal
+          isOpen={searchModalOpen}
+          onClose={() => setSearchModalOpen(false)}
+          onSelect={(addr: string) => {
+            setEditAddress(addr);
+            setSearchModalOpen(false);
+          }}
         />
-      )}
+
+        {/* 하단 고정 바: 신규 등록 버튼 */}
+        {!isKeyboardOpen && (
+          <FixedBottomBar
+            type='button'
+            text='신규 등록'
+            color='yellow'
+            onClick={handleRegister}
+          />
+        )}
+      </Container>
     </>
   );
 };
@@ -269,35 +271,26 @@ const Container = styled.div`
 `;
 
 const Block = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
 `;
 
 const Title = styled.div`
   font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
+  font-size: 16px;
+  line-height: 18px;
   color: #000;
+  margin-bottom: 16px;
 `;
 
 const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
-`;
-
-const ReadOnlyInput = styled.input`
-  width: 100%;
-  height: 57px;
-  padding-left: 16px;
-  box-sizing: border-box;
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 13px;
-  line-height: 14px;
-  color: #000;
+  gap: 12px;
+  margin-bottom: 16px;
 `;
 
 const SearchWrapper = styled.div`
@@ -314,9 +307,18 @@ const SearchInput = styled.input`
   flex: 1;
   height: 100%;
   padding-left: 16px;
+  box-sizing: border-box;
   background: transparent;
   border: none;
+  font-family: 'NanumSquare Neo OTF', sans-serif;
+  font-weight: 400;
   font-size: 13px;
+  line-height: 14px;
+  color: #000;
+
+  &::placeholder {
+    color: #ddd;
+  }
 
   &:focus {
     outline: none;
@@ -332,12 +334,12 @@ const SearchButton = styled.button`
   border-radius: 4px;
   font-weight: 800;
   font-size: 12px;
+  line-height: 13px;
   color: #fff;
   cursor: pointer;
 
   &:hover {
-    transform: scale(1.05);
-    transition: transform 0.2s;
+    background: #e69e1e;
   }
 `;
 
@@ -349,12 +351,17 @@ const DetailInput = styled.input`
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
+  font-weight: 400;
   font-size: 13px;
   line-height: 14px;
+  color: #000;
+
+  &::placeholder {
+    color: #ddd;
+  }
 
   &:focus {
     outline: none;
-    border-color: #000;
   }
 `;
 
@@ -363,7 +370,7 @@ const MessageTitle = styled.div`
   font-size: 10px;
   line-height: 11px;
   color: #000;
-  margin: 10px 0 4px;
+  margin-top: 8px;
 `;
 
 const MessageInput = styled.input`
@@ -374,74 +381,83 @@ const MessageInput = styled.input`
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
+  font-weight: 400;
   font-size: 13px;
   line-height: 14px;
+  color: #000;
+
+  &::placeholder {
+    color: #ddd;
+  }
 
   &:focus {
     outline: none;
-    border-color: #000;
   }
 `;
 
-// ButtonRow: 왼쪽 기본설정 영역 + 오른쪽 버튼 그룹
+const ReadOnlyInput = styled.input`
+  width: 100%;
+  height: 57px;
+  padding-left: 16px;
+  box-sizing: border-box;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 14px;
+  color: #666;
+  cursor: not-allowed;
+
+  &::placeholder {
+    color: #999;
+  }
+`;
+
 const ButtonRow = styled.div`
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
 `;
 
-// 왼쪽 기본주소설정 버튼
-const DefaultButton = styled.button`
-  background: #000000;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 0 12px;
-  height: 46px;
-  font-size: 13px;
-  cursor: pointer;
-  font-weight: 600;
-  &:hover {
-    background: #3d3d3d;
-    transition: background 0.2s;
-  }
-`;
-
-// 기본주소일 때 표시용 라벨
 const DefaultLabel = styled.div`
-  font-size: 13px;
-  color: #28a745;
-  font-weight: 600;
+  padding: 8px 16px;
+  background: #f6ae24;
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 12px;
+`;
+
+const DefaultButton = styled.button`
+  padding: 8px 16px;
+  background: #fff;
+  border: 1px solid #f6ae24;
+  color: #f6ae24;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+
+  &:hover {
+    background: #f6ae24;
+    color: #fff;
+  }
 `;
 
 // 오른쪽 버튼 그룹: margin-left: auto 로 오른쪽 끝으로 밀기
-const RightButtons = styled.div`
+const ActionButtons = styled.div`
   display: flex;
   gap: 8px;
-  margin-left: auto;
 `;
 
 const buttonHover = css`
   &:hover {
-    transform: translateY(-2px) scale(1.03);
-    transition: transform 0.2s;
+    opacity: 0.8;
   }
 `;
 
-const EditButton = styled.button`
-  width: 91px;
-  height: 46px;
-  background: #000;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-  ${buttonHover}
-`;
-
-const DeleteButton = styled.button`
+const ActionButton = styled.button`
   width: 91px;
   height: 46px;
   background: #fff;
@@ -451,37 +467,9 @@ const DeleteButton = styled.button`
   font-size: 14px;
   cursor: pointer;
   ${buttonHover}
-`;
 
-const SaveButton = styled.button`
-  width: 91px;
-  height: 46px;
-  background: #28a745;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-  ${buttonHover}
-`;
-
-const CancelButton = styled.button`
-  width: 91px;
-  height: 46px;
-  background: #dc3545;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-  ${buttonHover}
-`;
-
-const Separator = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #eee;
-  margin: 30px 0;
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;

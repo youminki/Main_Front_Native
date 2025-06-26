@@ -1,6 +1,7 @@
 // src/api/brand/brandApi.ts
 
 import { Axios } from '../Axios';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * 브랜드 정보 타입 (API 응답에 포함되는 모든 필드 반영)
@@ -23,6 +24,14 @@ export interface Brand {
 }
 
 /**
+ * 브랜드 통계 정보 타입
+ */
+export interface BrandStats {
+  brandCount: number;
+  productCount: number;
+}
+
+/**
  * GET 메인 페이지용 전체 브랜드 리스트
  * GET /brand/list
  */
@@ -31,6 +40,44 @@ export const getBrandList = async (): Promise<Brand[]> => {
   return response.data;
 };
 
+/**
+ * 브랜드 통계 정보 계산
+ */
+export const getBrandStats = async (): Promise<BrandStats> => {
+  const brands = await getBrandList();
+  const brandCount = brands.length;
+  const productCount = brands.reduce(
+    (sum, brand) => sum + (brand.productCount || 0),
+    0
+  );
+  return { brandCount, productCount };
+};
+
+/**
+ * 브랜드 리스트를 react-query로 가져오는 커스텀 훅
+ */
+export function useBrandList() {
+  return useQuery<Brand[]>({
+    queryKey: ['brandList'],
+    queryFn: getBrandList,
+    staleTime: 1000 * 60 * 10, // 10분 캐싱
+  });
+}
+
+/**
+ * 브랜드 통계 정보를 react-query로 가져오는 커스텀 훅
+ */
+export function useBrandStats() {
+  return useQuery<BrandStats>({
+    queryKey: ['brandStats'],
+    queryFn: getBrandStats,
+    staleTime: 1000 * 60 * 10, // 10분 캐싱
+  });
+}
+
 export default {
   getBrandList,
+  getBrandStats,
+  useBrandList,
+  useBrandStats,
 };

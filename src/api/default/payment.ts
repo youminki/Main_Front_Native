@@ -1,13 +1,15 @@
 // src/api/paypleApi.ts
 import { Axios } from '../Axios';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * 1. 로그인 유저의 카드 목록 조회
  * GET /card/me
  * @returns CardListResponse
  */
-export const getMyCards = () => {
-  return Axios.get<CardListResponse>('/card/me');
+export const getMyCards = async (): Promise<CardListResponse> => {
+  const response = await Axios.get<CardListResponse>('/card/me');
+  return response.data;
 };
 
 /**
@@ -81,4 +83,15 @@ export interface InitPaymentData {
   PCD_PAY_GOODS: string;
   PCD_PAY_TOTAL: number;
   PCD_RST_URL: string;
+}
+
+/**
+ * 내 카드 목록을 react-query로 가져오는 커스텀 훅
+ */
+export function useMyCards() {
+  return useQuery<CardListResponse>({
+    queryKey: ['myCards'],
+    queryFn: getMyCards,
+    staleTime: 1000 * 60 * 5, // 5분 캐싱
+  });
 }

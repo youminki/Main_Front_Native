@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import Theme from '../../styles/Theme';
-import BrandIcon from '/src/assets/BrandIcon.svg';
 import { BrandList } from '../../components/Brand/BrandList';
 import { ControlSection } from '../../components/Brand/ControlSection';
 import StatsSection from '../../components/Brand/StatsSection';
@@ -96,7 +95,13 @@ const Brand: React.FC = () => {
         </Header>
 
         {/* StatsSection: 전체 통계 */}
-        <StatsSection BrandIcon={BrandIcon} />
+        <StatsSection
+          brandCount={brands.length}
+          productCount={apiBrands.reduce(
+            (sum, b) => sum + (b.productCount || 0),
+            0
+          )}
+        />
 
         <Divider />
 
