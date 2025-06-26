@@ -1,4 +1,5 @@
 import { Axios } from '../Axios';
+import { useMutation } from '@tanstack/react-query';
 
 // --- Types ---
 /**
@@ -64,3 +65,12 @@ export const createRentalOrder = (
     (res) => res.data
   );
 };
+
+/**
+ * 렌탈 주문을 react-query useMutation으로 처리하는 커스텀 훅
+ */
+export function useCreateRentalOrder() {
+  return useMutation<RentalOrderResponse, unknown, RentalOrderRequest>({
+    mutationFn: createRentalOrder,
+  });
+}

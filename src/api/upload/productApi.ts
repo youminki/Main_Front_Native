@@ -1,5 +1,6 @@
 // src/api/upload/productApi.ts
 import { Axios } from '../Axios';
+import { useQuery } from '@tanstack/react-query';
 
 export interface ProductListItem {
   id: number;
@@ -14,7 +15,7 @@ export interface ProductListItem {
 
 export interface ProductSize {
   size: string;
-  measurements: Record<string, any>;
+  measurements: Record<string, number>;
 }
 
 export interface ProductDetail {
@@ -51,13 +52,24 @@ export interface GetProductInfoResponse {
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5173';
 
+interface RawProductListItem {
+  id: number;
+  image: string;
+  brand: string;
+  description: string;
+  category: string;
+  price: number;
+  discount: number;
+  isLiked?: boolean;
+}
+
 export const getProducts = async (
   category?: string
 ): Promise<ProductListItem[]> => {
   const response = await Axios.get('/admin/product/product/list', {
     params: { category },
   });
-  return (response.data || []).map((p: any) => ({
+  return (response.data || []).map((p: RawProductListItem) => ({
     id: p.id,
     image:
       p.image && !p.image.startsWith('http')
@@ -72,11 +84,21 @@ export const getProducts = async (
   }));
 };
 
+interface RawProductDetail extends Omit<ProductDetail, 'fabricComposition'> {
+  fabricComposition: string[];
+  mainImage: string;
+  product_img: string[];
+  size_picture: string;
+  product_url: string;
+  sale_price?: number;
+  size_label_guide?: Record<string, string>;
+}
+
 export const getProductInfo = async (
   id: number
 ): Promise<GetProductInfoResponse> => {
   const res = await Axios.get(`/admin/product/product/info/${id}`);
-  const raw = res.data as any;
+  const raw = res.data as RawProductDetail;
 
   // --- URL 보정 ---
   if (raw.mainImage && !raw.mainImage.startsWith('http')) {
@@ -134,6 +156,32 @@ export const getProductInfo = async (
 
   return { product };
 };
+
+/**
+ * 상품 리스트를 react-query로 가져오는 커스텀 훅
+ * @param category 상품 카테고리 (all 등)
+ */
+export function useProducts(category?: string) {
+  return useQuery<ProductListItem[]>({
+    queryKey: ['products', category],
+    queryFn: () => getProducts(category),
+    staleTime: 1000 * 60 * 5, // 5분 캐싱
+  });
+}
+
+/**
+ * 상품 상세 정보를 react-query로 가져오는 커스텀 훅
+ * @param id 상품 ID
+ */
+export function useProductInfo(id: number) {
+  return useQuery<GetProductInfoResponse>({
+    queryKey: ['product', id],
+    queryFn: () => getProductInfo(id),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!id,
+  });
+}
+
 export default {
   getProducts,
   getProductInfo,

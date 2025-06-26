@@ -1,4 +1,5 @@
 import { Axios } from '../Axios';
+import { useQuery } from '@tanstack/react-query';
 
 export interface ClosetItem {
   productId: number;
@@ -34,3 +35,14 @@ export const getMyCloset = async (): Promise<ClosetListResponse> => {
   const resp = await Axios.get<ClosetListResponse>('/closet/me');
   return resp.data;
 };
+
+/**
+ * 내 옷장 목록을 react-query로 가져오는 커스텀 훅
+ */
+export function useMyCloset() {
+  return useQuery<ClosetListResponse>({
+    queryKey: ['myCloset'],
+    queryFn: getMyCloset,
+    staleTime: 1000 * 60 * 5,
+  });
+}

@@ -1,4 +1,5 @@
 import { Axios } from '../Axios';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * 이용권 템플릿 정보 (UserTicket.ticketList 및 /ticket-list 응답 아이템)
@@ -75,3 +76,36 @@ export const getTicketTemplates =
       await Axios.get<TicketTemplatesResponse>('/ticket/templates');
     return response.data;
   };
+
+/**
+ * 로그인한 사용자의 이용권 목록을 react-query로 가져오는 커스텀 훅
+ */
+export function useUserTickets() {
+  return useQuery<TicketItem[]>({
+    queryKey: ['userTickets'],
+    queryFn: getUserTickets,
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+/**
+ * 전체 이용권 목록을 react-query로 가져오는 커스텀 훅
+ */
+export function useTicketList() {
+  return useQuery<TicketListResponse>({
+    queryKey: ['ticketList'],
+    queryFn: getTicketList,
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+/**
+ * 이용권 템플릿 전체를 react-query로 가져오는 커스텀 훅
+ */
+export function useTicketTemplates() {
+  return useQuery<TicketTemplatesResponse>({
+    queryKey: ['ticketTemplates'],
+    queryFn: getTicketTemplates,
+    staleTime: 1000 * 60 * 5,
+  });
+}

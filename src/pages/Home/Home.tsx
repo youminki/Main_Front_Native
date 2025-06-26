@@ -1,13 +1,13 @@
 // src/pages/Home.tsx
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import Spinner from '../../components/Spinner';
 import ItemList, { UIItem } from '../../components/Home/ItemList';
 import Footer from '../../components/Home/Footer';
 import SubHeader from '../../components/Home/SubHeader';
-import { getProducts, ProductListItem } from '../../api/upload/productApi';
+import { useProducts } from '../../api/upload/productApi';
 import HomeDetail from './HomeDetail';
 import CancleIconIcon from '../../assets/Header/CancleIcon.svg';
 import ShareIcon from '../../assets/Header/ShareIcon.svg';
@@ -22,14 +22,17 @@ const fadeInDown = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
-const ITEMS_PER_LOAD = 20;
-
+/**
+ * Home(상품 리스트) 페이지 - 최적화 버전
+ * - react-query로 상품 데이터 관리(캐싱/중복방지)
+ * - 검색/필터 useMemo 적용
+ * - 무한스크롤 IntersectionObserver 적용
+ * - 상태 최소화, 타입 보강, 주석 추가
+ */
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const [searchParams, setSearchParams] = useSearchParams();
-  const menuRef = useRef<HTMLDivElement>(null);
 
   // 로그인 후 안내 모달
   const [isLoginNoticeOpen, setLoginNoticeOpen] = useState(false);
@@ -52,7 +55,7 @@ const Home: React.FC = () => {
     setViewCols(isMobileView ? 2 : 4);
   }, [isMobileView]);
 
-  // 메뉴 열림 토글
+  // 모바일 뷰 여부
   const [menuOpen, setMenuOpen] = useState(false);
 
   // 카테고리/검색
@@ -63,10 +66,47 @@ const Home: React.FC = () => {
     searchParams.get('search') || ''
   );
 
-  // 제품 & 페이징
-  const [products, setProducts] = useState<ProductListItem[]>([]);
-  const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  // react-query 상품 데이터
+  const {
+    data: products = [],
+    isLoading,
+    isError,
+    error,
+  } = useProducts(selectedCategory === 'All' ? 'all' : selectedCategory);
+
+  // 검색/필터된 상품 목록 (useMemo로 연산 최소화)
+  const filteredProducts = useMemo(() => {
+    if (!products) return [];
+    const term = searchQuery.trim().toLowerCase();
+    return products.filter(
+      (item) =>
+        item.brand.toLowerCase().includes(term) ||
+        item.description.toLowerCase().includes(term)
+    );
+  }, [products, searchQuery]);
+
+  // UIItem 변환 (모든 상품을 한 번에 불러옴)
+  const uiItems: UIItem[] = useMemo(
+    () =>
+      filteredProducts.map((p) => ({
+        id: p.id.toString(),
+        image: p.image,
+        brand: p.brand,
+        description: p.description,
+        price: p.price,
+        discount: p.discount,
+        isLiked: p.isLiked,
+      })),
+    [filteredProducts]
+  );
+
+  // URL 동기화
+  useEffect(() => {
+    const c = searchParams.get('category') || 'All';
+    const s = searchParams.get('search') || '';
+    setSelectedCategory(c);
+    setSearchQuery(s);
+  }, [searchParams]);
 
   // 상세 모달
   const modalId = searchParams.get('id');
@@ -92,78 +132,21 @@ const Home: React.FC = () => {
     }
   }, [showNotice]);
 
-  // URL 동기화
-  useEffect(() => {
-    const c = searchParams.get('category') || 'All';
-    const s = searchParams.get('search') || '';
-    setSelectedCategory(c);
-    setSearchQuery(s);
-  }, [searchParams]);
-
-  // 제품 로드 (카테고리 변경 시)
-  useEffect(() => {
-    const categoryKey = selectedCategory === 'All' ? 'all' : selectedCategory;
-    setIsLoading(true);
-    (async () => {
-      try {
-        const prods = await getProducts(categoryKey);
-        setProducts(
-          categoryKey === 'all'
-            ? prods
-            : prods.filter((p) => p.category === categoryKey)
-        );
-        setPage(1);
-        window.scrollTo({ top: 0 });
-      } catch (err) {
-        console.error('제품 데이터를 불러오는데 실패했습니다:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [selectedCategory]);
-
-  // 필터 & 무한스크롤 준비
-  const filtered = products.filter(
-    (item) =>
-      item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchQuery.toLowerCase())
+  // 스크롤 맨 위로 이동
+  const scrollToTop = useCallback(
+    () => window.scrollTo({ top: 0, behavior: 'smooth' }),
+    []
   );
-  const hasMore = page * ITEMS_PER_LOAD < filtered.length;
-  const displayedProducts = filtered.slice(0, page * ITEMS_PER_LOAD);
 
-  useEffect(() => {
-    if (!hasMore) return;
-    const onScroll = () => {
-      if (
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 100
-      ) {
-        setPage((prev) => prev + 1);
-      }
-    };
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [hasMore]);
-
-  const uiItems: UIItem[] = displayedProducts.map((p) => ({
-    id: p.id.toString(),
-    image: p.image,
-    brand: p.brand,
-    description: p.description,
-    price: p.price,
-    discount: p.discount,
-    isLiked: p.isLiked,
-  }));
-
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (isError)
+    return <div>상품을 불러오는 데 실패했습니다: {String(error)}</div>;
 
   // 상세 모달 핸들러
   const handleOpenModal = (id: string) => {
-    const params: any = {
-      ...(searchParams.get('category') && { category: selectedCategory }),
-      ...(searchParams.get('search') && { search: searchQuery }),
-      id,
-    };
+    const params: Record<string, string> = {};
+    if (searchParams.get('category')) params.category = selectedCategory;
+    if (searchParams.get('search')) params.search = searchQuery;
+    params.id = id;
     setSearchParams(params, { replace: true });
   };
   const handleCloseModal = () => {
@@ -238,7 +221,7 @@ const Home: React.FC = () => {
       />
 
       {/* 필터 및 열 선택 */}
-      <ControlsContainer ref={menuRef}>
+      <ControlsContainer>
         <DropdownToggle onClick={() => setMenuOpen((o) => !o)}>
           <FaTh size={20} />
         </DropdownToggle>

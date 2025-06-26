@@ -1,6 +1,6 @@
 // src/pages/LockerRoom/MyTicket.tsx
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
@@ -9,7 +9,7 @@ import TicketIllustration from '../../../assets/LockerRoom/TicketIllustration.sv
 import AddTicketIllustration from '../../../assets/LockerRoom/AddTicketIllustration.svg';
 import CardIcon from '../../../assets/LockerRoom/AddTicketIllustrations.svg';
 import BarcodeImg from '../../../assets/LockerRoom/barcodeIcon.svg';
-import { getUserTickets, TicketItem } from '../../../api/ticket/ticket';
+import { useUserTickets } from '../../../api/ticket/ticket';
 
 const visitLabel = '사용중인 이용권';
 const salesLabel = '시즌';
@@ -29,15 +29,8 @@ const fadeInUp = keyframes`
 
 const MyTicket: React.FC = () => {
   const navigate = useNavigate();
-  const [tickets, setTickets] = useState<TicketItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getUserTickets()
-      .then((data) => setTickets(data))
-      .catch((err) => console.error('티켓 조회 실패:', err))
-      .finally(() => setLoading(false));
-  }, []);
+  // react-query로 티켓 데이터 패칭
+  const { data: tickets = [], isLoading } = useUserTickets();
 
   return (
     <MyTicketContainer>
@@ -56,7 +49,7 @@ const MyTicket: React.FC = () => {
       <Divider />
 
       <TicketWrapper>
-        {loading ? (
+        {isLoading ? (
           <SpinnerWrapper>
             <Spinner />
           </SpinnerWrapper>
@@ -106,7 +99,7 @@ const MyTicket: React.FC = () => {
               );
             })}
 
-            {/* 항상 표시되는 “이용권 추가” 카드 */}
+            {/* 항상 표시되는 "이용권 추가" 카드 */}
             <TicketCardAdd
               onClick={() => navigate('/my-ticket/PurchaseOfPasses')}
             >

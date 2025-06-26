@@ -14,7 +14,10 @@ const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
     ${({ theme }) => theme.fonts.default};
     /* 변경: 'NanumSquare Neo OTF' -> 'NanumSquare Neo' */
-    font-family: 'NanumSquare Neo', sans-serif;
+    font-family: 'NanumSquare Neo', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-smooth: always;
     &:visited {
       text-decoration: none;
       color: black;

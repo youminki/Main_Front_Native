@@ -4,11 +4,11 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { FaTshirt } from 'react-icons/fa';
+import { useMyCloset } from '../../../api/closet/closetApi';
 
 import StatsSection from '../../../components/StatsSection';
 import ItemList, { UIItem } from '../../../components/Home/MyclosetItemList';
 import HomeDetail from '../../Home/HomeDetail';
-import { getMyCloset } from '../../../api/closet/closetApi';
 import Spinner from '../../../components/Spinner'; // Spinner import 추가
 import CancleIconIcon from '../../../assets/Header/CancleIcon.svg';
 
@@ -17,11 +17,22 @@ const sales = '2025 1분기';
 const dateRange = 'SPRING';
 
 const MyCloset: React.FC = () => {
-  const [items, setItems] = useState<UIItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 추가
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  // react-query로 옷장 데이터 패칭
+  const { data, isLoading } = useMyCloset();
+  const items: UIItem[] =
+    data?.items.map((it) => ({
+      id: String(it.productId),
+      image: it.mainImage,
+      brand: it.brand,
+      description: it.name,
+      price: it.price,
+      discount: it.discountRate,
+      isLiked: true,
+    })) ?? [];
 
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? 'hidden' : '';
@@ -30,30 +41,7 @@ const MyCloset: React.FC = () => {
     };
   }, [isModalOpen]);
 
-  useEffect(() => {
-    getMyCloset()
-      .then((res) => {
-        setItems(
-          res.items.map((it) => ({
-            id: String(it.productId),
-            image: it.mainImage,
-            brand: it.brand,
-            description: it.name,
-            price: it.price,
-            discount: it.discountRate,
-            isLiked: true,
-          }))
-        );
-      })
-      .catch(console.error)
-      .finally(() => {
-        setLoading(false); // 로딩 완료
-      });
-  }, []);
-
-  const handleDelete = (id: string) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
-  };
+  const handleDelete = () => {};
 
   const handleOpenDetail = (id: string) => {
     setSelectedItemId(id);
@@ -87,7 +75,7 @@ const MyCloset: React.FC = () => {
       <Divider />
 
       <Content>
-        {loading ? (
+        {isLoading ? (
           <Spinner /> // 로딩 중 스피너 표시
         ) : items.length === 0 ? (
           <EmptyState>

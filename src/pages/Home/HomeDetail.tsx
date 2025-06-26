@@ -1,10 +1,10 @@
 // src/pages/HomeDetail.tsx
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Spinner from '../../components/Spinner';
 import {
-  getProductInfo,
+  useProductInfo,
   ProductDetail as APIProductDetail,
 } from '../../api/upload/productApi';
 import ImageSlider from '../../components/Home/HomeDetail/ImageSlider';
@@ -54,8 +54,34 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   const [cartModalOpen, setCartModalOpen] = useState(false);
   const navigate = useNavigate();
   const params = useParams<{ id: string }>();
-  const [product, setProduct] = useState<ProductDetail | null>(null);
-  const [loading, setLoading] = useState(true);
+  const id = propId || params.id;
+  const { data, isLoading, isError } = useProductInfo(Number(id));
+  const product = useMemo(() => {
+    if (!data) return null;
+    const api = data.product as APIProductDetail;
+    const rawFabric = api.fabricComposition;
+    let mappedFabric: Record<'겉감' | '안감' | '배색' | '부속', string>;
+    if (Array.isArray(rawFabric)) {
+      const [겉감 = '', 안감 = '', 배색 = '', 부속 = ''] = rawFabric;
+      mappedFabric = { 겉감, 안감, 배색, 부속 };
+    } else {
+      mappedFabric = {
+        겉감: (rawFabric as Record<string, string>)['겉감'] || '',
+        안감: (rawFabric as Record<string, string>)['안감'] || '',
+        배색: (rawFabric as Record<string, string>)['배색'] || '',
+        부속: (rawFabric as Record<string, string>)['부속'] || '',
+      };
+    }
+    const labelGuide = api.size_label_guide as
+      | Record<string, string>
+      | undefined;
+    const { ...rest } = api;
+    return {
+      ...rest,
+      fabricComposition: mappedFabric,
+      size_label_guide: labelGuide,
+    } as ProductDetail;
+  }, [data]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
@@ -105,40 +131,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     [handleSwipeLeft, handleSwipeRight]
   );
 
-  // 상품 정보 조회
-  useEffect(() => {
-    const id = propId || params.id;
-    if (!id) return;
-    getProductInfo(Number(id))
-      .then((res) => {
-        const api = res.product as APIProductDetail & Record<string, any>;
-        const rawFabric = api.fabricComposition;
-        let mappedFabric: Record<'겉감' | '안감' | '배색' | '부속', string>;
-        if (Array.isArray(rawFabric)) {
-          const [겉감 = '', 안감 = '', 배색 = '', 부속 = ''] = rawFabric;
-          mappedFabric = { 겉감, 안감, 배색, 부속 };
-        } else {
-          mappedFabric = {
-            겉감: rawFabric['겉감'] || '',
-            안감: rawFabric['안감'] || '',
-            배색: rawFabric['배색'] || '',
-            부속: rawFabric['부속'] || '',
-          };
-        }
-        const labelGuide = api.size_label_guide as
-          | Record<string, string>
-          | undefined;
-        const { fabricComposition: _f, size_label_guide: _l, ...rest } = api;
-        setProduct({
-          ...rest,
-          fabricComposition: mappedFabric,
-          size_label_guide: labelGuide,
-        });
-      })
-      .catch((e) => console.error(e))
-      .finally(() => setLoading(false));
-  }, [propId, params.id]);
-
   // 서비스 변경
   const handleServiceChange = (service: string) => {
     if (service === 'rental' && (!selectedSize || !selectedColor)) {
@@ -149,8 +141,8 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     setSelectedService(service as 'rental' | 'purchase');
   };
 
-  if (loading) return <Spinner />;
-  if (!product) return <div>제품을 찾을 수 없습니다.</div>;
+  if (isLoading) return <Spinner />;
+  if (isError || !product) return <div>제품을 찾을 수 없습니다.</div>;
 
   const productInfoItem = {
     brand: product.brand,

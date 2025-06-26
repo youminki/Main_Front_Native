@@ -25,7 +25,7 @@ const heartbeat = keyframes`
   100% { transform: scale(1); }
 `;
 
-const ItemCard: React.FC<ItemCardProps> = ({
+function ItemCard({
   id,
   image,
   brand,
@@ -35,7 +35,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
   isLiked: initialLiked,
   onOpenModal,
   onDelete,
-}) => {
+}: ItemCardProps) {
   const [liked, setLiked] = useState(initialLiked);
   const [animating, setAnimating] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
@@ -58,7 +58,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
     setTimeout(() => setAnimating(false), 300);
     try {
       await addToCloset(+id);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setLiked(false);
       showError(err);
     }
@@ -69,14 +69,18 @@ const ItemCard: React.FC<ItemCardProps> = ({
     try {
       await removeFromCloset(+id);
       onDelete?.(id);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setLiked(true);
       showError(err);
     }
   };
 
-  const showError = (err: any) => {
-    const status = err.response?.status;
+  const showError = (err: unknown) => {
+    let status;
+    if (typeof err === 'object' && err !== null && 'response' in err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      status = (err as any).response?.status;
+    }
     const msg =
       status === 409
         ? '이미 찜한 상품입니다.'
@@ -137,7 +141,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
       </ReusableModal>
     </>
   );
-};
+}
 
 export default ItemCard;
 
@@ -153,14 +157,26 @@ const ImageWrapper = styled.div`
   position: relative;
   width: 100%;
   aspect-ratio: 2/3;
+  min-height: 240px;
   background: #f5f5f5;
   border: 1px solid #ccc;
+  border-radius: 12px;
+  overflow: hidden;
+  @supports not (aspect-ratio: 2/3) {
+    min-height: 240px;
+    height: 360px;
+  }
 `;
 
 const Image = styled.img`
   width: 100%;
   height: 100%;
+  min-height: 240px;
+  aspect-ratio: 2/3;
   object-fit: cover;
+  display: block;
+  border-radius: 12px;
+  background: #f5f5f5;
 `;
 
 const LikeButton = styled.div<{ $animating: boolean }>`

@@ -9,7 +9,7 @@ import Modal from '../components/Melpik/CreateMelpik/Settings/Modal';
 import { CustomSelect } from '../components/CustomSelect';
 import FixedBottomBar from '../components/FixedBottomBar';
 import ReusableModal from '../components/ReusableModal';
-import { getUserStyle, updateUserStyle, UserStyle } from '../api/user/userApi';
+import { useUserStyle, updateUserStyle, UserStyle } from '../api/user/userApi';
 
 interface FormData {
   height: string;
@@ -79,43 +79,34 @@ const MyStyle: React.FC = () => {
   const [feedbackTitle, setFeedbackTitle] = useState<string>();
   const [feedbackMessage, setFeedbackMessage] = useState<string>();
 
+  // react-query로 스타일 데이터 패칭
+  const { data } = useUserStyle();
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await getUserStyle();
-        if (!data) return;
-        setValue('height', data.height != null ? data.height.toString() : '');
-        setValue('size', data.weight != null ? data.weight.toString() : '');
-        setValue('dress', data.dressSize ?? '');
-        setValue('top', data.topSize ?? '');
-        setValue('bottom', data.bottomSize ?? '');
-        setSelectedBrands(data.preferredBrands ?? []);
-        setValue('brand', (data.preferredBrands ?? []).join(', '));
-        setValue(
-          'shoulder',
-          data.shoulderWidth != null ? data.shoulderWidth.toString() : ''
-        );
-        setValue(
-          'chest',
-          data.chestCircumference != null
-            ? data.chestCircumference.toString()
-            : ''
-        );
-        setValue(
-          'waist',
-          data.waistCircumference != null
-            ? data.waistCircumference.toString()
-            : ''
-        );
-        setValue(
-          'sleeve',
-          data.sleeveLength != null ? data.sleeveLength.toString() : ''
-        );
-      } catch (e) {
-        console.error('Failed to load user style', e);
-      }
-    })();
-  }, [setValue]);
+    if (!data) return;
+    setValue('height', data.height != null ? data.height.toString() : '');
+    setValue('size', data.weight != null ? data.weight.toString() : '');
+    setValue('dress', data.dressSize ?? '');
+    setValue('top', data.topSize ?? '');
+    setValue('bottom', data.bottomSize ?? '');
+    setSelectedBrands(data.preferredBrands ?? []);
+    setValue('brand', (data.preferredBrands ?? []).join(', '));
+    setValue(
+      'shoulder',
+      data.shoulderWidth != null ? data.shoulderWidth.toString() : ''
+    );
+    setValue(
+      'chest',
+      data.chestCircumference != null ? data.chestCircumference.toString() : ''
+    );
+    setValue(
+      'waist',
+      data.waistCircumference != null ? data.waistCircumference.toString() : ''
+    );
+    setValue(
+      'sleeve',
+      data.sleeveLength != null ? data.sleeveLength.toString() : ''
+    );
+  }, [data, setValue]);
 
   const onSubmit: SubmitHandler<FormData> = async (form) => {
     try {

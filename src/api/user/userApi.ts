@@ -1,4 +1,5 @@
 import { Axios } from '../Axios';
+import { useQuery } from '@tanstack/react-query';
 
 export interface SignupRequest {
   email: string;
@@ -358,3 +359,36 @@ export const getHeaderInfo = async (): Promise<HeaderInfoResponse> => {
   const response = await Axios.get<HeaderInfoResponse>('/user/my-info/header');
   return response.data;
 };
+
+/**
+ * 내 스타일 정보를 react-query로 가져오는 커스텀 훅
+ */
+export function useUserStyle() {
+  return useQuery<UserStyle>({
+    queryKey: ['userStyle'],
+    queryFn: getUserStyle,
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+/**
+ * 내 멤버십 정보를 react-query로 가져오는 커스텀 훅
+ */
+export function useMembershipInfo() {
+  return useQuery<MembershipInfo>({
+    queryKey: ['membershipInfo'],
+    queryFn: getMembershipInfo,
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+/**
+ * 내 정보(프로필 등)를 react-query로 가져오는 커스텀 훅
+ */
+export function useMyInfo() {
+  return useQuery<MyInfoResponse>({
+    queryKey: ['myInfo'],
+    queryFn: getMyInfo,
+    staleTime: 1000 * 60 * 5,
+  });
+}

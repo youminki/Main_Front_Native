@@ -1,6 +1,6 @@
 // src/pages/Brand/BrandDetail.tsx
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import { FaTh } from 'react-icons/fa';
@@ -63,7 +63,6 @@ const BrandDetail: React.FC = () => {
   // 열 선택 관련 상태
   const [viewCols, setViewCols] = useState<number>(4);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
   // 모바일 뷰 여부
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
@@ -285,7 +284,7 @@ const BrandDetail: React.FC = () => {
         />
 
         {/* 필터 및 열 선택 */}
-        <ControlsContainer ref={menuRef}>
+        <ControlsContainer>
           <DropdownToggle onClick={() => setMenuOpen((prev) => !prev)}>
             <FaTh size={20} />
           </DropdownToggle>
