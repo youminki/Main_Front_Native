@@ -57,7 +57,7 @@ const Schedule: React.FC = () => {
   };
 
   // 각 스케줄 클릭 시 상세 페이지로 이동
-  const handleItemClick = (id: string) => {
+  const handleItemClick = (id: number): void => {
     navigate(`/schedule/confirmation/${id}`);
   };
 

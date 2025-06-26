@@ -1,3 +1,4 @@
+/* src/components/BottomNav2.tsx */
 import React from 'react';
 import styled from 'styled-components';
 import Theme from '../styles/Theme';
@@ -5,6 +6,7 @@ import Theme from '../styles/Theme';
 type BottomBarProps = {
   buttonText?: string;
   imageSrc?: string;
+  cartOnClick?: () => void;
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
@@ -13,21 +15,20 @@ type BottomBarProps = {
 const BottomBar: React.FC<BottomBarProps> = ({
   buttonText = '작성완료',
   imageSrc,
+  cartOnClick,
   onClick,
   type = 'button',
   disabled = false,
-}) => {
-  return (
-    <BottomBarContainer>
-      <CartButton>
-        {imageSrc && <CartImage src={imageSrc} alt='icon' />}
-      </CartButton>
-      <OrderButton onClick={onClick} type={type} disabled={disabled}>
-        {buttonText}
-      </OrderButton>
-    </BottomBarContainer>
-  );
-};
+}) => (
+  <BottomBarContainer>
+    <CartButton onClick={cartOnClick}>
+      {imageSrc && <CartImage src={imageSrc} alt='icon' />}
+    </CartButton>
+    <OrderButton onClick={onClick} type={type} disabled={disabled}>
+      {buttonText}
+    </OrderButton>
+  </BottomBarContainer>
+);
 
 export default BottomBar;
 
@@ -46,8 +47,6 @@ const BottomBarContainer = styled.div`
   margin: 0 auto;
   padding: 15px 0 34px 0;
   text-align: center;
-  max-width: 1000px;
-  margin: 0 auto;
 `;
 const CartButton = styled.button`
   width: 75px;
