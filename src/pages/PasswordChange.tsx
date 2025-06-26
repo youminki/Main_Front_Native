@@ -35,9 +35,8 @@ export default function PasswordChange() {
   );
 
   // 1단계: 현재 비밀번호 인증 (임시 처리)
-  const onVerify: SubmitHandler<FormData> = async ({ currentPassword }) => {
+  const onVerify: SubmitHandler<FormData> = async () => {
     setVerifyError(null);
-    console.log('verify current password:', currentPassword);
     // TODO: 실제 API 호출 시 여기에 로직 넣기
     // 임시로 성공 처리
     setTimeout(() => {
@@ -47,8 +46,7 @@ export default function PasswordChange() {
   };
 
   // 2단계: 새 비밀번호 변경 (임시 처리)
-  const onSubmit: SubmitHandler<FormData> = async ({ newPassword }) => {
-    console.log('change to new password:', newPassword);
+  const onSubmit: SubmitHandler<FormData> = async () => {
     // TODO: 실제 API 호출 시 여기에 로직 넣기
     alert('비밀번호가 성공적으로 변경되었습니다. (임시)');
   };

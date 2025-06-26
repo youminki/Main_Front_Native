@@ -82,8 +82,7 @@ const PersonalLink: React.FC = () => {
   );
 
   // 카드 클릭 시 동작 (예: 모달 열기 or 상세 페이지 네비게이트)
-  const handleItemClick = (id: string) => {
-    console.log('아이템 클릭:', id);
+  const handleItemClick = () => {
     // TODO: 상세 페이지로 이동 등 구현
   };
 
@@ -150,7 +149,7 @@ const PersonalLink: React.FC = () => {
               {uiDummyItems.map((item) => (
                 <ItemCardWrapper
                   key={item.id}
-                  onClick={() => handleItemClick(item.id)}
+                  onClick={() => handleItemClick()}
                 >
                   <ImageWrapper>
                     {/* 이미지 URL이 # 뒤에 옵션이 붙을 수 있으므로 split 처리 */}
