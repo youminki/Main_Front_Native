@@ -64,7 +64,7 @@ const TicketPayment: React.FC = () => {
     (async () => {
       try {
         const res = await getMyCards();
-        const items: CardItem[] = res.data.items;
+        const items: CardItem[] = res.items;
         let opts: string[];
         if (items.length === 0) {
           opts = ['등록된 카드가 없습니다', '카드 추가하기'];

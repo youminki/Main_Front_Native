@@ -4,8 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 import StatsSection from '../../../components/StatsSection';
 import Spinner from '../../../components/Spinner';
-import { useNavigate } from 'react-router-dom';
-import { useMyCards, CardItem } from '../../../api/default/payment';
+import { useMyCards } from '../../../api/default/payment';
+import { CardItem } from '../../../api/default/payment';
 
 interface UserInfo {
   userId: string;

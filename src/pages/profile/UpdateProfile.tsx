@@ -58,13 +58,9 @@ const UpdateProfile: React.FC = () => {
   const initialHeight = window.visualViewport
     ? window.visualViewport.height
     : window.innerHeight;
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState<boolean>(false);
   useEffect(() => {
     const handleResize = () => {
-      const vh = window.visualViewport
-        ? window.visualViewport.height
-        : window.innerHeight;
-      setIsKeyboardOpen(vh < initialHeight - 50);
+      // 키보드 열림 상태는 사용하지 않으므로 제거
     };
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', handleResize);
@@ -141,8 +137,10 @@ const UpdateProfile: React.FC = () => {
     } catch (err: unknown) {
       console.error('회원정보 수정 오류:', err);
       const msg =
-        err instanceof Error && 'response' in err && err.response?.data?.message
-          ? err.response.data.message
+        err instanceof Error &&
+        'response' in err &&
+        (err as any).response?.data?.message
+          ? (err as any).response.data.message
           : err instanceof Error
             ? err.message
             : '알 수 없는 오류';
@@ -324,52 +322,4 @@ const RowLabel = styled.div`
   align-items: center;
   gap: 10px;
   width: 100%;
-`;
-
-const GenderField = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 30px;
-`;
-
-const InputFieldLabel = styled.label`
-  margin-bottom: 8px;
-  color: ${({ theme }) => theme.colors.black};
-  font-weight: 700;
-  font-size: 11px;
-  line-height: 11px;
-`;
-
-const GenderRow = styled.div`
-  display: flex;
-  width: 100%;
-  height: 40px;
-`;
-
-const GenderButton = styled.button<{ selected: boolean; $isSelected: boolean }>`
-  flex: 1;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 11.05px;
-  border: ${({ $isSelected }) => ($isSelected ? '2px solid #f6ae24' : 'none')};
-  border-radius: 10px;
-  background-color: ${({ selected }) => (selected ? '#FFFFFF' : '#EEEEEE')};
-  color: ${({ selected }) => (selected ? '#000000' : '#999999')};
-  cursor: not-allowed;
-  transition:
-    background-color 0.3s ease,
-    border 0.3s ease,
-    color 0.3s ease;
-`;
-
-const PhoneField = styled.div`
-  display: flex;
-  align-items: center;
-  position: relative;
-
-  input {
-    flex: 1;
-    padding-right: 0;
-  }
 `;
