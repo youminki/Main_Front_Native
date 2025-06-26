@@ -43,7 +43,7 @@ const BottomBarContainer = styled.div`
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  max-width: 1000px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 15px 0 34px 0;
   text-align: center;

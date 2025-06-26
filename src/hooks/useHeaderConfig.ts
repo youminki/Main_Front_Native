@@ -41,7 +41,7 @@ const headerRules: {
     paths: [
       '/item/:id',
       '/createMelpik/settings',
-      '/schedule/confirmation',
+      '/schedule/confirmation/:scheduleId',
 
       '/schedule/reservation1',
       '/schedule/reservation2',
@@ -119,7 +119,7 @@ function getTwoDepthTitle(path: string): string {
   const map: Record<string, string> = {
     '/createMelpik/settings': '컨템포러리',
     '/sales-schedule': '판매 스케줄',
-    '/schedule/confirmation': '예약 스케줄 확인',
+    '/schedule/confirmation/:scheduleId': '예약 스케줄 확인',
     '/schedule/reservation1': '스케줄 예약하기',
     '/schedule/reservation2': '스케줄 예약하기',
     '/schedule/reservation3': '스케줄 예약하기',

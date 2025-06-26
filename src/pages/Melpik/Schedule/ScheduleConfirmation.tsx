@@ -350,8 +350,10 @@ export default ScheduleConfirmation;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background-color: #fff;
   padding: 1rem;
+  max-width: 600px;
+  margin: auto;
 `;
 const Content = styled.div`
   display: flex;
