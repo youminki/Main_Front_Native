@@ -27,7 +27,6 @@ const Schedule: React.FC = () => {
       setError(null);
       try {
         const data = await getMySaleScheduleSummaries();
-        // API에서 정렬된 순서로 반환된다고 가정. 필요 시 정렬 로직 추가.
         setSchedules(data);
       } catch (err: any) {
         console.error('스케줄 요약 조회 실패', err);
@@ -45,66 +44,36 @@ const Schedule: React.FC = () => {
 
   // 통계: 총 스케줄 수
   const totalCount = schedules.length;
-  // 진행중 스케줄 수: API status 값이 어떤 문자열인지에 따라 로직 조정 필요
-  // 예시: status가 'scheduled'인 항목을 진행중으로 간주
   const inProgressCount = schedules.filter(
     (item) => item.status === 'scheduled'
   ).length;
-  // dateRange: 가장 최근 항목(첫 번째)의 dateRange 사용. API가 정렬된 순서로 준다고 가정
   const currentDateRange = schedules.length > 0 ? schedules[0].dateRange : '';
 
   const visitLabel = '총 스케줄';
   const salesLabel = '진행중인 스케줄';
 
-  const handleIconClick = (): void => {
-    // 예: 상세 확인 페이지로 이동
-    navigate('/schedule/confirmation');
-  };
   const handleBottomClick = (): void => {
     navigate('/schedule/reservation1');
   };
 
-  // 스케줄 아이템 클릭 시 상세 페이지로 이동 (예: /sale_schedule/:id).
-  // 하지만 summary에는 id 필드가 없습니다. 필요 시 API 응답 타입에 id가 포함되도록 백엔드 수정하거나,
-  // 별도 상세 호출 전환 로직을 구현해야 합니다.
-  // 여기서는 title이나 index를 이용해 이동 경로를 구성한다고 가정할 수 있습니다.
-  // 예: navigate(`/sale_schedule/${someId}`) 형태.
-  // 현재 API 요약에 id가 없으므로, 상세 이동이 필요하면 백엔드에 id 포함 요청 필요.
-  const handleItemClick = (item: SaleScheduleSummaryItem) => {
-    // 예시: 상세 페이지가 title(예: "2025-06") 기반이라면
-    // navigate(`/sale_schedule/detail?title=${encodeURIComponent(item.title)}`);
-    // 실제 ID 기반 이동이 필요하면 summary 타입에 id가 포함되도록 API 수정 후 사용.
-    console.log('스케줄 아이템 클릭:', item);
-    // 예시 동작 없음
+  // 각 스케줄 클릭 시 상세 페이지로 이동
+  const handleItemClick = (id: string) => {
+    navigate(`/schedule/confirmation/${id}`);
   };
 
-  // status 문자열을 UI 상태로 매핑하는 헬퍼
   const mapStatusToUI = (
     status: string
   ): 'reserved' | 'inProgress' | 'notStarted' => {
-    // 비즈니스 로직에 맞춰 조정 필요
-    // 예시:
-    if (status === 'scheduled') {
-      // 예약된 스케줄: UI에서는 'reserved'
-      return 'reserved';
-    }
-    if (status === 'scheduling' || status === 'inProgress') {
-      // 진행중
-      return 'inProgress';
-    }
-    // 그 외
+    if (status === 'scheduled') return 'reserved';
+    if (status === 'scheduling' || status === 'inProgress') return 'inProgress';
     return 'notStarted';
   };
 
-  // 날짜 범위 문자열 예: "2025-06-01 ~ 2025-06-30"
-  // 이를 UI에 예쁘게 렌더링하려면 파싱 후 포맷 변경 가능
-  const formatDateRange = (dateRange: string): string => {
-    // 예: "2025-06-01 ~ 2025-06-30" → "2025.06.01 ~ 2025.06.30" 등
-    return dateRange
+  const formatDateRange = (dateRange: string): string =>
+    dateRange
       .split('~')
       .map((part) => part.trim().replace(/-/g, '.'))
       .join(' ~ ');
-  };
 
   return (
     <ScheduleContainer>
@@ -132,13 +101,13 @@ const Schedule: React.FC = () => {
 
           <ScheduleContent>
             <ScheduleList>
-              {schedules.map((item, index) => {
+              {schedules.map((item) => {
                 const uiStatus = mapStatusToUI(item.status);
                 return (
                   <ScheduleItemContainer
-                    key={index}
+                    key={item.id}
                     scheduleStatus={uiStatus}
-                    onClick={() => handleItemClick(item)}
+                    onClick={() => handleItemClick(item.id)}
                   >
                     <IconContainer>
                       <IconWrapper scheduleStatus={uiStatus}>
@@ -146,7 +115,7 @@ const Schedule: React.FC = () => {
                       </IconWrapper>
                       <ConnectorLine />
                     </IconContainer>
-                    <Container>
+                    <ItemContainer>
                       <MiniTitle>
                         {uiStatus === 'reserved'
                           ? '예약된 스케줄'
@@ -158,11 +127,13 @@ const Schedule: React.FC = () => {
                         <Details>
                           <SeasonWrapper>
                             <Season>
-                              {item.title} 시즌 {index + 1}
+                              {item.title} 시즌 {item.id}
                             </Season>
-                            <IconRightWrapper onClick={handleIconClick}>
-                              <IconRight src={BletIcon} alt='Blet Icon' />
-                            </IconRightWrapper>
+                            <BletIconWrapper
+                              onClick={() => handleItemClick(item.id)}
+                            >
+                              <BletIconImg src={BletIcon} alt='Blet Icon' />
+                            </BletIconWrapper>
                           </SeasonWrapper>
                           <DateWrapper>
                             <DateTitle>스케줄 일정</DateTitle>
@@ -179,7 +150,7 @@ const Schedule: React.FC = () => {
                           </InfoRow>
                         </Details>
                       </ScheduleItem>
-                    </Container>
+                    </ItemContainer>
                   </ScheduleItemContainer>
                 );
               })}
@@ -234,7 +205,7 @@ const ErrorMessage = styled.div`
   text-align: center;
   color: red;
 `;
-const Container = styled.div`
+const ItemContainer = styled.div`
   min-width: 290px;
   width: 100%;
   height: auto;
@@ -313,7 +284,7 @@ const Season = styled.span`
   font-size: 16px;
   line-height: 18px;
 `;
-const IconRightWrapper = styled.div`
+const BletIconWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -323,7 +294,7 @@ const IconRightWrapper = styled.div`
   margin-left: 10px;
   border-radius: 4px;
 `;
-const IconRight = styled.img`
+const BletIconImg = styled.img`
   width: 20px;
   height: 22px;
 `;

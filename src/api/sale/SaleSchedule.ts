@@ -1,5 +1,3 @@
-// src/api/sale/SaleSchedule.ts
-
 import { Axios } from '../Axios'; // Axios 인스턴스: 기본 URL, 인터셉터 등이 설정된 인스턴스라고 가정
 
 // 요청 바디 타입: 판매 스케줄 생성
@@ -28,10 +26,11 @@ export interface CreateSaleScheduleResponse {
 
 // 요약 리스트 조회 응답 타입
 export interface SaleScheduleSummaryItem {
+  id: number; // 스케줄 ID 추가
   title: string; // 예: "2025-06"
   dateRange: string; // 예: "2025-06-01 ~ 2025-06-30"
   status: string; // 예: "scheduled" 등
-  productCount: number;
+  productCount: number; // 선택된 상품 수
 }
 
 // blocked dates 조회 응답 타입
@@ -49,6 +48,7 @@ export interface SaleScheduleDetailProduct {
 }
 
 export interface SaleScheduleDetailResponse {
+  id?: number; // 상세 응답에 ID가 필요하면 추가
   title: string; // 예: "2025-06"
   dateRange: string; // 예: "2025-06-01 ~ 2025-06-30"
   status: string; // 예: "scheduled"
@@ -61,13 +61,18 @@ export interface DeleteSaleScheduleResponse {
   message: string; // 예: "스케줄이 삭제되었습니다."
 }
 
+// 수정 요청 바디 타입: 스케줄 타이틀 및 날짜 수정
+export interface PatchSaleScheduleRequest {
+  title?: string;
+  startDate?: string; // "YYYY-MM-DD"
+  endDate?: string; // "YYYY-MM-DD"
+}
+
 // API 호출 함수들
 
 /**
  * 판매 스케줄 생성
- * @param data CreateSaleScheduleRequest 객체
- * @returns CreateSaleScheduleResponse
- * @throws AxiosError
+ * POST /sale_schedule
  */
 export async function createSaleSchedule(
   data: CreateSaleScheduleRequest
@@ -81,8 +86,7 @@ export async function createSaleSchedule(
 
 /**
  * 본인 스케줄 요약 리스트 조회 (정렬 포함)
- * @returns SaleScheduleSummaryItem[]
- * @throws AxiosError
+ * GET /sale_schedule
  */
 export async function getMySaleScheduleSummaries(): Promise<
   SaleScheduleSummaryItem[]
@@ -93,8 +97,7 @@ export async function getMySaleScheduleSummaries(): Promise<
 
 /**
  * 예약된 스케줄 날짜 범위 리스트 + 사용자 progressTime 반환
- * @returns BlockedDatesResponse
- * @throws AxiosError
+ * GET /sale_schedule/blocked_dates
  */
 export async function getBlockedSaleScheduleDates(): Promise<BlockedDatesResponse> {
   const response = await Axios.get<BlockedDatesResponse>(
@@ -105,9 +108,7 @@ export async function getBlockedSaleScheduleDates(): Promise<BlockedDatesRespons
 
 /**
  * 특정 스케줄 상세 조회
- * @param scheduleId 스케줄 ID
- * @returns SaleScheduleDetailResponse
- * @throws AxiosError
+ * GET /sale_schedule/{scheduleId}
  */
 export async function getSaleScheduleDetail(
   scheduleId: number
@@ -120,15 +121,28 @@ export async function getSaleScheduleDetail(
 
 /**
  * 판매 스케줄 삭제 (scheduled, scheduling 상태만 가능)
- * @param scheduleId 스케줄 ID
- * @returns DeleteSaleScheduleResponse
- * @throws AxiosError (삭제 불가능 상태인 경우 400 등)
+ * DELETE /sale_schedule/{scheduleId}
  */
 export async function deleteSaleSchedule(
   scheduleId: number
 ): Promise<DeleteSaleScheduleResponse> {
   const response = await Axios.delete<DeleteSaleScheduleResponse>(
     `/sale_schedule/${scheduleId}`
+  );
+  return response.data;
+}
+
+/**
+ * 판매 스케줄 수정 (타이틀, 예약일자)
+ * PATCH /sale_schedule/{scheduleId}
+ */
+export async function patchSaleSchedule(
+  scheduleId: number,
+  data: PatchSaleScheduleRequest
+): Promise<{ message: string }> {
+  const response = await Axios.patch<{ message: string }>(
+    `/sale_schedule/${scheduleId}`,
+    data
   );
   return response.data;
 }

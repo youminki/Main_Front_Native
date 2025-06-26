@@ -145,7 +145,7 @@ const App: React.FC = () => (
         {/* Schedule */}
         <Route path='/sales-schedule' element={<Scedule />} />
         <Route
-          path='/schedule/confirmation'
+          path='/schedule/confirmation/:scheduleId'
           element={<ScheduleConfirmation />}
         />
         <Route
