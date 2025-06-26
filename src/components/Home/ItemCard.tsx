@@ -160,7 +160,7 @@ const ImageWrapper = styled.div`
   min-height: 240px;
   background: #f5f5f5;
   border: 1px solid #ccc;
-  border-radius: 12px;
+
   overflow: hidden;
   @supports not (aspect-ratio: 2/3) {
     min-height: 240px;
@@ -175,7 +175,7 @@ const Image = styled.img`
   aspect-ratio: 2/3;
   object-fit: cover;
   display: block;
-  border-radius: 12px;
+
   background: #f5f5f5;
 `;
 
