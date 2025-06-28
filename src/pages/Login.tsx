@@ -1,16 +1,22 @@
 // src/page/Login.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled, { ThemeProvider } from 'styled-components';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import LoginButton from '../components/Button01';
-import InputField from '../components/InputField';
-import Theme from '../styles/Theme';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginPost } from '../api/auth/LoginPost';
 import { getMembershipInfo, MembershipInfo } from '../api/user/userApi';
 import MelpikLogo from '../assets/LoginLogo.svg';
-import { schemaLogin } from '../hooks/ValidationYup';
 import ReusableModal from '../components/ReusableModal';
 
 type LoginFormValues = {
@@ -24,41 +30,58 @@ type LoginResponse = {
 };
 
 const Login: React.FC = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-
-  const {
-    control,
-    handleSubmit,
-    formState: { isValid, isSubmitting },
-  } = useForm<LoginFormValues>({
-    resolver: yupResolver(schemaLogin),
-    mode: 'onChange',
-    defaultValues: { email: '', password: '' },
+  const [formData, setFormData] = useState<LoginFormValues>({
+    email: '',
+    password: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [autoLogin, setAutoLogin] = useState(false);
 
   const handleModalClose = () => setIsModalOpen(false);
 
-  const handleLoginClick = async (data: LoginFormValues) => {
+  const validateForm = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email || !emailRegex.test(formData.email)) {
+      Alert.alert('오류', '올바른 이메일을 입력해주세요.');
+      return false;
+    }
+    if (!formData.password || formData.password.length < 6) {
+      Alert.alert('오류', '비밀번호는 6자 이상이어야 합니다.');
+      return false;
+    }
+    return true;
+  };
+
+  const handleLoginClick = async () => {
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
     try {
       const response = (await LoginPost(
-        data.email,
-        data.password
+        formData.email,
+        formData.password
       )) as LoginResponse;
       const { accessToken, refreshToken } = response;
 
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      await AsyncStorage.setItem('accessToken', accessToken);
+      await AsyncStorage.setItem('refreshToken', refreshToken);
 
       const membership: MembershipInfo = await getMembershipInfo();
 
-      navigate('/home', {
-        replace: true,
-        state: {
-          showNotice: true,
-          membership,
-        },
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'Home',
+            params: {
+              showNotice: true,
+              membership,
+            },
+          },
+        ],
       });
     } catch (error: unknown) {
       setModalMessage(
@@ -67,170 +90,231 @@ const Login: React.FC = () => {
           : '로그인 실패. 다시 시도해주세요.'
       );
       setIsModalOpen(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <ThemeProvider theme={Theme}>
-      <Container>
-        <LoginContainer>
-          <Logo src={MelpikLogo} alt='멜픽 로고' />
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.loginContainer}>
+          <Image source={MelpikLogo} style={styles.logo} />
 
-          <LoginForm
-            onSubmit={handleSubmit(handleLoginClick)}
-            autoComplete='on'
-          >
-            <InputFieldRow>
-              <Controller
-                control={control}
-                name='email'
-                render={({ field, fieldState: { error } }) => (
-                  <InputField
-                    label='사용자 이메일'
-                    type='text'
-                    placeholder='이메일을 입력하세요'
-                    error={error}
-                    autoComplete='username'
-                    {...field}
-                  />
-                )}
+          <View style={styles.formContainer}>
+            <View style={styles.inputFieldRow}>
+              <Text style={styles.label}>사용자 이메일</Text>
+              <TextInput
+                style={styles.input}
+                placeholder='이메일을 입력하세요'
+                value={formData.email}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, email: text })
+                }
+                keyboardType='email-address'
+                autoCapitalize='none'
+                autoCorrect={false}
               />
-            </InputFieldRow>
-            <InputFieldRow>
-              <Controller
-                control={control}
-                name='password'
-                render={({ field, fieldState: { error } }) => (
-                  <InputField
-                    label='비밀번호'
-                    type='password'
-                    placeholder='비밀번호를 입력하세요'
-                    error={error}
-                    autoComplete='current-password'
-                    {...field}
-                  />
-                )}
+            </View>
+
+            <View style={styles.inputFieldRow}>
+              <Text style={styles.label}>비밀번호</Text>
+              <TextInput
+                style={styles.input}
+                placeholder='비밀번호를 입력하세요'
+                value={formData.password}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, password: text })
+                }
+                secureTextEntry
+                autoCapitalize='none'
+                autoCorrect={false}
               />
-            </InputFieldRow>
+            </View>
 
-            <CheckboxWrapper>
-              <CheckboxLabel>
-                <CheckboxInput type='checkbox' />
-                <CheckboxText>자동 로그인</CheckboxText>
-              </CheckboxLabel>
-            </CheckboxWrapper>
+            <View style={styles.checkboxWrapper}>
+              <TouchableOpacity
+                style={styles.checkboxLabel}
+                onPress={() => setAutoLogin(!autoLogin)}
+              >
+                <View
+                  style={[styles.checkbox, autoLogin && styles.checkboxChecked]}
+                >
+                  {autoLogin && <Text style={styles.checkmark}>✓</Text>}
+                </View>
+                <Text style={styles.checkboxText}>자동 로그인</Text>
+              </TouchableOpacity>
+            </View>
 
-            <LoginButton type='submit' disabled={!isValid || isSubmitting}>
-              {isSubmitting ? '로그인 중...' : '로그인'}
-            </LoginButton>
-          </LoginForm>
+            <TouchableOpacity
+              style={[
+                styles.loginButton,
+                (!formData.email || !formData.password || isSubmitting) &&
+                  styles.loginButtonDisabled,
+              ]}
+              onPress={handleLoginClick}
+              disabled={!formData.email || !formData.password || isSubmitting}
+            >
+              <Text style={styles.loginButtonText}>
+                {isSubmitting ? '로그인 중...' : '로그인'}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-          <ExtraLinks>
-            <Link onClick={() => navigate('/findid')}>아이디 찾기</Link>
-            <LinkSeparator>|</LinkSeparator>
-            <Link onClick={() => navigate('/findPassword')}>비밀번호 찾기</Link>
-            <LinkSeparator>|</LinkSeparator>
-            <Link onClick={() => navigate('/signup')}>회원가입</Link>
-          </ExtraLinks>
-        </LoginContainer>
+          <View style={styles.extraLinks}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('FindId' as never)}
+            >
+              <Text style={styles.link}>아이디 찾기</Text>
+            </TouchableOpacity>
+            <Text style={styles.linkSeparator}>|</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('FindPassword' as never)}
+            >
+              <Text style={styles.link}>비밀번호 찾기</Text>
+            </TouchableOpacity>
+            <Text style={styles.linkSeparator}>|</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Signup' as never)}
+            >
+              <Text style={styles.link}>회원가입</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <ReusableModal
-          isOpen={isModalOpen}
+          visible={isModalOpen}
           onClose={handleModalClose}
           title='로그인 실패'
         >
-          {modalMessage}
+          <Text style={styles.modalText}>{modalMessage}</Text>
         </ReusableModal>
-      </Container>
-    </ThemeProvider>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loginContainer: {
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 400,
+  },
+  logo: {
+    width: 150,
+    height: 60,
+    marginVertical: 50,
+  },
+  formContainer: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  inputFieldRow: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
+  checkboxWrapper: {
+    width: '100%',
+    marginBottom: 20,
+    alignItems: 'flex-start',
+  },
+  checkboxLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: '#f6ac36',
+    borderColor: '#f6ac36',
+  },
+  checkmark: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  checkboxText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  loginButton: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#f6ac36',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  loginButtonDisabled: {
+    backgroundColor: '#ccc',
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  extraLinks: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  link: {
+    fontSize: 14,
+    color: '#666',
+    textDecorationLine: 'underline',
+  },
+  linkSeparator: {
+    fontSize: 14,
+    color: '#ccc',
+    marginHorizontal: 8,
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#333',
+    lineHeight: 24,
+  },
+});
+
 export default Login;
-
-// --- styled-components ---
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto;
-  max-width: 600px;
-  padding: 1rem;
-`;
-const LoginContainer = styled.div`
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-`;
-const Logo = styled.img`
-  width: 150px;
-  margin: 50px 0 21px;
-`;
-const LoginForm = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-const InputFieldRow = styled.div`
-  width: 100%;
-`;
-const CheckboxWrapper = styled.div`
-  width: 100%;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-`;
-const CheckboxLabel = styled.label`
-  display: flex;
-  align-items: center;
-`;
-const CheckboxInput = styled.input`
-  width: 20px;
-  height: 20px;
-  border: 1px solid lightgray;
-  appearance: none;
-  position: relative;
-  cursor: pointer;
-
-  &:checked::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 10px;
-    height: 5px;
-    border-left: 3px solid orange;
-    border-bottom: 3px solid orange;
-    transform: rotate(-45deg);
-  }
-`;
-const CheckboxText = styled.div`
-  font-size: 12px;
-  font-weight: 700;
-  margin-left: 8px;
-`;
-const ExtraLinks = styled.div`
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  min-width: 264px;
-  margin-top: 30px;
-`;
-const Link = styled.a`
-  color: ${({ theme }) => theme.colors.black};
-  padding: 5px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-const LinkSeparator = styled.span`
-  color: ${({ theme }) => theme.colors.gray2};
-  font-size: 15px;
-`;

@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled, { ThemeProvider } from 'styled-components';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ScrollView,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import LoginButton from '../components/Button01';
-import InputField from '../components/InputField';
-import Theme from '../styles/Theme';
 import { LoginPost } from '../api/auth/LoginPost';
 import { getMembershipInfo, MembershipInfo } from '../api/user/userApi';
-import MelpikLogo from '../assets/LoginLogo.svg';
 import { schemaLogin } from '../hooks/ValidationYup';
-import ReusableModal from '../components/ReusableModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type LoginFormValues = {
   email: string;
@@ -22,24 +26,22 @@ type LoginResponse = {
   refreshToken: string;
 };
 
-const Login: React.FC = () => {
-  const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
+const TestLogin: React.FC = () => {
+  const navigation = useNavigation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     control,
     handleSubmit,
-    formState: { isValid, isSubmitting },
+    formState: { isValid },
   } = useForm<LoginFormValues>({
     resolver: yupResolver(schemaLogin),
     mode: 'onChange',
     defaultValues: { email: '', password: '' },
   });
 
-  const handleModalClose = () => setIsModalOpen(false);
-
   const handleLoginClick = async (data: LoginFormValues) => {
+    setIsSubmitting(true);
     try {
       // 1) 로그인 요청
       const response = (await LoginPost(
@@ -49,183 +51,243 @@ const Login: React.FC = () => {
       const { accessToken, refreshToken } = response;
 
       // 2) 토큰 로컬 저장
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      await AsyncStorage.setItem('accessToken', accessToken);
+      await AsyncStorage.setItem('refreshToken', refreshToken);
 
       // 3) 멤버십 정보 조회
       const membership: MembershipInfo = await getMembershipInfo();
 
-      navigate('/home', {
-        replace: true,
-        state: {
+      navigation.navigate(
+        'Home' as never,
+        {
           showNotice: true,
           membership,
-        },
-      });
+        } as never
+      );
     } catch (error: any) {
-      setModalMessage(error?.message || '로그인 실패. 다시 시도해주세요.');
-      setIsModalOpen(true);
+      const errorMessage = error?.message || '로그인 실패. 다시 시도해주세요.';
+      Alert.alert('로그인 실패', errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <ThemeProvider theme={Theme}>
-      <Container>
-        <LoginContainer>
-          <Logo src={MelpikLogo} alt='멜픽 로고' />
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
+      <View style={styles.loginContainer}>
+        <Text style={styles.logo}>ME1PIK</Text>
 
-          {/* ... 로고 아래 설명 영역 생략 ... */}
-
-          <LoginForm onSubmit={handleSubmit(handleLoginClick)}>
-            <InputFieldRow>
-              <Controller
-                control={control}
-                name='email'
-                render={({ field, fieldState: { error } }) => (
-                  <InputField
-                    label='사용자 이메일'
-                    type='text'
+        <View style={styles.loginForm}>
+          <View style={styles.inputFieldRow}>
+            <Controller
+              control={control}
+              name='email'
+              render={({ field, fieldState: { error } }) => (
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>사용자 이메일</Text>
+                  <TextInput
+                    style={[styles.textInput, error && styles.inputError]}
                     placeholder='이메일을 입력하세요'
-                    error={error}
-                    {...field}
+                    value={field.value}
+                    onChangeText={field.onChange}
+                    keyboardType='email-address'
+                    autoCapitalize='none'
                   />
-                )}
-              />
-            </InputFieldRow>
-            <InputFieldRow>
-              <Controller
-                control={control}
-                name='password'
-                render={({ field, fieldState: { error } }) => (
-                  <InputField
-                    label='비밀번호'
-                    type='password'
+                  {error && (
+                    <Text style={styles.errorText}>{error.message}</Text>
+                  )}
+                </View>
+              )}
+            />
+          </View>
+
+          <View style={styles.inputFieldRow}>
+            <Controller
+              control={control}
+              name='password'
+              render={({ field, fieldState: { error } }) => (
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>비밀번호</Text>
+                  <TextInput
+                    style={[styles.textInput, error && styles.inputError]}
                     placeholder='비밀번호를 입력하세요'
-                    error={error}
-                    {...field}
+                    value={field.value}
+                    onChangeText={field.onChange}
+                    secureTextEntry
                   />
-                )}
-              />
-            </InputFieldRow>
+                  {error && (
+                    <Text style={styles.errorText}>{error.message}</Text>
+                  )}
+                </View>
+              )}
+            />
+          </View>
 
-            <CheckboxWrapper>
-              <CheckboxLabel>
-                <CheckboxInput type='checkbox' />
-                <CheckboxText>자동 로그인</CheckboxText>
-              </CheckboxLabel>
-            </CheckboxWrapper>
+          <View style={styles.checkboxWrapper}>
+            <TouchableOpacity style={styles.checkboxLabel}>
+              <View style={styles.checkbox}>
+                <Text style={styles.checkboxText}>✓</Text>
+              </View>
+              <Text style={styles.checkboxText}>자동 로그인</Text>
+            </TouchableOpacity>
+          </View>
 
-            <LoginButton type='submit' disabled={!isValid || isSubmitting}>
+          <TouchableOpacity
+            style={[
+              styles.loginButton,
+              (!isValid || isSubmitting) && styles.loginButtonDisabled,
+            ]}
+            onPress={handleSubmit(handleLoginClick)}
+            disabled={!isValid || isSubmitting}
+          >
+            <Text style={styles.loginButtonText}>
               {isSubmitting ? '로그인 중...' : '로그인'}
-            </LoginButton>
-          </LoginForm>
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-          <ExtraLinks>
-            <Link onClick={() => navigate('/findid')}>아이디 찾기</Link>
-            <LinkSeparator>|</LinkSeparator>
-            <Link onClick={() => navigate('/findpassword')}>비밀번호 찾기</Link>
-            <LinkSeparator>|</LinkSeparator>
-            <Link onClick={() => navigate('/signup')}>회원가입</Link>
-          </ExtraLinks>
-        </LoginContainer>
-
-        <ReusableModal
-          isOpen={isModalOpen}
-          onClose={handleModalClose}
-          title='로그인 실패'
-        >
-          {modalMessage}
-        </ReusableModal>
-      </Container>
-    </ThemeProvider>
+        <View style={styles.extraLinks}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('FindId' as never)}
+          >
+            <Text style={styles.link}>아이디 찾기</Text>
+          </TouchableOpacity>
+          <Text style={styles.linkSeparator}>|</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('FindPassword' as never)}
+          >
+            <Text style={styles.link}>비밀번호 찾기</Text>
+          </TouchableOpacity>
+          <Text style={styles.linkSeparator}>|</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Signup' as never)}
+          >
+            <Text style={styles.link}>회원가입</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
-export default Login;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  contentContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  loginContainer: {
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 400,
+  },
+  logo: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#f6ac36',
+    marginVertical: 50,
+  },
+  loginForm: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  inputFieldRow: {
+    width: '100%',
+    marginBottom: 16,
+  },
+  inputContainer: {
+    width: '100%',
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
+  textInput: {
+    width: '100%',
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  inputError: {
+    borderColor: '#ff0000',
+  },
+  errorText: {
+    color: '#ff0000',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  checkboxWrapper: {
+    width: '100%',
+    marginBottom: 20,
+    alignItems: 'flex-start',
+  },
+  checkboxLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f6ac36',
+  },
+  checkboxText: {
+    fontSize: 12,
+    fontWeight: '700',
+    marginLeft: 8,
+    color: '#333',
+  },
+  loginButton: {
+    width: '100%',
+    height: 48,
+    backgroundColor: '#f6ac36',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  loginButtonDisabled: {
+    backgroundColor: '#ccc',
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  extraLinks: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 30,
+  },
+  link: {
+    color: '#333',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  linkSeparator: {
+    color: '#999',
+    fontSize: 15,
+  },
+});
 
-// --- styled-components ---
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto;
-  max-width: 600px;
-  padding: 1rem;
-`;
-const LoginContainer = styled.div`
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-`;
-const Logo = styled.img`
-  width: 150px;
-  margin: 50px 0 21px;
-`;
-const LoginForm = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-const InputFieldRow = styled.div`
-  width: 100%;
-`;
-const CheckboxWrapper = styled.div`
-  width: 100%;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-`;
-const CheckboxLabel = styled.label`
-  display: flex;
-  align-items: center;
-`;
-const CheckboxInput = styled.input`
-  width: 20px;
-  height: 20px;
-  border: 1px solid lightgray;
-  appearance: none;
-  position: relative;
-  cursor: pointer;
-
-  &:checked::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 10px;
-    height: 5px;
-    border-left: 3px solid orange;
-    border-bottom: 3px solid orange;
-    transform: rotate(-45deg);
-  }
-`;
-const CheckboxText = styled.div`
-  font-size: 12px;
-  font-weight: 700;
-  margin-left: 8px;
-`;
-const ExtraLinks = styled.div`
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  min-width: 264px;
-  margin-top: 30px;
-`;
-const Link = styled.a`
-  color: ${({ theme }) => theme.colors.black};
-  padding: 5px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-const LinkSeparator = styled.span`
-  color: ${({ theme }) => theme.colors.gray2};
-  font-size: 15px;
-`;
+export default TestLogin;

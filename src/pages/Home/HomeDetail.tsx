@@ -1,8 +1,15 @@
 // src/pages/HomeDetail.tsx
 import React, { useState, useMemo, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import Spinner from '../../components/Spinner';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {
   useProductInfo,
   ProductDetail as APIProductDetail,
@@ -18,8 +25,9 @@ import ServiceSelection from '../../components/Home/HomeDetail/ServiceSelection'
 import RentalOptions from '../../components/Home/HomeDetail/RentalOptions';
 import ReusableModal from '../../components/ReusableModal';
 import BottomBar from '../../components/Home/HomeDetail/BottomBar';
-import ShoppingBasket from '../../assets/Home/HomeDetail/ShoppingBasket.svg';
 import { addCartItem } from '../../api/cart/cart';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 interface ProductDetail {
   id: number;
@@ -52,10 +60,11 @@ type HomeDetailProps = { id?: string };
 
 const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   const [cartModalOpen, setCartModalOpen] = useState(false);
-  const navigate = useNavigate();
-  const params = useParams<{ id: string }>();
-  const id = propId || params.id;
+  const navigation = useNavigation();
+  const route = useRoute();
+  const id = propId || route.params?.id;
   const { data, isLoading, isError } = useProductInfo(Number(id));
+
   const product = useMemo(() => {
     if (!data) return null;
     const api = data.product as APIProductDetail;
@@ -82,6 +91,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       size_label_guide: labelGuide,
     } as ProductDetail;
   }, [data]);
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
@@ -110,27 +120,6 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     );
   }, [images.length]);
 
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      const startX = e.clientX;
-      const onMove = (ev: MouseEvent) => {
-        if (Math.abs(ev.clientX - startX) > 50) {
-          ev.clientX - startX > 0 ? handleSwipeRight() : handleSwipeLeft();
-          window.removeEventListener('mousemove', onMove);
-          window.removeEventListener('mouseup', onUp);
-        }
-      };
-      const onUp = () => {
-        window.removeEventListener('mousemove', onMove);
-        window.removeEventListener('mouseup', onUp);
-      };
-      window.addEventListener('mousemove', onMove);
-      window.addEventListener('mouseup', onUp);
-    },
-    [handleSwipeLeft, handleSwipeRight]
-  );
-
   // 서비스 변경
   const handleServiceChange = (service: string) => {
     if (service === 'rental' && (!selectedSize || !selectedColor)) {
@@ -141,8 +130,21 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     setSelectedService(service as 'rental' | 'purchase');
   };
 
-  if (isLoading) return <Spinner />;
-  if (isError || !product) return <div>제품을 찾을 수 없습니다.</div>;
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>로딩 중...</Text>
+      </View>
+    );
+  }
+
+  if (isError || !product) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>제품을 찾을 수 없습니다.</Text>
+      </View>
+    );
+  }
 
   const productInfoItem = {
     brand: product.brand,
@@ -165,6 +167,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     price: selectedService === 'rental' ? 0 : product.retailPrice,
     imageUrl: product.mainImage,
   };
+
   const handleCartIconClick = async () => {
     if (!selectedService) {
       setWarnMessage('서비스 방식을 선택해주세요.');
@@ -194,19 +197,17 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       size: selectedSize,
       color: selectedColor,
       quantity: 1,
-      totalPrice: selectedService === 'purchase' ? product.retailPrice : 0, // 필요 시 다르게 계산
+      totalPrice: selectedService === 'purchase' ? product.retailPrice : 0,
     };
+
     try {
       await addCartItem(cartReq);
       setCartModalOpen(true);
-    } catch (err) {
-      console.error('장바구니 추가 실패', err);
-      setWarnMessage('장바구니에 추가하는데 실패했습니다.');
-      setWarnModalOpen(true);
+    } catch (error) {
+      Alert.alert('오류', '장바구니에 추가하는데 실패했습니다.');
     }
   };
 
-  // 제품 주문하기
   const handleOrderClick = () => {
     if (!selectedService) {
       setWarnMessage('서비스 방식을 선택해주세요.');
@@ -224,164 +225,127 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
       return;
     }
 
-    navigate(`/payment/${product.id}`, { state: [itemData] });
+    // 결제 페이지로 이동
+    navigation.navigate('Payment', { itemData } as never);
   };
 
   return (
-    <DetailContainer>
-      <ImageSlider
-        images={images}
-        currentImageIndex={currentImageIndex}
-        handleSwipeLeft={handleSwipeLeft}
-        handleSwipeRight={handleSwipeRight}
-        handleMouseDown={handleMouseDown}
-      />
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <ImageSlider
+          images={images}
+          currentIndex={currentImageIndex}
+          onSwipeLeft={handleSwipeLeft}
+          onSwipeRight={handleSwipeRight}
+        />
 
-      <ContentContainer>
-        <ProductInfo item={productInfoItem} productId={product.id} />
+        <ProductInfo productInfo={productInfoItem} />
 
         <ProductOptions
+          sizes={product.sizes}
           selectedSize={selectedSize}
-          setSelectedSize={setSelectedSize}
+          onSizeSelect={setSelectedSize}
           selectedColor={selectedColor}
-          setSelectedColor={setSelectedColor}
-          sizeOptions={product.sizes.map((s) => s.size)}
-          colorOptions={product.color.split(',').map((c) => c.trim())}
+          onColorSelect={setSelectedColor}
         />
 
-        <ServiceSelectionWrapper>
-          <ServiceSelection
-            selectedService={selectedService}
-            setSelectedService={handleServiceChange}
+        <ServiceSelection
+          selectedService={selectedService}
+          onServiceChange={handleServiceChange}
+        />
+
+        {selectedService === 'rental' && (
+          <RentalOptions
+            servicePeriod={servicePeriod}
+            onPeriodChange={setServicePeriod}
           />
-        </ServiceSelectionWrapper>
+        )}
 
-        <ConditionalContainer>
-          {selectedService === 'rental' && (
-            <RentalOptions
-              productId={product.id}
-              selectedSize={selectedSize}
-              onSelectPeriod={(formatted) => setServicePeriod(formatted)}
-            />
-          )}
-          {selectedService === 'purchase' && <PaymentMethod />}
-          {selectedService === '' && <Message>서비스를 선택하세요</Message>}
-        </ConditionalContainer>
-
-        <Separator />
+        <PaymentMethod />
 
         <SizeInfo
-          productSizes={product.sizes}
-          size_picture={product.size_picture}
-          labelGuide={product.size_label_guide}
+          sizePicture={product.size_picture}
+          sizeLabelGuide={product.size_label_guide}
         />
 
-        <Separator />
-
-        <MaterialInfo
-          materialData={{
-            두께감: product.thickness,
-            신축성: product.elasticity,
-            안감: product.lining,
-            촉감: product.fit,
-            비침: product.transparency,
-          }}
-        />
-
-        <Separator />
+        <MaterialInfo fabricComposition={product.fabricComposition} />
 
         <ProductDetails
-          fabricComposition={product.fabricComposition}
-          detailsData={{
-            품번: product.product_num,
-            시즌: product.season,
-            제조사: product.manufacturer,
-          }}
+          elasticity={product.elasticity}
+          transparency={product.transparency}
+          thickness={product.thickness}
+          lining={product.lining}
+          fit={product.fit}
+          color={product.color}
         />
-      </ContentContainer>
-
-      {warnModalOpen && (
-        <ReusableModal
-          isOpen={warnModalOpen}
-          onClose={() => setWarnModalOpen(false)}
-          title='알림'
-          width='80%'
-          height='200px'
-        >
-          <ErrorMsg>{warnMessage}</ErrorMsg>
-        </ReusableModal>
-      )}
-
-      {cartModalOpen && (
-        <ReusableModal
-          isOpen
-          onClose={() => setCartModalOpen(false)}
-          title='알림'
-          width='80%'
-          height='200px'
-        >
-          <div
-            style={{ textAlign: 'center', fontSize: '14px', padding: '20px' }}
-          >
-            장바구니에 추가되었습니다.
-          </div>
-        </ReusableModal>
-      )}
+      </ScrollView>
 
       <BottomBar
-        cartIconSrc={ShoppingBasket}
-        orderButtonLabel='제품 주문하기'
-        onOrderClick={handleOrderClick}
         onCartClick={handleCartIconClick}
+        onOrderClick={handleOrderClick}
+        selectedService={selectedService}
+        selectedSize={selectedSize}
+        selectedColor={selectedColor}
+        servicePeriod={servicePeriod}
       />
-    </DetailContainer>
+
+      {/* 경고 모달 */}
+      <ReusableModal
+        visible={warnModalOpen}
+        onClose={() => setWarnModalOpen(false)}
+        title='알림'
+      >
+        <Text style={styles.modalText}>{warnMessage}</Text>
+      </ReusableModal>
+
+      {/* 장바구니 추가 완료 모달 */}
+      <ReusableModal
+        visible={cartModalOpen}
+        onClose={() => setCartModalOpen(false)}
+        title='장바구니 추가 완료'
+      >
+        <Text style={styles.modalText}>상품이 장바구니에 추가되었습니다.</Text>
+      </ReusableModal>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#333',
+    lineHeight: 24,
+  },
+});
+
 export default HomeDetail;
-
-// — Styled Components (생략 없이 유지) —
-// ... (위에 있던 모든 styled-components 정의를 그대로 붙여 넣으시면 됩니다) ...
-
-// — Styled Components
-const DetailContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  max-width: 600px;
-  margin: 0 auto 100px;
-  box-sizing: border-box;
-`;
-
-const ContentContainer = styled.div`
-  padding: 1rem;
-`;
-
-const ServiceSelectionWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-bottom: 20px;
-`;
-
-const ConditionalContainer = styled.div`
-  margin-top: 20px;
-`;
-
-const Separator = styled.div`
-  border: 1px solid #ccc;
-  margin: 30px 0;
-`;
-
-const Message = styled.p`
-  text-align: center;
-  font-size: 16px;
-  color: gray;
-`;
-
-const ErrorMsg = styled.div`
-  font-size: 14px;
-  font-weight: 700;
-  text-align: center;
-`;

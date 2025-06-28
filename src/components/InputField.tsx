@@ -1,9 +1,15 @@
 // src/components/InputField.tsx
 
 import React, { useState, forwardRef } from 'react';
-import styled from 'styled-components';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import Button02 from './Button02';
-import { CustomSelect } from './CustomSelect';
 
 type InputFieldProps = {
   label: string;
@@ -12,16 +18,18 @@ type InputFieldProps = {
   error?: { message: string };
   buttonLabel?: string;
   buttonColor?: 'yellow' | 'blue' | 'red';
-  onButtonClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onButtonPress?: () => void;
   prefix?: string;
   prefixcontent?: string | React.ReactNode;
   suffixcontent?: string | React.ReactNode;
-  as?: React.ElementType;
   useToggle?: boolean;
   options?: string[];
   onSelectChange?: (value: string) => void;
   readOnly?: boolean;
   disabledOptions?: string[];
+  value?: string;
+  onChangeText?: (text: string) => void;
+  placeholder?: string;
   [key: string]: any;
 };
 
@@ -31,22 +39,34 @@ function parsePrefixContent(content: string) {
   return tokens.map((token, i) => {
     if (token === '|') {
       applyGray = true;
-      return <GraySpan key={i}>{token}</GraySpan>;
+      return (
+        <Text key={i} style={styles.grayText}>
+          {token}
+        </Text>
+      );
     }
     if (applyGray) {
-      return <GraySpan key={i}>{token}</GraySpan>;
+      return (
+        <Text key={i} style={styles.grayText}>
+          {token}
+        </Text>
+      );
     }
     if (
       (token.startsWith('(') && token.endsWith(')')) ||
       token === '해당없음'
     ) {
-      return <GraySpan key={i}>{token}</GraySpan>;
+      return (
+        <Text key={i} style={styles.grayText}>
+          {token}
+        </Text>
+      );
     }
-    return <React.Fragment key={i}>{token}</React.Fragment>;
+    return <Text key={i}>{token}</Text>;
   });
 }
 
-const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
+const InputField = forwardRef<TextInput, InputFieldProps>(
   (
     {
       label,
@@ -55,16 +75,18 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       error,
       buttonLabel,
       buttonColor = 'yellow',
-      onButtonClick,
+      onButtonPress,
       prefix,
       prefixcontent,
       suffixcontent,
-      as,
       useToggle = false,
       options,
       onSelectChange,
       readOnly = false,
       disabledOptions = [],
+      value,
+      onChangeText,
+      placeholder,
       ...rest
     },
     ref
@@ -73,8 +95,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       options && options.length > 0 ? options[0] : ''
     );
 
-    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const val = e.target.value;
+    const handleSelectChange = (val: string) => {
       setSelectedOption(val);
       onSelectChange?.(val);
     };
@@ -83,211 +104,185 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       if (!prefixcontent) return null;
       if (typeof prefixcontent === 'string') {
         return (
-          <PrefixContentText>
+          <Text style={styles.prefixContentText}>
             {parsePrefixContent(prefixcontent)}
-          </PrefixContentText>
+          </Text>
         );
       }
-      return <PrefixContentText>{prefixcontent}</PrefixContentText>;
+      return <Text style={styles.prefixContentText}>{prefixcontent}</Text>;
     };
 
     const renderSuffixContent = () => {
       if (!suffixcontent) return null;
-      return <SuffixContentText>{suffixcontent}</SuffixContentText>;
+      return <Text style={styles.suffixContentText}>{suffixcontent}</Text>;
     };
 
     return (
-      <InputContainer>
-        <Label htmlFor={id} $isEmpty={!label}>
+      <View style={styles.inputContainer}>
+        <Text style={[styles.label, !label && styles.hiddenLabel]}>
           {label.split('(')[0] || '​'}
           {label.includes('(') && (
-            <GrayText>{`(${label.split('(')[1]}`}</GrayText>
+            <Text style={styles.grayText}>{`(${label.split('(')[1]}`}</Text>
           )}
-        </Label>
+        </Text>
 
-        <InputRow>
-          {prefix && <PrefixText>{prefix}</PrefixText>}
-          <InputWrapper $readOnly={readOnly}>
+        <View style={styles.inputRow}>
+          {prefix && <Text style={styles.prefixText}>{prefix}</Text>}
+          <View
+            style={[styles.inputWrapper, readOnly && styles.readOnlyWrapper]}
+          >
             {prefixcontent && renderPrefixContent()}
 
             {options ? (
-              <StyledSelect
-                id={id}
-                value={selectedOption}
-                onChange={handleSelectChange}
-                disabled={readOnly}
-                {...rest}
-              >
-                {options.map((option: string) => (
-                  <option
-                    key={option}
-                    value={option}
-                    disabled={disabledOptions.includes(option)}
-                  >
-                    {option}
-                  </option>
-                ))}
-              </StyledSelect>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={selectedOption}
+                  onValueChange={handleSelectChange}
+                  enabled={!readOnly}
+                  style={styles.picker}
+                >
+                  {options.map((option: string) => (
+                    <Picker.Item
+                      key={option}
+                      label={option}
+                      value={option}
+                      enabled={!disabledOptions.includes(option)}
+                    />
+                  ))}
+                </Picker>
+              </View>
             ) : (
-              <Input
-                as={as}
-                type={type}
-                id={id}
+              <TextInput
                 ref={ref}
-                readOnly={readOnly}
+                style={[styles.input, readOnly && styles.readOnlyInput]}
+                value={value}
+                onChangeText={onChangeText}
+                placeholder={placeholder}
+                editable={!readOnly}
                 {...rest}
               />
             )}
 
             {suffixcontent && renderSuffixContent()}
 
-            {buttonLabel && onButtonClick && !readOnly && (
-              <ButtonWrapper>
-                <Button02 onClick={onButtonClick} color={buttonColor}>
+            {buttonLabel && onButtonPress && !readOnly && (
+              <View style={styles.buttonWrapper}>
+                <Button02 onPress={onButtonPress} color={buttonColor}>
                   {buttonLabel}
                 </Button02>
-              </ButtonWrapper>
+              </View>
             )}
 
-            {useToggle && <ToggleWrapper />}
-          </InputWrapper>
-        </InputRow>
+            {useToggle && <View style={styles.toggleWrapper} />}
+          </View>
+        </View>
 
-        <ErrorContainer>
-          {error && <ErrorMessage>{error.message}</ErrorMessage>}
-        </ErrorContainer>
-      </InputContainer>
+        <View style={styles.errorContainer}>
+          {error && <Text style={styles.errorMessage}>{error.message}</Text>}
+        </View>
+      </View>
     );
   }
 );
 
+const styles = StyleSheet.create({
+  inputContainer: {
+    flexDirection: 'column',
+    width: '100%',
+  },
+  label: {
+    marginBottom: 10,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  hiddenLabel: {
+    opacity: 0,
+  },
+  grayText: {
+    paddingLeft: 3,
+    color: '#888888',
+    fontSize: 12,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  prefixText: {
+    marginRight: 10,
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#000000',
+  },
+  prefixContentText: {
+    marginLeft: 10,
+    fontWeight: '800',
+    fontSize: 13,
+    color: '#000000',
+  },
+  suffixContentText: {
+    marginLeft: 'auto',
+    marginRight: 10,
+    fontSize: 13,
+    color: '#999999',
+  },
+  inputWrapper: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#dddddd',
+    borderRadius: 4,
+    height: 57,
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  readOnlyWrapper: {
+    backgroundColor: '#f5f5f5',
+  },
+  buttonWrapper: {
+    position: 'absolute',
+    right: 0,
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+  },
+  toggleWrapper: {
+    position: 'absolute',
+    right: 40,
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+  },
+  input: {
+    flex: 1,
+    height: '100%',
+    borderWidth: 0,
+    paddingHorizontal: 11,
+    fontSize: 13,
+    backgroundColor: 'transparent',
+    color: '#000000',
+  },
+  readOnlyInput: {
+    backgroundColor: '#f5f5f5',
+    color: '#999999',
+  },
+  pickerContainer: {
+    flex: 1,
+    height: '100%',
+  },
+  picker: {
+    height: '100%',
+    backgroundColor: 'transparent',
+  },
+  errorContainer: {
+    minHeight: 18,
+    marginTop: 6,
+    marginLeft: 4,
+  },
+  errorMessage: {
+    color: 'blue',
+    fontSize: 12,
+  },
+});
+
 export default InputField;
-
-// Styled Components
-
-const InputContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
-
-const Label = styled.label<{ $isEmpty: boolean }>`
-  margin-bottom: 10px;
-  font-size: 12px;
-  font-weight: 700;
-  visibility: ${({ $isEmpty }) => ($isEmpty ? 'hidden' : 'visible')};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const GrayText = styled.span`
-  padding-left: 3px;
-  color: #888888;
-  font-size: 12px;
-`;
-
-const InputRow = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const PrefixText = styled.span`
-  margin-right: 10px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #000000;
-`;
-
-const PrefixContentText = styled.span`
-  margin-left: 10px;
-  font-weight: 800;
-  font-size: 13px;
-  color: #000000;
-`;
-
-const SuffixContentText = styled.span`
-  margin-left: auto; /* 우측 정렬 */
-  margin-right: 10px;
-  font-size: 13px;
-  color: #999999; /* 회색 */
-`;
-
-const GraySpan = styled.span`
-  color: #999999;
-`;
-
-const InputWrapper = styled.div<{ $readOnly: boolean }>`
-  position: relative;
-  display: flex;
-  align-items: center;
-  border: 1px solid #dddddd;
-  border-radius: 4px;
-  height: 57px;
-  flex: 1;
-  background-color: ${({ $readOnly }) => ($readOnly ? '#f5f5f5' : 'white')};
-`;
-
-const ButtonWrapper = styled.div`
-  position: absolute;
-  right: 0;
-  display: flex;
-  align-items: center;
-  height: 100%;
-`;
-
-const ToggleWrapper = styled.div`
-  position: absolute;
-  right: 40px;
-  display: flex;
-  align-items: center;
-  height: 100%;
-`;
-
-const Input = styled.input<{ readOnly?: boolean }>`
-  flex: 1;
-  height: 100%;
-  border: none;
-  padding: 0 11px;
-  font-size: 13px;
-  background-color: ${({ readOnly }) => (readOnly ? '#f5f5f5' : 'white')};
-  color: ${({ readOnly }) => (readOnly ? '#999999' : '#000000')};
-
-  &:disabled {
-    color: #999999;
-    cursor: not-allowed;
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const StyledSelect = styled(CustomSelect)<{ disabled?: boolean }>`
-  flex: 1;
-  height: 100%;
-  border: none;
-  padding: 0 11px;
-  font-size: 13px;
-  background-color: ${({ disabled }) => (disabled ? '#f5f5f5' : 'white')};
-  color: ${({ disabled }) => (disabled ? '#999999' : '#000000')};
-
-  &:disabled {
-    cursor: not-allowed;
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const ErrorContainer = styled.div`
-  min-height: 18px;
-  margin-top: 6px;
-  margin-left: 4px;
-`;
-
-const ErrorMessage = styled.span`
-  color: blue;
-  font-size: 12px;
-`;

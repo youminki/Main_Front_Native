@@ -1,21 +1,25 @@
 // src/components/MypageModal.tsx
 
-import React, { useEffect, useState } from 'react';
-import styled, { keyframes, css } from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
-import MypageBox from '../assets/MypageBox.svg';
-import MystyleBox from '../assets/MystyleBox.svg';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+  Image,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReusableModal2 from '../components/ReusableModal2';
 import { logoutUser } from '../api/user/userApi';
 import { Axios } from '../api/Axios';
 
-const getEmailFromToken = (): string | null => {
-  const token =
-    Cookies.get('accessToken') || localStorage.getItem('accessToken') || '';
-  if (!token) return null;
+const getEmailFromToken = async (): Promise<string | null> => {
   try {
-    const payload = JSON.parse(window.atob(token.split('.')[1]));
+    const token = await AsyncStorage.getItem('accessToken');
+    if (!token) return null;
+    const payload = JSON.parse(atob(token.split('.')[1]));
     return payload.email as string;
   } catch {
     return null;
@@ -28,95 +32,88 @@ type MypageModalProps = {
 };
 
 const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
-  const [isClosing, setIsClosing] = useState(false);
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isOpen) setIsClosing(false);
-  }, [isOpen]);
-
-  const handleOverlayClick = () => {
-    setIsClosing(true);
-    setTimeout(onClose, 400);
-  };
-
-  const handleModalClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
-
-  const handleLogoutOpen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setLogoutModalOpen(true);
-  };
+  const navigation = useNavigation();
 
   const handleLogoutConfirm = async () => {
     try {
-      const email = getEmailFromToken();
+      const email = await getEmailFromToken();
       if (email) {
         await logoutUser(email);
       }
     } catch (err) {
       console.error('logout error:', err);
     } finally {
-      Cookies.remove('accessToken');
-      Cookies.remove('refreshToken');
-      Cookies.remove('profileImageUrl');
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      await AsyncStorage.removeItem('accessToken');
+      await AsyncStorage.removeItem('refreshToken');
+      await AsyncStorage.removeItem('profileImageUrl');
 
       Axios.defaults.headers.Authorization = '';
       setLogoutModalOpen(false);
       onClose();
-      navigate('/login', { replace: true });
-      window.location.reload();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
     }
   };
 
-  if (!isOpen) return null;
-
   return (
     <>
-      <Overlay onClick={handleOverlayClick}>
-        <ModalContainer onClick={handleModalClick} $isClosing={isClosing}>
-          <ModalHandle>
-            <HandleBar />
-          </ModalHandle>
+      <Modal
+        visible={isOpen}
+        transparent={true}
+        animationType='slide'
+        onRequestClose={onClose}
+      >
+        <View style={styles.overlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHandle}>
+              <View style={styles.handleBar} />
+            </View>
 
-          <ModalHeader>
-            <Title>마이페이지</Title>
-          </ModalHeader>
-          <Divider />
+            <View style={styles.modalHeader}>
+              <Text style={styles.title}>마이페이지</Text>
+            </View>
+            <View style={styles.divider} />
 
-          <ModalContentArea>
-            {/* 첫 번째 이미지 클릭 시 /MyInfoList로 이동 */}
-            <PlaceholderImage
-              src={MypageBox}
-              alt='마이페이지 이미지'
-              onClick={(e) => {
-                e.stopPropagation();
-                onClose();
-                navigate('/MyInfoList');
-              }}
-            />
+            <View style={styles.modalContentArea}>
+              <TouchableOpacity
+                style={styles.imageContainer}
+                onPress={() => {
+                  onClose();
+                  navigation.navigate('MyInfoList');
+                }}
+              >
+                <View style={styles.placeholderImage}>
+                  <Text style={styles.imageText}>마이페이지</Text>
+                </View>
+              </TouchableOpacity>
 
-            {/* 두 번째 이미지 클릭 시 /Mystyle로 이동 */}
-            <PlaceholderImage
-              src={MystyleBox}
-              alt='마이스타일 이미지'
-              onClick={(e) => {
-                e.stopPropagation();
-                onClose();
-                navigate('/Mystyle');
-              }}
-            />
-          </ModalContentArea>
+              <TouchableOpacity
+                style={styles.imageContainer}
+                onPress={() => {
+                  onClose();
+                  navigation.navigate('Mystyle');
+                }}
+              >
+                <View style={styles.placeholderImage}>
+                  <Text style={styles.imageText}>마이스타일</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
 
-          <Divider />
+            <View style={styles.divider} />
 
-          <LogoutButton onClick={handleLogoutOpen}>로그아웃</LogoutButton>
-        </ModalContainer>
-      </Overlay>
+            <TouchableOpacity
+              style={styles.logoutButton}
+              onPress={() => setLogoutModalOpen(true)}
+            >
+              <Text style={styles.logoutButtonText}>로그아웃</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {isLogoutModalOpen && (
         <ReusableModal2
@@ -132,116 +129,85 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContainer: {
+    width: '90%',
+    minHeight: 350,
+    padding: 16,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    alignSelf: 'center',
+  },
+  modalHandle: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  handleBar: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#ddd',
+    borderRadius: 2,
+  },
+  modalHeader: {
+    margin: 16,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '800',
+    margin: 0,
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#ddd',
+    marginVertical: 0,
+  },
+  modalContentArea: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    gap: 20,
+    paddingVertical: 20,
+  },
+  imageContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  placeholderImage: {
+    width: 120,
+    height: 120,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  imageText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+  },
+  logoutButton: {
+    width: '100%',
+    height: 56,
+    margin: 16,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontWeight: '800',
+    fontSize: 16,
+  },
+});
+
 export default MypageModal;
-
-/* Styled Components */
-const slideUp = keyframes`
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
-`;
-
-const slideDown = keyframes`
-  from { transform: translateY(0); }
-  to   { transform: translateY(100%); }
-`;
-
-interface ModalContainerProps {
-  $isClosing: boolean;
-}
-
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  z-index: 9999;
-`;
-
-const ModalContainer = styled.div<ModalContainerProps>`
-  position: fixed;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 600px;
-  min-height: 350px;
-  padding: 1rem;
-  background: #fff;
-  border-radius: 20px 20px 0 0;
-  display: flex;
-  flex-direction: column;
-
-  animation: ${({ $isClosing }) =>
-    $isClosing
-      ? css`
-          ${slideDown} 0.4s ease-out forwards
-        `
-      : css`
-          ${slideUp} 0.4s ease-out forwards
-        `};
-`;
-
-const ModalHandle = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 8px;
-`;
-
-const HandleBar = styled.div`
-  position: fixed;
-  top: 6px;
-  width: 40px;
-  height: 4px;
-  background: #ddd;
-  border-radius: 2px;
-`;
-
-const ModalHeader = styled.div`
-  margin: 16px;
-`;
-
-const Title = styled.h2`
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 18px;
-  margin: 0;
-`;
-
-const Divider = styled.hr`
-  width: 100%;
-  height: 1px;
-  background: #ddd;
-  border: none;
-  margin: 0;
-`;
-
-const ModalContentArea = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  gap: 20px;
-`;
-
-const PlaceholderImage = styled.img`
-  cursor: pointer;
-  object-fit: cover;
-`;
-
-const LogoutButton = styled.button`
-  width: 100%;
-  height: 56px;
-  margin: 16px auto;
-  background: #000;
-  color: #fff;
-  font-weight: 800;
-  font-size: 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-`;

@@ -1,14 +1,14 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
-import styled, { ThemeProvider } from 'styled-components';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { schemaMyStyle } from '../hooks/ValidationYup';
-import InputField from '../components/InputField';
-import Theme from '../styles/Theme';
-import Modal from '../components/Melpik/CreateMelpik/Settings/Modal';
-import { CustomSelect } from '../components/CustomSelect';
-import FixedBottomBar from '../components/FixedBottomBar';
-import ReusableModal from '../components/ReusableModal';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Alert,
+} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { useUserStyle, updateUserStyle, UserStyle } from '../api/user/userApi';
 
 interface FormData {
@@ -39,348 +39,292 @@ const SIZE_LABELS: Record<(typeof SIZE_OPTIONS)[number], string> = {
 };
 
 const MyStyle: React.FC = () => {
-  const {
-    control,
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schemaMyStyle),
-    mode: 'all',
-    defaultValues: {
-      height: '',
-      size: '',
-      dress: '',
-      top: '',
-      bottom: '',
-      brand: '',
-      shoulder: '',
-      chest: '',
-      waist: '',
-      sleeve: '',
-    },
+  const [formData, setFormData] = useState<FormData>({
+    height: '',
+    size: '',
+    dress: '',
+    top: '',
+    bottom: '',
+    brand: '',
+    shoulder: '',
+    chest: '',
+    waist: '',
+    sleeve: '',
   });
 
-  const watched = {
-    height: watch('height'),
-    size: watch('size'),
-    dress: watch('dress'),
-    top: watch('top'),
-    bottom: watch('bottom'),
-  };
-
-  const [isModalOpen, setModalOpen] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-
-  // ReusableModal 상태
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [feedbackTitle, setFeedbackTitle] = useState<string>();
-  const [feedbackMessage, setFeedbackMessage] = useState<string>();
 
   // react-query로 스타일 데이터 패칭
   const { data } = useUserStyle();
+
   useEffect(() => {
     if (!data) return;
-    setValue('height', data.height != null ? data.height.toString() : '');
-    setValue('size', data.weight != null ? data.weight.toString() : '');
-    setValue('dress', data.dressSize ?? '');
-    setValue('top', data.topSize ?? '');
-    setValue('bottom', data.bottomSize ?? '');
+    setFormData({
+      height: data.height != null ? data.height.toString() : '',
+      size: data.weight != null ? data.weight.toString() : '',
+      dress: data.dressSize ?? '',
+      top: data.topSize ?? '',
+      bottom: data.bottomSize ?? '',
+      brand: (data.preferredBrands ?? []).join(', '),
+      shoulder: data.shoulderWidth != null ? data.shoulderWidth.toString() : '',
+      chest:
+        data.chestCircumference != null
+          ? data.chestCircumference.toString()
+          : '',
+      waist:
+        data.waistCircumference != null
+          ? data.waistCircumference.toString()
+          : '',
+      sleeve: data.sleeveLength != null ? data.sleeveLength.toString() : '',
+    });
     setSelectedBrands(data.preferredBrands ?? []);
-    setValue('brand', (data.preferredBrands ?? []).join(', '));
-    setValue(
-      'shoulder',
-      data.shoulderWidth != null ? data.shoulderWidth.toString() : ''
-    );
-    setValue(
-      'chest',
-      data.chestCircumference != null ? data.chestCircumference.toString() : ''
-    );
-    setValue(
-      'waist',
-      data.waistCircumference != null ? data.waistCircumference.toString() : ''
-    );
-    setValue(
-      'sleeve',
-      data.sleeveLength != null ? data.sleeveLength.toString() : ''
-    );
-  }, [data, setValue]);
+  }, [data]);
 
-  const onSubmit: SubmitHandler<FormData> = async (form) => {
+  const handleInputChange = (field: keyof FormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async () => {
     try {
       const payload: Partial<UserStyle> = {
-        height: form.height ? parseFloat(form.height) : undefined,
-        weight: form.size ? parseFloat(form.size) : undefined,
-        dressSize: form.dress,
-        topSize: form.top,
-        bottomSize: form.bottom,
+        height: formData.height ? parseFloat(formData.height) : undefined,
+        weight: formData.size ? parseFloat(formData.size) : undefined,
+        dressSize: formData.dress,
+        topSize: formData.top,
+        bottomSize: formData.bottom,
         preferredBrands: selectedBrands,
-        shoulderWidth: form.shoulder ? parseFloat(form.shoulder) : undefined,
-        chestCircumference: form.chest ? parseFloat(form.chest) : undefined,
-        waistCircumference: form.waist ? parseFloat(form.waist) : undefined,
-        sleeveLength: form.sleeve ? parseFloat(form.sleeve) : undefined,
+        shoulderWidth: formData.shoulder
+          ? parseFloat(formData.shoulder)
+          : undefined,
+        chestCircumference: formData.chest
+          ? parseFloat(formData.chest)
+          : undefined,
+        waistCircumference: formData.waist
+          ? parseFloat(formData.waist)
+          : undefined,
+        sleeveLength: formData.sleeve ? parseFloat(formData.sleeve) : undefined,
       };
       await updateUserStyle(payload);
 
-      // 성공 메시지
-      setFeedbackTitle('성공');
-      setFeedbackMessage('스타일 정보가 업데이트되었습니다.');
-      setFeedbackOpen(true);
+      Alert.alert('성공', '스타일 정보가 업데이트되었습니다.');
     } catch (e) {
       console.error(e);
-
-      // 에러 메시지
-      setFeedbackTitle('오류');
-      setFeedbackMessage('업데이트 중 오류가 발생했습니다.');
-      setFeedbackOpen(true);
+      Alert.alert('오류', '업데이트 중 오류가 발생했습니다.');
     }
   };
 
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
-  const handleBrandSelect = (brands: string[]) => {
-    setSelectedBrands(brands);
-    setValue('brand', brands.join(', '));
-  };
-
-  const renderSelectOption = (
-    value: string,
-    display: string | React.ReactNode
+  const renderPicker = (
+    field: keyof FormData,
+    options: string[],
+    placeholder: string,
+    suffix: string = ''
   ) => (
-    <option key={value} value={value}>
-      {display}
-    </option>
+    <View style={styles.inputContainer}>
+      <Text style={styles.label}>{placeholder}</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={formData[field]}
+          onValueChange={(value) => handleInputChange(field, value)}
+          style={styles.picker}
+        >
+          <Picker.Item label={`${placeholder} 선택`} value='' />
+          {options.map((option) => (
+            <Picker.Item
+              key={option}
+              label={`${option}${suffix}`}
+              value={option}
+            />
+          ))}
+        </Picker>
+      </View>
+    </View>
   );
 
   return (
-    <ThemeProvider theme={Theme}>
-      <Container>
-        <FormWrapper>
-          {/* 키, 몸무게 */}
-          <Row>
-            <InputField
-              label='키'
-              id='height'
-              as={CustomSelect}
-              error={errors.height}
-              {...register('height')}
-            >
-              <option value='' disabled hidden>
-                선택해주세요
-              </option>
-              {watched.height &&
-                !HEIGHT_OPTIONS.includes(watched.height) &&
-                renderSelectOption(watched.height, `${watched.height} cm`)}
-              {HEIGHT_OPTIONS.map((h) => renderSelectOption(h, `${h} cm`))}
-            </InputField>
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>내 스타일</Text>
+          <Text style={styles.subtitle}>나만의 스타일을 설정해보세요</Text>
+        </View>
 
-            <InputField
-              label='몸무게'
-              id='size'
-              as={CustomSelect}
-              error={errors.size}
-              {...register('size')}
-            >
-              <option value='' disabled hidden>
-                선택해주세요
-              </option>
-              {watched.size &&
-                !WEIGHT_RANGE.includes(watched.size) &&
-                renderSelectOption(watched.size, `${watched.size} kg`)}
-              {WEIGHT_RANGE.map((w) => renderSelectOption(w, `${w} kg`))}
-            </InputField>
-          </Row>
+        {/* 키, 몸무게 */}
+        <View style={styles.row}>
+          {renderPicker('height', HEIGHT_OPTIONS, '키', ' cm')}
+          {renderPicker('size', WEIGHT_RANGE, '몸무게', ' kg')}
+        </View>
 
-          <Divider />
+        <View style={styles.divider} />
 
-          {/* 원피스·상의·하의 */}
-          <Row>
-            {(['dress', 'top', 'bottom'] as const).map((field) => {
-              const labels = {
-                dress: '원피스 사이즈',
-                top: '상의 사이즈',
-                bottom: '하의 사이즈',
-              } as const;
-              return (
-                <Controller
-                  key={field}
-                  name={field}
-                  control={control}
-                  defaultValue=''
-                  render={({ field: { value, onChange } }) => (
-                    <InputField
-                      label={labels[field]}
-                      id={field}
-                      as={CustomSelect}
-                      error={errors[field]}
-                      value={value}
-                      onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                        onChange(e.target.value)
-                      }
-                    >
-                      <option value='' disabled hidden>
-                        선택해주세요
-                      </option>
-                      {SIZE_OPTIONS.map((s) => (
-                        <option key={s} value={s}>
-                          {`${s} (${SIZE_LABELS[s]})`}
-                        </option>
-                      ))}
-                    </InputField>
-                  )}
-                />
-              );
-            })}
-          </Row>
+        {/* 원피스·상의·하의 */}
+        <View style={styles.row}>
+          {renderPicker('dress', SIZE_OPTIONS, '원피스')}
+          {renderPicker('top', SIZE_OPTIONS, '상의')}
+          {renderPicker('bottom', SIZE_OPTIONS, '하의')}
+        </View>
 
-          <Divider />
+        <View style={styles.divider} />
 
-          {/* 선호 브랜드 */}
-          <Row>
-            <InputField
-              label='선호 브랜드 선택 (최대 3가지)'
-              id='brand'
-              type='text'
-              placeholder='브랜드 3가지를 선택하세요'
-              error={errors.brand}
-              {...register('brand')}
-              value={selectedBrands.join(', ')}
-              buttonLabel='선택하기'
-              onButtonClick={openModal}
-            />
-          </Row>
+        {/* 상세 치수 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>상세 치수</Text>
+          <View style={styles.row}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>어깨</Text>
+              <TextInput
+                style={styles.textInput}
+                value={formData.shoulder}
+                onChangeText={(value) => handleInputChange('shoulder', value)}
+                placeholder='어깨 너비 (cm)'
+                keyboardType='numeric'
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>가슴</Text>
+              <TextInput
+                style={styles.textInput}
+                value={formData.chest}
+                onChangeText={(value) => handleInputChange('chest', value)}
+                placeholder='가슴 둘레 (cm)'
+                keyboardType='numeric'
+              />
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>허리</Text>
+              <TextInput
+                style={styles.textInput}
+                value={formData.waist}
+                onChangeText={(value) => handleInputChange('waist', value)}
+                placeholder='허리 둘레 (cm)'
+                keyboardType='numeric'
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>소매</Text>
+              <TextInput
+                style={styles.textInput}
+                value={formData.sleeve}
+                onChangeText={(value) => handleInputChange('sleeve', value)}
+                placeholder='소매 길이 (cm)'
+                keyboardType='numeric'
+              />
+            </View>
+          </View>
+        </View>
 
-          <Divider />
+        <View style={styles.divider} />
 
-          {/* 선택적 치수 */}
-          <Row>
-            <Controller
-              name='shoulder'
-              control={control}
-              render={({ field }) => (
-                <InputField
-                  label='어깨너비 (선택)'
-                  id='shoulder'
-                  placeholder='선택해주세요'
-                  error={errors.shoulder}
-                  {...field}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    const num = e.target.value.replace(/\D/g, '');
-                    field.onChange(num ? `${num}cm` : '');
-                  }}
-                />
-              )}
-            />
-            <Controller
-              name='chest'
-              control={control}
-              render={({ field }) => (
-                <InputField
-                  label='가슴둘레 (선택)'
-                  id='chest'
-                  placeholder='선택해주세요'
-                  error={errors.chest}
-                  {...field}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    const num = e.target.value.replace(/\D/g, '');
-                    field.onChange(num ? `${num}cm` : '');
-                  }}
-                />
-              )}
-            />
-          </Row>
-          <Row>
-            <Controller
-              name='waist'
-              control={control}
-              render={({ field }) => (
-                <InputField
-                  label='허리둘레 (선택)'
-                  id='waist'
-                  placeholder='선택해주세요'
-                  error={errors.waist}
-                  {...field}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    const num = e.target.value.replace(/\D/g, '');
-                    field.onChange(num ? `${num}cm` : '');
-                  }}
-                />
-              )}
-            />
-            <Controller
-              name='sleeve'
-              control={control}
-              render={({ field }) => (
-                <InputField
-                  label='소매길이 (선택)'
-                  id='sleeve'
-                  placeholder='선택해주세요'
-                  error={errors.sleeve}
-                  {...field}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    const num = e.target.value.replace(/\D/g, '');
-                    field.onChange(num ? `${num}cm` : '');
-                  }}
-                />
-              )}
-            />
-          </Row>
-        </FormWrapper>
+        {/* 선호 브랜드 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>선호 브랜드</Text>
+          <TextInput
+            style={styles.textInput}
+            value={formData.brand}
+            onChangeText={(value) => handleInputChange('brand', value)}
+            placeholder='선호하는 브랜드를 입력하세요'
+          />
+        </View>
+      </ScrollView>
 
-        <Modal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          onSelect={handleBrandSelect}
-          selectedBrands={selectedBrands}
-        />
-
-        <FixedBottomBar
-          text='정보 변경'
-          color='yellow'
-          onClick={() => handleSubmit(onSubmit)()}
-        />
-
-        {/* 성공/오류 피드백 모달 */}
-        <ReusableModal
-          isOpen={feedbackOpen}
-          onClose={() => setFeedbackOpen(false)}
-          title={feedbackTitle}
-          width='260px'
-          height='200px'
-        >
-          <p>{feedbackMessage}</p>
-        </ReusableModal>
-      </Container>
-    </ThemeProvider>
+      <View style={styles.bottomBar}>
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.submitButtonText}>저장하기</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
-export default MyStyle;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#000',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  inputContainer: {
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    backgroundColor: '#f9f9f9',
+  },
+  picker: {
+    height: 50,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#eee',
+    marginVertical: 20,
+  },
+  section: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 16,
+  },
+  bottomBar: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    backgroundColor: '#fff',
+  },
+  submitButton: {
+    backgroundColor: '#f6ac36',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
 
-// Form 대신 div로 감싸기
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #fff;
-  padding: 1rem;
-  max-width: 600px;
-  margin: 0 auto;
-`;
-const FormWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-const Row = styled.div`
-  display: flex;
-  gap: 1rem;
-`;
-const Divider = styled.hr`
-  border: none;
-  width: 100%;
-  border-top: 1px solid #eee;
-  margin: 20px 0;
-`;
+export default MyStyle;

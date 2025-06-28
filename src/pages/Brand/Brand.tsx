@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styled, { ThemeProvider } from 'styled-components';
-import Theme from '../../styles/Theme';
-import { BrandList } from '../../components/Brand/BrandList';
-import { ControlSection } from '../../components/Brand/ControlSection';
-import StatsSection from '../../components/Brand/StatsSection';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { getBrandList, Brand as ApiBrand } from '../../api/brand/brandApi';
 
 interface LocalBrand {
@@ -87,74 +83,124 @@ const Brand: React.FC = () => {
   };
 
   return (
-    <ThemeProvider theme={Theme}>
-      <Container>
-        <Header>
-          <Title>브랜드</Title>
-          <Subtitle>새로운 시즌 제품들을 내 손안에!</Subtitle>
-        </Header>
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>브랜드</Text>
+          <Text style={styles.subtitle}>새로운 시즌 제품들을 내 손안에!</Text>
+        </View>
 
         {/* StatsSection: 전체 통계 */}
-        <StatsSection
-          brandCount={brands.length}
-          productCount={apiBrands.reduce(
-            (sum, b) => sum + (b.productCount || 0),
-            0
-          )}
-        />
+        <View style={styles.statsSection}>
+          <Text style={styles.statsText}>
+            브랜드 {brands.length}개 | 제품{' '}
+            {apiBrands.reduce((sum, b) => sum + (b.productCount || 0), 0)}개
+          </Text>
+        </View>
 
-        <Divider />
+        <View style={styles.divider} />
 
         {/* ControlSection: 검색어와 정렬 토글 */}
-        <ControlSection
-          toggleSort={toggleSort}
-          sortBy={sortBy}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-        />
+        <View style={styles.controlSection}>
+          <Text style={styles.controlText}>
+            정렬: {sortBy === 'group' ? '그룹별' : '카테고리별'}
+          </Text>
+        </View>
 
         {/* BrandList: 그룹핑된 결과 */}
-        <BrandList groupedBrands={sortedGroupedBrands} />
-      </Container>
-    </ThemeProvider>
+        <View style={styles.brandList}>
+          {Object.entries(sortedGroupedBrands).map(([groupName, brandList]) => (
+            <View key={groupName} style={styles.brandGroup}>
+              <Text style={styles.groupTitle}>{groupName}</Text>
+              {brandList.map((brand) => (
+                <View key={brand.id} style={styles.brandItem}>
+                  <Text style={styles.brandName}>{brand.name}</Text>
+                </View>
+              ))}
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    marginBottom: 6,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#000',
+    marginBottom: 0,
+  },
+  subtitle: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#ccc',
+  },
+  statsSection: {
+    padding: 16,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    marginVertical: 16,
+  },
+  statsText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#dddddd',
+    marginVertical: 30,
+  },
+  controlSection: {
+    marginBottom: 20,
+  },
+  controlText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '600',
+  },
+  brandList: {
+    flex: 1,
+  },
+  brandGroup: {
+    marginBottom: 24,
+  },
+  groupTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  brandItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  brandName: {
+    fontSize: 16,
+    color: '#333',
+  },
+});
+
 export default Brand;
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  background-color: #fff;
-  padding: 1rem;
-`;
-
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  margin-bottom: 6px;
-`;
-
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: 800;
-  color: #000;
-  margin-bottom: 0px;
-`;
-
-const Subtitle = styled.p`
-  font-size: 12px;
-  font-weight: 400;
-  color: #ccc;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #dddddd;
-  margin: 30px 0;
-`;

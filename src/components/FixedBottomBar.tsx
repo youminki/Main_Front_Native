@@ -1,56 +1,73 @@
 // src/components/FixedBottomBar.tsx
 import React from 'react';
-import styled from 'styled-components';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-interface FixedBottomBarProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface FixedBottomBarProps {
   text: string;
   color?: 'yellow' | 'black';
+  onPress?: () => void;
+  disabled?: boolean;
 }
 
 const FixedBottomBar: React.FC<FixedBottomBarProps> = ({
   text,
   color = 'black',
-  ...buttonProps
+  onPress,
+  disabled = false,
 }) => {
   return (
-    <BottomBar>
-      <SettleButton $color={color} {...buttonProps}>
-        {text}
-      </SettleButton>
-    </BottomBar>
+    <View style={styles.bottomBar}>
+      <TouchableOpacity
+        style={[
+          styles.settleButton,
+          color === 'yellow' ? styles.yellowButton : styles.blackButton,
+          disabled && styles.disabledButton,
+        ]}
+        onPress={onPress}
+        disabled={disabled}
+      >
+        <Text style={styles.settleButtonText}>{text}</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  bottomBar: {
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    backgroundColor: '#eeeeee',
+    paddingVertical: 15,
+    paddingBottom: 34,
+    alignItems: 'center',
+  },
+  settleButton: {
+    width: '90%',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  yellowButton: {
+    backgroundColor: '#F6AE24',
+  },
+  blackButton: {
+    backgroundColor: '#000000',
+  },
+  disabledButton: {
+    backgroundColor: '#ccc',
+  },
+  settleButtonText: {
+    fontSize: 16,
+    color: '#ffffff',
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+});
+
 export default FixedBottomBar;
-
-const BottomBar = styled.div`
-  width: 100%;
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  max-width: 600px;
-  margin: 0 auto;
-  background: #eeeeee;
-  padding: 15px 0 34px 0;
-  text-align: center;
-`;
-
-// transient prop "$color" 사용
-const SettleButton = styled.button<{ $color: 'yellow' | 'black' }>`
-  width: 90%;
-  padding: 20px;
-  font-size: 16px;
-  border-radius: 6px;
-  cursor: pointer;
-
-  background-color: ${({ $color }) =>
-    $color === 'yellow' ? '#F6AE24' : '#000000'};
-  color: #ffffff;
-  border: none;
-  font-weight: 800;
-  line-height: 18px;
-  text-align: center;
-`;

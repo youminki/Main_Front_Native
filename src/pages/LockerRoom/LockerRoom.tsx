@@ -1,45 +1,26 @@
 // src/pages/LockerRoom.tsx
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import StatsSection from '../../components/LockerRoom/StatsSection';
-
-import LockerRoomIcons from '../../assets/LockerRoomIcons.svg';
-import ClosetIcon from '../../assets/LockerRoom/ClosetIcon.svg';
-import HistoryIcon from '../../assets/LockerRoom/HistoryIcon.svg';
-import PointsIcon from '../../assets/LockerRoom/PointsIcon.svg';
-import TicketIcon from '../../assets/LockerRoom/TicketIcon.svg';
-import PaymentIcon from '../../assets/LockerRoom/PaymentIcon.svg';
-import ReviewIcon from '../../assets/LockerRoom/ReviewIcon.svg';
-
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { getMembershipInfo, MembershipInfo } from '../../api/user/userApi';
 
 const menuItems = [
-  { icon: ClosetIcon, label: '내 옷장', path: '/my-closet', disabled: false },
-  {
-    icon: HistoryIcon,
-    label: '이용내역',
-    path: '/usage-history',
-    disabled: false,
-  },
-  { icon: PointsIcon, label: '포인트', path: '/point', disabled: true },
-  { icon: TicketIcon, label: '이용권', path: '/my-ticket', disabled: false },
-  {
-    icon: PaymentIcon,
-    label: '결제수단',
-    path: '/payment-method',
-    disabled: false,
-  },
-  {
-    icon: ReviewIcon,
-    label: '상품리뷰',
-    path: '/product-review',
-    disabled: true,
-  },
+  { icon: '👕', label: '내 옷장', path: 'MyCloset', disabled: false },
+  { icon: '📋', label: '이용내역', path: 'UsageHistory', disabled: false },
+  { icon: '💰', label: '포인트', path: 'Point', disabled: true },
+  { icon: '🎫', label: '이용권', path: 'MyTicket', disabled: false },
+  { icon: '💳', label: '결제수단', path: 'PaymentMethod', disabled: false },
+  { icon: '⭐', label: '상품리뷰', path: 'ProductReview', disabled: true },
 ];
 
 const LockerRoom: React.FC = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
   const [membership, setMembership] = useState<MembershipInfo | null>(null);
 
   useEffect(() => {
@@ -52,168 +33,168 @@ const LockerRoom: React.FC = () => {
       });
   }, []);
 
+  const handleMenuPress = (item: (typeof menuItems)[0]) => {
+    if (!item.disabled) {
+      navigation.navigate(item.path as never);
+    }
+  };
+
   return (
-    <Container>
-      <Header>
-        <Title>락커룸</Title>
-        <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
-      </Header>
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>락커룸</Text>
+          <Text style={styles.subtitle}>
+            나에게 맞는 스타일을 찾을 때는 멜픽!
+          </Text>
+        </View>
 
-      <StatsRow>
-        <StatsSection
-          visits={membership?.name ?? '—'}
-          sales='0'
-          dateRange='요약정보'
-          visitLabel='그룹'
-          salesLabel='보유 포인트'
-        />
-        <MenuIcon src={LockerRoomIcons} alt='메뉴 이미지' />
-      </StatsRow>
+        <View style={styles.statsRow}>
+          <View style={styles.statsSection}>
+            <Text style={styles.statsLabel}>그룹</Text>
+            <Text style={styles.statsValue}>{membership?.name ?? '—'}</Text>
+            <Text style={styles.statsLabel}>보유 포인트</Text>
+            <Text style={styles.statsValue}>0</Text>
+          </View>
+          <Text style={styles.menuIcon}>🎽</Text>
+        </View>
 
-      <Divider />
+        <View style={styles.divider} />
 
-      <GridMenu>
-        {menuItems.map((item, idx) => (
-          <GridItem
-            key={idx}
-            disabled={item.disabled}
-            onClick={() => {
-              if (!item.disabled) navigate(item.path);
-            }}
-          >
-            <IconLabelRow>
-              <IconImage src={item.icon} alt={item.label} />
-              <Label disabled={item.disabled}>{item.label}</Label>
-            </IconLabelRow>
-            <PickButton disabled={item.disabled}>
-              PICK <Arrow>→</Arrow>
-            </PickButton>
-          </GridItem>
-        ))}
-      </GridMenu>
-    </Container>
+        <View style={styles.gridMenu}>
+          {menuItems.map((item, idx) => (
+            <TouchableOpacity
+              key={idx}
+              style={[
+                styles.gridItem,
+                item.disabled && styles.gridItemDisabled,
+              ]}
+              onPress={() => handleMenuPress(item)}
+              disabled={item.disabled}
+            >
+              <View style={styles.iconLabelRow}>
+                <Text style={styles.iconText}>{item.icon}</Text>
+                <Text
+                  style={[styles.label, item.disabled && styles.labelDisabled]}
+                >
+                  {item.label}
+                </Text>
+              </View>
+              <View style={styles.pickButton}>
+                <Text style={styles.pickButtonText}>
+                  PICK <Text style={styles.arrow}>→</Text>
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    marginBottom: 6,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '800',
+    margin: 0,
+    color: '#000',
+  },
+  subtitle: {
+    fontSize: 12,
+    lineHeight: 28,
+    margin: 0,
+    color: '#cccccc',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  statsSection: {
+    flex: 1,
+  },
+  statsLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+  },
+  statsValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 12,
+  },
+  menuIcon: {
+    fontSize: 40,
+    marginLeft: 16,
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#ddd',
+    marginVertical: 20,
+  },
+  gridMenu: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  gridItem: {
+    width: '48%',
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    backgroundColor: '#fff',
+    marginBottom: 16,
+    borderRadius: 8,
+  },
+  gridItemDisabled: {
+    opacity: 0.5,
+  },
+  iconLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  iconText: {
+    fontSize: 24,
+    marginRight: 8,
+  },
+  label: {
+    fontWeight: '700',
+    fontSize: 14,
+    color: '#000',
+  },
+  labelDisabled: {
+    color: '#999',
+  },
+  pickButton: {
+    alignSelf: 'flex-end',
+  },
+  pickButtonText: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '600',
+  },
+  arrow: {
+    color: '#f6ac36',
+  },
+});
+
 export default LockerRoom;
-
-// --- Styled Components ---
-
-const Container = styled.div`
-  width: 100%;
-  padding: 1rem;
-  background: #fff;
-  box-sizing: border-box;
-`;
-
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 6px;
-`;
-
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: 800;
-  margin: 0;
-  color: #000;
-  @media (min-width: 1024px) {
-    font-size: 32px;
-    margin-bottom: 10px;
-  }
-`;
-
-const Subtitle = styled.p`
-  font-size: 12px;
-  line-height: 28px;
-  margin: 0;
-  color: #cccccc;
-  @media (min-width: 1024px) {
-    font-size: 16px;
-  }
-`;
-
-const StatsRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const MenuIcon = styled.img`
-  width: 64px;
-  height: 58px;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #ddd;
-  margin: 20px 0;
-`;
-
-const GridMenu = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  width: 100%;
-  margin: auto;
-
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-`;
-
-const GridItem = styled.div<{ disabled?: boolean }>`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 1rem;
-  box-sizing: border-box;
-  border: 1px solid #ddd;
-  background: #fff;
-  width: 100%;
-  height: 100%;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
-`;
-
-const IconLabelRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 10px;
-`;
-
-const IconImage = styled.img`
-  object-fit: contain;
-`;
-
-const Label = styled.div<{ disabled?: boolean }>`
-  font-weight: 700;
-  font-size: 14px;
-  color: ${({ disabled }) => (disabled ? '#999' : '#000')};
-  @media (min-width: 1024px) {
-    font-size: 18px;
-    margin-left: 1rem;
-  }
-`;
-
-const PickButton = styled.div<{ disabled?: boolean }>`
-  align-self: flex-end;
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  background: #fafafa;
-  font-size: 12px;
-  font-weight: 600;
-  color: ${({ disabled }) => (disabled ? '#aaa' : '#000')};
-  @media (min-width: 1024px) {
-    padding: 10px 16px;
-    font-size: 14px;
-  }
-`;
-
-const Arrow = styled.span`
-  margin-left: 4px;
-`;

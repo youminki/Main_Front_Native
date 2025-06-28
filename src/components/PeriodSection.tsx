@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
 type PeriodSectionProps = {
   selectedPeriod: number;
@@ -16,66 +16,90 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
       : '2025.03.01 ~ 2025.08.31';
 
   return (
-    <SettlementHeader>
-      <DateRange>{dateRangeText}</DateRange>
-      <PeriodSelector>
-        <PeriodButton
-          active={selectedPeriod === 3}
-          onClick={() => setSelectedPeriod(3)}
+    <View style={styles.settlementHeader}>
+      <Text style={styles.dateRange}>{dateRangeText}</Text>
+      <View style={styles.periodSelector}>
+        <TouchableOpacity
+          style={[
+            styles.periodButton,
+            selectedPeriod === 3 && styles.periodButtonActive,
+          ]}
+          onPress={() => setSelectedPeriod(3)}
         >
-          3개월
-        </PeriodButton>
-        <PeriodButton
-          active={selectedPeriod === 6}
-          onClick={() => setSelectedPeriod(6)}
+          <Text
+            style={[
+              styles.periodButtonText,
+              selectedPeriod === 3 && styles.periodButtonTextActive,
+            ]}
+          >
+            3개월
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.periodButton,
+            selectedPeriod === 6 && styles.periodButtonActive,
+          ]}
+          onPress={() => setSelectedPeriod(6)}
         >
-          6개월
-        </PeriodButton>
-      </PeriodSelector>
-    </SettlementHeader>
+          <Text
+            style={[
+              styles.periodButtonText,
+              selectedPeriod === 6 && styles.periodButtonTextActive,
+            ]}
+          >
+            6개월
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  settlementHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#f3f3f3',
+    borderWidth: 1,
+    borderColor: '#dddddd',
+    padding: 10,
+  },
+  dateRange: {
+    fontWeight: '700',
+    fontSize: 14,
+    color: '#000',
+    flexShrink: 0,
+  },
+  periodSelector: {
+    flexDirection: 'row',
+    flexShrink: 0,
+  },
+  periodButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    height: 36,
+    marginRight: 8,
+    borderRadius: 18,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  periodButtonActive: {
+    backgroundColor: '#000',
+    borderColor: '#000',
+  },
+  periodButtonText: {
+    fontWeight: '700',
+    fontSize: 12,
+    color: '#000',
+  },
+  periodButtonTextActive: {
+    color: '#fff',
+  },
+});
+
 export default PeriodSection;
-
-const SettlementHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f3f3f3;
-  border: 1px solid #dddddd;
-  padding: 10px;
-  white-space: nowrap;
-`;
-
-const DateRange = styled.p`
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 13px;
-  color: #000;
-  flex-shrink: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const PeriodSelector = styled.div`
-  display: flex;
-  flex-shrink: 0;
-`;
-
-const PeriodButton = styled.button<{ active: boolean }>`
-  padding: 8px 12px;
-
-  height: 36px;
-  margin-right: 8px;
-  border-radius: 18px;
-
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 11px;
-  color: ${({ active }) => (active ? '#fff' : '#000')};
-  background: ${({ active }) => (active ? '#000' : '#fff')};
-  border: 1px solid ${({ active }) => (active ? '#000' : '#ccc')};
-  cursor: pointer;
-  white-space: nowrap;
-`;

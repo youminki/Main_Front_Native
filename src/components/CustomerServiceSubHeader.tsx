@@ -1,6 +1,11 @@
 import React from 'react';
-import styled from 'styled-components';
-import SearchIcon from '../assets/CustomerService/SearchIcon.svg';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  TextInput,
+  StyleSheet,
+} from 'react-native';
 
 type PeriodSectionProps = {
   selectedPeriod: number;
@@ -12,87 +17,116 @@ const PeriodSection: React.FC<PeriodSectionProps> = ({
   setSelectedPeriod,
 }) => {
   return (
-    <SettlementHeader>
-      <PeriodSelector>
-        <PeriodButton
-          active={selectedPeriod === 3}
-          onClick={() => setSelectedPeriod(3)}
+    <View style={styles.settlementHeader}>
+      <View style={styles.periodSelector}>
+        <TouchableOpacity
+          style={[
+            styles.periodButton,
+            selectedPeriod === 3 && styles.periodButtonActive,
+          ]}
+          onPress={() => setSelectedPeriod(3)}
         >
-          공지
-        </PeriodButton>
-        <PeriodButton
-          active={selectedPeriod === 6}
-          onClick={() => setSelectedPeriod(6)}
+          <Text
+            style={[
+              styles.periodButtonText,
+              selectedPeriod === 3 && styles.periodButtonTextActive,
+            ]}
+          >
+            공지
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.periodButton,
+            selectedPeriod === 6 && styles.periodButtonActive,
+          ]}
+          onPress={() => setSelectedPeriod(6)}
         >
-          안내
-        </PeriodButton>
-      </PeriodSelector>
+          <Text
+            style={[
+              styles.periodButtonText,
+              selectedPeriod === 6 && styles.periodButtonTextActive,
+            ]}
+          >
+            안내
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-      <SearchBarContainer>
-        <SearchInput placeholder='검색' />
-        <SearchIconImg src={SearchIcon} alt='search' />
-      </SearchBarContainer>
-    </SettlementHeader>
+      <View style={styles.searchBarContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder='검색'
+          placeholderTextColor='#999'
+        />
+        <View style={styles.searchIconContainer}>
+          <Text style={styles.searchIcon}>🔍</Text>
+        </View>
+      </View>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  settlementHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#f3f3f3',
+    borderWidth: 1,
+    borderColor: '#dddddd',
+    padding: 10,
+  },
+  periodSelector: {
+    flexDirection: 'row',
+    marginRight: 10,
+  },
+  periodButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    height: 36,
+    marginRight: 8,
+    borderRadius: 18,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  periodButtonActive: {
+    backgroundColor: '#000',
+    borderColor: '#000',
+  },
+  periodButtonText: {
+    fontWeight: '700',
+    fontSize: 12,
+    color: '#000',
+  },
+  periodButtonTextActive: {
+    color: '#fff',
+  },
+  searchBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 40,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#dddddd',
+    flex: 1,
+  },
+  searchInput: {
+    flex: 1,
+    paddingHorizontal: 10,
+    fontSize: 14,
+  },
+  searchIconContainer: {
+    paddingRight: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchIcon: {
+    fontSize: 16,
+  },
+});
+
 export default PeriodSection;
-
-const SettlementHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  background: #f3f3f3;
-  border: 1px solid #dddddd;
-  padding: 10px;
-  white-space: nowrap;
-`;
-
-const PeriodSelector = styled.div`
-  display: flex;
-  flex-shrink: 0;
-  margin-right: 10px;
-`;
-
-const PeriodButton = styled.button<{ active: boolean }>`
-  padding: 8px 12px;
-
-  height: 36px;
-  margin-right: 8px;
-  border-radius: 18px;
-
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 11px;
-  color: ${({ active }) => (active ? '#fff' : '#000')};
-  background: ${({ active }) => (active ? '#000' : '#fff')};
-  border: 1px solid ${({ active }) => (active ? '#000' : '#ccc')};
-  cursor: pointer;
-  white-space: nowrap;
-`;
-
-const SearchBarContainer = styled.div`
-  display: flex;
-  align-items: center;
-
-  height: 40px;
-  box-sizing: border-box;
-  background: #ffffff;
-  border: 1px solid #dddddd;
-`;
-
-const SearchInput = styled.input`
-  flex: 1;
-  border: none;
-  background: transparent;
-  outline: none;
-  padding: 0 10px;
-`;
-
-const SearchIconImg = styled.img`
-  width: 16px;
-  height: 16px;
-  margin-right: 12px;
-  cursor: pointer;
-`;

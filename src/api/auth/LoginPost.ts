@@ -1,5 +1,5 @@
 import { Axios } from '../Axios.ts';
-import Cookies from 'js-cookie';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface LoginResponse {
   accessToken: string;
@@ -36,19 +36,9 @@ export const LoginPost = async (
 
     console.log('✅ 로그인 성공:', response.data);
 
-    const isHttps = window.location.protocol === 'https:';
-    Cookies.set('accessToken', response.data.accessToken, {
-      secure: isHttps,
-      httpOnly: false,
-      sameSite: 'strict',
-      path: '/',
-    });
-    Cookies.set('refreshToken', response.data.refreshToken, {
-      secure: isHttps,
-      httpOnly: false,
-      sameSite: 'strict',
-      path: '/',
-    });
+    // React Native에서는 AsyncStorage 사용
+    await AsyncStorage.setItem('accessToken', response.data.accessToken);
+    await AsyncStorage.setItem('refreshToken', response.data.refreshToken);
 
     Axios.defaults.headers.Authorization = `Bearer ${response.data.accessToken}`;
 

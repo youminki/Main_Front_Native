@@ -1,8 +1,8 @@
 // src/layouts/AppLayout.tsx
 import React, { useEffect } from 'react';
-import { useLocation, useNavigate, Outlet } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components';
-import Cookies from 'js-cookie';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import UnifiedHeader from '../components/UnifiedHeader';
 import BottomNav from '../components/BottomNav1';
@@ -10,24 +10,34 @@ import useHeaderConfig from '../hooks/useHeaderConfig';
 import useImageLoader from '../hooks/useImageLoader';
 
 const AppLayout: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const navigation = useNavigation();
+  const route = useRoute();
 
   useEffect(() => {
-    const token = Cookies.get('accessToken');
-    const publicPaths = [
-      '/signup',
-      '/findid',
-      '/findPassword',
-      '/landing',
-      '/',
-      '/login',
-      '/PersonalLink',
-    ];
-    if (!publicPaths.includes(location.pathname) && !token) {
-      navigate('/login', { replace: true });
-    }
-  }, [location.pathname, navigate]);
+    const checkAuth = async () => {
+      try {
+        const token = await AsyncStorage.getItem('accessToken');
+        const publicPaths = [
+          'Signup',
+          'FindId',
+          'FindPassword',
+          'Landing',
+          'Login',
+          'PersonalLink',
+        ];
+        if (!publicPaths.includes(route.name) && !token) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+          });
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+      }
+    };
+
+    checkAuth();
+  }, [route.name, navigation]);
 
   const {
     includeHeader1,
@@ -37,32 +47,32 @@ const AppLayout: React.FC = () => {
     includeBottomNav,
     headerTitle,
     disablePadding,
-  } = useHeaderConfig(location.pathname);
+  } = useHeaderConfig(route.name);
 
   const { loading, handleBackWithExit } = useImageLoader(
-    navigate,
-    location.pathname
+    navigation,
+    route.name
   );
 
   if (loading) {
     return (
-      <LoadingOverlay>
-        <LoadingSpinner />
-      </LoadingOverlay>
+      <View style={styles.loadingOverlay}>
+        <ActivityIndicator size='large' color='#f6ac36' />
+      </View>
     );
   }
 
   // BottomNav 표시 대상 경로
   const bottomNavPaths = [
-    '/home',
-    '/brand',
-    '/melpik',
-    '/lockerRoom',
-    '/customerService',
+    'Home',
+    'Brand',
+    'Melpik',
+    'LockerRoom',
+    'CustomerService',
   ];
 
   return (
-    <AppContainer>
+    <View style={styles.appContainer}>
       {includeHeader1 && <UnifiedHeader variant='default' />}
       {includeHeader2 && <UnifiedHeader variant='oneDepth' />}
       {includeHeader3 && (
@@ -80,62 +90,43 @@ const AppLayout: React.FC = () => {
         />
       )}
 
-      {/* transient prop으로 변경 */}
-      <ContentContainer $disablePadding={disablePadding}>
-        <Outlet />
-      </ContentContainer>
+      <View
+        style={[styles.contentContainer, disablePadding && styles.noPadding]}
+      >
+        {/* React Navigation의 자식 컴포넌트들이 여기에 렌더링됩니다 */}
+      </View>
 
-      {includeBottomNav && bottomNavPaths.includes(location.pathname) && (
-        <BottomNav />
-      )}
-    </AppContainer>
+      {includeBottomNav && bottomNavPaths.includes(route.name) && <BottomNav />}
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  appContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  contentContainer: {
+    flex: 1,
+    paddingTop: 70,
+    paddingBottom: 70,
+    backgroundColor: '#fff',
+  },
+  noPadding: {
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+});
+
 export default AppLayout;
-
-// --- Styled Components ---
-
-const spin = keyframes`
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
-
-const AppContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: #fff;
-`;
-
-const ContentContainer = styled.div<{
-  $disablePadding?: boolean;
-}>`
-  flex: 1;
-  padding: ${({ $disablePadding }) => ($disablePadding ? '0' : '70px 0')};
-  overflow: auto;
-  min-height: 100vh;
-  background: #fff;
-`;
-
-const LoadingOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-`;
-
-const LoadingSpinner = styled.div`
-  border: 8px solid rgba(246, 172, 54, 0.3);
-  border-top: 8px solid #f6ac36;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: ${spin} 1s linear infinite;
-`;

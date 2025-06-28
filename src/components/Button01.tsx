@@ -1,72 +1,96 @@
 // src/components/Button01.tsx
 import React from 'react';
-import styled from 'styled-components';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-interface Button01Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface Button01Props {
   children: React.ReactNode;
   /** 흰색 텍스트/배경 사용 */
   white?: boolean;
   /** 회색 텍스트/배경 사용 */
   gray?: boolean;
+  /** 비활성화 상태 */
+  disabled?: boolean;
+  /** 클릭 핸들러 */
+  onPress?: () => void;
+  /** 추가 스타일 */
+  style?: any;
 }
 
 const Button01: React.FC<Button01Props> = ({
   children,
   white,
   gray,
+  disabled,
+  onPress,
+  style,
   ...props
-}) => (
-  <StyledButton $white={white} $gray={gray} {...props}>
-    {children}
-  </StyledButton>
-);
+}) => {
+  const buttonStyle = [
+    styles.button,
+    white && styles.whiteButton,
+    gray && styles.grayButton,
+    disabled && styles.disabledButton,
+    style,
+  ];
+
+  const textStyle = [
+    styles.text,
+    white && styles.whiteText,
+    gray && styles.grayText,
+    disabled && styles.disabledText,
+  ];
+
+  return (
+    <TouchableOpacity
+      style={buttonStyle}
+      onPress={onPress}
+      disabled={disabled}
+      activeOpacity={0.8}
+      {...props}
+    >
+      <Text style={textStyle}>{children}</Text>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  button: {
+    width: '100%',
+    height: 56,
+    padding: 15,
+    marginTop: 20,
+    backgroundColor: '#f6ae24',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  whiteButton: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  grayButton: {
+    backgroundColor: '#cccccc',
+  },
+  disabledButton: {
+    backgroundColor: '#eeeeee',
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: '800',
+    lineHeight: 17.68,
+    textAlign: 'center',
+    color: '#ffffff',
+  },
+  whiteText: {
+    color: '#333333',
+  },
+  grayText: {
+    color: '#666666',
+  },
+  disabledText: {
+    color: '#aaaaaa',
+  },
+});
 
 export default Button01;
-
-const StyledButton = styled.button<{
-  $white?: boolean;
-  $gray?: boolean;
-}>`
-  width: 100%;
-  height: 56px;
-  padding: 15px;
-  margin-top: 20px;
-
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 17.68px;
-  text-align: center;
-  text-underline-position: from-font;
-  text-decoration-skip-ink: none;
-
-  /* 색상: white > gray > 기본 */
-  color: ${({ $white, $gray }) =>
-    $white ? '#ffffff' : $gray ? '#666666' : '#ffffff'};
-  background-color: ${({ $white, $gray }) =>
-    $white ? '#ffffff' : $gray ? '#cccccc' : '#f6ae24'};
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    transform 0.2s ease;
-
-  &:hover {
-    background-color: ${({ $white, $gray }) =>
-      $white ? '#f0f0f0' : $gray ? '#dddddd' : '#ffc947'};
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    background-color: ${({ $white, $gray }) =>
-      $white ? '#e0e0e0' : $gray ? '#bbbbbb' : '#d99a1e'};
-    transform: translateY(0);
-  }
-
-  &:disabled {
-    background-color: #eeeeee;
-    color: #aaaaaa;
-    cursor: not-allowed;
-    transform: none;
-  }
-`;

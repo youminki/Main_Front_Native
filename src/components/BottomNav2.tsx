@@ -1,13 +1,20 @@
 /* src/components/BottomNav2.tsx */
 import React from 'react';
-import styled from 'styled-components';
-import Theme from '../styles/Theme';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 type BottomBarProps = {
   buttonText?: string;
   imageSrc?: string;
-  cartOnClick?: () => void;
-  onClick?: () => void;
+  cartOnPress?: () => void;
+  onPress?: () => void;
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
 };
@@ -15,61 +22,73 @@ type BottomBarProps = {
 const BottomBar: React.FC<BottomBarProps> = ({
   buttonText = '작성완료',
   imageSrc,
-  cartOnClick,
-  onClick,
+  cartOnPress,
+  onPress,
   type = 'button',
   disabled = false,
 }) => (
-  <BottomBarContainer>
-    <CartButton onClick={cartOnClick}>
-      {imageSrc && <CartImage src={imageSrc} alt='icon' />}
-    </CartButton>
-    <OrderButton onClick={onClick} type={type} disabled={disabled}>
-      {buttonText}
-    </OrderButton>
-  </BottomBarContainer>
+  <View style={styles.bottomBarContainer}>
+    <TouchableOpacity style={styles.cartButton} onPress={cartOnPress}>
+      {imageSrc && <Text style={styles.cartImage}>🛒</Text>}
+    </TouchableOpacity>
+    <TouchableOpacity
+      style={[styles.orderButton, disabled && styles.orderButtonDisabled]}
+      onPress={onPress}
+      disabled={disabled}
+    >
+      <Text style={styles.orderButtonText}>{buttonText}</Text>
+    </TouchableOpacity>
+  </View>
 );
 
-export default BottomBar;
+const styles = StyleSheet.create({
+  bottomBarContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    maxWidth: 600,
+    alignSelf: 'center',
+    paddingVertical: 15,
+    paddingBottom: 34,
+  },
+  cartButton: {
+    width: 75,
+    height: 56,
+    backgroundColor: '#f5f5f5',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 21,
+  },
+  cartImage: {
+    fontSize: 24,
+  },
+  orderButton: {
+    flex: 1,
+    height: 56,
+    backgroundColor: '#000000',
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 11,
+  },
+  orderButtonDisabled: {
+    backgroundColor: '#cccccc',
+  },
+  orderButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+});
 
-const BottomBarContainer = styled.div`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background-color: ${Theme.colors.gray4};
-  width: 100%;
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 15px 0 34px 0;
-  text-align: center;
-`;
-const CartButton = styled.button`
-  width: 75px;
-  height: 56px;
-  background-color: ${Theme.colors.gray4};
-  border: 1px solid ${Theme.colors.gray};
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin: 0 21px;
-`;
-const CartImage = styled.img``;
-const OrderButton = styled.button`
-  width: 100%;
-  height: 56px;
-  background-color: ${Theme.colors.black};
-  border: none;
-  border-radius: 6px;
-  color: ${Theme.colors.white};
-  font-size: 16px;
-  font-weight: 800;
-  cursor: pointer;
-  margin-right: 11px;
-`;
+export default BottomBar;

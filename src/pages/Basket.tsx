@@ -1,15 +1,17 @@
 // src/pages/Basket.tsx
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import BasketIcon from '../assets/Basket/BasketIcon.svg';
-import PriceIcon from '../assets/Basket/PriceIcon.svg';
-import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
-import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
-import FixedBottomBar from '../components/FixedBottomBar';
-import Spinner from '../components/Spinner';
-import { useNavigate } from 'react-router-dom';
-import ReusableModal2 from '../components/ReusableModal2';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Alert,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { getCartItems, deleteCartItem } from '../api/cart/cart';
+import ReusableModal2 from '../components/ReusableModal2';
 
 interface BasketItemForPayment {
   id: number;
@@ -48,7 +50,7 @@ const getServiceLabel = (type: string) => {
 };
 
 const Basket: React.FC = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
   const [items, setItems] = useState<BasketItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -111,10 +113,9 @@ const Basket: React.FC = () => {
       imageUrl: item.productThumbnail,
       $isSelected: true,
     };
-    navigate(`/payment/${item.productId}`, { state: [payload] });
+    navigation.navigate('Payment', { itemData: [payload] } as never);
   };
 
-  // 수정된 부분: 선택된 모든 아이템을 payment로 보내도록 함
   const handleConfirmPayment = () => {
     const toPay = items.filter((item) => item.$isSelected);
     if (toPay.length === 0) return;
@@ -136,7 +137,7 @@ const Basket: React.FC = () => {
       $isSelected: true,
     }));
     const firstId = payloads[0].id;
-    navigate(`/payment/${firstId}`, { state: payloads });
+    navigation.navigate('Payment', { itemData: payloads } as never);
   };
 
   const handleDeleteClick = (id: number) => {
@@ -168,457 +169,337 @@ const Basket: React.FC = () => {
 
   if (loading) {
     return (
-      <Container>
-        <Spinner />
-      </Container>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>로딩 중...</Text>
+      </View>
     );
   }
 
+  const selectedItems = items.filter((item) => item.$isSelected);
+  const totalPrice = selectedItems.reduce(
+    (sum, item) => sum + item.totalPrice,
+    0
+  );
+
   return (
-    <Container>
+    <View style={styles.container}>
       {items.length === 0 ? (
-        <EmptyContainer>
-          <Icon src={BasketIcon} alt='장바구니 아이콘' />
-          <EmptyText>장바구니가 비어있습니다</EmptyText>
-        </EmptyContainer>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyIcon}>🛒</Text>
+          <Text style={styles.emptyText}>장바구니가 비어있습니다</Text>
+        </View>
       ) : (
         <>
-          <Header>
-            <Checkbox
-              type='checkbox'
-              checked={items.every((item) => item.$isSelected)}
-              onChange={handleSelectAll}
-            />
-            <span>전체선택</span>
-          </Header>
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.checkboxContainer}
+              onPress={handleSelectAll}
+            >
+              <View
+                style={[
+                  styles.checkbox,
+                  items.every((item) => item.$isSelected) &&
+                    styles.checkboxChecked,
+                ]}
+              >
+                {items.every((item) => item.$isSelected) && (
+                  <Text style={styles.checkmark}>✓</Text>
+                )}
+              </View>
+              <Text style={styles.selectAllText}>전체선택</Text>
+            </TouchableOpacity>
+          </View>
 
-          {items.map((item) => (
-            <Item key={item.id}>
-              <ContentWrapper>
-                <ItemDetails>
-                  <Brand>{item.productBrand}</Brand>
-                  <ItemName>
-                    <Code>{item.product_num}</Code>
-                    <Slash>/</Slash>
-                    <Name>{item.name}</Name>
-                  </ItemName>
-
-                  <InfoRowFlex>
-                    <IconArea>
-                      <Icon src={ServiceInfoIcon} alt='Service' />
-                    </IconArea>
-                    <TextContainer>
-                      <RowText>
-                        <LabelDetailText>진행 서비스 - </LabelDetailText>
-                        <DetailHighlight>
-                          {getServiceLabel(item.serviceType)}
-                        </DetailHighlight>
-                      </RowText>
-                      {item.rentalStartDate && item.rentalEndDate && (
-                        <AdditionalText>
-                          <DetailText>
-                            {item.rentalStartDate} ~ {item.rentalEndDate}
-                          </DetailText>
-                        </AdditionalText>
+          <ScrollView
+            style={styles.itemList}
+            showsVerticalScrollIndicator={false}
+          >
+            {items.map((item) => (
+              <View key={item.id} style={styles.item}>
+                <View style={styles.itemContent}>
+                  <TouchableOpacity
+                    style={styles.checkboxContainer}
+                    onPress={() => handleSelectItem(item.id)}
+                  >
+                    <View
+                      style={[
+                        styles.checkbox,
+                        item.$isSelected && styles.checkboxChecked,
+                      ]}
+                    >
+                      {item.$isSelected && (
+                        <Text style={styles.checkmark}>✓</Text>
                       )}
-                    </TextContainer>
-                  </InfoRowFlex>
+                    </View>
+                  </TouchableOpacity>
 
-                  <InfoRowFlex>
-                    <IconArea>
-                      <Icon src={ProductInfoIcon} alt='Product' />
-                    </IconArea>
-                    <TextContainer>
-                      <RowText>
-                        <LabelDetailText>제품정보</LabelDetailText>
-                      </RowText>
-                      <AdditionalText>
-                        <DetailText>
-                          사이즈 -{' '}
-                          <DetailHighlight>{item.size}</DetailHighlight> <br />
-                          색상 - <DetailHighlight>{item.color}</DetailHighlight>
-                        </DetailText>
-                      </AdditionalText>
-                    </TextContainer>
-                  </InfoRowFlex>
+                  <Image
+                    source={{ uri: item.productThumbnail }}
+                    style={styles.itemImage}
+                  />
 
-                  <InfoRowFlex>
-                    <IconArea>
-                      <Icon src={PriceIcon} alt='Price' />
-                    </IconArea>
-                    <TextContainer>
-                      <RowText>
-                        <LabelDetailText>결제금액 - </LabelDetailText>
-                        <DetailHighlight>
-                          {item.totalPrice.toLocaleString()}원
-                        </DetailHighlight>
-                      </RowText>
-                    </TextContainer>
-                  </InfoRowFlex>
-                </ItemDetails>
+                  <View style={styles.itemDetails}>
+                    <Text style={styles.brand}>{item.productBrand}</Text>
+                    <Text style={styles.itemName}>
+                      {item.product_num} / {item.name}
+                    </Text>
+                    <Text style={styles.serviceType}>
+                      {getServiceLabel(item.serviceType)}
+                    </Text>
+                    <Text style={styles.itemInfo}>
+                      사이즈: {item.size} | 색상: {item.color}
+                    </Text>
+                    {item.serviceType === 'rental' &&
+                      item.rentalStartDate &&
+                      item.rentalEndDate && (
+                        <Text style={styles.rentalPeriod}>
+                          대여기간: {item.rentalStartDate} ~{' '}
+                          {item.rentalEndDate}
+                        </Text>
+                      )}
+                    <Text style={styles.price}>
+                      {item.totalPrice.toLocaleString()}원
+                    </Text>
+                  </View>
+                </View>
 
-                <RightSection>
-                  <ItemImageContainer>
-                    <CheckboxOverlay>
-                      <Checkbox
-                        type='checkbox'
-                        checked={item.$isSelected}
-                        onChange={() => handleSelectItem(item.id)}
-                      />
-                    </CheckboxOverlay>
-                    <ItemImage src={item.productThumbnail} alt={item.name} />
-                  </ItemImageContainer>
-                </RightSection>
-              </ContentWrapper>
+                <View style={styles.itemActions}>
+                  <TouchableOpacity
+                    style={styles.actionButton}
+                    onPress={() => handleBuyClick(item.id)}
+                  >
+                    <Text style={styles.actionButtonText}>구매</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.actionButton, styles.deleteButton]}
+                    onPress={() => handleDeleteClick(item.id)}
+                  >
+                    <Text
+                      style={[styles.actionButtonText, styles.deleteButtonText]}
+                    >
+                      삭제
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
 
-              <ButtonContainer>
-                <DeleteButton onClick={() => handleDeleteClick(item.id)}>
-                  삭제
-                </DeleteButton>
-                <PurchaseButton onClick={() => handleBuyClick(item.id)}>
-                  바로구매
-                </PurchaseButton>
-              </ButtonContainer>
-            </Item>
-          ))}
-
-          <FixedBottomBar
-            onClick={handleConfirmPayment}
-            text='결제하기'
-            color='yellow'
-          />
-
-          <ReusableModal2
-            isOpen={isDeleteModalOpen}
-            onClose={() => setIsDeleteModalOpen(false)}
-            onConfirm={handleConfirmDelete}
-            title='알림'
-          >
-            해당 제품을 삭제하시겠습니까?
-          </ReusableModal2>
-
-          <ReusableModal2
-            isOpen={isBuyModalOpen}
-            onClose={() => setIsBuyModalOpen(false)}
-            onConfirm={handleConfirmBuy}
-            title='알림'
-          >
-            해당 제품을 바로 구매하시겠습니까?
-          </ReusableModal2>
+          <View style={styles.bottomBar}>
+            <View style={styles.totalInfo}>
+              <Text style={styles.totalText}>
+                선택된 상품 {selectedItems.length}개
+              </Text>
+              <Text style={styles.totalPrice}>
+                총 {totalPrice.toLocaleString()}원
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={[
+                styles.paymentButton,
+                selectedItems.length === 0 && styles.paymentButtonDisabled,
+              ]}
+              onPress={handleConfirmPayment}
+              disabled={selectedItems.length === 0}
+            >
+              <Text style={styles.paymentButtonText}>결제하기</Text>
+            </TouchableOpacity>
+          </View>
         </>
       )}
-    </Container>
+
+      <ReusableModal2
+        visible={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title='상품 삭제'
+        message='선택한 상품을 장바구니에서 삭제하시겠습니까?'
+      />
+
+      <ReusableModal2
+        visible={isBuyModalOpen}
+        onClose={() => setIsBuyModalOpen(false)}
+        onConfirm={handleConfirmBuy}
+        title='상품 구매'
+        message='선택한 상품을 구매하시겠습니까?'
+      />
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyIcon: {
+    fontSize: 60,
+    marginBottom: 20,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: '#666',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: '#f6ac36',
+    borderColor: '#f6ac36',
+  },
+  checkmark: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  selectAllText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  itemList: {
+    flex: 1,
+  },
+  item: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    padding: 16,
+  },
+  itemContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  itemImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  itemDetails: {
+    flex: 1,
+  },
+  brand: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+  },
+  itemName: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 4,
+  },
+  serviceType: {
+    fontSize: 12,
+    color: '#f6ac36',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  itemInfo: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 2,
+  },
+  rentalPeriod: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  itemActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 12,
+    gap: 8,
+  },
+  actionButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 6,
+    backgroundColor: '#f6ac36',
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  deleteButton: {
+    backgroundColor: '#ff6b6b',
+  },
+  deleteButtonText: {
+    color: '#fff',
+  },
+  bottomBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    backgroundColor: '#fff',
+  },
+  totalInfo: {
+    flex: 1,
+  },
+  totalText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  totalPrice: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+  },
+  paymentButton: {
+    backgroundColor: '#f6ac36',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  paymentButtonDisabled: {
+    backgroundColor: '#ccc',
+  },
+  paymentButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
+
 export default Basket;
-
-// --- styled-components 정의 (생략 없이 동일하게 유지) ---
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  padding: 1rem;
-  max-width: 600px;
-`;
-
-const EmptyContainer = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: #888;
-  pointer-events: none;
-`;
-
-const EmptyText = styled.p`
-  margin-top: 16px;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 15px;
-  text-align: center;
-
-  color: #aaaaaa;
-`;
-
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 15px;
-`;
-
-const Checkbox = styled.input`
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: #ffffff;
-  border: 1px solid #cccccc;
-
-  cursor: pointer;
-  position: relative;
-
-  &:checked {
-    background-color: #ffffff;
-    border-color: #999999;
-  }
-
-  &:checked::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 10px;
-    height: 5px;
-    border-left: 3px solid orange;
-    border-bottom: 3px solid orange;
-    transform: rotate(-45deg);
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const Item = styled.div`
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  padding: 30px 0;
-  margin-bottom: 15px;
-  background-color: #fff;
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-`;
-
-const ItemDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-`;
-
-const Brand = styled.div`
-  font-weight: 900;
-  font-size: 12px;
-  line-height: 11px;
-  color: #000000;
-
-  @media (max-width: 480px) {
-    margin: 0;
-    font-size: 11px;
-  }
-`;
-
-const ItemName = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 6px;
-  margin-bottom: 28px;
-
-  @media (max-width: 480px) {
-    /* 모바일에선 세로 정렬 */
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 16px;
-  }
-`;
-
-const LabelDetailText = styled.span`
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 22px;
-  color: #000000;
-  white-space: nowrap;
-  @media (max-width: 480px) {
-    font-size: 13px;
-  }
-`;
-
-const DetailText = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  color: #000000;
-  white-space: nowrap;
-  @media (max-width: 480px) {
-    font-size: 13px;
-  }
-`;
-
-const DetailHighlight = styled.span`
-  font-weight: 900;
-  font-size: 14px;
-  line-height: 22px;
-  color: #000000;
-  white-space: nowrap;
-
-  @media (max-width: 480px) {
-    font-size: 13px;
-  }
-`;
-
-const InfoRowFlex = styled.div`
-  display: flex;
-  align-items: stretch;
-  gap: 5px;
-  width: 100%;
-`;
-
-const IconArea = styled.div`
-  flex: 0 0 auto;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-`;
-
-const TextContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 20px;
-  @media (max-width: 480px) {
-    margin-bottom: 10px;
-  }
-`;
-
-const RowText = styled.div`
-  display: flex;
-  gap: 5px;
-  white-space: nowrap;
-`;
-
-const AdditionalText = styled.div`
-  display: flex;
-  gap: 5px;
-  white-space: nowrap;
-`;
-
-const RightSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding-left: 10px;
-`;
-
-const ItemImageContainer = styled.div`
-  position: relative;
-  width: 100%;
-  height: 210px;
-
-  @media (min-width: 600px) {
-    width: 200px;
-    height: auto;
-  }
-`;
-
-const CheckboxOverlay = styled.div`
-  position: absolute;
-`;
-
-const ItemImage = styled.img`
-  width: 100%;
-  height: 100%;
-  border: 1px solid #ddd;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-  align-self: flex-end;
-
-  @media (max-width: 600px) {
-    margin-top: 10px;
-  }
-`;
-
-const DeleteButton = styled.button`
-  background-color: #fff;
-  color: #888;
-  width: 91px;
-  height: 46px;
-  white-space: nowrap;
-  border-radius: 6px;
-  cursor: pointer;
-  border: 1px solid #ddd;
-
-  font-weight: 800;
-  font-size: 14px;
-  line-height: 15px;
-  text-align: center;
-
-  color: #999999;
-
-  @media (max-width: 600px) {
-    width: 60px;
-    height: 40px;
-  }
-`;
-
-const PurchaseButton = styled.button`
-  background-color: black;
-  color: white;
-  border: none;
-  width: 91px;
-  height: 46px;
-  white-space: nowrap;
-  border-radius: 6px;
-  cursor: pointer;
-  border: 1px solid #ddd;
-
-  font-weight: 800;
-  font-size: 14px;
-  line-height: 15px;
-  text-align: center;
-
-  @media (max-width: 600px) {
-    width: 60px;
-    height: 40px;
-  }
-`;
-
-const Icon = styled.img`
-  width: auto;
-  height: auto;
-`;
-
-const Code = styled.span`
-  font-weight: 700;
-  font-size: 13px;
-  color: #999;
-  margin-right: 4px;
-  @media (max-width: 480px) {
-    margin: 0;
-    font-size: 13px;
-  }
-`;
-const Slash = styled.span`
-  font-weight: 700;
-  font-size: 15px;
-  color: #000;
-  margin: 0 4px;
-  @media (max-width: 480px) {
-    display: none;
-  }
-`;
-const Name = styled.span`
-  font-weight: 700;
-  font-size: 15px;
-  color: #000;
-  @media (max-width: 480px) {
-    margin-top: 4px;
-    font-size: 14px;
-  }
-`;

@@ -1,67 +1,15 @@
 // src/components/AddressSearchModal.tsx
 
-import React, { useEffect, useRef } from 'react';
-import styled from 'styled-components';
-
-declare global {
-  interface Window {
-    daum: any;
-  }
-}
-
-// Daum 우편번호 스크립트 로드
-const loadDaumPostcode = (): Promise<void> =>
-  new Promise((resolve, reject) => {
-    if (window.daum && window.daum.Postcode) {
-      resolve();
-      return;
-    }
-    const script = document.createElement('script');
-    script.src =
-      '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('다음 우편번호 로드 실패'));
-    document.head.appendChild(script);
-  });
-
-type ModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  title?: string;
-  children: React.ReactNode;
-  width?: string;
-  height?: string;
-  actions?: React.ReactNode;
-};
-
-const ReusableModal: React.FC<ModalProps> = ({
-  isOpen,
-  onClose,
-  title,
-  children,
-  width = '100%',
-  height = '360px',
-  actions,
-}) => {
-  if (!isOpen) return null;
-
-  return (
-    <StyledModal>
-      <ModalContent width={width} height={height}>
-        {title && (
-          <ModalHeader>
-            <ModalTitle>{title}</ModalTitle>
-          </ModalHeader>
-        )}
-        <ModalBody>{children}</ModalBody>
-        {actions && <ModalActions>{actions}</ModalActions>}
-        <CloseButtonWrapper>
-          <CloseButton onClick={onClose}>닫기</CloseButton>
-        </CloseButtonWrapper>
-      </ModalContent>
-    </StyledModal>
-  );
-};
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Modal,
+} from 'react-native';
 
 interface AddressSearchModalProps {
   isOpen: boolean;
@@ -74,121 +22,141 @@ const AddressSearchModal: React.FC<AddressSearchModalProps> = ({
   onClose,
   onSelect,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    loadDaumPostcode()
-      .then(() => {
-        if (!containerRef.current) return;
-        containerRef.current.innerHTML = '';
-        new window.daum.Postcode({
-          width: '100%',
-          height: '100%',
-          oncomplete: (data: any) => {
-            const addr = data.roadAddress || data.jibunAddress;
-            onSelect(addr, parseFloat(data.y), parseFloat(data.x));
-            onClose();
-          },
-        }).embed(containerRef.current);
-      })
-      .catch(console.error);
-    return () => {
-      if (containerRef.current) containerRef.current.innerHTML = '';
-    };
-  }, [isOpen, onClose, onSelect]);
+  const handleSearch = () => {
+    // 실제 구현에서는 주소 검색 API를 호출
+    // 여기서는 예시 데이터를 사용
+    const mockResults = [
+      '서울특별시 강남구 테헤란로 123',
+      '서울특별시 강남구 역삼동 456',
+      '서울특별시 서초구 서초대로 789',
+    ];
+    setSearchResults(mockResults);
+  };
+
+  const handleSelectAddress = (address: string) => {
+    onSelect(address);
+    onClose();
+  };
 
   return (
-    <ReusableModal
-      isOpen={isOpen}
-      onClose={onClose}
-      title='주소 검색'
-      width='600px'
-      height='600px'
+    <Modal
+      visible={isOpen}
+      transparent={true}
+      animationType='slide'
+      onRequestClose={onClose}
     >
-      <MapContainer ref={containerRef} />
-    </ReusableModal>
+      <View style={styles.overlay}>
+        <View style={styles.modalContainer}>
+          <View style={styles.header}>
+            <Text style={styles.title}>주소 검색</Text>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>×</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.searchContainer}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder='주소를 입력하세요'
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            <TouchableOpacity
+              style={styles.searchButton}
+              onPress={handleSearch}
+            >
+              <Text style={styles.searchButtonText}>검색</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.resultsContainer}>
+            {searchResults.map((address, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.resultItem}
+                onPress={() => handleSelectAddress(address)}
+              >
+                <Text style={styles.resultText}>{address}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
   );
 };
 
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: '90%',
+    height: '80%',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  closeButton: {
+    padding: 8,
+  },
+  closeButtonText: {
+    fontSize: 24,
+    color: '#666',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  searchInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginRight: 10,
+  },
+  searchButton: {
+    backgroundColor: '#000',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    justifyContent: 'center',
+  },
+  searchButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  resultsContainer: {
+    flex: 1,
+  },
+  resultItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  resultText: {
+    fontSize: 14,
+    color: '#333',
+  },
+});
+
 export default AddressSearchModal;
-
-// — styled-components 모두 생략 없이 아래 그대로 유지 —
-
-const StyledModal = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 27px;
-  z-index: 9999;
-  width: 100vw;
-  height: 100vh;
-`;
-
-const ModalContent = styled.div<{ width: string; height: string }>`
-  background-color: #ffffff;
-  padding: 1rem;
-  width: ${({ width }) => width};
-  height: ${({ height }) => height};
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  max-width: 600px;
-  margin: 0 auto;
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ModalTitle = styled.h2`
-  font-size: 16px;
-  font-weight: bold;
-`;
-
-const ModalBody = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-  border-top: 2px solid #e0e0e0;
-  border-bottom: 2px solid #e0e0e0;
-`;
-
-const CloseButtonWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-`;
-
-const CloseButton = styled.button`
-  width: 100%;
-  height: 50px;
-  background-color: #000000;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-`;
-
-const ModalActions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-`;
-
-const MapContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  margin: auto;
-`;

@@ -1,6 +1,13 @@
 // src/components/DeliveryListModal.tsx
-import React, { useEffect } from 'react';
-import styled from 'styled-components';
+import React from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Modal,
+} from 'react-native';
 import { Address } from '../api/address/address';
 
 interface Props {
@@ -20,188 +27,201 @@ const DeliveryListModal: React.FC<Props> = ({
   onClose,
   onConfirm,
 }) => {
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
-
-  if (!isOpen) return null;
-
   return (
-    <Overlay onClick={onClose}>
-      <ModalWrapper onClick={(e) => e.stopPropagation()}>
-        <Header>
-          <Title>배송목록 선택</Title>
-          <CloseBtn onClick={onClose}>×</CloseBtn>
-        </Header>
+    <Modal
+      visible={isOpen}
+      transparent={true}
+      animationType='fade'
+      onRequestClose={onClose}
+    >
+      <View style={styles.overlay}>
+        <View style={styles.modalWrapper}>
+          <View style={styles.header}>
+            <Text style={styles.title}>배송목록 선택</Text>
+            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+              <Text style={styles.closeBtnText}>×</Text>
+            </TouchableOpacity>
+          </View>
 
-        <Content>
-          {addresses.length === 0 ? (
-            <EmptyText>저장된 배송지가 없습니다.</EmptyText>
-          ) : (
-            addresses.map((addr, idx) => {
-              const isSelected = selectedId === addr.id;
-              return (
-                <Block key={addr.id}>
-                  <TitleSmall>
-                    {addr.isDefault ? '배송지 (기본)' : `배송지 ${idx + 1}`}
-                  </TitleSmall>
-                  <ReadOnlyInput value={addr.address} readOnly />
-                  <ReadOnlyInput value={addr.addressDetail} readOnly />
-                  <ReadOnlyInput
-                    value={(addr as any).deliveryMessage || ''}
-                    readOnly
-                  />
-                  <RadioWrapper>
-                    <RadioLabel>
-                      <input
-                        type='radio'
-                        checked={isSelected}
-                        onChange={() => onSelect(addr)}
-                      />{' '}
-                      선택
-                    </RadioLabel>
-                  </RadioWrapper>
-                  {idx < addresses.length - 1 && <Separator />}
-                </Block>
-              );
-            })
-          )}
-        </Content>
+          <ScrollView style={styles.content}>
+            {addresses.length === 0 ? (
+              <Text style={styles.emptyText}>저장된 배송지가 없습니다.</Text>
+            ) : (
+              addresses.map((addr, idx) => {
+                const isSelected = selectedId === addr.id;
+                return (
+                  <View key={addr.id} style={styles.block}>
+                    <Text style={styles.titleSmall}>
+                      {addr.isDefault ? '배송지 (기본)' : `배송지 ${idx + 1}`}
+                    </Text>
+                    <View style={styles.readOnlyInput}>
+                      <Text style={styles.readOnlyText}>{addr.address}</Text>
+                    </View>
+                    <View style={styles.readOnlyInput}>
+                      <Text style={styles.readOnlyText}>
+                        {addr.addressDetail}
+                      </Text>
+                    </View>
+                    <View style={styles.readOnlyInput}>
+                      <Text style={styles.readOnlyText}>
+                        {(addr as any).deliveryMessage || ''}
+                      </Text>
+                    </View>
+                    <View style={styles.radioWrapper}>
+                      <TouchableOpacity
+                        style={styles.radioLabel}
+                        onPress={() => onSelect(addr)}
+                      >
+                        <View
+                          style={[
+                            styles.radio,
+                            isSelected && styles.radioSelected,
+                          ]}
+                        >
+                          {isSelected && <View style={styles.radioInner} />}
+                        </View>
+                        <Text style={styles.radioText}>선택</Text>
+                      </TouchableOpacity>
+                    </View>
+                    {idx < addresses.length - 1 && (
+                      <View style={styles.separator} />
+                    )}
+                  </View>
+                );
+              })
+            )}
+          </ScrollView>
 
-        <Footer>
-          <ConfirmButton onClick={onConfirm}>선택 완료</ConfirmButton>
-        </Footer>
-      </ModalWrapper>
-    </Overlay>
+          <View style={styles.footer}>
+            <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
+              <Text style={styles.confirmButtonText}>선택 완료</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 };
 
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalWrapper: {
+    width: '80%',
+    maxHeight: '80%',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    flexDirection: 'column',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  closeBtn: {
+    padding: 4,
+  },
+  closeBtnText: {
+    fontSize: 24,
+    color: '#666',
+  },
+  content: {
+    flex: 1,
+    padding: 12,
+  },
+  footer: {
+    padding: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    alignItems: 'center',
+  },
+  confirmButton: {
+    width: '100%',
+    height: 48,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+  },
+  confirmButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#666',
+    marginTop: 20,
+  },
+  block: {
+    marginBottom: 16,
+  },
+  titleSmall: {
+    fontWeight: '700',
+    fontSize: 12,
+    color: '#000',
+    marginBottom: 8,
+  },
+  readOnlyInput: {
+    width: '100%',
+    height: 48,
+    paddingHorizontal: 12,
+    backgroundColor: '#f9f9f9',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  readOnlyText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  radioWrapper: {
+    alignItems: 'flex-end',
+  },
+  radioLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  radio: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#ddd',
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  radioSelected: {
+    borderColor: '#000',
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#000',
+  },
+  radioText: {
+    fontSize: 14,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#eee',
+    marginVertical: 16,
+  },
+});
+
 export default DeliveryListModal;
-
-/* Styled Components */
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9990;
-`;
-
-const ModalWrapper = styled.div`
-  width: 80%;
-  max-width: 600px;
-  max-height: 80%;
-  background: #fff;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid #eee;
-`;
-
-const Title = styled.h2`
-  font-size: 16px;
-  margin: 0;
-`;
-
-const CloseBtn = styled.button`
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-`;
-
-const Content = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  padding: 12px 16px;
-`;
-
-const Footer = styled.div`
-  position: sticky;
-  bottom: 0;
-
-  background: #fff;
-  padding: 12px 20px;
-
-  border-top: 1px solid #eee;
-  display: flex;
-  justify-content: center;
-`;
-
-const ConfirmButton = styled.button`
-  width: 100%;
-  height: 48px;
-  background: #000;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-`;
-
-const EmptyText = styled.p`
-  text-align: center;
-  color: #666;
-`;
-
-const Block = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
-`;
-
-const TitleSmall = styled.div`
-  font-weight: 700;
-  font-size: 12px;
-  color: #000;
-`;
-
-const ReadOnlyInput = styled.input`
-  width: 100%;
-  height: 48px;
-  padding: 0 12px;
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  color: #333;
-  box-sizing: border-box;
-`;
-
-const RadioWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`;
-
-const RadioLabel = styled.label`
-  font-size: 14px;
-  cursor: pointer;
-  input {
-    margin-right: 4px;
-  }
-`;
-
-const Separator = styled.div`
-  height: 1px;
-  background: #eee;
-  margin: 16px 0;
-`;

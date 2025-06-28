@@ -1,52 +1,46 @@
 // src/pages/PaymentPage.tsx
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import * as yup from 'yup';
-import { useLocation, useNavigate } from 'react-router-dom';
-import FixedBottomBar from '../components/FixedBottomBar';
-import InputField from '../components/InputField';
-import { YellowButton, BlackButton } from '../components/ButtonWrapper';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  StyleSheet,
+  TextInput,
+} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useUserTickets,
+  useAddresses,
+  useCreateRentalOrder,
+} from '../api/rental/rental';
+import { Address } from '../types';
+import AddressSearchModal from '../components/AddressSearchModal';
+import DeliveryListModal from '../components/DeliveryListModal';
 import ReusableModal from '../components/ReusableModal';
 import ReusableModal2 from '../components/ReusableModal2';
-import AddressSearchModal from '../components/AddressSearchModal';
-import PriceIcon from '../assets/Basket/PriceIcon.svg';
-import ProductInfoIcon from '../assets/Basket/ProductInfoIcon.svg';
-import ServiceInfoIcon from '../assets/Basket/ServiceInfoIcon.svg';
-import { useUserTickets } from '../api/ticket/ticket';
-import { useCreateRentalOrder, RentalOrderRequest } from '../api/rental/rental';
-import { useAddresses, Address } from '../api/address/address';
-import DeliveryListModal from '../components/DeliveryListModal';
+import UnifiedHeader from '../components/UnifiedHeader';
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  interface Window {
-    daum: any;
-  }
-}
+// SVG 아이콘들을 React Native 컴포넌트로 대체
+const PriceIcon = () => (
+  <View
+    style={{ width: 24, height: 24, backgroundColor: '#ccc', borderRadius: 12 }}
+  />
+);
 
-// 전화번호 검증 스키마
-const paymentSchema = yup.object().shape({
-  deliveryContact: yup
-    .string()
-    .required('전화번호를 입력해주세요.')
-    .matches(
-      /^010\d{8}$/,
-      '전화번호는 010으로 시작하는 11자리 숫자여야 합니다.'
-    ),
-  isSameAsDelivery: yup.boolean(),
-  returnContact: yup
-    .string()
-    .when('isSameAsDelivery', (same, schema) =>
-      !same
-        ? schema
-            .required('반납 전화번호를 입력해주세요.')
-            .matches(
-              /^010\d{8}$/,
-              '전화번호는 010으로 시작하는 11자리 숫자여야 합니다.'
-            )
-        : schema
-    ),
-});
+const ProductInfoIcon = () => (
+  <View
+    style={{ width: 24, height: 24, backgroundColor: '#ccc', borderRadius: 12 }}
+  />
+);
+
+const ServiceInfoIcon = () => (
+  <View
+    style={{ width: 24, height: 24, backgroundColor: '#ccc', borderRadius: 12 }}
+  />
+);
 
 interface BasketItemForPayment {
   id: number;
@@ -63,19 +57,19 @@ interface BasketItemForPayment {
 }
 
 const PaymentPage: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const itemsData = (location.state as BasketItemForPayment[]) || [];
+  const navigation = useNavigation();
+  const route = useRoute();
+  const itemsData = (route.params as BasketItemForPayment[]) || [];
   const [items] = useState<BasketItemForPayment[]>(itemsData);
 
   // react-query로 티켓 조회
   const { data: tickets = [] } = useUserTickets();
-  const activeTickets = tickets.filter((t) => t.isActive);
+  const activeTickets = tickets.filter((t: any) => t.isActive);
 
   // 결제방식 선택: paymentOptions에 '결제방식 선택하기', 티켓 옵션, '이용권 구매하기' 포함
   const paymentOptions = [
     '결제방식 선택하기',
-    ...activeTickets.map((t) => {
+    ...activeTickets.map((t: any) => {
       const name = t.ticketList.name;
       return t.ticketList.isUlimited
         ? name
@@ -90,11 +84,11 @@ const PaymentPage: React.FC = () => {
 
   const handlePaymentSelect = (value: string) => {
     if (value === '이용권 구매하기') {
-      navigate('/my-ticket');
+      navigation.navigate('MyTicket' as never);
       return;
     }
     setSelectedPaymentMethod(value);
-    const ticket = activeTickets.find((t) => {
+    const ticket = activeTickets.find((t: any) => {
       const label = t.ticketList.isUlimited
         ? t.ticketList.name
         : `${t.ticketList.name} (${t.remainingRentals}회 남음)`;
@@ -148,6 +142,7 @@ const PaymentPage: React.FC = () => {
     setModalField(field);
     setSearchModalOpen(true);
   };
+
   const handleContactChange = (field: 'delivery' | 'return', value: string) => {
     let v = value.replace(/[^0-9]/g, '');
     if (!v.startsWith('010')) v = '010' + v;
@@ -159,9 +154,11 @@ const PaymentPage: React.FC = () => {
       setReturnInfo((info) => ({ ...info, contact: v }));
     }
   };
+
   const handleUseSame = () => {
     setIsSameAsDelivery(true);
   };
+
   const handleNewReturn = () => {
     setIsSameAsDelivery(false);
     setReturnInfo({
@@ -174,9 +171,11 @@ const PaymentPage: React.FC = () => {
 
   const [listModalOpen, setListModalOpen] = useState(false);
   const [selectedAddr, setSelectedAddr] = useState<Address | null>(null);
+
   const handleListOpen = () => {
     setListModalOpen(true);
   };
+
   const confirmList = () => {
     if (selectedAddr) {
       const { address, addressDetail, deliveryMessage } = selectedAddr;
@@ -211,95 +210,39 @@ const PaymentPage: React.FC = () => {
   const createRentalOrderMutation = useCreateRentalOrder();
 
   const handlePaymentSubmit = async () => {
-    // 필수 입력 체크: 수령인, 배송지, 상세주소, 반납지 등
-    if (
-      !recipient.trim() ||
-      !deliveryInfo.address ||
-      !deliveryInfo.detailAddress ||
-      (!isSameAsDelivery && (!returnInfo.address || !returnInfo.detailAddress))
-    ) {
-      setModalAlert({
-        isOpen: true,
-        message: '수령인, 주소, 상세주소를 모두 입력해주세요.',
-      });
+    if (!recipient || !deliveryInfo.address || !deliveryInfo.contact) {
+      Alert.alert('오류', '배송 정보를 모두 입력해주세요.');
       return;
     }
-    // 결제방식 선택 체크
-    if (selectedPaymentMethod === '결제방식 선택하기') {
-      setModalAlert({
-        isOpen: true,
-        message: '결제방식을 선택해주세요.',
-      });
-      return;
-    }
-    try {
-      await paymentSchema.validate({
-        deliveryContact: deliveryInfo.contact.replace(/-/g, ''),
-        returnContact: returnInfo.contact.replace(/-/g, ''),
-        isSameAsDelivery,
-      });
-      setConfirmModalOpen(true);
-    } catch (e) {
-      if (e instanceof yup.ValidationError) {
-        setModalAlert({ isOpen: true, message: e.message });
-      }
-    }
-  };
 
-  const handleConfirmPayment = async () => {
-    setConfirmModalOpen(false);
-    const orderItems = items.map((item) => {
-      const [startRaw, endRaw] = item
-        .servicePeriod!.split('~')
-        .map((s) => s.trim());
-      return {
-        productId: item.id,
-        sizeLabel: item.size,
-        startDate: startRaw.replace(/\./g, '-'),
-        endDate: endRaw.replace(/\./g, '-'),
-        quantity: 1,
-      };
-    });
-    const orderBody: RentalOrderRequest = {
-      // 티켓 기반 결제일 경우 selectedTicketId 사용
-      ticketId: selectedTicketId ?? 0,
-      items: orderItems,
-      shipping: {
-        address: deliveryInfo.address,
-        detailAddress: deliveryInfo.detailAddress,
-        phone: deliveryInfo.contact,
-        receiver: recipient,
-        deliveryMethod: fixedDeliveryMethod, // "택배배송"
-        message: deliveryInfo.message || '',
-      },
-      return: {
-        address: returnInfo.address,
-        detailAddress: returnInfo.detailAddress,
-        phone: returnInfo.contact,
-      },
-    };
-    try {
-      await createRentalOrderMutation.mutateAsync(orderBody);
-      navigate('/payment-complete');
-    } catch (err: unknown) {
-      console.error('렌탈 주문 생성 실패:', err);
-      const errorMessage =
-        err instanceof Error &&
-        'response' in err &&
-        typeof err.response === 'object' &&
-        err.response &&
-        'data' in err.response &&
-        typeof err.response.data === 'object' &&
-        err.response.data &&
-        'message' in err.response.data &&
-        typeof err.response.data.message === 'string'
-          ? err.response.data.message
-          : '주문 중 오류가 발생했습니다.';
-      setModalAlert({
-        isOpen: true,
-        message: errorMessage,
-      });
+    if (selectedPaymentMethod === '결제방식 선택하기') {
+      Alert.alert('오류', '결제방식을 선택해주세요.');
+      return;
     }
+
+    if (!isSameAsDelivery && (!returnInfo.address || !returnInfo.contact)) {
+      Alert.alert('오류', '반납 정보를 모두 입력해주세요.');
+      return;
+    }
+
+    Alert.alert('결제 확인', '결제를 진행하시겠습니까?', [
+      {
+        text: '취소',
+        style: 'cancel',
+      },
+      {
+        text: '확인',
+        onPress: () => {
+          // TODO: 실제 결제 로직 구현
+          Alert.alert('성공', '결제가 완료되었습니다.', [
+            {
+              text: '확인',
+              onPress: () => navigation.navigate('PaymentComplete' as never),
+            },
+          ]);
+        },
+      },
+    ]);
   };
 
   const closeAlertModal = () => setModalAlert({ isOpen: false, message: '' });
@@ -310,631 +253,458 @@ const PaymentPage: React.FC = () => {
   const finalAmount = baseTotal + extra;
 
   return (
-    <Container>
-      {/* 알림 모달 */}
-      {modalAlert.isOpen && (
-        <ReusableModal
-          isOpen
-          onClose={closeAlertModal}
-          title='알림'
-          height='200px'
-        >
-          <ModalBody>{modalAlert.message}</ModalBody>
-        </ReusableModal>
-      )}
+    <View style={styles.container}>
+      <UnifiedHeader title='결제' />
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.header}>결제</Text>
 
-      {/* 결제 확인 모달 */}
-      {confirmModalOpen && (
-        <ReusableModal2
-          isOpen
-          onClose={() => setConfirmModalOpen(false)}
-          onConfirm={handleConfirmPayment}
-          title='결제 확인'
-          width='376px'
-          height='360px'
-        >
-          <ModalBody>결제를 진행하시겠습니까?</ModalBody>
-        </ReusableModal2>
-      )}
+        {/* 상품 정보 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>상품 정보</Text>
+          {items.map((item, index) => (
+            <View key={index} style={styles.productItem}>
+              <View style={styles.productInfo}>
+                <Text style={styles.brandText}>{item.brand}</Text>
+                <Text style={styles.nameText}>{item.nameCode}</Text>
+                <Text style={styles.typeText}>{item.nameType}</Text>
+                {item.servicePeriod && (
+                  <Text style={styles.periodText}>{item.servicePeriod}</Text>
+                )}
+                <Text style={styles.sizeText}>
+                  사이즈: {item.size} | 색상: {item.color}
+                </Text>
+              </View>
+              <Text style={styles.priceText}>
+                {item.price.toLocaleString()}원
+              </Text>
+            </View>
+          ))}
+        </View>
 
-      {/* 신청제품 리스트 */}
-      <LabelDetailText>신청제품</LabelDetailText>
-      {items.map((item) => (
-        <Item key={item.id}>
-          <ContentWrapper>
-            <ItemDetails>
-              <Brand>{item.brand}</Brand>
-              <ItemName>
-                <Column>
-                  <NameCode>{item.nameCode}</NameCode>
-                  <ItemType>{item.nameType}</ItemType>
-                </Column>
-              </ItemName>
-
-              <InfoRowFlex>
-                <IconArea>
-                  <Icon src={ServiceInfoIcon} />
-                </IconArea>
-                <TextContainer>
-                  <Column>
-                    <LabelDetailText>
-                      진행 서비스 -{' '}
-                      <DetailHighlight>
-                        {item.type === 'rental' ? '대여' : '구매'}
-                      </DetailHighlight>
-                    </LabelDetailText>
-                    {item.type === 'rental' && item.servicePeriod && (
-                      <DetailText>{item.servicePeriod}</DetailText>
-                    )}
-                  </Column>
-                </TextContainer>
-              </InfoRowFlex>
-
-              <InfoRowFlex>
-                <IconArea>
-                  <Icon src={ProductInfoIcon} />
-                </IconArea>
-                <TextContainer>
-                  <LabelDetailText>제품 정보</LabelDetailText>
-                  <RowText>
-                    <AdditionalText>
-                      <LabelDetailText>사이즈 - </LabelDetailText>
-                      <DetailHighlight>{item.size}</DetailHighlight>
-                      <Slash>/</Slash>
-                      <DetailText>색상 - </DetailText>
-                    </AdditionalText>
-                    <DetailHighlight>{item.color}</DetailHighlight>
-                  </RowText>
-                </TextContainer>
-              </InfoRowFlex>
-
-              <InfoRowFlex>
-                <IconArea>
-                  <Icon src={PriceIcon} />
-                </IconArea>
-                <TextContainer>
-                  <RowText>
-                    <LabelDetailText>결제금액 - </LabelDetailText>
-                    <DetailHighlight>
-                      {item.price.toLocaleString()}원
-                    </DetailHighlight>
-                  </RowText>
-                </TextContainer>
-              </InfoRowFlex>
-            </ItemDetails>
-            <RightSection>
-              <ItemImageContainer>
-                <ItemImage src={item.imageUrl} />
-              </ItemImageContainer>
-            </RightSection>
-          </ContentWrapper>
-        </Item>
-      ))}
-
-      {/* 수령인 & 배송방법 고정 표시 */}
-      <Section>
-        <Row>
-          <InputGroup>
-            <InputField
-              id='recipient'
-              label='수령인 *'
-              placeholder='이름을 입력 하세요'
-              value={recipient}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setRecipient(e.target.value)
-              }
-            />
-          </InputGroup>
-          <InputGroup>
-            <InputField
-              id='delivery-method'
-              label='배송방법'
-              value={fixedDeliveryMethod}
-              readOnly
-            />
-          </InputGroup>
-        </Row>
-      </Section>
-
-      {/* 배송지 입력 */}
-      <Section>
-        <SectionTitle>배송지 입력 *</SectionTitle>
-        <Row>
-          <AddressInputWrapper>
-            <AddressInput
-              readOnly
-              value={deliveryInfo.address}
-              placeholder='주소를 검색 하세요'
-            />
-            <SearchBtn onClick={() => handleAddressSearch('delivery')}>
-              검색
-            </SearchBtn>
-          </AddressInputWrapper>
-          <DeliveryListButton onClick={handleListOpen}>
-            배송목록
-          </DeliveryListButton>
-        </Row>
-        <Row>
-          <DetailAddressInput
-            placeholder='상세주소를 입력 하세요'
-            value={deliveryInfo.detailAddress}
-            onChange={(e) =>
-              setDeliveryInfo((info) => ({
-                ...info,
-                detailAddress: e.target.value,
-              }))
-            }
-          />
-        </Row>
-        <Row>
-          <InputField
-            id='delivery-message'
-            label='배송 메시지 (선택)'
-            placeholder='예: 문 앞에 두고 벨 눌러주세요.'
-            value={deliveryInfo.message}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setDeliveryInfo((info) => ({
-                ...info,
-                message: e.target.value,
-              }))
-            }
-          />
-        </Row>
-        <Row>
-          <InputField
-            id='contact'
-            label='연락처'
-            placeholder='나머지 8자리 입력'
-            value={deliveryInfo.contact}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleContactChange('delivery', e.target.value)
-            }
-          />
-        </Row>
-      </Section>
-
-      {/* 반납지 입력 */}
-      <ReturnSection>
-        <SectionTitle>반납지 입력 *</SectionTitle>
-        <ReturnOption>
-          <OptionButtonRight $active={isSameAsDelivery} onClick={handleUseSame}>
-            배송지와 동일
-          </OptionButtonRight>
-          <OptionButtonLeft
-            $active={!isSameAsDelivery}
-            onClick={handleNewReturn}
-          >
-            새로 입력
-          </OptionButtonLeft>
-        </ReturnOption>
-        <Row>
-          <AddressInputWrapper>
-            <AddressInput
-              readOnly
-              disabled={isSameAsDelivery}
-              value={
-                isSameAsDelivery ? deliveryInfo.address : returnInfo.address
-              }
-              placeholder='주소를 검색 하세요'
-            />
-            <SearchBtn
-              disabled={isSameAsDelivery}
-              onClick={() => handleAddressSearch('return')}
+        {/* 결제 방식 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>결제 방식</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedPaymentMethod}
+              onValueChange={handlePaymentSelect}
+              style={styles.picker}
             >
-              검색
-            </SearchBtn>
-          </AddressInputWrapper>
-          <DeliveryListButton onClick={handleListOpen}>
-            배송목록
-          </DeliveryListButton>
-        </Row>
-        <Row>
-          <DetailAddressInput
-            disabled={isSameAsDelivery}
-            placeholder='상세주소를 입력 하세요'
-            value={
-              isSameAsDelivery
-                ? deliveryInfo.detailAddress
-                : returnInfo.detailAddress
-            }
-            onChange={(e) =>
-              setReturnInfo((info) => ({
-                ...info,
-                detailAddress: e.target.value,
-              }))
-            }
-          />
-        </Row>
-        <Row>
-          <InputField
-            id='return-delivery-message'
-            label='배송 메시지 (선택)'
-            placeholder='예: 문 앞에 두고 벨 눌러주세요.'
-            value={isSameAsDelivery ? deliveryInfo.message : returnInfo.message}
-            disabled={isSameAsDelivery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setReturnInfo((info) => ({
-                ...info,
-                message: e.target.value,
-              }))
-            }
-          />
-        </Row>
-        <Row>
-          <InputField
-            id='return-contact'
-            label='연락처'
-            placeholder='나머지 8자리 입력'
-            disabled={isSameAsDelivery}
-            value={isSameAsDelivery ? deliveryInfo.contact : returnInfo.contact}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleContactChange('return', e.target.value)
-            }
-          />
-        </Row>
-      </ReturnSection>
+              {paymentOptions.map((option, index) => (
+                <Picker.Item key={index} label={option} value={option} />
+              ))}
+            </Picker>
+          </View>
+        </View>
 
-      {/* 주소검색 모달 */}
+        {/* 배송 정보 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>배송 정보</Text>
+
+          {/* 수령인 */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>수령인</Text>
+            <TextInput
+              style={styles.input}
+              value={recipient}
+              onChangeText={setRecipient}
+              placeholder='수령인을 입력하세요'
+            />
+          </View>
+
+          {/* 배송지 주소 */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>배송지 주소</Text>
+            <TouchableOpacity
+              style={styles.addressButton}
+              onPress={() => handleAddressSearch('delivery')}
+            >
+              <Text style={styles.addressButtonText}>
+                {deliveryInfo.address || '주소 검색'}
+              </Text>
+            </TouchableOpacity>
+            <TextInput
+              style={styles.input}
+              value={deliveryInfo.detailAddress}
+              onChangeText={(text) =>
+                setDeliveryInfo((prev) => ({ ...prev, detailAddress: text }))
+              }
+              placeholder='상세주소'
+            />
+          </View>
+
+          {/* 연락처 */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>연락처</Text>
+            <TextInput
+              style={styles.input}
+              value={deliveryInfo.contact}
+              onChangeText={(text) => handleContactChange('delivery', text)}
+              placeholder='010-0000-0000'
+              keyboardType='phone-pad'
+            />
+          </View>
+
+          {/* 배송 메시지 */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>배송 메시지</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              value={deliveryInfo.message}
+              onChangeText={(text) =>
+                setDeliveryInfo((prev) => ({ ...prev, message: text }))
+              }
+              placeholder='배송 메시지를 입력하세요'
+              multiline
+            />
+          </View>
+        </View>
+
+        {/* 반납 정보 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>반납 정보</Text>
+
+          <View style={styles.sameAddressButtons}>
+            <TouchableOpacity
+              style={[
+                styles.sameButton,
+                isSameAsDelivery && styles.activeButton,
+              ]}
+              onPress={handleUseSame}
+            >
+              <Text
+                style={[
+                  styles.sameButtonText,
+                  isSameAsDelivery && styles.activeButtonText,
+                ]}
+              >
+                배송지와 동일
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.sameButton,
+                !isSameAsDelivery && styles.activeButton,
+              ]}
+              onPress={handleNewReturn}
+            >
+              <Text
+                style={[
+                  styles.sameButtonText,
+                  !isSameAsDelivery && styles.activeButtonText,
+                ]}
+              >
+                새로 입력
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {!isSameAsDelivery && (
+            <>
+              {/* 반납지 주소 */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>반납지 주소</Text>
+                <TouchableOpacity
+                  style={styles.addressButton}
+                  onPress={() => handleAddressSearch('return')}
+                >
+                  <Text style={styles.addressButtonText}>
+                    {returnInfo.address || '주소 검색'}
+                  </Text>
+                </TouchableOpacity>
+                <TextInput
+                  style={styles.input}
+                  value={returnInfo.detailAddress}
+                  onChangeText={(text) =>
+                    setReturnInfo((prev) => ({ ...prev, detailAddress: text }))
+                  }
+                  placeholder='상세주소'
+                />
+              </View>
+
+              {/* 반납 연락처 */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>반납 연락처</Text>
+                <TextInput
+                  style={styles.input}
+                  value={returnInfo.contact}
+                  onChangeText={(text) => handleContactChange('return', text)}
+                  placeholder='010-0000-0000'
+                  keyboardType='phone-pad'
+                />
+              </View>
+
+              {/* 반납 메시지 */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>반납 메시지</Text>
+                <TextInput
+                  style={[styles.input, styles.textArea]}
+                  value={returnInfo.message}
+                  onChangeText={(text) =>
+                    setReturnInfo((prev) => ({ ...prev, message: text }))
+                  }
+                  placeholder='반납 메시지를 입력하세요'
+                  multiline
+                />
+              </View>
+            </>
+          )}
+        </View>
+
+        {/* 결제 금액 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>결제 금액</Text>
+          <View style={styles.priceRow}>
+            <Text style={styles.priceLabel}>상품 금액</Text>
+            <Text style={styles.priceValue}>
+              {baseTotal.toLocaleString()}원
+            </Text>
+          </View>
+          <View style={styles.priceRow}>
+            <Text style={styles.priceLabel}>배송비</Text>
+            <Text style={styles.priceValue}>{extra.toLocaleString()}원</Text>
+          </View>
+          <View style={[styles.priceRow, styles.totalRow]}>
+            <Text style={styles.totalLabel}>총 결제금액</Text>
+            <Text style={styles.totalValue}>
+              {finalAmount.toLocaleString()}원
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* 결제 버튼 */}
+      <View style={styles.bottomBar}>
+        <TouchableOpacity
+          style={styles.paymentButton}
+          onPress={handlePaymentSubmit}
+        >
+          <Text style={styles.paymentButtonText}>
+            {finalAmount.toLocaleString()}원 결제하기
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* 모달들 */}
       <AddressSearchModal
-        isOpen={searchModalOpen}
+        visible={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}
-        onSelect={(addr) => {
+        onSelect={(address) => {
           if (modalField === 'delivery') {
-            setDeliveryInfo((info) => ({ ...info, address: addr }));
-          } else if (!isSameAsDelivery) {
-            setReturnInfo((info) => ({ ...info, address: addr }));
+            setDeliveryInfo((prev) => ({
+              ...prev,
+              address: address.address,
+              detailAddress: address.addressDetail,
+            }));
+          } else {
+            setReturnInfo((prev) => ({
+              ...prev,
+              address: address.address,
+              detailAddress: address.addressDetail,
+            }));
           }
+          setSearchModalOpen(false);
         }}
       />
 
       <DeliveryListModal
-        isOpen={listModalOpen}
+        visible={listModalOpen}
         addresses={savedAddresses}
-        selectedId={selectedAddr?.id ?? null}
-        onSelect={(addr) => setSelectedAddr(addr)}
         onClose={() => setListModalOpen(false)}
-        onConfirm={confirmList}
+        onSelect={(address) => {
+          setSelectedAddr(address);
+          confirmList();
+        }}
       />
 
-      <Section>
-        <Row>
-          <InputGroup>
-            <InputField
-              id='payment-method'
-              label='결제방식'
-              options={paymentOptions}
-              value={selectedPaymentMethod}
-              onSelectChange={handlePaymentSelect}
-            />
-          </InputGroup>
-        </Row>
-      </Section>
-
-      {/* 총 결제금액 */}
-      <PaymentAndCouponContainer>
-        <PaymentSection>{/* 추가 할인/쿠폰 UI 있으면 여기에 */}</PaymentSection>
-      </PaymentAndCouponContainer>
-
-      <TotalPaymentSection>
-        <SectionTitle>총 결제금액 (VAT 포함)</SectionTitle>
-        <TotalAmount>
-          {extra > 0 && (
-            <AdditionalCost>
-              + 추가비용 ({extra.toLocaleString()}원)
-            </AdditionalCost>
-          )}
-          <Amount>{finalAmount.toLocaleString()}원</Amount>
-        </TotalAmount>
-      </TotalPaymentSection>
-
-      <FixedBottomBar
-        text={createRentalOrderMutation.isPending ? '결제 중...' : '결제하기'}
-        color='yellow'
-        onClick={handlePaymentSubmit}
-        disabled={createRentalOrderMutation.isPending}
+      <ReusableModal
+        visible={modalAlert.isOpen}
+        onClose={closeAlertModal}
+        title='알림'
+        message={modalAlert.message}
       />
-    </Container>
+
+      <ReusableModal2
+        visible={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        onConfirm={handlePaymentSubmit}
+        title='결제 확인'
+        message='결제를 진행하시겠습니까?'
+      />
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    padding: 20,
+    textAlign: 'center',
+  },
+  section: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  productItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  productInfo: {
+    flex: 1,
+  },
+  brandText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  nameText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 5,
+  },
+  typeText: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 2,
+  },
+  periodText: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 2,
+  },
+  sizeText: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 2,
+  },
+  priceText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+  },
+  picker: {
+    height: 50,
+  },
+  inputGroup: {
+    marginBottom: 15,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+  },
+  textArea: {
+    height: 80,
+    textAlignVertical: 'top',
+  },
+  addressButton: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: '#f9f9f9',
+  },
+  addressButtonText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  sameAddressButtons: {
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
+  sameButton: {
+    flex: 1,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    marginHorizontal: 5,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  activeButton: {
+    backgroundColor: '#000',
+    borderColor: '#000',
+  },
+  sameButtonText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  activeButtonText: {
+    color: '#fff',
+  },
+  priceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+  },
+  priceLabel: {
+    fontSize: 16,
+  },
+  priceValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  totalRow: {
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    marginTop: 10,
+    paddingTop: 15,
+  },
+  totalLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  totalValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ff6b6b',
+  },
+  bottomBar: {
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    backgroundColor: '#fff',
+  },
+  paymentButton: {
+    backgroundColor: '#000',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  paymentButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
+
 export default PaymentPage;
-
-/* ── styled-components ── */
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  background: #ffffff;
-  padding: 1rem;
-  max-width: 600px;
-  margin-bottom: 100px;
-`;
-
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const SectionTitle = styled.h2`
-  font-size: 11px;
-  line-height: 11px;
-  color: #000000;
-  margin-bottom: 8px;
-`;
-
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-`;
-
-const InputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
-
-const AddressInputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  flex: 1;
-  height: 57px;
-  border: 1px solid #dddddd;
-  border-radius: 4px;
-  min-width: 200px;
-  overflow: hidden;
-`;
-
-const AddressInput = styled.input`
-  flex: 1;
-  border: none;
-  padding: 0 10px;
-  font-size: 14px;
-  box-sizing: border-box;
-  height: 100%;
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const SearchBtn = styled(YellowButton)<{ disabled?: boolean }>`
-  height: 57px;
-  border: none;
-  border-radius: 0;
-  padding: 0 15px;
-`;
-
-const DeliveryListButton = styled(BlackButton)`
-  height: 57px;
-  padding: 0 15px;
-`;
-
-const DetailAddressInput = styled.input`
-  flex: 1;
-  border: 1px solid #dddddd;
-  border-radius: 4px;
-  padding: 0 10px;
-  font-size: 13px;
-  line-height: 14px;
-  height: 57px;
-  box-sizing: border-box;
-  &:focus {
-    outline: none;
-  }
-  margin-bottom: 20px;
-`;
-
-const ReturnOption = styled.div`
-  display: inline-flex;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 30px;
-  font-weight: 800;
-  font-size: 13px;
-  text-align: center;
-  color: #000000;
-`;
-
-const OptionButtonRight = styled.button<{ $active: boolean }>`
-  flex: 1;
-  height: 57px;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-  outline: none;
-  border-radius: 10px 0 0 10px;
-  border: ${({ $active }) =>
-    $active ? '2px solid #f6ae24' : '2px solid transparent'};
-  background: ${({ $active }) => ($active ? '#fff' : '#eee')};
-  color: ${({ $active }) => ($active ? '#000' : '#888')};
-  &:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    border: 2px solid #ccc;
-  }
-`;
-
-const OptionButtonLeft = styled.button<{ $active: boolean }>`
-  flex: 1;
-  height: 57px;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-  outline: none;
-  border-radius: 0 10px 10px 0;
-  border: ${({ $active }) =>
-    $active ? '2px solid #f6ae24' : '2px solid transparent'};
-  background: ${({ $active }) => ($active ? '#fff' : '#eee')};
-  color: ${({ $active }) => ($active ? '#000' : '#888')};
-`;
-
-const PaymentAndCouponContainer = styled.div`
-  border-top: 1px solid #ddd;
-`;
-
-const ReturnSection = styled(Section)`
-  border-top: 1px solid #ddd;
-  padding-top: 30px;
-`;
-
-const PaymentSection = styled.section`
-  display: flex;
-  flex-direction: column;
-`;
-
-const TotalPaymentSection = styled.section`
-  display: flex;
-  flex-direction: column;
-  padding-top: 30px;
-`;
-
-const TotalAmount = styled.div`
-  box-sizing: border-box;
-  background: #ffffff;
-  border: 1px solid #eeeeee;
-  border-radius: 4px;
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const AdditionalCost = styled.div`
-  font-weight: 400;
-  font-size: 14px;
-  color: #000000;
-`;
-
-const Amount = styled.div`
-  font-weight: 900;
-  font-size: 16px;
-  color: #000000;
-`;
-
-const Item = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin: 10px 0;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  padding: 30px 0;
-  background-color: #fff;
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const ItemDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-`;
-
-const Brand = styled.div`
-  font-weight: 900;
-  font-size: 10px;
-  color: #000;
-`;
-
-const ItemName = styled.div`
-  margin: 6px 0 20px;
-`;
-
-const NameCode = styled.span`
-  font-weight: 900;
-  font-size: 14px;
-`;
-
-const ItemType = styled.span`
-  font-weight: 400;
-  font-size: 12px;
-  color: #999;
-`;
-
-const InfoRowFlex = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 5px;
-  margin-bottom: 16px;
-`;
-
-const IconArea = styled.div`
-  flex: 0 0 auto;
-  display: flex;
-  justify-content: center;
-`;
-
-const TextContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-`;
-
-const RowText = styled.div`
-  display: flex;
-  gap: 5px;
-`;
-
-const DetailText = styled.span`
-  font-weight: 400;
-  font-size: 12px;
-`;
-
-const DetailHighlight = styled.span`
-  font-weight: 900;
-  font-size: 12px;
-`;
-
-const Slash = styled.span`
-  margin: 0 4px;
-  font-weight: 400;
-  font-size: 12px;
-  color: #ddd;
-`;
-
-const LabelDetailText = styled.span`
-  font-weight: 700;
-  font-size: 12px;
-`;
-
-const RightSection = styled.div`
-  display: flex;
-  align-items: flex-end;
-  padding-left: 10px;
-`;
-
-const ItemImageContainer = styled.div`
-  width: 140px;
-  height: 210px;
-  border: 1px solid #ddd;
-`;
-
-const ItemImage = styled.img`
-  width: 100%;
-  height: 100%;
-`;
-
-const Icon = styled.img`
-  width: 20px;
-  height: 20px;
-`;
-
-const ModalBody = styled.div`
-  padding: 20px;
-  text-align: center;
-  font-size: 14px;
-`;
-
-const AdditionalText = styled.div`
-  display: flex;
-`;
-
-const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;

@@ -11,121 +11,57 @@ import LandingPage7 from '../components/Landing/LandingPage7';
 
 import Footer from '../components/Landing/Footer';
 
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+  Dimensions,
+} from 'react-native';
+
+const { width: screenWidth } = Dimensions.get('window');
+
 interface ScrollFadeInProps {
   children: React.ReactNode;
 }
 
-const useScrollDirection = () => {
-  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down');
-  const lastScrollY = useRef(window.scrollY);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setScrollDirection(currentScrollY > lastScrollY.current ? 'down' : 'up');
-      lastScrollY.current = currentScrollY;
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return scrollDirection;
-};
-
 const ScrollFadeIn: React.FC<ScrollFadeInProps> = ({ children }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  const scrollDirection = useScrollDirection();
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisible(true);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <FadeInWrapper
-      ref={ref}
-      scrollDirection={scrollDirection}
-      className={visible ? 'visible' : ''}
-    >
-      {children}
-    </FadeInWrapper>
-  );
+  return <View style={styles.fadeInWrapper}>{children}</View>;
 };
 
 const Landing: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.body.classList.add('landing');
-
-    const images = document.querySelectorAll('img');
-    let loadedCount = 0;
-    const totalImages = images.length;
-
-    if (totalImages === 0) {
+    // 이미지 로딩 시뮬레이션
+    const timer = setTimeout(() => {
       setLoading(false);
-      return;
-    }
+    }, 2000);
 
-    const handleImageLoadOrError = () => {
-      loadedCount += 1;
-
-      if (loadedCount === totalImages) {
-        setLoading(false);
-      }
-    };
-
-    images.forEach((img) => {
-      if (img.complete) {
-        handleImageLoadOrError();
-      } else {
-        img.addEventListener('load', handleImageLoadOrError);
-        img.addEventListener('error', handleImageLoadOrError);
-      }
-    });
-
-    return () => {
-      images.forEach((img) => {
-        img.removeEventListener('load', handleImageLoadOrError);
-        img.removeEventListener('error', handleImageLoadOrError);
-      });
-      document.body.classList.remove('landing');
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   if (loading) {
     return (
-      <LoadingOverlay>
-        <LoadingSpinner />
-      </LoadingOverlay>
+      <View style={styles.loadingOverlay}>
+        <ActivityIndicator size='large' color='#f6ac36' />
+      </View>
     );
   }
 
   return (
-    <LandingContainer>
-      <BackgroundWrapper>
-        <BackgroundStripe2 />
-
-        <BackgroundStripe1 />
-      </BackgroundWrapper>
+    <View style={styles.landingContainer}>
+      <View style={styles.backgroundWrapper}>
+        <View style={styles.backgroundStripe2} />
+        <View style={styles.backgroundStripe1} />
+      </View>
 
       <Header />
 
-      <ContentWrapper>
+      <ScrollView
+        style={styles.contentWrapper}
+        showsVerticalScrollIndicator={false}
+      >
         <LandingPage1 />
 
         <ScrollFadeIn>
@@ -146,14 +82,63 @@ const Landing: React.FC = () => {
         <ScrollFadeIn>
           <LandingPage7 />
         </ScrollFadeIn>
-      </ContentWrapper>
+      </ScrollView>
 
       <ScrollFadeIn>
         <Footer />
       </ScrollFadeIn>
-    </LandingContainer>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  landingContainer: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
+    maxWidth: 600,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  backgroundWrapper: {
+    position: 'absolute',
+    width: 930.88,
+    height: 1299.04,
+    left: -296,
+    top: 34.09,
+  },
+  backgroundStripe2: {
+    position: 'absolute',
+    width: 1086,
+    height: 170,
+    left: -13.03,
+    top: 777,
+    backgroundColor: '#f6ac36',
+    transform: [{ rotate: '30deg' }],
+  },
+  backgroundStripe1: {
+    position: 'absolute',
+    width: 1086,
+    height: 230,
+    left: -6,
+    top: 304,
+    backgroundColor: '#f1bb02',
+    transform: [{ rotate: '-45deg' }],
+  },
+  contentWrapper: {
+    flex: 1,
+    width: '100%',
+  },
+  fadeInWrapper: {
+    opacity: 1,
+  },
+  loadingOverlay: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default Landing;
 

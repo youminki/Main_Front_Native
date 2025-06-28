@@ -1,200 +1,179 @@
 import React from 'react';
-import styled, { ThemeProvider } from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import Theme from '../../styles/Theme';
-import StatsSection from '../../components/StatsSection';
-
-import CustomerServiceIcon from '../../assets/CustomerServiceIcons.svg';
-import FrequentlyAskedQuestionsBox from '../../assets/CustomerService/FrequentlyAskedQuestions.svg';
-import NoticeBox from '../../assets/CustomerService/Notice.svg';
-import PersonalInformationProcessingPolicyBox from '../../assets/CustomerService/PersonalInformationProcessingPolicy.svg';
-import TermsAndConditionsOfUseBox from '../../assets/CustomerService/TermsAndConditionsOfUse.svg';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const menuItems = [
-  { icon: NoticeBox, label: '공지사항', path: '/CustomerService/Notice' },
+  { icon: '📢', label: '공지사항', path: 'Notice' },
+  { icon: '❓', label: '자주 묻는 질문', path: 'FrequentlyAskedQuestions' },
+  { icon: '📋', label: '이용약관', path: 'TermsAndConditionsOfUse' },
   {
-    icon: FrequentlyAskedQuestionsBox,
-    label: '자주 묻는 질문',
-    path: '/CustomerService/FrequentlyAskedQuestions',
-  },
-  {
-    icon: TermsAndConditionsOfUseBox,
-    label: '이용약관',
-    path: '/CustomerService/TermsAndConditionsOfUse',
-  },
-  {
-    icon: PersonalInformationProcessingPolicyBox,
+    icon: '🔒',
     label: '개인정보처리방침',
-    path: '/CustomerService/PersonalInformationProcessingPolicy',
+    path: 'PersonalInformationProcessingPolicy',
   },
 ];
 
 const CustomerService: React.FC = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
+
+  const handleMenuPress = (item: (typeof menuItems)[0]) => {
+    navigation.navigate(item.path as never);
+  };
+
   return (
-    <ThemeProvider theme={Theme}>
-      <Container>
-        <Header>
-          <Title>고객센터</Title>
-          <Subtitle>새로운 소식 및 서비스 안내를 드립니다.</Subtitle>
-        </Header>
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>고객센터</Text>
+          <Text style={styles.subtitle}>
+            새로운 소식 및 서비스 안내를 드립니다.
+          </Text>
+        </View>
 
-        <StatsRow>
-          <StatsSection
-            visits='999'
-            sales='999'
-            dateRange='NEW 2025. 03.'
-            visitLabel='공지사항'
-            salesLabel='자주 묻는 질문'
-          />
-          <Icon src={CustomerServiceIcon} alt='고객센터 아이콘' />
-        </StatsRow>
+        <View style={styles.statsRow}>
+          <View style={styles.statsSection}>
+            <Text style={styles.statsLabel}>공지사항</Text>
+            <Text style={styles.statsValue}>999</Text>
+            <Text style={styles.statsLabel}>자주 묻는 질문</Text>
+            <Text style={styles.statsValue}>999</Text>
+            <Text style={styles.dateRange}>NEW 2025. 03.</Text>
+          </View>
+          <Text style={styles.icon}>🎧</Text>
+        </View>
 
-        <Divider />
+        <View style={styles.divider} />
 
-        <GridMenu>
+        <View style={styles.gridMenu}>
           {menuItems.map((item, idx) => (
-            <GridItem key={idx} onClick={() => navigate(item.path)}>
-              <IconLabelRow>
-                <IconImage src={item.icon} alt={item.label} />
-                <Label>{item.label}</Label>
-              </IconLabelRow>
-              <PickButton>
-                PICK <Arrow>→</Arrow>
-              </PickButton>
-            </GridItem>
+            <TouchableOpacity
+              key={idx}
+              style={styles.gridItem}
+              onPress={() => handleMenuPress(item)}
+            >
+              <View style={styles.iconLabelRow}>
+                <Text style={styles.iconText}>{item.icon}</Text>
+                <Text style={styles.label}>{item.label}</Text>
+              </View>
+              <View style={styles.pickButton}>
+                <Text style={styles.pickButtonText}>
+                  PICK <Text style={styles.arrow}>→</Text>
+                </Text>
+              </View>
+            </TouchableOpacity>
           ))}
-        </GridMenu>
-      </Container>
-    </ThemeProvider>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    marginBottom: 6,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '800',
+    margin: 0,
+    color: '#000',
+  },
+  subtitle: {
+    fontSize: 12,
+    lineHeight: 28,
+    margin: 0,
+    color: '#cccccc',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  statsSection: {
+    flex: 1,
+  },
+  statsLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+  },
+  statsValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 12,
+  },
+  dateRange: {
+    fontSize: 10,
+    color: '#999',
+    marginTop: 8,
+  },
+  icon: {
+    fontSize: 40,
+    marginLeft: 16,
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#ddd',
+    marginVertical: 20,
+  },
+  gridMenu: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  gridItem: {
+    width: '48%',
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    backgroundColor: '#fff',
+    marginBottom: 16,
+    borderRadius: 8,
+  },
+  iconLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  iconText: {
+    fontSize: 24,
+    marginRight: 8,
+  },
+  label: {
+    fontWeight: '700',
+    fontSize: 14,
+    color: '#000',
+  },
+  pickButton: {
+    alignSelf: 'flex-end',
+  },
+  pickButtonText: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '600',
+  },
+  arrow: {
+    color: '#f6ac36',
+  },
+});
+
 export default CustomerService;
-
-const Container = styled.div`
-  width: 100%;
-  padding: 1rem;
-  background: #fff;
-  box-sizing: border-box;
-  @media (min-width: 1024px) {
-    padding: 3rem;
-  }
-`;
-
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 6px;
-  @media (min-width: 1024px) {
-    margin-bottom: 24px;
-  }
-`;
-
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: 800;
-  margin: 0;
-  color: #000;
-
-  @media (min-width: 1024px) {
-    font-size: 32px;
-    margin-bottom: 10px;
-  }
-`;
-
-const Subtitle = styled.p`
-  font-size: 12px;
-  line-height: 28px;
-  margin: 0;
-  color: #cccccc;
-
-  @media (min-width: 1024px) {
-    font-size: 16px;
-  }
-`;
-
-const StatsRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-const Icon = styled.img`
-  width: 64px;
-  height: auto;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #ddd;
-  margin: 20px 0;
-`;
-
-const GridMenu = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  width: 100%;
-  /* 데스크탑: 3열, 셀 높이는 콘텐츠 기준으로 늘어남 */
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-`;
-
-const GridItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  padding: 1rem;
-  box-sizing: border-box;
-  border: 1px solid #ddd;
-  background: #fff;
-  cursor: pointer;
-
-  /* 셀을 꽉 채우기 위해 높이를 자동으로 늘림 */
-  width: 100%;
-  height: 100%;
-`;
-
-const IconLabelRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 10px;
-`;
-
-const IconImage = styled.img`
-  object-fit: contain;
-`;
-
-const Label = styled.div`
-  font-weight: 700;
-  font-size: 14px;
-
-  color: #000;
-  @media (min-width: 1024px) {
-    font-size: 18px;
-    margin-left: 1rem;
-  }
-`;
-
-const PickButton = styled.div`
-  align-self: flex-end;
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  background: #fafafa;
-  font-size: 12px;
-  font-weight: 600;
-  @media (min-width: 1024px) {
-    padding: 10px 16px;
-    font-size: 14px;
-  }
-`;
-
-const Arrow = styled.span`
-  margin-left: 4px;
-`;

@@ -1,34 +1,27 @@
-import styled from 'styled-components';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import Content from '../components/Analysis/AnalysisContent';
-import Theme from '../styles/Theme';
 
 const Analysis = () => {
   return (
-    <AnalysisContainer>
-      <ContentWrapper>
+    <View style={styles.container}>
+      <View style={styles.contentWrapper}>
         <Content />
-      </ContentWrapper>
-    </AnalysisContainer>
+      </View>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    padding: 16,
+  },
+  contentWrapper: {
+    flex: 1,
+    width: '100%',
+  },
+});
+
 export default Analysis;
-
-const AnalysisContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f5f5f5;
-  margin: 0 auto;
-  border: 1px solid ${Theme.colors.gray1};
-  padding: 1rem;
-`;
-
-const ContentWrapper = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
