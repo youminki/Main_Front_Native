@@ -34,7 +34,7 @@ export const LoginPost = async (
       password,
     });
 
-    console.log('✅ 로그인 성공:', response.data);
+    // console.log('✅ 로그인 성공:', response.data);
 
     // React Native에서는 AsyncStorage 사용
     await AsyncStorage.setItem('accessToken', response.data.accessToken);

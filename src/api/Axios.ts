@@ -47,6 +47,7 @@ Axios.interceptors.response.use(
         await AsyncStorage.removeItem('refreshToken');
         // React Native에서는 네비게이션을 통해 로그인 페이지로 이동
         // window.location.href 대신 navigation.reset 사용
+        // TODO: 네비게이션 컨텍스트를 통해 로그인 페이지로 리다이렉트
         return Promise.reject(error);
       }
     }

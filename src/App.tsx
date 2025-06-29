@@ -9,88 +9,17 @@ import {
   ScrollView,
 } from 'react-native';
 
-// Landing & Auth Screens
-import Landing from './pages/Landing';
-import Login from './pages/Login';
-import ReadyLogin from './pages/ReadyLogin';
-import TestLogin from './pages/TestLogin';
-import Signup from './pages/Signup';
-import FindId from './pages/FindId';
-import FindPassword from './pages/FindPassword';
-import PersonalLink from './pages/PersonalLink';
-
-// Main App Screens
+// 실제 사용되는 컴포넌트들만 import
 import AppLayout from './pages/AppLayout';
 import Home from './pages/Home/Home';
 import HomeDetail from './pages/Home/HomeDetail';
-import Analysis from './pages/Analysis';
-import Basket from './pages/Basket';
-import Alarm from './pages/Alarm';
-import Payment from './pages/Payment';
-import PaymentComplete from './pages/PaymentComplete';
-import PaymentFail from './pages/Paymentfail';
-
-// User Pages
-import MyinfoList from './pages/MyinfoList';
-import MyStyle from './pages/MyStyle';
-import PasswordChange from './pages/PasswordChange';
-
-// Brand Screens
-import Brand from './pages/Brand/Brand';
-import BrandDetail from './pages/Brand/BrandDetail';
-
-// Melpik Screens
-import Melpik from './pages/Melpik/Melpik';
-import CreateMelpik from './pages/Melpik/Create/CreateMelpik';
-import ContemporarySettings from './pages/Melpik/Create/ContemporarySettings';
-import SettingMelpik from './pages/Melpik/Setting/SettingMelpik';
-import SalesSettlement from './pages/Melpik/Calculate/SalesSettlement';
-import SalesSettlementDetail from './pages/Melpik/Calculate/SalesSettlementDetail';
-import SettlementRequest from './pages/Melpik/Calculate/SettlementRequest';
-
-// Schedule Screens
-import Scedule from './pages/Melpik/Schedule/Scedule';
-import ScheduleConfirmation from './pages/Melpik/Schedule/ScheduleConfirmation';
-import ScheduleReservation1 from './pages/Melpik/Schedule/ScheduleReservation1';
-import ScheduleReservation2 from './pages/Melpik/Schedule/ScheduleReservation2';
-import ScheduleReservation3 from './pages/Melpik/Schedule/ScheduleReservation3';
-
-// LockerRoom Screens
-import LockerRoom from './pages/LockerRoom/LockerRoom';
-import UsageHistory from './pages/LockerRoom/UsageHistory/UsageHistory';
-import Point from './pages/LockerRoom/Point/Point';
-import MyCloset from './pages/LockerRoom/MyCloset/MyCloset';
-import MyTicket from './pages/LockerRoom/MyTicket/MyTicket';
-import PurchaseOfPasses from './pages/LockerRoom/MyTicket/PurchaseOfPasses';
-import TicketPayment from './pages/LockerRoom/MyTicket/TicketPayment';
-import TicketDetail from './pages/LockerRoom/MyTicket/TicketDetail';
-
-// Payment & Review Screens
-import PaymentMethod from './pages/LockerRoom/PaymentMethod/PaymentMethod';
-import AddCard from './pages/LockerRoom/PaymentMethod/AddCard';
-import ProductReview from './pages/LockerRoom/ProductReview/ProductReview';
-import ProductReviewWrite from './pages/LockerRoom/ProductReview/ProductReviewWrite';
-
-// Customer Service Screens
-import CustomerService from './pages/CustomerService/CustomerService';
-import FrequentlyAskedQuestions from './pages/CustomerService/FrequentlyAskedQuestions/FrequentlyAskedQuestions';
-import Notice from './pages/CustomerService/Notice/Notice';
-import NoticeDetail from './pages/CustomerService/Notice/NoticeDetail';
-import PersonalInformationProcessingPolicy from './pages/CustomerService/PersonalInformationProcessingPolicy/PersonalInformationProcessingPolicy';
-import PersonalInformationProcessingPolicyDetail from './pages/CustomerService/PersonalInformationProcessingPolicy/PersonalInformationProcessingPolicyDetail';
-import TermsAndConditionsOfUse from './pages/CustomerService/TermsAndConditionsOfUse/TermsAndConditionsOfUse';
-import TermsAndConditionsOfUseDetail from './pages/CustomerService/TermsAndConditionsOfUse/TermsAndConditionsOfUseDetail';
-
-// Profile Screens
-import UpdateProfile from './pages/profile/UpdateProfile';
-import ChangePassword from './pages/profile/ChangePassword';
-import DeliveryManagement from './pages/profile/DeliveryManagement';
-import EditAddress from './pages/profile/EditAddress';
+import Landing from './pages/Landing';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 // Test Screens
 import PaypleTest from './Test/PaypleTest';
 import AddCardPayple from './Test/AddCardPayple';
-import Link from './pages/Link';
 
 const Stack = createStackNavigator();
 

@@ -29,7 +29,7 @@ const ChangeRefundAccountModal: React.FC<ChangeRefundAccountModalProps> = ({
       return;
     }
     // TODO: API 연동 로직 (bankName, accountNumber, accountHolder) 추가
-    console.log({ bankName, accountNumber, accountHolder });
+    // console.log({ bankName, accountNumber, accountHolder });
     onClose();
     setBankName('');
     setAccountNumber('');

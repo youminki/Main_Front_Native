@@ -94,7 +94,7 @@ const PaypleTest = () => {
       if (!res.ok) throw new Error('카드 등록 데이터 요청 실패');
 
       const data = await res.json();
-      console.log('[✅ 카드 등록용 데이터]', data);
+      // console.log('[✅ 카드 등록용 데이터]', data);
 
       if (typeof window.PaypleCpayAuthCheck !== 'function') {
         console.error('[❌ Payple SDK 로딩 실패]');
@@ -117,7 +117,7 @@ const PaypleTest = () => {
 
   const requestPayPasswordPopup = async (payerId: string) => {
     try {
-      console.log('🧾 PAYER_ID to use:', payerId);
+      // console.log('🧾 PAYER_ID to use:', payerId);
       if (!payerId || typeof payerId !== 'string' || payerId.trim() === '') {
         alert('유효한 카드가 없습니다.');
         return;
@@ -145,7 +145,7 @@ const PaypleTest = () => {
 
   useEffect(() => {
     window.PCD_PAY_CALLBACK = async (result: any) => {
-      console.log('[✅ Payple 결과 수신]', result);
+      // console.log('[✅ Payple 결과 수신]', result);
       if (!userInfo) return setError('로그인 정보를 찾을 수 없습니다.');
 
       try {

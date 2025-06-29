@@ -27,7 +27,7 @@ const ChangeNicknameModal: React.FC<ChangeNicknameModalProps> = ({
       return;
     }
     // TODO: API 연동 로직 (nickname) 추가
-    console.log({ nickname });
+    // console.log({ nickname });
     onClose();
     setNickname('');
   };

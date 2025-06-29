@@ -46,7 +46,7 @@ const ContemporarySettings: React.FC = () => {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
   const onSubmit = (data: FormData) => {
-    console.log('Form Data: ', data);
+    // console.log('Form Data: ', data);
     Alert.alert('성공', '설정이 완료되었습니다.');
   };
 
