@@ -1,280 +1,125 @@
-import styled from 'styled-components';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-const FavoriteBrandsSection = () => (
-  <>
-    <Label>선호하는 브랜드 (3가지)</Label>
-    <BrandContainer>
-      <BrandOptions />
-    </BrandContainer>
-  </>
-);
+const FavoriteBrandsSection = () => {
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
-const BrandOptions = () => (
-  <>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='48' value='48' />
-      <label htmlFor='48'>
-        <span></span>CADELL
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='57' value='57' />
-      <label htmlFor='57'>
-        <span></span>CC Collect
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='10' value='10' />
-      <label htmlFor='10'>
-        <span></span>CLUB MONACO
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='30' value='30' />
-      <label htmlFor='30'>
-        <span></span>DECO
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='15' value='15' />
-      <label htmlFor='15'>
-        <span></span>DEW L
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='51' value='51' />
-      <label htmlFor='51'>
-        <span></span>DOUCAN
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='17' value='17' />
-      <label htmlFor='17'>
-        <span></span>EGOIST
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='20' value='20' />
-      <label htmlFor='20'>
-        <span></span>G-CUT
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='23' value='23' />
-      <label htmlFor='23'>
-        <span></span>it MICHAA
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='11' value='11' />
-      <label htmlFor='11'>
-        <span></span>JIGOTT
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='13' value='13' />
-      <label htmlFor='13'>
-        <span></span>JJ JIGOTT
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='19' value='19' />
-      <label htmlFor='19'>
-        <span></span>KENNETH LADY
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='32' value='32' />
-      <label htmlFor='32'>
-        <span></span>LÄTT BY T
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='50' value='50' />
-      <label htmlFor='50'>
-        <span></span>Lazyna
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='45' value='45' />
-      <label htmlFor='45'>
-        <span></span>LINE
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='18' value='18' />
-      <label htmlFor='18'>
-        <span></span>LYNN
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='34' value='34' />
-      <label htmlFor='34'>
-        <span></span>MAJE
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='46' value='46' />
-      <label htmlFor='46'>
-        <span></span>Mark de niel
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='22' value='22' />
-      <label htmlFor='22'>
-        <span></span>MICHAA
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='16' value='16' />
-      <label htmlFor='16'>
-        <span></span>MOJO.S.PHINE
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='47' value='47' />
-      <label htmlFor='47'>
-        <span></span>Mujatzz
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='29' value='29' />
-      <label htmlFor='29'>
-        <span></span>OLIVE DES OLIVE
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='35' value='35' />
-      <label htmlFor='35'>
-        <span></span>O˙2nd
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='26' value='26' />
-      <label htmlFor='26'>
-        <span></span>RENEEVON
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='27' value='27' />
-      <label htmlFor='27'>
-        <span></span>SANDRO
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='21' value='21' />
-      <label htmlFor='21'>
-        <span></span>SATIN
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='25' value='25' />
-      <label htmlFor='25'>
-        <span></span>SISLEY
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='2' value='2' />
-      <label htmlFor='2'>
-        <span></span>SJSJ
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='33' value='33' />
-      <label htmlFor='33'>
-        <span></span>SJYP
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='28' value='28' />
-      <label htmlFor='28'>
-        <span></span>STUDIO TOMBOY
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='1' value='1' />
-      <label htmlFor='1'>
-        <span></span>SYSTEM
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='58' value='58' />
-      <label htmlFor='58'>
-        <span></span>S_Blanc
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='24' value='24' />
-      <label htmlFor='24'>
-        <span></span>S˙SOLEZIA
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='14' value='14' />
-      <label htmlFor='14'>
-        <span></span>THE IZZAT
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='12' value='12' />
-      <label htmlFor='12'>
-        <span></span>THE IZZAT Collection
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='31' value='31' />
-      <label htmlFor='31'>
-        <span></span>TIME
-      </label>
-    </BrandCheckbox>
-    <BrandCheckbox>
-      <input type='checkbox' name='favoriteBrandSeq' id='36' value='36' />
-      <label htmlFor='36'>
-        <span></span>ZOOC
-      </label>
-    </BrandCheckbox>
-  </>
-);
+  const handleBrandToggle = (brandId: string) => {
+    setSelectedBrands((prev) => {
+      if (prev.includes(brandId)) {
+        return prev.filter((id) => id !== brandId);
+      } else {
+        if (prev.length >= 3) {
+          return prev;
+        }
+        return [...prev, brandId];
+      }
+    });
+  };
+
+  const brands = [
+    { id: '48', name: 'CADELL' },
+    { id: '57', name: 'CC Collect' },
+    { id: '10', name: 'CLUB MONACO' },
+    { id: '30', name: 'DECO' },
+    { id: '15', name: 'DEW L' },
+    { id: '51', name: 'DOUCAN' },
+    { id: '17', name: 'EGOIST' },
+    { id: '20', name: 'G-CUT' },
+    { id: '23', name: 'it MICHAA' },
+    { id: '11', name: 'JIGOTT' },
+    { id: '13', name: 'JJ JIGOTT' },
+    { id: '19', name: 'KENNETH LADY' },
+    { id: '32', name: 'LÄTT BY T' },
+    { id: '50', name: 'Lazyna' },
+    { id: '45', name: 'LINE' },
+    { id: '18', name: 'LYNN' },
+    { id: '34', name: 'MAJE' },
+    { id: '46', name: 'Mark de niel' },
+    { id: '22', name: 'MICHAA' },
+    { id: '16', name: 'MOJO.S.PHINE' },
+    { id: '47', name: 'Mujatzz' },
+    { id: '29', name: 'OLIVE DES OLIVE' },
+    { id: '35', name: 'O˙2nd' },
+    { id: '26', name: 'RENEEVON' },
+    { id: '27', name: 'SANDRO' },
+    { id: '21', name: 'SATIN' },
+    { id: '25', name: 'SISLEY' },
+    { id: '2', name: 'SJSJ' },
+    { id: '33', name: 'SJYP' },
+    { id: '28', name: 'STUDIO TOMBOY' },
+    { id: '1', name: 'SYSTEM' },
+  ];
+
+  return (
+    <>
+      <Text style={styles.label}>선호하는 브랜드 (3가지)</Text>
+      <View style={styles.brandContainer}>
+        {brands.map((brand) => (
+          <TouchableOpacity
+            key={brand.id}
+            style={styles.brandCheckbox}
+            onPress={() => handleBrandToggle(brand.id)}
+          >
+            <View
+              style={[
+                styles.checkbox,
+                selectedBrands.includes(brand.id) && styles.checkboxSelected,
+              ]}
+            >
+              {selectedBrands.includes(brand.id) && (
+                <Text style={styles.checkmark}>✓</Text>
+              )}
+            </View>
+            <Text style={styles.brandName}>{brand.name}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </>
+  );
+};
 
 export default FavoriteBrandsSection;
 
-const Label = styled.label`
-  font-size: 16px;
-  font-weight: bold;
-  color: ${({ theme }) => theme.colors.DarkBrown3};
-  margin-bottom: 12px;
-  text-align: left;
-  letter-spacing: 1px;
-`;
-
-const BrandContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  margin-bottom: 20px;
-  padding: 30px;
-  border: 1px solid ${({ theme }) => theme.colors.gray};
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    padding: 15px;
-    margin-bottom: 15px;
-  }
-`;
-const BrandCheckbox = styled.div`
-  display: flex;
-  align-items: center;
-  width: calc(50% - 10px);
-  margin-bottom: 10px;
-
-  input {
-    margin-right: 10px;
-  }
-
-  label {
-    font-size: 14px;
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    width: calc(100% - 10px);
-  }
-`;
+const styles = StyleSheet.create({
+  label: {
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 12,
+    color: '#333',
+  },
+  brandContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  brandCheckbox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    minWidth: '30%',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxSelected: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  checkmark: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  brandName: {
+    fontSize: 14,
+    color: '#333',
+  },
+});

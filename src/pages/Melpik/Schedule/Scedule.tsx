@@ -1,8 +1,16 @@
 // src/pages/Melpik/Schedule/Schedule.tsx
 
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import Theme from '../../../styles/Theme';
 import ScheduleIcon from '../../../assets/Melpik/schedule.svg';
 import BletIcon from '../../../assets/Melpik/blet.svg';
@@ -12,8 +20,14 @@ import {
   SaleScheduleSummaryItem,
 } from '../../../api/sale/SaleSchedule';
 
+// 네비게이션 타입 정의 (필요에 따라 StackParamList를 실제 네비게이션 구조에 맞게 수정)
+type RootStackParamList = {
+  ScheduleReservation1: undefined;
+  ScheduleConfirmation: { id: number };
+};
+
 const Schedule: React.FC = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   // API로부터 받아올 스케줄 요약 리스트
   const [schedules, setSchedules] = useState<SaleScheduleSummaryItem[]>([]);
@@ -53,12 +67,12 @@ const Schedule: React.FC = () => {
   const salesLabel = '진행중인 스케줄';
 
   const handleBottomClick = (): void => {
-    navigate('/schedule/reservation1');
+    navigation.navigate('ScheduleReservation1');
   };
 
   // 각 스케줄 클릭 시 상세 페이지로 이동
   const handleItemClick = (id: number): void => {
-    navigate(`/schedule/confirmation/${id}`);
+    navigation.navigate('ScheduleConfirmation', { id });
   };
 
   const mapStatusToUI = (
@@ -75,300 +89,308 @@ const Schedule: React.FC = () => {
       .map((part) => part.trim().replace(/-/g, '.'))
       .join(' ~ ');
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size='large' color='#000' />
+        <Text style={styles.loadingMessage}>로딩 중...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorMessage}>{error}</Text>
+      </View>
+    );
+  }
+
   return (
-    <ScheduleContainer>
-      <Header>
-        <Title>판매 스케줄</Title>
-        <Subtitle>내 채널을 통해 나는 브랜드가 된다</Subtitle>
-      </Header>
+    <View style={styles.scheduleContainer}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>판매 스케줄</Text>
+          <Text style={styles.subtitle}>내 채널을 통해 나는 브랜드가 된다</Text>
+        </View>
 
-      {loading ? (
-        <LoadingMessage>로딩 중...</LoadingMessage>
-      ) : error ? (
-        <ErrorMessage>{error}</ErrorMessage>
-      ) : (
-        <>
-          <StatsRow>
-            <StatsSection
-              visits={totalCount}
-              sales={inProgressCount}
-              dateRange={currentDateRange}
-              visitLabel={visitLabel}
-              salesLabel={salesLabel}
-            />
-          </StatsRow>
-          <Divider />
+        <View style={styles.statsRow}>
+          <StatsSection
+            visits={totalCount}
+            sales={inProgressCount}
+            dateRange={currentDateRange}
+            visitLabel={visitLabel}
+            salesLabel={salesLabel}
+          />
+        </View>
+        <View style={styles.divider} />
 
-          <ScheduleContent>
-            <ScheduleList>
-              {schedules.map((item) => {
-                const uiStatus = mapStatusToUI(item.status);
-                return (
-                  <ScheduleItemContainer
-                    key={item.id}
-                    scheduleStatus={uiStatus}
-                    onClick={() => handleItemClick(item.id)}
-                  >
-                    <IconContainer>
-                      <IconWrapper scheduleStatus={uiStatus}>
-                        <Icon src={ScheduleIcon} alt={`${item.title} Icon`} />
-                      </IconWrapper>
-                      <ConnectorLine />
-                    </IconContainer>
-                    <ItemContainer>
-                      <MiniTitle>
-                        {uiStatus === 'reserved'
-                          ? '예약된 스케줄'
-                          : uiStatus === 'inProgress'
-                            ? '진행된 스케줄'
-                            : '미진행 스케줄'}
-                      </MiniTitle>
-                      <ScheduleItem>
-                        <Details>
-                          <SeasonWrapper>
-                            <Season>
-                              {item.title} 시즌 {item.id}
-                            </Season>
-                            <BletIconWrapper
-                              onClick={() => handleItemClick(item.id)}
-                            >
-                              <BletIconImg src={BletIcon} alt='Blet Icon' />
-                            </BletIconWrapper>
-                          </SeasonWrapper>
-                          <DateWrapper>
-                            <DateTitle>스케줄 일정</DateTitle>
-                            <DateText>
-                              {formatDateRange(item.dateRange)}
-                            </DateText>
-                          </DateWrapper>
-                          <ConnectorLine1 />
-                          <InfoRow>
-                            <InfoColumn>
-                              <DateTitle>선택한 작품</DateTitle>
-                              <DateText>{item.productCount}가지</DateText>
-                            </InfoColumn>
-                          </InfoRow>
-                        </Details>
-                      </ScheduleItem>
-                    </ItemContainer>
-                  </ScheduleItemContainer>
-                );
-              })}
-            </ScheduleList>
-          </ScheduleContent>
-        </>
-      )}
+        <View style={styles.scheduleContent}>
+          <View style={styles.scheduleList}>
+            {schedules.map((item) => {
+              const uiStatus = mapStatusToUI(item.status);
+              return (
+                <TouchableOpacity
+                  key={item.id}
+                  style={[
+                    styles.scheduleItemContainer,
+                    uiStatus === 'reserved' && styles.scheduleItemReserved,
+                    uiStatus === 'inProgress' && styles.scheduleItemInProgress,
+                    uiStatus === 'notStarted' && styles.scheduleItemNotStarted,
+                  ]}
+                  onPress={() => handleItemClick(item.id)}
+                >
+                  <View style={styles.iconContainer}>
+                    <View
+                      style={[
+                        styles.iconWrapper,
+                        uiStatus === 'reserved' && styles.iconWrapperReserved,
+                        uiStatus === 'inProgress' &&
+                          styles.iconWrapperInProgress,
+                        uiStatus === 'notStarted' &&
+                          styles.iconWrapperNotStarted,
+                      ]}
+                    >
+                      <ScheduleIcon width={24} height={24} />
+                    </View>
+                    <View style={styles.connectorLine} />
+                  </View>
+                  <View style={styles.itemContainer}>
+                    <Text style={styles.miniTitle}>
+                      {uiStatus === 'reserved'
+                        ? '예약된 스케줄'
+                        : uiStatus === 'inProgress'
+                        ? '진행된 스케줄'
+                        : '미진행 스케줄'}
+                    </Text>
+                    <View style={styles.scheduleItem}>
+                      <View style={styles.details}>
+                        <View style={styles.seasonWrapper}>
+                          <Text style={styles.season}>
+                            {item.title} 시즌 {item.id}
+                          </Text>
+                          <TouchableOpacity
+                            style={styles.bletIconWrapper}
+                            onPress={() => handleItemClick(item.id)}
+                          >
+                            <BletIcon width={20} height={20} />
+                          </TouchableOpacity>
+                        </View>
+                        <View style={styles.dateWrapper}>
+                          <Text style={styles.dateTitle}>스케줄 일정</Text>
+                          <Text style={styles.dateText}>
+                            {formatDateRange(item.dateRange)}
+                          </Text>
+                        </View>
+                        <View style={styles.connectorLine1} />
+                        <View style={styles.infoRow}>
+                          <View style={styles.infoColumn}>
+                            <Text style={styles.dateTitle}>선택한 작품</Text>
+                            <Text style={styles.dateText}>
+                              {item.productCount}가지
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+      </ScrollView>
 
-      <BottomBarContainer>
-        <OrderButton onClick={handleBottomClick}>스케줄 예약하기</OrderButton>
-      </BottomBarContainer>
-      <BeenContainer />
-    </ScheduleContainer>
+      <View style={styles.bottomBarContainer}>
+        <TouchableOpacity
+          style={styles.orderButton}
+          onPress={handleBottomClick}
+        >
+          <Text style={styles.orderButtonText}>스케줄 예약하기</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
 export default Schedule;
 
-// Styled Components
-const ScheduleContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  background-color: #fff;
-  padding: 1rem;
-  max-width: 600px;
-  margin: auto;
-`;
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  margin-bottom: 6px;
-`;
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: 800;
-  color: #000;
-  margin-bottom: 0px;
-`;
-const Subtitle = styled.p`
-  font-size: 12px;
-  font-weight: 400;
-  color: #ccc;
-`;
-const LoadingMessage = styled.div`
-  padding: 20px;
-  text-align: center;
-`;
-const ErrorMessage = styled.div`
-  padding: 20px;
-  text-align: center;
-  color: red;
-`;
-const ItemContainer = styled.div`
-  min-width: 290px;
-  width: 100%;
-  height: auto;
-`;
-const ScheduleContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-`;
-const ScheduleList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  width: 100%;
-`;
-const IconContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  z-index: 2;
-  margin: 30px 20px 0 0;
-`;
-interface ScheduleItemProps {
-  scheduleStatus: 'reserved' | 'inProgress' | 'notStarted';
-}
-const ScheduleItemContainer = styled.div<ScheduleItemProps>`
-  display: flex;
-  align-items: flex-start;
-  cursor: pointer;
-`;
-const IconWrapper = styled.div<ScheduleItemProps>`
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background-color: ${({ scheduleStatus }) =>
-    scheduleStatus === 'reserved'
-      ? Theme.colors.gray
-      : scheduleStatus === 'inProgress'
-        ? Theme.colors.yellow
-        : Theme.colors.gray4};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-const Icon = styled.img`
-  width: 24px;
-  height: 24px;
-`;
-const ConnectorLine1 = styled.div`
-  border: 1px solid ${Theme.colors.gray4};
-  margin: 4px 0;
-`;
-const ConnectorLine = styled.div`
-  border: 2px solid ${Theme.colors.gray4};
-  height: 212px;
-`;
-const ScheduleItem = styled.div`
-  background-color: white;
-  border: 1px solid ${Theme.colors.gray4};
-  flex-grow: 1;
-`;
-const Details = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 31px 21px 34px 21px;
-`;
-const SeasonWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-const Season = styled.span`
-  font-weight: 900;
-  font-size: 16px;
-  line-height: 18px;
-`;
-const BletIconWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid ${Theme.colors.gray1};
-  margin-left: 10px;
-  border-radius: 4px;
-`;
-const BletIconImg = styled.img`
-  width: 20px;
-  height: 22px;
-`;
-const DateWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-`;
-const DateTitle = styled.span`
-  color: ${Theme.colors.gray2};
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 13px;
-  margin-bottom: 10px;
-`;
-const DateText = styled.span`
-  font-weight: 800;
-  font-size: 14px;
-  line-height: 15px;
-`;
-const InfoRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-const InfoColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-right: 50px;
-`;
-const MiniTitle = styled.div`
-  display: flex;
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-  padding: 9px 10px;
-`;
-const BottomBarContainer = styled.div`
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 600px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px 10px 34px;
-  background-color: #eeeeee;
-  z-index: 9999;
-`;
-const OrderButton = styled.button`
-  width: 100%;
-  height: 56px;
-  background-color: black;
-  border: none;
-  border-radius: 6px;
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 800;
-  cursor: pointer;
-  margin: 0 21px;
-`;
-const BeenContainer = styled.div`
-  height: 100px;
-`;
-const StatsRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-`;
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #dddddd;
-  margin: 30px 0;
-`;
+const styles = StyleSheet.create({
+  scheduleContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+    padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingMessage: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  errorMessage: {
+    fontSize: 16,
+    color: '#ff0000',
+    textAlign: 'center',
+  },
+  header: {
+    alignItems: 'flex-start',
+    width: '100%',
+    marginBottom: 6,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#000',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#ccc',
+  },
+  statsRow: {
+    marginBottom: 20,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#E5E5E5',
+    marginVertical: 20,
+  },
+  scheduleContent: {
+    flex: 1,
+  },
+  scheduleList: {
+    gap: 20,
+  },
+  scheduleItemContainer: {
+    flexDirection: 'row',
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5E5E5',
+  },
+  scheduleItemReserved: {
+    backgroundColor: '#F8F9FA',
+    borderColor: '#007BFF',
+  },
+  scheduleItemInProgress: {
+    backgroundColor: '#E7F3FF',
+    borderColor: '#28A745',
+  },
+  scheduleItemNotStarted: {
+    backgroundColor: '#F8F9FA',
+    borderColor: '#6C757D',
+  },
+  iconContainer: {
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  iconWrapper: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  iconWrapperReserved: {
+    backgroundColor: '#007BFF',
+  },
+  iconWrapperInProgress: {
+    backgroundColor: '#28A745',
+  },
+  iconWrapperNotStarted: {
+    backgroundColor: '#6C757D',
+  },
+  connectorLine: {
+    width: 2,
+    height: 20,
+    backgroundColor: '#E5E5E5',
+  },
+  itemContainer: {
+    flex: 1,
+  },
+  miniTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#666',
+    marginBottom: 8,
+  },
+  scheduleItem: {
+    flex: 1,
+  },
+  details: {
+    gap: 12,
+  },
+  seasonWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  season: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  bletIconWrapper: {
+    padding: 4,
+  },
+  dateWrapper: {
+    gap: 4,
+  },
+  dateTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  dateText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  connectorLine1: {
+    height: 1,
+    backgroundColor: '#E5E5E5',
+  },
+  infoRow: {
+    flexDirection: 'row',
+  },
+  infoColumn: {
+    flex: 1,
+  },
+  bottomBarContainer: {
+    padding: 16,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5E5',
+  },
+  orderButton: {
+    backgroundColor: '#000',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  orderButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});

@@ -1,7 +1,14 @@
 // src/components/Melpik/Schedule/Reservation1/Calendar.tsx
 import React from 'react';
-import styled from 'styled-components';
-import { FaPlus, FaMinus } from 'react-icons/fa';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+
+const { width } = Dimensions.get('window');
 
 interface CalendarProps {
   year: number;
@@ -51,30 +58,45 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   return (
-    <CalendarWrapper>
-      <Header>
-        <HeaderText>
+    <View style={styles.calendarWrapper}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>
           {year}년 {month}월
-        </HeaderText>
-        <IconGroup>
-          <IconButton onClick={onDecrease} title='종료일 -1일'>
-            <FaMinus />
-          </IconButton>
-          <IconButton onClick={onIncrease} title='종료일 +1일'>
-            <FaPlus />
-          </IconButton>
-        </IconGroup>
-      </Header>
+        </Text>
+        <View style={styles.iconGroup}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={onDecrease}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.iconText}>-</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={onIncrease}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.iconText}>+</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
-      <CalendarContainer>
+      <View style={styles.calendarContainer}>
         {['일', '월', '화', '수', '목', '금', '토'].map((name, idx) => (
-          <DayName key={idx} isWeekend={idx === 0 || idx === 6}>
-            {name}
-          </DayName>
+          <View key={idx} style={styles.dayName}>
+            <Text
+              style={[
+                styles.dayNameText,
+                idx === 0 || idx === 6 ? styles.weekendText : null,
+              ]}
+            >
+              {name}
+            </Text>
+          </View>
         ))}
 
         {Array.from({ length: firstDay }).map((_, i) => (
-          <EmptyBox key={i} />
+          <View key={i} style={styles.emptyBox} />
         ))}
 
         {Array.from({ length: daysInMonth }, (_, idx) => {
@@ -82,152 +104,125 @@ const Calendar: React.FC<CalendarProps> = ({
           const disabled = isDisabled(day);
           const selected = !disabled && isSelected(day);
           return (
-            <DayBox
+            <TouchableOpacity
               key={day}
-              disabled={disabled}
-              selected={selected}
-              onClick={() => {
+              style={[
+                styles.dayBox,
+                disabled && styles.disabledDay,
+                selected && styles.selectedDay,
+              ]}
+              onPress={() => {
                 if (!disabled) onDateClick(day);
               }}
+              disabled={disabled}
+              activeOpacity={0.7}
             >
-              <DayNumber>{day}</DayNumber>
-            </DayBox>
+              <Text
+                style={[
+                  styles.dayNumber,
+                  disabled && styles.disabledText,
+                  selected && styles.selectedText,
+                ]}
+              >
+                {day}
+              </Text>
+            </TouchableOpacity>
           );
         })}
-      </CalendarContainer>
-    </CalendarWrapper>
+      </View>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  calendarWrapper: {
+    position: 'relative',
+    borderRadius: 4,
+    paddingTop: 40,
+  },
+  header: {
+    position: 'relative',
+    height: 48,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#cccccc',
+  },
+  headerText: {
+    position: 'absolute',
+    left: '50%',
+    transform: [{ translateX: -50 }],
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  iconGroup: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  iconButton: {
+    backgroundColor: '#f6ae24',
+    borderRadius: 4,
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  calendarContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    padding: 8,
+  },
+  dayName: {
+    width: (width - 32) / 7,
+    aspectRatio: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayNameText: {
+    fontWeight: 'bold',
+    color: '#000000',
+    fontSize: 12,
+  },
+  weekendText: {
+    color: '#888888',
+  },
+  emptyBox: {
+    width: (width - 32) / 7,
+    aspectRatio: 1,
+  },
+  dayBox: {
+    width: (width - 32) / 7,
+    aspectRatio: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 2,
+  },
+  disabledDay: {
+    opacity: 0.3,
+  },
+  selectedDay: {
+    backgroundColor: '#f6ae24',
+    borderRadius: 4,
+  },
+  dayNumber: {
+    fontSize: 14,
+    color: '#000000',
+  },
+  disabledText: {
+    color: '#cccccc',
+  },
+  selectedText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+  },
+});
+
 export default Calendar;
-
-const CalendarWrapper = styled.div`
-  position: relative;
-
-  border-radius: 4px;
-  padding-top: 2.5rem;
-`;
-
-const Header = styled.div`
-  position: relative;
-  height: 3rem; /* 높이 약간 늘림 */
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 0 1rem; /* 좌우 여백 확대 */
-  background: #ffffff;
-  border-bottom: 1px solid #cccccc;
-`;
-
-const HeaderText = styled.div`
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 16px; /* 기본 사이즈 증가 */
-  font-weight: bold;
-
-  @media (min-width: 768px) {
-    font-size: 18px;
-  }
-  @media (min-width: 1024px) {
-    font-size: 20px; /* 데스크탑에서 더 키움 */
-  }
-`;
-
-const IconGroup = styled.div`
-  display: flex;
-  gap: 8px; /* 아이콘 간격 확대 */
-`;
-
-const IconButton = styled.button`
-  background: #f6ae24;
-  color: #ffffff;
-  border: none;
-  border-radius: 4px;
-  width: 28px; /* 기본 크기 키움 */
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 14px; /* 아이콘 크기 키움 */
-  transition: background 0.2s;
-  &:hover {
-    background: #d8921e;
-  }
-
-  @media (min-width: 768px) {
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
-  }
-  @media (min-width: 1024px) {
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
-  }
-`;
-
-const CalendarContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  padding: 0.5rem;
-
-  @media (min-width: 1024px) {
-    gap: 6px;
-    padding: 1rem;
-  }
-`;
-
-const DayName = styled.div<{ isWeekend: boolean }>`
-  text-align: center;
-  font-weight: bold;
-  color: ${(p) => (p.isWeekend ? '#888888' : '#000000')};
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-
-  @media (min-width: 768px) {
-    font-size: 14px;
-  }
-  @media (min-width: 1024px) {
-    font-size: 16px;
-  }
-`;
-
-const EmptyBox = styled.div`
-  aspect-ratio: 1;
-`;
-
-const DayBox = styled.div<{ disabled: boolean; selected: boolean }>`
-  cursor: ${(p) => (p.disabled ? 'default' : 'pointer')};
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${(p) =>
-    p.disabled ? '#EEEEEE' : p.selected ? '#F6AE24' : '#FFFFFF'};
-  color: ${(p) =>
-    p.disabled ? '#AAAAAA' : p.selected ? '#FFFFFF' : '#000000'};
-  border: 1px solid
-    ${(p) => (p.disabled ? '#DDDDDD' : p.selected ? '#F6AE24' : '#CCCCCC')};
-  transition: background 0.2s;
-
-  &:hover {
-    background: ${(p) =>
-      p.disabled ? '#EEEEEE' : p.selected ? '#F6AE24' : '#EEEEEE'};
-  }
-`;
-
-const DayNumber = styled.span`
-  font-size: 12px;
-  @media (min-width: 768px) {
-    font-size: 14px;
-  }
-  @media (min-width: 1024px) {
-    font-size: 16px;
-  }
-`;

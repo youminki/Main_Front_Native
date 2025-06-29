@@ -1,45 +1,48 @@
 // src/components/Brand/BrandList.tsx
 
 import React from 'react';
-import styled from 'styled-components';
+import { View, Text, StyleSheet } from 'react-native';
 import BrandItem, { Brand as BrandType } from './BrandItem';
 
 interface BrandListProps {
   groupedBrands: Record<string, BrandType[]>;
 }
 
-export const BrandList: React.FC<BrandListProps> = ({ groupedBrands }) => {
-  const keys = Object.keys(groupedBrands);
+const BrandList: React.FC<BrandListProps> = ({ groupedBrands }) => {
   return (
-    <Container>
-      {keys.map((groupKey) => (
-        <GroupSection key={groupKey}>
-          <GroupTitle>{groupKey}</GroupTitle>
-          {groupedBrands[groupKey].map((brand) => (
-            // brand.id가 고유하므로 key로 사용
+    <View style={styles.container}>
+      {Object.entries(groupedBrands).map(([groupName, brands]) => (
+        <View key={groupName} style={styles.groupSection}>
+          <Text style={styles.groupTitle}>{groupName}</Text>
+          {brands.map((brand) => (
             <BrandItem key={brand.id} brand={brand} />
           ))}
-        </GroupSection>
+        </View>
       ))}
-    </Container>
+    </View>
   );
 };
 
-const Container = styled.div`
-  width: 100%;
-  border-left: 1px solid #ccc;
-  border-right: 1px solid #ccc;
-`;
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    borderLeftWidth: 1,
+    borderLeftColor: '#ccc',
+    borderRightWidth: 1,
+    borderRightColor: '#ccc',
+  },
+  groupSection: {
+    marginBottom: 0,
+  },
+  groupTitle: {
+    fontWeight: '900',
+    fontSize: 16,
+    backgroundColor: '#555',
+    padding: 12,
+    paddingHorizontal: 20,
+    color: 'white',
+    margin: 0,
+  },
+});
 
-const GroupSection = styled.section`
-  margin-bottom: 0px;
-`;
-
-const GroupTitle = styled.h2`
-  font-weight: 900;
-  font-size: 16px;
-  background-color: #555;
-  padding: 12px 20px;
-  color: white;
-  margin: 0px;
-`;
+export default BrandList;

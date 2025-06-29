@@ -1,69 +1,52 @@
-import 'react-native';
+declare module '*.svg' {
+  import React from 'react';
+  import { SvgProps } from 'react-native-svg';
+  const content: React.FC<SvgProps>;
+  export default content;
+}
 
-declare module 'react-native' {
-  interface ViewProps {
-    children?: React.ReactNode;
-  }
+declare module '*.png' {
+  const content: any;
+  export default content;
+}
 
-  interface TextProps {
-    children?: React.ReactNode;
-  }
+declare module '*.jpg' {
+  const content: any;
+  export default content;
+}
 
-  interface TouchableOpacityProps {
-    children?: React.ReactNode;
-  }
+declare module '*.jpeg' {
+  const content: any;
+  export default content;
+}
 
-  interface TextInputProps {
-    children?: React.ReactNode;
-  }
+declare module '*.gif' {
+  const content: any;
+  export default content;
+}
 
-  interface ScrollViewProps {
-    children?: React.ReactNode;
-  }
+declare module '*.webp' {
+  const content: any;
+  export default content;
+}
 
-  interface ModalProps {
-    children?: React.ReactNode;
-  }
+declare module 'date-fns' {
+  export function addDays(date: Date, amount: number): Date;
+  export function isSameDay(dateLeft: Date, dateRight: Date): boolean;
+  export function isBefore(date: Date, dateToCompare: Date): boolean;
+  export function format(date: Date, formatStr: string): string;
+  export function addMonths(date: Date, amount: number): Date;
+}
 
-  interface ImageProps {
-    children?: React.ReactNode;
-  }
+declare module 'styled-reset' {
+  export const reset: any;
 }
 
 declare global {
-  namespace React {
-    interface ReactNode {
-      bigint?: never;
-    }
+  interface Window {
+    PaypleCpayAuthCheck: any;
+    PCD_PAY_CALLBACK: any;
   }
-}
 
-// React Native 컴포넌트 타입 호환성 개선
-declare module 'react' {
-  interface ReactElement<
-    P = any,
-    T extends string | JSXElementConstructor<any> =
-      | string
-      | JSXElementConstructor<any>
-  > {
-    type: T;
-    props: P;
-    key: Key | null;
-  }
-}
-
-// React Native 컴포넌트 타입 확장
-declare module '@react-navigation/native' {
-  export interface NavigationProp<
-    ParamList extends ParamListBase,
-    RouteName extends keyof ParamList = keyof ParamList
-  > {
-    navigate<RouteName extends keyof ParamList>(
-      ...args: undefined extends ParamList[RouteName]
-        ?
-            | [screen: RouteName]
-            | [screen: RouteName, params: ParamList[RouteName]]
-        : [screen: RouteName, params: ParamList[RouteName]]
-    ): void;
-  }
+  function alert(message: string): void;
 }

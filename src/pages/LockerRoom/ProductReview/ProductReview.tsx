@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import StatsSection from '../../../components/StatsSection';
 import PeriodSection from '../../../components/PeriodSection';
-
-import sampleImage from '../../../assets/sample-dress.svg';
-import ProductInfoIcon from '../../../assets/Basket/ProductInfoIcon.svg';
-import ServiceInfoIcon from '../../../assets/Basket/ServiceInfoIcon.svg';
-import EvaluationIcon from '../../../assets/Basket/EvaluationIcon.svg';
-import FilledStarIcon from '../../../assets/Basket/FilledStarIcon.svg';
-import EmptyStarIcon from '../../../assets/Basket/EmptyStarIcon.svg';
 
 interface BasketItem {
   id: number;
@@ -22,7 +22,7 @@ interface BasketItem {
   size: string;
   color: string;
   price: number | string;
-  imageUrl: string;
+  imageUrl: any;
   $isSelected: boolean;
   rentalDays?: string;
   rating?: number;
@@ -30,7 +30,7 @@ interface BasketItem {
 
 const ProductReview: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(6);
-  const navigate = useNavigate();
+  const navigation = useNavigation();
 
   const [items] = useState<BasketItem[]>([
     {
@@ -43,7 +43,7 @@ const ProductReview: React.FC = () => {
       size: 'M (55)',
       color: '블랙',
       price: 50000,
-      imageUrl: sampleImage,
+      imageUrl: require('../../../assets/sample-dress.png'),
       $isSelected: true,
       rentalDays: '대여 (3일)',
       rating: 3,
@@ -58,7 +58,7 @@ const ProductReview: React.FC = () => {
       size: 'M (55)',
       color: '블랙',
       price: '489,000',
-      imageUrl: sampleImage,
+      imageUrl: require('../../../assets/sample-dress.png'),
       $isSelected: true,
       rentalDays: '구매',
       rating: 5,
@@ -68,11 +68,13 @@ const ProductReview: React.FC = () => {
   const filteredItems = selectedPeriod === 3 ? items.slice(0, 3) : items;
 
   return (
-    <ProductReviewContainer>
-      <Header>
-        <Title>제품평가</Title>
-        <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
-      </Header>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>제품평가</Text>
+        <Text style={styles.subtitle}>
+          나에게 맞는 스타일을 찾을 때는 멜픽!
+        </Text>
+      </View>
 
       <StatsSection
         visits={'999'}
@@ -82,356 +84,363 @@ const ProductReview: React.FC = () => {
         salesLabel={'시즌'}
       />
 
-      <Divider />
+      <View style={styles.divider} />
 
-      <Section>
+      <View style={styles.section}>
         <PeriodSection
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
         />
 
-        <ItemList>
+        <View style={styles.itemList}>
           {filteredItems.map((item) => (
-            <Item key={item.id}>
-              <ContentWrapper>
-                <ItemDetails>
-                  <Brand>{item.brand}</Brand>
-                  <ItemName>
-                    <NameCode>{item.nameCode}</NameCode>
-                    <Slash>/</Slash>
-                    <ItemType>{item.nameType}</ItemType>
-                  </ItemName>
+            <View key={item.id} style={styles.item}>
+              <View style={styles.contentWrapper}>
+                <View style={styles.itemDetails}>
+                  <Text style={styles.brand}>{item.brand}</Text>
+                  <View style={styles.itemName}>
+                    <Text style={styles.nameCode}>{item.nameCode}</Text>
+                    <Text style={styles.slash}>/</Text>
+                    <Text style={styles.itemType}>{item.nameType}</Text>
+                  </View>
 
                   {item.type === 'rental' ? (
-                    <InfoRowFlex>
-                      <IconArea>
-                        <Icon src={ServiceInfoIcon} alt='Service Info' />
-                      </IconArea>
-                      <TextContainer>
-                        <RowText>
-                          <LabelDetailText>진행 서비스 - </LabelDetailText>
-                          <DetailHighlight>{item.rentalDays}</DetailHighlight>
-                        </RowText>
+                    <View style={styles.infoRowFlex}>
+                      <View style={styles.iconArea}>
+                        <Image
+                          source={require('../../../assets/Basket/ServiceInfoIcon.png')}
+                          style={styles.icon}
+                        />
+                      </View>
+                      <View style={styles.textContainer}>
+                        <View style={styles.rowText}>
+                          <Text style={styles.labelDetailText}>
+                            진행 서비스 -{' '}
+                          </Text>
+                          <Text style={styles.detailHighlight}>
+                            {item.rentalDays}
+                          </Text>
+                        </View>
                         {item.servicePeriod && (
-                          <AdditionalText>
-                            <DetailText>{item.servicePeriod}</DetailText>
-                          </AdditionalText>
+                          <View style={styles.additionalText}>
+                            <Text style={styles.detailText}>
+                              {item.servicePeriod}
+                            </Text>
+                          </View>
                         )}
-                      </TextContainer>
-                    </InfoRowFlex>
+                      </View>
+                    </View>
                   ) : (
-                    <InfoRowFlex>
-                      <IconArea>
-                        <Icon src={ServiceInfoIcon} alt='Service Info' />
-                      </IconArea>
-                      <TextContainer>
-                        <RowText>
-                          <DetailText>진행 서비스 - 구매</DetailText>
-                        </RowText>
+                    <View style={styles.infoRowFlex}>
+                      <View style={styles.iconArea}>
+                        <Image
+                          source={require('../../../assets/Basket/ServiceInfoIcon.png')}
+                          style={styles.icon}
+                        />
+                      </View>
+                      <View style={styles.textContainer}>
+                        <View style={styles.rowText}>
+                          <Text style={styles.detailText}>
+                            진행 서비스 - 구매
+                          </Text>
+                        </View>
                         {item.deliveryDate && (
-                          <AdditionalText>
-                            <DetailText>{item.deliveryDate}</DetailText>
-                          </AdditionalText>
+                          <View style={styles.additionalText}>
+                            <Text style={styles.detailText}>
+                              {item.deliveryDate}
+                            </Text>
+                          </View>
                         )}
-                      </TextContainer>
-                    </InfoRowFlex>
+                      </View>
+                    </View>
                   )}
 
-                  <InfoRowFlex>
-                    <IconArea>
-                      <Icon src={ProductInfoIcon} alt='Product Info' />
-                    </IconArea>
-                    <TextContainer>
-                      <RowText>
-                        <LabelDetailText>제품 정보</LabelDetailText>
-                      </RowText>
-                      <AdditionalText>
-                        <DetailText>사이즈 - </DetailText>
-                        <DetailHighlight>{item.size}</DetailHighlight>
-                        <Slash>/</Slash>
-                        <DetailText>색상 - </DetailText>
-                        <DetailHighlight>{item.color}</DetailHighlight>
-                      </AdditionalText>
-                    </TextContainer>
-                  </InfoRowFlex>
+                  <View style={styles.infoRowFlex}>
+                    <View style={styles.iconArea}>
+                      <Image
+                        source={require('../../../assets/Basket/ProductInfoIcon.png')}
+                        style={styles.icon}
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <View style={styles.rowText}>
+                        <Text style={styles.labelDetailText}>제품 정보</Text>
+                      </View>
+                      <View style={styles.additionalText}>
+                        <Text style={styles.detailText}>사이즈 - </Text>
+                        <Text style={styles.detailHighlight}>{item.size}</Text>
+                        <Text style={styles.slash}>/</Text>
+                        <Text style={styles.detailText}>색상 - </Text>
+                        <Text style={styles.detailHighlight}>{item.color}</Text>
+                      </View>
+                    </View>
+                  </View>
 
-                  <InfoRowFlex>
-                    <IconArea>
-                      <Icon src={EvaluationIcon} alt='평가' />
-                    </IconArea>
-                    <TextContainer>
-                      <RowText>
-                        <LabelDetailText>평가 -</LabelDetailText>
-                        <StarRow>
+                  <View style={styles.infoRowFlex}>
+                    <View style={styles.iconArea}>
+                      <Image
+                        source={require('../../../assets/Basket/EvaluationIcon.png')}
+                        style={styles.icon}
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <View style={styles.rowText}>
+                        <Text style={styles.labelDetailText}>평가 -</Text>
+                        <View style={styles.starRow}>
                           {Array.from({ length: 5 }).map((_, i) => {
                             const filled = i < (item.rating || 0);
                             return (
-                              <StarIcon
+                              <Image
                                 key={i}
-                                src={filled ? FilledStarIcon : EmptyStarIcon}
-                                alt='별'
+                                source={
+                                  filled
+                                    ? require('../../../assets/Basket/FilledStarIcon.png')
+                                    : require('../../../assets/Basket/EmptyStarIcon.png')
+                                }
+                                style={styles.starIcon}
                               />
                             );
                           })}
-                        </StarRow>
-                      </RowText>
-                    </TextContainer>
-                  </InfoRowFlex>
-                </ItemDetails>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
 
-                <RightSection>
-                  <ItemImageContainer>
-                    <ItemImage src={item.imageUrl} alt={item.nameCode} />
-                  </ItemImageContainer>
-                </RightSection>
-              </ContentWrapper>
+                <View style={styles.rightSection}>
+                  <View style={styles.itemImageContainer}>
+                    <Image source={item.imageUrl} style={styles.itemImage} />
+                  </View>
+                </View>
+              </View>
 
-              <ButtonContainer>
-                <DeleteButton onClick={() => navigate(`/item/${item.id}`)}>
-                  제품상세
-                </DeleteButton>
-
-                <PurchaseButton
-                  onClick={() => navigate('/payment-review/Write')}
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() =>
+                    navigation.navigate(
+                      'ItemDetail' as never,
+                      { id: item.id } as never
+                    )
+                  }
                 >
-                  작성
-                </PurchaseButton>
-              </ButtonContainer>
-            </Item>
+                  <Text style={styles.deleteButtonText}>제품상세</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.purchaseButton}
+                  onPress={() =>
+                    navigation.navigate('PaymentReviewWrite' as never)
+                  }
+                >
+                  <Text style={styles.purchaseButtonText}>작성</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           ))}
-        </ItemList>
-      </Section>
-    </ProductReviewContainer>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
 export default ProductReview;
 
-const ProductReviewContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  background-color: #fff;
-  padding: 1rem;
-`;
-
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  margin-bottom: 6px;
-`;
-
-const Title = styled.h1`
-  font-weight: 800;
-  font-size: 24px;
-  line-height: 27px;
-  color: #000;
-  margin-bottom: 0;
-`;
-
-const Subtitle = styled.p`
-  font-size: 12px;
-  font-weight: 400;
-  color: #ccc;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #dddddd;
-  margin-top: 30px;
-`;
-
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding-bottom: 80px;
-  margin-top: 30px;
-`;
-
-const ItemList = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-top: 20px;
-`;
-
-const Item = styled.div`
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid #ddd;
-  padding: 30px 0;
-  margin-bottom: 15px;
-  background-color: #fff;
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-`;
-
-const ItemDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-`;
-
-const Brand = styled.div`
-  font-weight: 900;
-  font-size: 12px;
-  line-height: 11px;
-  color: #000;
-`;
-
-const ItemName = styled.div`
-  display: flex;
-  align-items: center;
-  margin: 6px 0 28px;
-`;
-
-const NameCode = styled.span`
-  font-weight: 900;
-  font-size: 18px;
-  line-height: 22px;
-  color: #000;
-`;
-
-const Slash = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  color: #dddddd;
-  margin: 0 4px;
-`;
-
-const ItemType = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  color: #999;
-`;
-
-const InfoRowFlex = styled.div`
-  display: flex;
-  align-items: stretch;
-  gap: 5px;
-  width: 100%;
-`;
-
-const IconArea = styled.div`
-  flex: 0 0 auto;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-`;
-
-const TextContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 16px;
-`;
-
-const RowText = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-`;
-
-const AdditionalText = styled.div`
-  display: flex;
-  gap: 5px;
-  white-space: nowrap;
-`;
-
-const DetailText = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  color: #000;
-  white-space: nowrap;
-`;
-
-const DetailHighlight = styled.span`
-  font-weight: 900;
-  font-size: 14px;
-  line-height: 22px;
-  color: #000;
-  white-space: nowrap;
-`;
-
-const RightSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding-left: 10px;
-`;
-
-const ItemImageContainer = styled.div`
-  position: relative;
-  width: 140px;
-  height: 210px;
-`;
-
-const ItemImage = styled.img`
-  width: 100%;
-  height: 100%;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 20px;
-  margin-top: 20px;
-  align-self: flex-end;
-`;
-
-const DeleteButton = styled.button`
-  background-color: #fff;
-  color: #888;
-  width: 91px;
-  height: 46px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  cursor: pointer;
-`;
-
-const PurchaseButton = styled.button`
-  background-color: #000;
-  color: #fff;
-  width: 91px;
-  height: 46px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  cursor: pointer;
-`;
-
-const Icon = styled.img`
-  width: 20px;
-  height: 20px;
-`;
-
-const LabelDetailText = styled.span`
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 22px;
-  color: #000000;
-  white-space: nowrap;
-`;
-
-const StarRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-`;
-
-const StarIcon = styled.img`
-  width: 16px;
-  height: 16px;
-`;
+// --- Styles ---
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 16,
+  },
+  header: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    width: '100%',
+    marginBottom: 6,
+  },
+  title: {
+    fontWeight: '800',
+    fontSize: 24,
+    lineHeight: 27,
+    color: '#000',
+    marginBottom: 0,
+  },
+  subtitle: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#ccc',
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#dddddd',
+    marginTop: 30,
+  },
+  section: {
+    flexDirection: 'column',
+    width: '100%',
+    paddingBottom: 80,
+    marginTop: 30,
+  },
+  itemList: {
+    flexDirection: 'column',
+    width: '100%',
+    marginTop: 20,
+  },
+  item: {
+    flexDirection: 'column',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    paddingVertical: 30,
+    marginBottom: 15,
+    backgroundColor: '#fff',
+  },
+  contentWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  itemDetails: {
+    flexDirection: 'column',
+    flex: 1,
+  },
+  brand: {
+    fontWeight: '900',
+    fontSize: 12,
+    lineHeight: 11,
+    color: '#000',
+  },
+  itemName: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 6,
+    marginBottom: 28,
+  },
+  nameCode: {
+    fontWeight: '900',
+    fontSize: 18,
+    lineHeight: 22,
+    color: '#000',
+  },
+  slash: {
+    fontWeight: '400',
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#dddddd',
+    marginHorizontal: 4,
+  },
+  itemType: {
+    fontWeight: '400',
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#999',
+  },
+  infoRowFlex: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    gap: 5,
+    width: '100%',
+  },
+  iconArea: {
+    flex: 0,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  textContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    gap: 4,
+    marginBottom: 16,
+  },
+  rowText: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  additionalText: {
+    flexDirection: 'row',
+    gap: 5,
+  },
+  detailText: {
+    fontWeight: '400',
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#000',
+  },
+  detailHighlight: {
+    fontWeight: '900',
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#000',
+  },
+  rightSection: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    paddingLeft: 10,
+  },
+  itemImageContainer: {
+    position: 'relative',
+    width: 140,
+    height: 210,
+  },
+  itemImage: {
+    width: '100%',
+    height: '100%',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 20,
+    marginTop: 20,
+    alignSelf: 'flex-end',
+  },
+  deleteButton: {
+    backgroundColor: '#fff',
+    width: 91,
+    height: 46,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  deleteButtonText: {
+    color: '#888',
+    fontWeight: '400',
+    fontSize: 14,
+  },
+  purchaseButton: {
+    backgroundColor: '#000',
+    width: 91,
+    height: 46,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  purchaseButtonText: {
+    color: '#fff',
+    fontWeight: '400',
+    fontSize: 14,
+  },
+  icon: {
+    width: 20,
+    height: 20,
+  },
+  labelDetailText: {
+    fontWeight: '700',
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#000000',
+  },
+  starRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  starIcon: {
+    width: 16,
+    height: 16,
+  },
+});

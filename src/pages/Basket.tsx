@@ -10,8 +10,10 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from './AppLayout';
 import { getCartItems, deleteCartItem } from '../api/cart/cart';
-import ReusableModal2 from '../components/ReusableModal2';
+import ReusableModal from '../components/ReusableModal';
 
 interface BasketItemForPayment {
   id: number;
@@ -50,7 +52,8 @@ const getServiceLabel = (type: string) => {
 };
 
 const Basket: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [items, setItems] = useState<BasketItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -113,7 +116,7 @@ const Basket: React.FC = () => {
       imageUrl: item.productThumbnail,
       $isSelected: true,
     };
-    navigation.navigate('Payment', { itemData: [payload] } as never);
+    navigation.navigate('Payment', { itemData: [payload] });
   };
 
   const handleConfirmPayment = () => {
@@ -137,7 +140,7 @@ const Basket: React.FC = () => {
       $isSelected: true,
     }));
     const firstId = payloads[0].id;
-    navigation.navigate('Payment', { itemData: payloads } as never);
+    navigation.navigate('Payment', { itemData: payloads });
   };
 
   const handleDeleteClick = (id: number) => {
@@ -308,21 +311,23 @@ const Basket: React.FC = () => {
         </>
       )}
 
-      <ReusableModal2
+      <ReusableModal
         visible={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
+        title='삭제 확인'
         onConfirm={handleConfirmDelete}
-        title='상품 삭제'
-        message='선택한 상품을 장바구니에서 삭제하시겠습니까?'
-      />
+      >
+        이 상품을 장바구니에서 삭제하시겠습니까?
+      </ReusableModal>
 
-      <ReusableModal2
+      <ReusableModal
         visible={isBuyModalOpen}
         onClose={() => setIsBuyModalOpen(false)}
+        title='구매 확인'
         onConfirm={handleConfirmBuy}
-        title='상품 구매'
-        message='선택한 상품을 구매하시겠습니까?'
-      />
+      >
+        이 상품을 구매하시겠습니까?
+      </ReusableModal>
     </View>
   );
 };

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 
 const AgreementSection = () => {
   const [individualChecks, setIndividualChecks] = useState({
@@ -10,11 +10,10 @@ const AgreementSection = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState('');
 
-  const handleIndividualCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, checked } = e.target;
+  const handleIndividualCheck = (id: 'agree1' | 'agree2') => {
     setIndividualChecks((prev) => ({
       ...prev,
-      [id]: checked,
+      [id]: !prev[id],
     }));
   };
 
@@ -28,247 +27,205 @@ const AgreementSection = () => {
   };
 
   return (
-    <AgreementWrapper>
-      <ContentContainer>
-        <CheckboxWrapper>
-          <Checkbox
-            type='checkbox'
-            id='agree1'
-            required
-            checked={individualChecks.agree1}
-            onChange={handleIndividualCheck}
-          />
-          <Label htmlFor='agree1'>
-            정보입력 동의 <RequiredText>(필수)</RequiredText>
-          </Label>
-        </CheckboxWrapper>
-        <InputWrapper>
-          <DescriptionWrapper>
-            <Description>설정에 필요한 정보입력 동의 안내.</Description>
-          </DescriptionWrapper>
-          <ViewDetailsButton
-            onClick={() =>
-              handleViewDetails(`
-                본 약관은 주식회사 멜픽(이하 "회사"라 합니다.)가 제공하는 의류 및 잡화(이하 "제품"이라 합니다.) 판매 및 전자상거래에 관한 온/오프라인상의 제반 서비스(이하 "서비스"라 합니다.)를 이용함에 있어서 회사와 회원의 권리와 의무에 대한 책임사항을 규정함을 목적으로 합니다.
-              `)
+    <View style={styles.agreementWrapper}>
+      <View style={styles.contentContainer}>
+        <View style={styles.checkboxWrapper}>
+          <TouchableOpacity
+            style={[
+              styles.checkbox,
+              individualChecks.agree1 && styles.checkboxChecked,
+            ]}
+            onPress={() => handleIndividualCheck('agree1')}
+          >
+            {individualChecks.agree1 && <Text style={styles.checkmark}>✔</Text>}
+          </TouchableOpacity>
+          <Text style={styles.label}>
+            정보입력 동의 <Text style={styles.requiredText}>(필수)</Text>
+          </Text>
+        </View>
+        <View style={styles.inputWrapper}>
+          <View style={styles.descriptionWrapper}>
+            <Text style={styles.description}>
+              설정에 필요한 정보입력 동의 안내.
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.viewDetailsButton}
+            onPress={() =>
+              handleViewDetails(
+                '본 약관은 주식회사 멜픽(이하 "회사"라 합니다.)가 제공하는 의류 및 잡화(이하 "제품"이라 합니다.) 판매 및 전자상거래에 관한 온/오프라인상의 제반 서비스(이하 "서비스"라 합니다.)를 이용함에 있어서 회사와 회원의 권리와 의무에 대한 책임사항을 규정함을 목적으로 합니다.'
+              )
             }
           >
-            전체보기
-          </ViewDetailsButton>
-        </InputWrapper>
-      </ContentContainer>
+            <Text style={styles.viewDetailsButtonText}>전체보기</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
-      {modalVisible && (
-        <Modal>
-          <ModalContent>
-            <ContentWrapper>
-              <ModalHeader>
-                <ModalTitle>이용약관</ModalTitle>
-                <GrayLine />
-                <SectionTitle>제1장 총칙</SectionTitle>
-                <SubTitle>제1조 (목적)</SubTitle>
-              </ModalHeader>
-              <Text>{modalContent}</Text>
-              <GrayLine />
-              <CloseButtonWrapper>
-                <CloseButton onClick={closeModal}>확인</CloseButton>
-              </CloseButtonWrapper>
-            </ContentWrapper>
-          </ModalContent>
-        </Modal>
-      )}
-    </AgreementWrapper>
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType='fade'
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>이용약관</Text>
+            <View style={styles.grayLine} />
+            <Text style={styles.sectionTitle}>제1장 총칙</Text>
+            <Text style={styles.subTitle}>제1조 (목적)</Text>
+            <Text style={styles.modalText}>{modalContent}</Text>
+            <View style={styles.grayLine} />
+            <View style={styles.closeButtonWrapper}>
+              <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                <Text style={styles.closeButtonText}>확인</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 };
 
 export default AgreementSection;
 
-const AgreementWrapper = styled.div`
-  background-color: ${({ theme }) => theme.colors.white};
-  margin-bottom: 20px;
-  z-index: 110;
-`;
-
-const CheckboxWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-`;
-
-const ContentContainer = styled.div`
-  background-color: ${({ theme }) => theme.colors.lightgray};
-  border: 1px solid ${({ theme }) => theme.colors.gray0};
-  padding: 20px;
-  width: 100%;
-`;
-
-const InputWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  background-color: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.gray3};
-  padding: 10px;
-  position: relative;
-`;
-
-const Checkbox = styled.input`
-  margin-bottom: 5px;
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.gray2};
-  border-radius: 3px;
-  cursor: pointer;
-
-  &:checked {
-    background-color: ${({ theme }) => theme.colors.white};
-    border-color: ${({ theme }) => theme.colors.gray1};
-  }
-
-  &:checked::before {
-    content: '✔';
-    color: ${({ theme }) => theme.colors.yellow};
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-`;
-
-const Label = styled.label`
-  ${({ theme }) => theme.fonts.default};
-  color: ${({ theme }) => theme.colors.black};
-`;
-
-const RequiredText = styled.span`
-  color: ${({ theme }) => theme.colors.gray2};
-`;
-
-const ViewDetailsButton = styled.button`
-  width: 69px;
-  height: 34px;
-  background-color: ${({ theme }) => theme.colors.black};
-
-  border: none;
-  cursor: pointer;
-
-  border-radius: 5px;
-
-  font-weight: 800;
-  font-size: 12px;
-  line-height: 13px;
-  text-align: center;
-
-  color: #ffffff;
-`;
-
-const DescriptionWrapper = styled.div`
-  display: flex;
-  justify-content: left;
-  align-items: center;
-  flex-grow: 1;
-`;
-
-const Description = styled.p`
-  color: ${({ theme }) => theme.colors.gray};
-  margin: 0;
-
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-`;
-
-const Modal = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 27px;
-`;
-
-const ModalContent = styled.div`
-  background-color: ${({ theme }) => theme.colors.white};
-  padding: 20px;
-  max-width: 500px;
-  width: 100%;
-  height: 670px;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-const ContentWrapper = styled.div`
-  flex-grow: 1;
-  height: 486px;
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ModalTitle = styled.p`
-  font-weight: 800;
-  font-size: 16px;
-  line-height: 16px;
-  margin-top: 20px;
-`;
-
-const SectionTitle = styled.p`
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 13.26px;
-  margin-bottom: 20px;
-`;
-
-const SubTitle = styled.p`
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 13.26px;
-  margin-bottom: 20px;
-`;
-
-const Text = styled.p`
-  height: 386px;
-
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 13.26px;
-  margin-bottom: 20px;
-  color: ${({ theme }) => theme.colors.gray2};
-`;
-
-const GrayLine = styled.hr`
-  border: none;
-  width: 100%;
-  border: 1px solid ${({ theme }) => theme.colors.gray0};
-  margin: 20px 0;
-`;
-
-const CloseButtonWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const CloseButton = styled.button`
-  width: 100%;
-  height: 56px;
-  background-color: #000000;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-`;
+const styles = StyleSheet.create({
+  agreementWrapper: {
+    backgroundColor: '#fff',
+    marginBottom: 20,
+    zIndex: 110,
+  },
+  contentContainer: {
+    backgroundColor: '#f5f5f5',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    padding: 20,
+    width: '100%',
+  },
+  checkboxWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxChecked: {
+    borderColor: '#ff8c00',
+  },
+  checkmark: {
+    color: '#ff8c00',
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  label: {
+    fontWeight: '700',
+    fontSize: 13,
+    color: '#000',
+  },
+  requiredText: {
+    color: '#888',
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    position: 'relative',
+  },
+  descriptionWrapper: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  description: {
+    color: '#888',
+    fontWeight: '700',
+    fontSize: 12,
+  },
+  viewDetailsButton: {
+    width: 69,
+    height: 34,
+    backgroundColor: '#000',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  viewDetailsButtonText: {
+    color: '#fff',
+    fontWeight: '800',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 27,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    width: 320,
+    maxWidth: '90%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginBottom: 8,
+  },
+  grayLine: {
+    borderBottomWidth: 1,
+    borderColor: '#eee',
+    width: '100%',
+    marginVertical: 8,
+  },
+  sectionTitle: {
+    fontWeight: 'bold',
+    fontSize: 15,
+    marginBottom: 4,
+  },
+  subTitle: {
+    fontWeight: '600',
+    fontSize: 13,
+    marginBottom: 8,
+  },
+  modalText: {
+    fontSize: 13,
+    color: '#222',
+    marginBottom: 12,
+  },
+  closeButtonWrapper: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  closeButton: {
+    backgroundColor: '#f5ab35',
+    borderRadius: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 24,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+});

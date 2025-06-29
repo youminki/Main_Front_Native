@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import StatsSection from '../../../components/StatsSection';
 
-type FaqItem = {
-  id: number;
-  category: string;
-  question: string;
-  answer: string;
-};
-
-const FAQ_DATA: FaqItem[] = [
+const FAQ_DATA = [
   {
     id: 1,
     category: '서비스 - 포인트',
@@ -45,50 +44,98 @@ const FAQ_DATA: FaqItem[] = [
   },
 ];
 
-type PeriodSectionProps = {
-  selectedPeriod: number;
-  setSelectedPeriod: (period: number) => void;
-};
-
-const PeriodSection: React.FC<PeriodSectionProps> = ({
+const PeriodSection = ({
   selectedPeriod,
   setSelectedPeriod,
+}: {
+  selectedPeriod: number;
+  setSelectedPeriod: (period: number) => void;
 }) => {
   return (
-    <SettlementHeader>
-      <PeriodSelector>
-        <PeriodButton
-          active={selectedPeriod === 1}
-          onClick={() => setSelectedPeriod(1)}
+    <View style={styles.settlementHeader}>
+      <View style={styles.periodSelector}>
+        <TouchableOpacity
+          style={[
+            styles.periodButton,
+            selectedPeriod === 1 && styles.periodButtonActive,
+          ]}
+          onPress={() => setSelectedPeriod(1)}
         >
-          전체
-        </PeriodButton>
-        <PeriodButton
-          active={selectedPeriod === 2}
-          onClick={() => setSelectedPeriod(2)}
+          <Text
+            style={[
+              styles.periodButtonText,
+              selectedPeriod === 1 && styles.periodButtonTextActive,
+            ]}
+          >
+            전체
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.periodButton,
+            selectedPeriod === 2 && styles.periodButtonActive,
+          ]}
+          onPress={() => setSelectedPeriod(2)}
         >
-          서비스
-        </PeriodButton>
-        <PeriodButton
-          active={selectedPeriod === 3}
-          onClick={() => setSelectedPeriod(3)}
+          <Text
+            style={[
+              styles.periodButtonText,
+              selectedPeriod === 2 && styles.periodButtonTextActive,
+            ]}
+          >
+            서비스
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.periodButton,
+            selectedPeriod === 3 && styles.periodButtonActive,
+          ]}
+          onPress={() => setSelectedPeriod(3)}
         >
-          주문/결제
-        </PeriodButton>
-        <PeriodButton
-          active={selectedPeriod === 4}
-          onClick={() => setSelectedPeriod(4)}
+          <Text
+            style={[
+              styles.periodButtonText,
+              selectedPeriod === 3 && styles.periodButtonTextActive,
+            ]}
+          >
+            주문/결제
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.periodButton,
+            selectedPeriod === 4 && styles.periodButtonActive,
+          ]}
+          onPress={() => setSelectedPeriod(4)}
         >
-          배송/반품
-        </PeriodButton>
-        <PeriodButton
-          active={selectedPeriod === 5}
-          onClick={() => setSelectedPeriod(5)}
+          <Text
+            style={[
+              styles.periodButtonText,
+              selectedPeriod === 4 && styles.periodButtonTextActive,
+            ]}
+          >
+            배송/반품
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.periodButton,
+            selectedPeriod === 5 && styles.periodButtonActive,
+          ]}
+          onPress={() => setSelectedPeriod(5)}
         >
-          이용권
-        </PeriodButton>
-      </PeriodSelector>
-    </SettlementHeader>
+          <Text
+            style={[
+              styles.periodButtonText,
+              selectedPeriod === 5 && styles.periodButtonTextActive,
+            ]}
+          >
+            이용권
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
@@ -101,11 +148,16 @@ const FrequentlyAskedQuestions: React.FC = () => {
   };
 
   return (
-    <FrequentlyAskedQuestionsContainer>
-      <Header>
-        <Title>자주묻는질문</Title>
-        <Subtitle>새로운 소식 및 서비스 안내를 드립니다.</Subtitle>
-      </Header>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ alignItems: 'center' }}
+    >
+      <View style={styles.header}>
+        <Text style={styles.title}>자주묻는질문</Text>
+        <Text style={styles.subtitle}>
+          새로운 소식 및 서비스 안내를 드립니다.
+        </Text>
+      </View>
 
       <StatsSection
         visits='999'
@@ -114,202 +166,168 @@ const FrequentlyAskedQuestions: React.FC = () => {
         visitLabel='전체'
         salesLabel='최근 업데이트'
       />
-      <Divider />
+      <View style={styles.divider} />
 
-      <Section>
+      <View style={styles.section}>
         <PeriodSection
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
         />
 
-        <FrequentlyAskedQuestionsListContainer>
+        <View style={styles.listContainer}>
           {FAQ_DATA.map((faq, index) => (
-            <FaqItemContainer key={faq.id}>
-              <QuestionWrapper onClick={() => toggleItem(index)}>
-                <QuestionText>
-                  <Row>
-                    <QPrefix>Q.</QPrefix>
-                    <QuestionLabel>{faq.question}</QuestionLabel>
-                  </Row>
-
-                  <CategoryLabel>{faq.category}</CategoryLabel>
-                </QuestionText>
-
-                <ArrowIcon isOpen={openIndex === index} />
-              </QuestionWrapper>
-
-              <AnswerWrapper
-                isOpen={openIndex === index}
-                className='transition-all duration-500 ease-in-out'
+            <View key={faq.id} style={styles.faqItemContainer}>
+              <TouchableOpacity
+                style={styles.questionWrapper}
+                onPress={() => toggleItem(index)}
               >
-                <AnswerInner className='opacity-100'>{faq.answer}</AnswerInner>
-              </AnswerWrapper>
-            </FaqItemContainer>
+                <View style={styles.questionText}>
+                  <View style={styles.row}>
+                    <Text style={styles.qPrefix}>Q.</Text>
+                    <Text style={styles.questionLabel}>{faq.question}</Text>
+                  </View>
+                  <Text style={styles.categoryLabel}>{faq.category}</Text>
+                </View>
+                <Text
+                  style={
+                    openIndex === index ? styles.arrowOpen : styles.arrowClosed
+                  }
+                >
+                  ▼
+                </Text>
+              </TouchableOpacity>
+              {openIndex === index && (
+                <View style={styles.answerWrapper}>
+                  <Text style={styles.answerInner}>{faq.answer}</Text>
+                </View>
+              )}
+            </View>
           ))}
-        </FrequentlyAskedQuestionsListContainer>
-      </Section>
-    </FrequentlyAskedQuestionsContainer>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
 export default FrequentlyAskedQuestions;
 
-const FrequentlyAskedQuestionsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  background-color: #fff;
-  padding: 1rem;
-`;
-
-const Header = styled.div`
-  width: 100%;
-  margin-bottom: 6px;
-`;
-
-const Title = styled.h1`
-  font-weight: 800;
-  font-size: 24px;
-  line-height: 27px;
-  color: #000000;
-  margin-bottom: 0px;
-`;
-
-const Subtitle = styled.p`
-  font-size: 12px;
-  font-weight: 400;
-  color: #ccc;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #dddddd;
-  margin-top: 30px;
-`;
-
-const Section = styled.div`
-  width: 100%;
-  padding-bottom: 80px;
-  margin-top: 30px;
-`;
-
-const SettlementHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f3f3f3;
-  border: 1px solid #dddddd;
-  padding: 10px;
-  white-space: nowrap;
-`;
-
-const PeriodSelector = styled.div`
-  display: flex;
-  flex-shrink: 0;
-  margin-right: 10px;
-`;
-
-const PeriodButton = styled.button<{ active: boolean }>`
-  padding: 8px 12px;
-
-  height: 36px;
-  margin-right: 8px;
-  border-radius: 18px;
-
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 11px;
-  color: ${({ active }) => (active ? '#fff' : '#000')};
-  background: ${({ active }) => (active ? '#000' : '#fff')};
-  border: 1px solid ${({ active }) => (active ? '#000' : '#ccc')};
-  cursor: pointer;
-  white-space: nowrap;
-`;
-
-const FrequentlyAskedQuestionsListContainer = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  margin-top: 10px;
-  border: 1px solid #dddddd;
-`;
-
-const FaqItemContainer = styled.div`
-  background-color: #ffffff;
-  border-bottom: 1px solid #dddddd;
-
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const QuestionWrapper = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 16px;
-  cursor: pointer;
-`;
-
-const QuestionText = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-`;
-
-const Row = styled.div`
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 4px;
-`;
-
-const QPrefix = styled.span`
-  font-weight: 800;
-  margin-right: 6px;
-  font-size: 14px;
-`;
-
-const QuestionLabel = styled.span`
-  font-weight: 700;
-  font-size: 14px;
-  color: #000;
-`;
-
-const CategoryLabel = styled.span`
-  margin-top: 2px;
-  font-weight: 800;
-  font-size: 12px;
-  color: #f6ae24;
-`;
-
-type ArrowIconProps = {
-  isOpen: boolean;
-};
-
-const ArrowIcon = styled.div<ArrowIconProps>`
-  width: 10px;
-  height: 10px;
-  border-right: 2px solid #ccc;
-  border-bottom: 2px solid #ccc;
-
-  transform: ${({ isOpen }) => (isOpen ? 'rotate(-135deg)' : 'rotate(45deg)')};
-  transition: transform 0.3s ease-in-out;
-`;
-
-const AnswerWrapper = styled.div<{ isOpen: boolean }>`
-  overflow: hidden;
-  max-height: ${({ isOpen }) => (isOpen ? '300px' : '0')};
-  transition: max-height 0.4s ease-in-out;
-  background: #eeeeee;
-
-  border-top: 1px solid #dddddd;
-`;
-
-const AnswerInner = styled.div`
-  padding: 16px;
-  font-size: 14px;
-  color: #555;
-  line-height: 1.4;
-`;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 16,
+  },
+  header: {
+    width: '100%',
+    marginBottom: 6,
+  },
+  title: {
+    fontWeight: '800',
+    fontSize: 24,
+    lineHeight: 27,
+    color: '#000',
+    marginBottom: 0,
+  },
+  subtitle: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#ccc',
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#dddddd',
+    marginTop: 30,
+  },
+  section: {
+    width: '100%',
+    paddingBottom: 80,
+    marginTop: 30,
+  },
+  settlementHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#f3f3f3',
+    borderWidth: 1,
+    borderColor: '#dddddd',
+    padding: 10,
+  },
+  periodSelector: {
+    flexDirection: 'row',
+    marginRight: 10,
+  },
+  periodButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 4,
+    backgroundColor: '#fff',
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  periodButtonActive: {
+    backgroundColor: '#000',
+    borderColor: '#000',
+  },
+  periodButtonText: {
+    color: '#000',
+    fontWeight: 'bold',
+  },
+  periodButtonTextActive: {
+    color: '#fff',
+  },
+  listContainer: {
+    marginTop: 20,
+  },
+  faqItemContainer: {
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  questionWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+  },
+  questionText: {
+    flex: 1,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  qPrefix: {
+    fontWeight: 'bold',
+    color: '#007AFF',
+    marginRight: 8,
+  },
+  questionLabel: {
+    fontSize: 16,
+    color: '#222',
+  },
+  categoryLabel: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 4,
+  },
+  arrowOpen: {
+    fontSize: 18,
+    color: '#007AFF',
+    transform: [{ rotate: '180deg' }],
+  },
+  arrowClosed: {
+    fontSize: 18,
+    color: '#ccc',
+  },
+  answerWrapper: {
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    backgroundColor: '#f9f9f9',
+  },
+  answerInner: {
+    fontSize: 15,
+    color: '#333',
+  },
+});

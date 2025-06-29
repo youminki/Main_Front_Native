@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 
-export interface SizeInfoProps {
-  productSizes: { size: string; measurements: Record<string, any> }[];
+interface SizeInfoProps {
   size_picture: string;
-  /** key → label 매핑(서버에서 내려오는 값) */
-  labelGuide?: Record<string, string>;
+  size_label_guide?: Record<string, string>;
 }
 
-const SIZE_PLACEHOLDER = '/images/size-placeholder.png';
+const SIZE_PLACEHOLDER = 'https://via.placeholder.com/300x200';
 
 const SIZE_LABELS: Record<string, string> = {
   '44': 'S',
@@ -18,26 +16,15 @@ const SIZE_LABELS: Record<string, string> = {
 };
 
 const SizeInfo: React.FC<SizeInfoProps> = ({
-  productSizes,
   size_picture,
-  labelGuide,
+  size_label_guide,
 }) => {
   const [imgSrc, setImgSrc] = useState(size_picture);
   const handleImageError = () => setImgSrc(SIZE_PLACEHOLDER);
 
-  if (!productSizes?.length) {
-    return <Message>사이즈 정보가 없습니다.</Message>;
+  if (!size_picture) {
+    return <Text style={styles.message}>사이즈 정보가 없습니다.</Text>;
   }
-
-  const measurementKeys = Object.keys(productSizes[0].measurements || {});
-  const sortedKeys = measurementKeys.sort((a, b) => a.localeCompare(b));
-
-  // 서버에서 labelGuide가 내려오면 그 값을, 아니면 알파벳 순서 기본 라벨
-  const columnLabels = sortedKeys.map((key, idx) =>
-    labelGuide && labelGuide[key]
-      ? labelGuide[key]
-      : String.fromCharCode(65 + idx)
-  );
 
   const formatSize = (raw: string) => {
     if (/free/i.test(raw)) return 'Free';
@@ -47,167 +34,63 @@ const SizeInfo: React.FC<SizeInfoProps> = ({
   };
 
   return (
-    <Container>
-      <Title>사이즈 정보</Title>
-
-      <InfoWrapper>
-        <PictureWrapper>
-          <StyledImg
-            src={imgSrc}
-            srcSet={`${imgSrc} 1x, ${imgSrc} 2x`}
-            alt='사이즈 안내 이미지'
-            onError={handleImageError}
-          />
-        </PictureWrapper>
-
-        <LabelList>
-          {sortedKeys.map((key) => (
-            <LabelItem key={key}>{key}</LabelItem>
+    <View style={styles.container}>
+      <Text style={styles.title}>사이즈 정보</Text>
+      <Image
+        source={{ uri: imgSrc }}
+        style={styles.sizeImage}
+        resizeMode='contain'
+        onError={handleImageError}
+      />
+      {size_label_guide && (
+        <View style={styles.guideContainer}>
+          <Text style={styles.guideTitle}>사이즈 가이드</Text>
+          {Object.entries(size_label_guide).map(([key, value]) => (
+            <Text key={key} style={styles.guideText}>
+              {key}: {value}
+            </Text>
           ))}
-        </LabelList>
-      </InfoWrapper>
-
-      <TableWrapper>
-        <Table>
-          <thead>
-            <Row>
-              <Header>사이즈</Header>
-              {columnLabels.map((lbl, i) => (
-                <Header key={i}>{lbl}</Header>
-              ))}
-            </Row>
-          </thead>
-          <tbody>
-            {productSizes.map(({ size, measurements }) => (
-              <Row key={size}>
-                <Cell>{formatSize(size)}</Cell>
-                {sortedKeys.map((key) => {
-                  const raw = measurements[key];
-                  const displayVal =
-                    typeof raw === 'number' ? Math.round(raw) : (raw ?? '-');
-                  return <Cell key={key}>{displayVal}</Cell>;
-                })}
-              </Row>
-            ))}
-          </tbody>
-        </Table>
-      </TableWrapper>
-    </Container>
+        </View>
+      )}
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  sizeImage: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'contain',
+    marginBottom: 16,
+  },
+  guideContainer: {
+    marginTop: 16,
+  },
+  guideTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  guideText: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  message: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginVertical: 20,
+  },
+});
+
 export default SizeInfo;
-
-/* Styled Components */
-const Container = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 20px 0;
-`;
-
-const Title = styled.h3`
-  font-size: 16px;
-  font-weight: bold;
-  color: #000;
-  margin-bottom: 12px;
-  text-align: center;
-`;
-
-const InfoWrapper = styled.div`
-  display: grid;
-  grid-template-columns: auto 120px;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  width: 100%;
-  max-width: 1000px;
-  margin-bottom: 16px;
-  overflow-x: auto;
-`;
-
-const PictureWrapper = styled.div`
-  flex: none;
-  overflow: hidden;
-  border-radius: 4px;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const StyledImg = styled.img`
-  min-width: 300px;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  image-rendering: crisp-edges;
-`;
-
-const LabelList = styled.ul`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 10px;
-  width: 100%;
-`;
-
-const LabelItem = styled.li`
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  padding: 6px 10px;
-  border-radius: 4px;
-
-  @media (min-width: 1024px) {
-    font-size: 16px;
-    padding: 10px 14px;
-  }
-`;
-
-const TableWrapper = styled.div`
-  width: 100%;
-`;
-
-const Table = styled.table`
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
-`;
-
-const Row = styled.tr`
-  &:nth-child(even) {
-    background-color: #f7f7f7;
-  }
-`;
-
-const Header = styled.th`
-  padding: 8px 4px;
-  font-size: 12px;
-  font-weight: 700;
-  text-align: center;
-  background-color: #e0e0e0;
-  border: 1px solid #ccc;
-`;
-
-const Cell = styled.td`
-  padding: 8px 4px;
-  font-size: 12px;
-  text-align: center;
-  border: 1px solid #ccc;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const Message = styled.p`
-  font-size: 14px;
-  color: #666;
-  text-align: center;
-`;

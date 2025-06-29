@@ -1,347 +1,289 @@
-import styled from 'styled-components';
+import { StyleSheet } from 'react-native';
 
 // 기본 컨테이너
-export const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #fff;
-  padding: 1rem;
-  min-height: 100vh;
+export const containerStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 16,
+    minHeight: '100%',
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 16,
+  },
+  scrollContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  contentContainer: {
+    padding: 16,
+    alignItems: 'center',
+  },
+});
 
-  @media (min-width: 1024px) {
-    padding: 3rem;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-`;
+// 텍스트 스타일
+export const textStyles = StyleSheet.create({
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  body: {
+    fontSize: 16,
+    color: '#333',
+    lineHeight: 24,
+    textAlign: 'center',
+  },
+  caption: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+  },
+  error: {
+    fontSize: 14,
+    color: '#e74c3c',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+});
 
-// 페이지 헤더
-export const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  margin-bottom: 6px;
+// 버튼 스타일
+export const buttonStyles = StyleSheet.create({
+  primary: {
+    backgroundColor: '#f6ae24',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
+  },
+  secondary: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#f6ae24',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
+  },
+  disabled: {
+    backgroundColor: '#ccc',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
+  },
+  primaryText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  secondaryText: {
+    color: '#f6ae24',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  disabledText: {
+    color: '#999',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
 
-  @media (min-width: 1024px) {
-    margin-bottom: 24px;
-  }
-`;
+// 입력 필드 스타일
+export const inputStyles = StyleSheet.create({
+  container: {
+    marginBottom: 16,
+    width: '100%',
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
+  inputFocused: {
+    borderColor: '#f6ae24',
+  },
+  error: {
+    borderColor: '#e74c3c',
+  },
+  errorText: {
+    color: '#e74c3c',
+    fontSize: 12,
+    marginTop: 4,
+  },
+});
 
-// 페이지 제목
-export const Title = styled.h1`
-  font-size: 24px;
-  font-weight: 800;
-  color: #000;
-  margin-bottom: 0px;
+// 카드 스타일
+export const cardStyles = StyleSheet.create({
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000',
+  },
+  cardContent: {
+    marginBottom: 12,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+});
 
-  @media (min-width: 1024px) {
-    font-size: 32px;
-    margin-bottom: 10px;
-  }
-`;
+// 구분선 스타일
+export const dividerStyles = StyleSheet.create({
+  horizontal: {
+    height: 1,
+    backgroundColor: '#eee',
+    marginVertical: 16,
+  },
+  vertical: {
+    width: 1,
+    backgroundColor: '#eee',
+    marginHorizontal: 16,
+  },
+});
 
-// 페이지 부제목
-export const Subtitle = styled.p`
-  font-size: 12px;
-  font-weight: 400;
-  color: #ccc;
+// 플렉스 유틸리티
+export const flexStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  column: {
+    flexDirection: 'column',
+  },
+  center: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  spaceBetween: {
+    justifyContent: 'space-between',
+  },
+  spaceAround: {
+    justifyContent: 'space-around',
+  },
+  flex1: {
+    flex: 1,
+  },
+  flex2: {
+    flex: 2,
+  },
+  flex3: {
+    flex: 3,
+  },
+});
 
-  @media (min-width: 1024px) {
-    font-size: 16px;
-  }
-`;
-
-// 구분선
-export const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #dddddd;
-  margin: 20px 0;
-
-  @media (min-width: 1024px) {
-    margin: 30px 0;
-  }
-`;
-
-// 섹션 컨테이너
-export const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-bottom: 20px;
-`;
-
-// 섹션 제목
-export const SectionTitle = styled.h2`
-  font-size: 16px;
-  font-weight: 700;
-  color: #000;
-  margin-bottom: 12px;
-`;
-
-// 행 컨테이너
-export const Row = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-
-  @media (min-width: 1024px) {
-    gap: 20px;
-  }
-`;
-
-// 열 컨테이너
-export const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-// 입력 그룹
-export const InputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
-
-// 카드 컨테이너
-export const Card = styled.div`
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
-
-// 버튼 기본 스타일
-export const Button = styled.button<{
-  $primary?: boolean;
-  $secondary?: boolean;
-  $danger?: boolean;
-  $disabled?: boolean;
-}>`
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-
-  ${({ $primary, $secondary, $danger, $disabled }) => {
-    if ($disabled) {
-      return `
-        background: #ccc;
-        color: #666;
-        cursor: not-allowed;
-      `;
-    }
-    if ($primary) {
-      return `
-        background: #f6ae24;
-        color: #fff;
-        &:hover {
-          background: #e69e1e;
-        }
-      `;
-    }
-    if ($secondary) {
-      return `
-        background: #fff;
-        color: #f6ae24;
-        border: 1px solid #f6ae24;
-        &:hover {
-          background: #f6ae24;
-          color: #fff;
-        }
-      `;
-    }
-    if ($danger) {
-      return `
-        background: #dc3545;
-        color: #fff;
-        &:hover {
-          background: #c82333;
-        }
-      `;
-    }
-    return `
-      background: #fff;
-      color: #333;
-      border: 1px solid #ddd;
-      &:hover {
-        background: #f8f9fa;
-      }
-    `;
-  }}
-`;
-
-// 모달 오버레이
-export const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
-// 모달 박스
-export const ModalBox = styled.div`
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-
-  @media (min-width: 768px) {
-    min-width: 400px;
-  }
-`;
-
-// 모달 헤더
-export const ModalHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #eee;
-`;
-
-// 로딩 스피너 컨테이너
-export const SpinnerWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  color: #666;
-`;
-
-// 빈 상태 컨테이너
-export const EmptyState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  text-align: center;
-  color: #666;
-`;
-
-// 텍스트 컨테이너
-export const TextContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-// 이미지 컨테이너
-export const ImageContainer = styled.div`
-  width: 100%;
-  height: 200px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-// 그리드 컨테이너
-export const GridContainer = styled.div<{ $columns?: number }>`
-  display: grid;
-  grid-template-columns: repeat(${({ $columns = 2 }) => $columns}, 1fr);
-  gap: 16px;
-  width: 100%;
-
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(
-      ${({ $columns = 2 }) => Math.min($columns + 1, 4)},
-      1fr
-    );
-  }
-`;
-
-// 플렉스 컨테이너
-export const FlexContainer = styled.div<{
-  $direction?: 'row' | 'column';
-  $justify?: 'start' | 'center' | 'end' | 'space-between';
-  $align?: 'start' | 'center' | 'end';
-  $gap?: number;
-}>`
-  display: flex;
-  flex-direction: ${({ $direction = 'row' }) => $direction};
-  justify-content: ${({ $justify = 'start' }) => $justify};
-  align-items: ${({ $align = 'start' }) => $align};
-  gap: ${({ $gap = 0 }) => $gap}px;
-`;
-
-// 배지
-export const Badge = styled.span<{
-  $variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning';
-}>`
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-
-  ${({ $variant = 'primary' }) => {
-    switch ($variant) {
-      case 'primary':
-        return 'background: #f6ae24; color: #fff;';
-      case 'secondary':
-        return 'background: #6c757d; color: #fff;';
-      case 'success':
-        return 'background: #28a745; color: #fff;';
-      case 'danger':
-        return 'background: #dc3545; color: #fff;';
-      case 'warning':
-        return 'background: #ffc107; color: #000;';
-      default:
-        return 'background: #f6ae24; color: #fff;';
-    }
-  }}
-`;
-
-// 아이콘 컨테이너
-export const IconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-`;
-
-// 툴팁
-export const Tooltip = styled.div`
-  position: absolute;
-  background: #333;
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 1000;
-  pointer-events: none;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 4px solid transparent;
-    border-top-color: #333;
-  }
-`;
+// 마진/패딩 유틸리티
+export const spacingStyles = StyleSheet.create({
+  m0: { margin: 0 },
+  m1: { margin: 4 },
+  m2: { margin: 8 },
+  m3: { margin: 12 },
+  m4: { margin: 16 },
+  m5: { margin: 20 },
+  mt0: { marginTop: 0 },
+  mt1: { marginTop: 4 },
+  mt2: { marginTop: 8 },
+  mt3: { marginTop: 12 },
+  mt4: { marginTop: 16 },
+  mt5: { marginTop: 20 },
+  mb0: { marginBottom: 0 },
+  mb1: { marginBottom: 4 },
+  mb2: { marginBottom: 8 },
+  mb3: { marginBottom: 12 },
+  mb4: { marginBottom: 16 },
+  mb5: { marginBottom: 20 },
+  ml0: { marginLeft: 0 },
+  ml1: { marginLeft: 4 },
+  ml2: { marginLeft: 8 },
+  ml3: { marginLeft: 12 },
+  ml4: { marginLeft: 16 },
+  ml5: { marginLeft: 20 },
+  mr0: { marginRight: 0 },
+  mr1: { marginRight: 4 },
+  mr2: { marginRight: 8 },
+  mr3: { marginRight: 12 },
+  mr4: { marginRight: 16 },
+  mr5: { marginRight: 20 },
+  p0: { padding: 0 },
+  p1: { padding: 4 },
+  p2: { padding: 8 },
+  p3: { padding: 12 },
+  p4: { padding: 16 },
+  p5: { padding: 20 },
+  pt0: { paddingTop: 0 },
+  pt1: { paddingTop: 4 },
+  pt2: { paddingTop: 8 },
+  pt3: { paddingTop: 12 },
+  pt4: { paddingTop: 16 },
+  pt5: { paddingTop: 20 },
+  pb0: { paddingBottom: 0 },
+  pb1: { paddingBottom: 4 },
+  pb2: { paddingBottom: 8 },
+  pb3: { paddingBottom: 12 },
+  pb4: { paddingBottom: 16 },
+  pb5: { paddingBottom: 20 },
+  pl0: { paddingLeft: 0 },
+  pl1: { paddingLeft: 4 },
+  pl2: { paddingLeft: 8 },
+  pl3: { paddingLeft: 12 },
+  pl4: { paddingLeft: 16 },
+  pl5: { paddingLeft: 20 },
+  pr0: { paddingRight: 0 },
+  pr1: { paddingRight: 4 },
+  pr2: { paddingRight: 8 },
+  pr3: { paddingRight: 12 },
+  pr4: { paddingRight: 16 },
+  pr5: { paddingRight: 20 },
+});

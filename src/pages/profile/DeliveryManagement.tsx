@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import styled, { css } from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import FixedBottomBar from '../../components/FixedBottomBar';
 import AddressSearchModal from '../../components/AddressSearchModal';
 import {
@@ -13,7 +21,7 @@ import {
 } from '../../api/address/address';
 
 const DeliveryManagement: React.FC = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editAddress, setEditAddress] = useState<string>('');
   const [editDetail, setEditDetail] = useState<string>('');
@@ -47,7 +55,7 @@ const DeliveryManagement: React.FC = () => {
   // 수정 저장
   const handleSaveEdit = async (id: number) => {
     if (!editAddress.trim() || !editDetail.trim()) {
-      alert('주소와 상세주소를 모두 입력해주세요.');
+      Alert.alert('알림', '주소와 상세주소를 모두 입력해주세요.');
       return;
     }
 
@@ -59,35 +67,42 @@ const DeliveryManagement: React.FC = () => {
 
     try {
       await updateAddressMutation.mutateAsync({ id, data: payload });
-      alert('배송지가 업데이트 되었습니다.');
+      Alert.alert('알림', '배송지가 업데이트 되었습니다.');
       setEditingId(null);
       setEditAddress('');
       setEditDetail('');
       setEditMessage('');
     } catch (err) {
       console.error('주소 수정 실패:', err);
-      alert('배송지 수정 중 오류가 발생했습니다.');
+      Alert.alert('오류', '배송지 수정 중 오류가 발생했습니다.');
     }
   };
 
   // 주소 삭제
   const handleDelete = async (id: number) => {
-    if (!window.confirm('정말 이 배송지를 삭제하시겠습니까?')) return;
-
-    try {
-      await deleteAddressMutation.mutateAsync(id);
-      alert('배송지가 삭제되었습니다.');
-    } catch (err) {
-      console.error('주소 삭제 실패:', err);
-      alert('배송지 삭제 중 오류가 발생했습니다.');
-    }
+    Alert.alert('확인', '정말 이 배송지를 삭제하시겠습니까?', [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '삭제',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteAddressMutation.mutateAsync(id);
+            Alert.alert('알림', '배송지가 삭제되었습니다.');
+          } catch (err) {
+            console.error('주소 삭제 실패:', err);
+            Alert.alert('오류', '배송지 삭제 중 오류가 발생했습니다.');
+          }
+        },
+      },
+    ]);
   };
 
   // 기본 주소 설정
   const handleSetDefault = async (id: number) => {
     try {
       await setDefaultAddressMutation.mutateAsync(id);
-      alert('기본 주소로 설정되었습니다.');
+      Alert.alert('알림', '기본 주소로 설정되었습니다.');
     } catch (err: unknown) {
       console.error('기본 주소 설정 실패:', err);
       if (
@@ -98,34 +113,17 @@ const DeliveryManagement: React.FC = () => {
         'status' in err.response &&
         err.response.status === 404
       ) {
-        alert('해당 주소를 찾을 수 없습니다.');
+        Alert.alert('오류', '해당 주소를 찾을 수 없습니다.');
       } else {
-        alert('기본 주소 설정 중 오류가 발생했습니다.');
+        Alert.alert('오류', '기본 주소 설정 중 오류가 발생했습니다.');
       }
     }
   };
 
   // 신규 등록 페이지로 이동
   const handleRegister = () => {
-    navigate('/EditAddress');
+    navigation.navigate('EditAddress' as never);
   };
-
-  // 모바일 키보드 열림 감지 (기존 코드 유지)
-  const initialHeight = window.visualViewport
-    ? window.visualViewport.height
-    : window.innerHeight;
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-  useEffect(() => {
-    const handleResize = () => {
-      const vh = window.visualViewport
-        ? window.visualViewport.height
-        : window.innerHeight;
-      setIsKeyboardOpen(vh < initialHeight - 50);
-    };
-    const viewport = window.visualViewport ?? window;
-    viewport.addEventListener('resize', handleResize);
-    return () => viewport.removeEventListener('resize', handleResize);
-  }, [initialHeight]);
 
   // 주소 검색 실행
   const handleSearch = () => {
@@ -134,102 +132,148 @@ const DeliveryManagement: React.FC = () => {
 
   return (
     <>
-      <Container>
+      <ScrollView style={styles.container}>
         {isLoading ? (
-          <p>주소를 불러오는 중...</p>
+          <Text style={styles.loadingText}>주소를 불러오는 중...</Text>
         ) : addresses.length === 0 ? (
-          <p>등록된 배송지가 없습니다.</p>
+          <Text style={styles.emptyText}>등록된 배송지가 없습니다.</Text>
         ) : (
           addresses.map((item, idx) => {
             const isEditing = editingId === item.id;
             return (
-              <Block key={item.id}>
-                <Title>
+              <View key={item.id} style={styles.block}>
+                <Text style={styles.title}>
                   {item.isDefault ? '배송지 (기본)' : `배송지 ${idx + 1}`}
-                </Title>
+                </Text>
 
-                <InputGroup>
+                <View style={styles.inputGroup}>
                   {isEditing ? (
                     <>
-                      <SearchWrapper>
-                        <SearchInput
+                      <View style={styles.searchWrapper}>
+                        <TextInput
+                          style={styles.searchInput}
                           value={editAddress}
-                          readOnly
-                          onClick={handleSearch}
+                          editable={false}
+                          onPressIn={handleSearch}
                         />
-                        <SearchButton onClick={handleSearch}>검색</SearchButton>
-                      </SearchWrapper>
-                      <DetailInput
+                        <TouchableOpacity
+                          style={styles.searchButton}
+                          onPress={handleSearch}
+                        >
+                          <Text style={styles.searchButtonText}>검색</Text>
+                        </TouchableOpacity>
+                      </View>
+                      <TextInput
+                        style={styles.detailInput}
                         value={editDetail}
-                        onChange={(e) => setEditDetail(e.target.value)}
+                        onChangeText={setEditDetail}
                         placeholder='상세주소를 입력하세요'
                       />
-                      <MessageTitle>배송 메시지 (선택)</MessageTitle>
-                      <MessageInput
+                      <Text style={styles.messageTitle}>
+                        배송 메시지 (선택)
+                      </Text>
+                      <TextInput
+                        style={styles.messageInput}
                         value={editMessage}
                         placeholder='문 앞에 두고 벨 눌러주세요.'
-                        onChange={(e) => setEditMessage(e.target.value)}
+                        onChangeText={setEditMessage}
                       />
                     </>
                   ) : (
                     <>
-                      <ReadOnlyInput readOnly value={item.address} />
-                      <ReadOnlyInput readOnly value={item.addressDetail} />
-                      <ReadOnlyInput
-                        readOnly
+                      <TextInput
+                        style={styles.readOnlyInput}
+                        editable={false}
+                        value={item.address}
+                      />
+                      <TextInput
+                        style={styles.readOnlyInput}
+                        editable={false}
+                        value={item.addressDetail}
+                      />
+                      <TextInput
+                        style={styles.readOnlyInput}
+                        editable={false}
                         value={item.deliveryMessage || ''}
                         placeholder='배송 메시지가 없습니다.'
                       />
                     </>
                   )}
-                </InputGroup>
+                </View>
 
-                <ButtonRow>
+                <View style={styles.buttonRow}>
                   {/* 왼쪽: 기본주소설정 혹은 현재 기본주소 표시 */}
                   {isEditing ? (
-                    <div /> /* 편집중에는 왼쪽 공간 비워둡니다 */
+                    <View /> /* 편집중에는 왼쪽 공간 비워둡니다 */
                   ) : item.isDefault ? (
-                    <DefaultLabel>기본주소</DefaultLabel>
+                    <View style={styles.defaultLabel}>
+                      <Text style={styles.defaultLabelText}>기본주소</Text>
+                    </View>
                   ) : (
-                    <DefaultButton onClick={() => handleSetDefault(item.id)}>
-                      기본주소로 설정
-                    </DefaultButton>
+                    <TouchableOpacity
+                      style={styles.defaultButton}
+                      onPress={() => handleSetDefault(item.id)}
+                    >
+                      <Text style={styles.defaultButtonText}>
+                        기본주소로 설정
+                      </Text>
+                    </TouchableOpacity>
                   )}
 
                   {/* 오른쪽: 편집/삭제 버튼 */}
-                  <ActionButtons>
+                  <View style={styles.actionButtons}>
                     {isEditing ? (
                       <>
-                        <ActionButton
-                          onClick={() => handleSaveEdit(item.id)}
+                        <TouchableOpacity
+                          style={[
+                            styles.actionButton,
+                            updateAddressMutation.isPending &&
+                              styles.actionButtonDisabled,
+                          ]}
+                          onPress={() => handleSaveEdit(item.id)}
                           disabled={updateAddressMutation.isPending}
                         >
-                          {updateAddressMutation.isPending
-                            ? '저장 중...'
-                            : '저장'}
-                        </ActionButton>
-                        <ActionButton onClick={handleCancelEdit}>
-                          취소
-                        </ActionButton>
+                          <Text style={styles.actionButtonText}>
+                            {updateAddressMutation.isPending
+                              ? '저장 중...'
+                              : '저장'}
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.actionButton}
+                          onPress={handleCancelEdit}
+                        >
+                          <Text style={styles.actionButtonText}>취소</Text>
+                        </TouchableOpacity>
                       </>
                     ) : (
                       <>
-                        <ActionButton onClick={() => handleStartEdit(item)}>
-                          편집
-                        </ActionButton>
-                        <ActionButton
-                          onClick={() => handleDelete(item.id)}
+                        <TouchableOpacity
+                          style={styles.actionButton}
+                          onPress={() => handleStartEdit(item)}
+                        >
+                          <Text style={styles.actionButtonText}>편집</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[
+                            styles.actionButton,
+                            deleteAddressMutation.isPending &&
+                              styles.actionButtonDisabled,
+                          ]}
+                          onPress={() => handleDelete(item.id)}
                           disabled={deleteAddressMutation.isPending}
                         >
-                          {deleteAddressMutation.isPending
-                            ? '삭제 중...'
-                            : '삭제'}
-                        </ActionButton>
+                          <Text style={styles.actionButtonText}>
+                            {deleteAddressMutation.isPending
+                              ? '삭제 중...'
+                              : '삭제'}
+                          </Text>
+                        </TouchableOpacity>
                       </>
                     )}
-                  </ActionButtons>
-                </ButtonRow>
-              </Block>
+                  </View>
+                </View>
+              </View>
             );
           })
         )}
@@ -243,233 +287,188 @@ const DeliveryManagement: React.FC = () => {
             setSearchModalOpen(false);
           }}
         />
+      </ScrollView>
 
-        {/* 하단 고정 바: 신규 등록 버튼 */}
-        {!isKeyboardOpen && (
-          <FixedBottomBar
-            type='button'
-            text='신규 등록'
-            color='yellow'
-            onClick={handleRegister}
-          />
-        )}
-      </Container>
+      {/* 하단 고정 바: 신규 등록 버튼 */}
+      <FixedBottomBar
+        
+        text='신규 등록'
+        color='yellow'
+        onPress={handleRegister}
+      />
     </>
   );
 };
 
 export default DeliveryManagement;
 
-/* Styled Components */
-const Container = styled.div`
-  max-width: 600px;
-  margin: 0 auto;
-  margin-bottom: 50px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-`;
-
-const Block = styled.div`
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 16px;
-`;
-
-const Title = styled.div`
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 18px;
-  color: #000;
-  margin-bottom: 16px;
-`;
-
-const InputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
-`;
-
-const SearchWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 57px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-`;
-
-const SearchInput = styled.input`
-  flex: 1;
-  height: 100%;
-  padding-left: 16px;
-  box-sizing: border-box;
-  background: transparent;
-  border: none;
-  font-family: 'NanumSquare Neo OTF', sans-serif;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 14px;
-  color: #000;
-
-  &::placeholder {
-    color: #ddd;
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const SearchButton = styled.button`
-  width: 69px;
-  height: 34px;
-  margin-right: 20px;
-  background: #f6ae24;
-  border: none;
-  border-radius: 4px;
-  font-weight: 800;
-  font-size: 12px;
-  line-height: 13px;
-  color: #fff;
-  cursor: pointer;
-
-  &:hover {
-    background: #e69e1e;
-  }
-`;
-
-const DetailInput = styled.input`
-  width: 100%;
-  height: 57px;
-  padding-left: 16px;
-  box-sizing: border-box;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 14px;
-  color: #000;
-
-  &::placeholder {
-    color: #ddd;
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const MessageTitle = styled.div`
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-  color: #000;
-  margin-top: 8px;
-`;
-
-const MessageInput = styled.input`
-  width: 100%;
-  height: 57px;
-  padding-left: 16px;
-  box-sizing: border-box;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 14px;
-  color: #000;
-
-  &::placeholder {
-    color: #ddd;
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const ReadOnlyInput = styled.input`
-  width: 100%;
-  height: 57px;
-  padding-left: 16px;
-  box-sizing: border-box;
-  background: #f8f9fa;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 14px;
-  color: #666;
-  cursor: not-allowed;
-
-  &::placeholder {
-    color: #999;
-  }
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const DefaultLabel = styled.div`
-  padding: 8px 16px;
-  background: #f6ae24;
-  color: #fff;
-  border-radius: 4px;
-  font-weight: 700;
-  font-size: 12px;
-`;
-
-const DefaultButton = styled.button`
-  padding: 8px 16px;
-  background: #fff;
-  border: 1px solid #f6ae24;
-  color: #f6ae24;
-  border-radius: 4px;
-  font-weight: 700;
-  font-size: 12px;
-  cursor: pointer;
-
-  &:hover {
-    background: #f6ae24;
-    color: #fff;
-  }
-`;
-
-// 오른쪽 버튼 그룹: margin-left: auto 로 오른쪽 끝으로 밀기
-const ActionButtons = styled.div`
-  display: flex;
-  gap: 8px;
-`;
-
-const buttonHover = css`
-  &:hover {
-    opacity: 0.8;
-  }
-`;
-
-const ActionButton = styled.button`
-  width: 91px;
-  height: 46px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-  ${buttonHover}
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
+// --- Styles ---
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    padding: 16,
+  },
+  loadingText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
+  },
+  block: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 20,
+    marginBottom: 16,
+  },
+  title: {
+    fontWeight: '700',
+    fontSize: 16,
+    lineHeight: 18,
+    color: '#000',
+    marginBottom: 16,
+  },
+  inputGroup: {
+    flexDirection: 'column',
+    gap: 12,
+    marginBottom: 16,
+  },
+  searchWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    height: 57,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+  },
+  searchInput: {
+    flex: 1,
+    height: '100%',
+    paddingLeft: 16,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    fontSize: 13,
+    lineHeight: 14,
+    color: '#000',
+  },
+  searchButton: {
+    width: 69,
+    height: 34,
+    marginRight: 20,
+    backgroundColor: '#f6ae24',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchButtonText: {
+    fontWeight: '800',
+    fontSize: 12,
+    lineHeight: 13,
+    color: '#fff',
+  },
+  detailInput: {
+    width: '100%',
+    height: 57,
+    paddingLeft: 16,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    fontWeight: '400',
+    fontSize: 13,
+    lineHeight: 14,
+    color: '#000',
+  },
+  messageTitle: {
+    fontWeight: '700',
+    fontSize: 10,
+    lineHeight: 11,
+    color: '#000',
+    marginTop: 8,
+  },
+  messageInput: {
+    width: '100%',
+    height: 57,
+    paddingLeft: 16,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    fontWeight: '400',
+    fontSize: 13,
+    lineHeight: 14,
+    color: '#000',
+  },
+  readOnlyInput: {
+    width: '100%',
+    height: 57,
+    paddingLeft: 16,
+    backgroundColor: '#f8f9fa',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    fontWeight: '400',
+    fontSize: 13,
+    lineHeight: 14,
+    color: '#666',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  defaultLabel: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#f6ae24',
+    borderRadius: 4,
+  },
+  defaultLabelText: {
+    fontWeight: '700',
+    fontSize: 12,
+    color: '#fff',
+  },
+  defaultButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#f6ae24',
+    borderRadius: 4,
+  },
+  defaultButtonText: {
+    fontWeight: '700',
+    fontSize: 12,
+    color: '#f6ae24',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  actionButton: {
+    width: 91,
+    height: 46,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  actionButtonDisabled: {
+    opacity: 0.5,
+  },
+  actionButtonText: {
+    fontWeight: '800',
+    fontSize: 14,
+    color: '#000',
+  },
+});

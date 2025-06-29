@@ -34,7 +34,7 @@ const Home: React.FC = () => {
 
   // 로그인 후 안내 모달
   const [isLoginNoticeOpen, setLoginNoticeOpen] = useState(false);
-  const showNotice = route.params?.showNotice;
+  const showNotice = (route.params as any)?.showNotice;
 
   // 공유 모달 상태
   const [isShareModalOpen, setShareModalOpen] = useState(false);
@@ -192,19 +192,9 @@ const Home: React.FC = () => {
           onSearchChange={setSearchQuery}
         />
 
-        <FilterContainer
-          viewCols={viewCols}
-          onViewColsChange={setViewCols}
-          colOptions={colOptions}
-          onShare={handleShare}
-        />
+        <FilterContainer />
 
-        <ItemList
-          items={uiItems}
-          viewCols={viewCols}
-          onItemPress={handleOpenModal}
-          isLoading={isLoading}
-        />
+        <ItemList items={uiItems} />
 
         <Footer />
       </ScrollView>

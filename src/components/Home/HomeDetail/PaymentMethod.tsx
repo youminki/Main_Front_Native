@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Theme from '../../../styles/Theme';
 
 const PaymentMethod: React.FC = () => {
@@ -10,113 +10,123 @@ const PaymentMethod: React.FC = () => {
   };
 
   return (
-    <PaymentMethodContainer>
-      <PaymentMethodText>결제방식 (선택)</PaymentMethodText>
-      <InstallmentOptions>
-        <NowOptionWrapper onClick={() => handleOptionClick('NOW')}>
-          <NowOption active={selectedOption === 'NOW'}>
-            {selectedOption === 'NOW' && <Circle />}
-            <OptionText>NOW</OptionText>
-          </NowOption>
-        </NowOptionWrapper>
-        <OptionContainer>
+    <View style={styles.paymentMethodContainer}>
+      <Text style={styles.paymentMethodText}>결제방식 (선택)</Text>
+      <View style={styles.installmentOptions}>
+        <TouchableOpacity
+          style={styles.nowOptionWrapper}
+          onPress={() => handleOptionClick('NOW')}
+          activeOpacity={0.7}
+        >
+          <View
+            style={[
+              styles.nowOption,
+              selectedOption === 'NOW' && styles.activeOption,
+            ]}
+          >
+            {selectedOption === 'NOW' && <View style={styles.circle} />}
+            <Text style={styles.optionText}>NOW</Text>
+          </View>
+        </TouchableOpacity>
+        <View style={styles.optionContainer}>
           {['6', '12', '18', '24', '36'].map((option) => (
-            <OptionWrapper
+            <TouchableOpacity
               key={option}
-              onClick={() => handleOptionClick(option)}
+              style={styles.optionWrapper}
+              onPress={() => handleOptionClick(option)}
+              activeOpacity={0.7}
             >
-              <Option active={selectedOption === option}>
-                {selectedOption === option && <Circle />}
-                <OptionText>{option}</OptionText>
-              </Option>
-            </OptionWrapper>
+              <View
+                style={[
+                  styles.option,
+                  selectedOption === option && styles.activeOption,
+                ]}
+              >
+                {selectedOption === option && <View style={styles.circle} />}
+                <Text style={styles.optionText}>{option}</Text>
+              </View>
+            </TouchableOpacity>
           ))}
-        </OptionContainer>
-      </InstallmentOptions>
-    </PaymentMethodContainer>
+        </View>
+      </View>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  paymentMethodContainer: {
+    marginTop: 54,
+    marginBottom: 24,
+  },
+  paymentMethodText: {
+    fontWeight: '700',
+    fontSize: 12,
+    marginBottom: 10,
+  },
+  installmentOptions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  nowOptionWrapper: {
+    marginRight: 10,
+    alignItems: 'center',
+  },
+  nowOption: {
+    paddingHorizontal: 20,
+    backgroundColor: Theme.colors.gray3,
+    borderWidth: 1,
+    borderColor: Theme.colors.gray1,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    borderRadius: 50,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  optionContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: Theme.colors.gray3,
+    borderWidth: 1,
+    borderColor: Theme.colors.gray1,
+    borderRadius: 50,
+    height: 30,
+  },
+  optionWrapper: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  option: {
+    padding: 10,
+    fontWeight: 'bold',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  activeOption: {
+    backgroundColor: Theme.colors.yellow,
+  },
+  optionText: {
+    fontWeight: '800',
+    fontSize: 14,
+    textAlign: 'center',
+    color: Theme.colors.black,
+    zIndex: 1,
+  },
+  circle: {
+    position: 'absolute',
+    width: 40,
+    height: 40,
+    borderWidth: 5,
+    borderColor: Theme.colors.yellow,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -20 }, { translateY: -20 }],
+  },
+});
+
 export default PaymentMethod;
-
-const PaymentMethodContainer = styled.div`
-  margin-top: 54px;
-  margin-bottom: 24px;
-`;
-
-const PaymentMethodText = styled.div`
-  font-weight: 700;
-  font-size: 12px;
-  margin-bottom: 10px;
-`;
-
-const InstallmentOptions = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const NowOptionWrapper = styled.div`
-  margin-right: 10px;
-  display: flex;
-  align-items: center;
-`;
-
-const NowOption = styled.div<{ active: boolean }>`
-  padding: 0px 20px;
-  background-color: ${Theme.colors.gray3};
-  border: 1px solid ${Theme.colors.gray1};
-  font-weight: bold;
-  text-align: center;
-  cursor: pointer;
-  border-radius: 50px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  position: relative;
-`;
-
-const OptionContainer = styled.div`
-  display: flex;
-  flex-grow: 1;
-  background-color: ${Theme.colors.gray3};
-  border: 1px solid ${Theme.colors.gray1};
-  border-radius: 50px;
-  height: 30px;
-`;
-
-const OptionWrapper = styled.div`
-  flex: 1;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Option = styled.div<{ active: boolean }>`
-  padding: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  position: relative;
-`;
-
-const OptionText = styled.div`
-  font-weight: 800;
-  font-size: 14px;
-  text-align: center;
-  color: ${Theme.colors.black};
-  z-index: 1;
-`;
-
-const Circle = styled.div`
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  border: 5px solid ${Theme.colors.yellow};
-  background-color: white;
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-`;

@@ -1,7 +1,14 @@
 // src/components/ChangeAddressModal.tsx
-import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
-import styled from 'styled-components';
-import { FaTimes } from 'react-icons/fa';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  Modal,
+  Alert,
+} from 'react-native';
 
 interface ChangeAddressModalProps {
   isOpen: boolean;
@@ -16,18 +23,11 @@ const ChangeAddressModal: React.FC<ChangeAddressModalProps> = ({
   const [postalCode, setPostalCode] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
 
-  const handleAddressNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setAddressName(e.target.value);
-  };
-  const handlePostalCodeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPostalCode(e.target.value);
-  };
-  const handleDetailAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setDetailAddress(e.target.value);
-  };
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
+    if (!addressName.trim() || !postalCode.trim() || !detailAddress.trim()) {
+      Alert.alert('오류', '모든 필드를 입력해주세요.');
+      return;
+    }
     // TODO: API 연동 로직 (배송지명, 우편번호, 상세주소) 추가
     console.log({ addressName, postalCode, detailAddress });
     onClose();
@@ -36,174 +36,141 @@ const ChangeAddressModal: React.FC<ChangeAddressModalProps> = ({
     setDetailAddress('');
   };
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
   return (
-    <Overlay onClick={onClose}>
-      <ModalWrapper onClick={(e) => e.stopPropagation()}>
-        <Header>
-          <Title>배송지 관리</Title>
-          <CloseButton onClick={onClose}>
-            <FaTimes />
-          </CloseButton>
-        </Header>
-        <Body>
-          <FormContainer onSubmit={handleSubmit}>
-            <Label htmlFor='addr-name'>배송지명</Label>
-            <Input
-              id='addr-name'
-              type='text'
-              value={addressName}
-              onChange={handleAddressNameChange}
-              placeholder='배송지명을 입력하세요'
-              required
-            />
+    <Modal visible={isOpen} transparent animationType='fade'>
+      <View style={styles.overlay}>
+        <View style={styles.modalWrapper}>
+          <View style={styles.header}>
+            <Text style={styles.title}>배송지 관리</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <Text style={styles.closeButtonText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.body}>
+            <View style={styles.formContainer}>
+              <Text style={styles.label}>배송지명</Text>
+              <TextInput
+                style={styles.input}
+                value={addressName}
+                onChangeText={setAddressName}
+                placeholder='배송지명을 입력하세요'
+                placeholderTextColor='#999'
+              />
 
-            <Label htmlFor='addr-postal'>우편번호</Label>
-            <Input
-              id='addr-postal'
-              type='text'
-              value={postalCode}
-              onChange={handlePostalCodeChange}
-              placeholder='우편번호를 입력하세요'
-              required
-            />
+              <Text style={styles.label}>우편번호</Text>
+              <TextInput
+                style={styles.input}
+                value={postalCode}
+                onChangeText={setPostalCode}
+                placeholder='우편번호를 입력하세요'
+                placeholderTextColor='#999'
+                keyboardType='numeric'
+              />
 
-            <Label htmlFor='addr-detail'>상세주소</Label>
-            <Input
-              id='addr-detail'
-              type='text'
-              value={detailAddress}
-              onChange={handleDetailAddressChange}
-              placeholder='상세주소를 입력하세요'
-              required
-            />
+              <Text style={styles.label}>상세주소</Text>
+              <TextInput
+                style={styles.input}
+                value={detailAddress}
+                onChangeText={setDetailAddress}
+                placeholder='상세주소를 입력하세요'
+                placeholderTextColor='#999'
+              />
 
-            <Divider />
+              <View style={styles.divider} />
 
-            <SubmitBtn type='submit'>주소 저장</SubmitBtn>
-          </FormContainer>
-        </Body>
-      </ModalWrapper>
-    </Overlay>
+              <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
+                <Text style={styles.submitBtnText}>주소 저장</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 };
 
 export default ChangeAddressModal;
 
-/* ───────────────────────── Styled Components ───────────────────────── */
-
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-const ModalWrapper = styled.div`
-  width: 100%;
-  max-width: 300px;
-  background: #fff;
-
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-`;
-
-const Header = styled.div`
-  position: relative;
-  padding: 12px 16px;
-  background-color: #fffcfc;
-  border-bottom: 1px solid #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Title = styled.h2`
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: #000;
-  text-align: center;
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  right: 16px;
-  background: transparent;
-  border: none;
-  color: #000;
-  cursor: pointer;
-  padding: 0;
-  font-size: 20px;
-  line-height: 1;
-`;
-
-const Body = styled.div`
-  padding: 1rem;
-`;
-
-const FormContainer = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-`;
-
-const Label = styled.label`
-  font-size: 12px;
-  font-weight: 700;
-  margin-top: 12px;
-  margin-bottom: 4px;
-  color: #333;
-`;
-
-const Input = styled.input`
-  padding: 10px 12px;
-  font-size: 14px;
-  border: 1px solid #000;
-  outline: none;
-
-  &:focus {
-    border-color: #f6ae24;
-  }
-`;
-
-const Divider = styled.div`
-  margin: 50px 0 0 0;
-  border-top: 1px solid #ccc;
-`;
-
-const SubmitBtn = styled.button`
-  margin-top: 12px;
-  width: 100%;
-  padding: 12px 0;
-  background: #000;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 800;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-
-  &:hover {
-    background: #dfa11d;
-  }
-`;
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalWrapper: {
+    width: '100%',
+    maxWidth: 300,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  header: {
+    position: 'relative',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#fffcfc',
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#000',
+    textAlign: 'center',
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 16,
+    padding: 0,
+  },
+  closeButtonText: {
+    fontSize: 20,
+    color: '#000',
+  },
+  body: {
+    padding: 16,
+  },
+  formContainer: {
+    gap: 5,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: '700',
+    marginTop: 12,
+    marginBottom: 4,
+    color: '#333',
+  },
+  input: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: '#000',
+  },
+  divider: {
+    marginTop: 50,
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+  },
+  submitBtn: {
+    marginTop: 12,
+    width: '100%',
+    paddingVertical: 12,
+    backgroundColor: '#000',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  submitBtnText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+});

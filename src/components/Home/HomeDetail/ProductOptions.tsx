@@ -1,89 +1,122 @@
 import React from 'react';
-import styled from 'styled-components';
-import Theme from '../../../styles/Theme';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-export interface ProductOptionsProps {
+interface ProductOptionsProps {
+  sizes: { size: string; measurements: Record<string, any> }[];
   selectedSize: string;
-  setSelectedSize: (size: string) => void;
+  onSizeSelect: (size: string) => void;
   selectedColor: string;
-  setSelectedColor: (color: string) => void;
-  sizeOptions: string[];
-  colorOptions: string[];
+  onColorSelect: (color: string) => void;
 }
 
 const ProductOptions: React.FC<ProductOptionsProps> = ({
+  sizes,
   selectedSize,
-  setSelectedSize,
+  onSizeSelect,
   selectedColor,
-  setSelectedColor,
-  sizeOptions,
-  colorOptions,
+  onColorSelect,
 }) => {
+  const colors = ['Black', 'White', 'Red', 'Blue'];
+
   return (
-    <OptionsContainer>
-      <label>제품옵션 (선택)</label>
-      <OptionsWrapper>
-        <select
-          value={selectedSize}
-          onChange={(e) => setSelectedSize(e.target.value)}
-        >
-          <option value=''>사이즈 선택</option>
-          {sizeOptions.map((size) => (
-            <option key={size} value={size}>
-              {size}
-            </option>
+    <View style={styles.container}>
+      <Text style={styles.title}>옵션 선택</Text>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>사이즈</Text>
+        <View style={styles.optionsContainer}>
+          {sizes.map((size) => (
+            <TouchableOpacity
+              key={size.size}
+              style={[
+                styles.optionButton,
+                selectedSize === size.size && styles.selectedOption,
+              ]}
+              onPress={() => onSizeSelect(size.size)}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  selectedSize === size.size && styles.selectedOptionText,
+                ]}
+              >
+                {size.size}
+              </Text>
+            </TouchableOpacity>
           ))}
-        </select>
-        <select
-          value={selectedColor}
-          onChange={(e) => setSelectedColor(e.target.value)}
-        >
-          <option value=''>색상 선택</option>
-          {colorOptions.map((color) => (
-            <option key={color} value={color}>
-              {color}
-            </option>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>색상</Text>
+        <View style={styles.optionsContainer}>
+          {colors.map((color) => (
+            <TouchableOpacity
+              key={color}
+              style={[
+                styles.optionButton,
+                selectedColor === color && styles.selectedOption,
+              ]}
+              onPress={() => onColorSelect(color)}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  selectedColor === color && styles.selectedOptionText,
+                ]}
+              >
+                {color}
+              </Text>
+            </TouchableOpacity>
           ))}
-        </select>
-      </OptionsWrapper>
-    </OptionsContainer>
+        </View>
+      </View>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  section: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  optionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  optionButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+  },
+  selectedOption: {
+    backgroundColor: '#f6ac36',
+    borderColor: '#f6ac36',
+  },
+  optionText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  selectedOptionText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+});
+
 export default ProductOptions;
-
-const OptionsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 30px;
-
-  label {
-    font-weight: 700;
-    font-size: 12px;
-    margin-bottom: 10px;
-    display: block;
-  }
-`;
-
-const OptionsWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-
-  select {
-    flex: 1;
-    padding: 8px;
-    box-sizing: border-box;
-    width: 100%;
-    height: 57px;
-    border-radius: 4px;
-    border: 1px solid ${Theme.colors.black};
-    background-color: ${Theme.colors.white};
-    font-size: 16px;
-    color: ${Theme.colors.black};
-    margin-right: 8px;
-
-    &:last-child {
-      margin-right: 0;
-    }
-  }
-`;

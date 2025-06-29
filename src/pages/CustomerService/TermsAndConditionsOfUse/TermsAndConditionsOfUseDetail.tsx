@@ -1,132 +1,121 @@
 import React from 'react';
-import styled from 'styled-components';
+import { View, Text, StyleSheet } from 'react-native';
 
 const TermsAndConditionsOfUseDetail: React.FC = () => {
   return (
-    <DetailContainer>
-      <Section>
-        <Label>서비스 정책</Label>
-        <Box>
-          <BoxText>제2장 회원가입 사항</BoxText>
-        </Box>
-      </Section>
+    <View style={styles.detailContainer}>
+      <View style={styles.section}>
+        <Text style={styles.label}>서비스 정책</Text>
+        <View style={styles.box}>
+          <Text style={styles.boxText}>제2장 회원가입 사항</Text>
+        </View>
+      </View>
 
-      <Section>
-        <Label>개정일</Label>
-        <Box>
-          <BoxText>2025.02.01</BoxText>
-        </Box>
-      </Section>
+      <View style={styles.section}>
+        <Text style={styles.label}>개정일</Text>
+        <View style={styles.box}>
+          <Text style={styles.boxText}>2025.02.01</Text>
+        </View>
+      </View>
 
-      <Section>
-        <Label>상세내용</Label>
-        <ContentBox>
-          <ContentText>
+      <View style={styles.section}>
+        <Text style={styles.label}>상세내용</Text>
+        <View style={styles.contentBox}>
+          <Text style={styles.contentText}>
             이용약관이 들어가는 영역으로 내용이 길어지면 여기까지 표기 되고
             내용이 만들어 진다.
-          </ContentText>
-        </ContentBox>
-      </Section>
+          </Text>
+        </View>
+      </View>
 
-      <Divider />
+      <View style={styles.divider} />
 
-      <NoticeMessage>
-        <Bullet>※</Bullet>
-        <NoticeText>
+      <View style={styles.noticeMessage}>
+        <Text style={styles.bullet}>※</Text>
+        <Text style={styles.noticeText}>
           해당 약관은 새로운 업데이트에 관한 내용으로 상황에 따라 변경될 수
           있으며, 자세한 문의는 서비스팀을 통해 안내 드립니다.
-        </NoticeText>
-      </NoticeMessage>
-    </DetailContainer>
+        </Text>
+      </View>
+    </View>
   );
 };
 
 export default TermsAndConditionsOfUseDetail;
 
-const DetailContainer = styled.div`
-  margin: 0 auto;
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-
-  background: #ffffff;
-  box-sizing: border-box;
-  padding: 1rem;
-  max-width: 1000px;
-`;
-
-const Section = styled.div`
-  width: 100%;
-
-  margin-bottom: 30px;
-`;
-
-const Label = styled.div`
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-  color: #000000;
-
-  margin-bottom: 10px;
-`;
-
-const Box = styled.div`
-  width: 100%;
-  background: #ffffff;
-  border: 1px solid #eeeeee;
-  border-radius: 4px;
-  padding: 20px 10px;
-  box-sizing: border-box;
-`;
-
-const BoxText = styled.div`
-  font-weight: 700;
-  font-size: 13px;
-  line-height: 14px;
-  color: #000000;
-`;
-
-const ContentBox = styled(Box)`
-  min-height: 320px;
-`;
-
-const ContentText = styled.div`
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 20px;
-  color: #000000;
-  white-space: pre-wrap;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #dddddd;
-  margin-bottom: 30px;
-`;
-
-const NoticeMessage = styled.div`
-  width: 100%;
-
-  display: flex;
-  align-items: flex-start;
-`;
-
-const Bullet = styled.div`
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 23px;
-  color: #999999;
-
-  margin-right: 5px;
-`;
-
-const NoticeText = styled.div`
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 23px;
-  color: #999999;
-
-  white-space: pre-wrap;
-`;
+const styles = StyleSheet.create({
+  detailContainer: {
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    backgroundColor: '#fff',
+    padding: 16,
+    maxWidth: 1000,
+  },
+  section: {
+    width: '100%',
+    marginBottom: 30,
+  },
+  label: {
+    fontWeight: '700',
+    fontSize: 10,
+    lineHeight: 11,
+    color: '#000',
+    marginBottom: 10,
+  },
+  box: {
+    width: '100%',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#eee',
+    borderRadius: 4,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+  },
+  boxText: {
+    fontWeight: '700',
+    fontSize: 13,
+    lineHeight: 14,
+    color: '#000',
+  },
+  contentBox: {
+    minHeight: 320,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#eee',
+    borderRadius: 4,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+  },
+  contentText: {
+    fontWeight: '400',
+    fontSize: 13,
+    lineHeight: 20,
+    color: '#000',
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#ddd',
+    marginBottom: 30,
+  },
+  noticeMessage: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  bullet: {
+    fontWeight: '400',
+    fontSize: 12,
+    lineHeight: 23,
+    color: '#999',
+    marginRight: 5,
+  },
+  noticeText: {
+    fontWeight: '400',
+    fontSize: 12,
+    lineHeight: 23,
+    color: '#999',
+  },
+});

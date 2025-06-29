@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
 import ReusableModal from '../../ReusableModal';
 
 type AgreementSectionProps = Record<string, never>;
@@ -27,11 +33,10 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
     });
   };
 
-  const handleIndividualCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, checked } = e.target;
+  const handleIndividualCheck = (id: keyof IndividualChecks) => {
     setIndividualChecks((prev) => ({
       ...prev,
-      [id]: checked,
+      [id]: !prev[id],
     }));
   };
 
@@ -44,185 +49,166 @@ const AgreementSection: React.FC<AgreementSectionProps> = () => {
   };
 
   return (
-    <AgreementWrapper>
-      <AllAgreeWrapper>
-        <Checkbox
-          type='checkbox'
-          id='agreeAll'
-          checked={allChecked}
-          onChange={handleAllChecked}
+    <View style={styles.agreementWrapper}>
+      <View style={styles.allAgreeWrapper}>
+        <TouchableOpacity
+          style={[styles.checkbox, allChecked && styles.checkboxChecked]}
+          onPress={handleAllChecked}
+        >
+          {allChecked && <View style={styles.checkmark} />}
+        </TouchableOpacity>
+        <Text style={styles.label}>전체동의</Text>
+      </View>
+
+      <View style={styles.contentContainer}>
+        <View style={styles.checkboxWrapper}>
+          <TouchableOpacity
+            style={[
+              styles.checkbox,
+              individualChecks.agree1 && styles.checkboxChecked,
+            ]}
+            onPress={() => handleIndividualCheck('agree1')}
+          >
+            {individualChecks.agree1 && <View style={styles.checkmark} />}
+          </TouchableOpacity>
+          <Text style={styles.label}>
+            정산에 따른 동의 <Text style={styles.requiredText}>(필수)</Text>
+          </Text>
+        </View>
+        <View style={styles.inputWrapper}>
+          <View style={styles.descriptionWrapper}>
+            <Text style={styles.description}>
+              이용 전 필수사항 및 주의사항 안내.
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.viewDetailsButton}
+            onPress={handleViewDetails}
+          >
+            <Text style={styles.viewDetailsButtonText}>전체보기</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.checkboxWrapper}>
+          <TouchableOpacity
+            style={[
+              styles.checkbox,
+              individualChecks.agree2 && styles.checkboxChecked,
+            ]}
+            onPress={() => handleIndividualCheck('agree2')}
+          >
+            {individualChecks.agree2 && <View style={styles.checkmark} />}
+          </TouchableOpacity>
+          <Text style={styles.label}>
+            정산계좌 확인 <Text style={styles.requiredText}>(필수)</Text>
+          </Text>
+        </View>
+        <TextInput
+          style={styles.readonlyInput}
+          value='234501-04-654122 (국민) - 홍길동'
+          editable={false}
         />
-        <Label htmlFor='agreeAll'>전체동의</Label>
-      </AllAgreeWrapper>
+      </View>
 
-      <ContentContainer>
-        <CheckboxWrapper>
-          <Checkbox
-            type='checkbox'
-            id='agree1'
-            checked={individualChecks.agree1}
-            onChange={handleIndividualCheck}
-          />
-          <Label htmlFor='agree1'>
-            정산에 따른 동의 <RequiredText>(필수)</RequiredText>
-          </Label>
-        </CheckboxWrapper>
-        <InputWrapper>
-          <DescriptionWrapper>
-            <Description>이용 전 필수사항 및 주의사항 안내.</Description>
-          </DescriptionWrapper>
-          <ViewDetailsButton onClick={handleViewDetails}>
-            전체보기
-          </ViewDetailsButton>
-        </InputWrapper>
-        <CheckboxWrapper>
-          <Checkbox
-            type='checkbox'
-            id='agree2'
-            checked={individualChecks.agree2}
-            onChange={handleIndividualCheck}
-          />
-          <Label htmlFor='agree2'>
-            정산계좌 확인 <RequiredText>(필수)</RequiredText>
-          </Label>
-        </CheckboxWrapper>
-        <ReadonlyInput value='234501-04-654122 (국민) - 홍길동' readOnly />
-      </ContentContainer>
-
-      <ReusableModal isOpen={modalVisible} onClose={closeModal} title='알림'>
+      <ReusableModal visible={modalVisible} onClose={closeModal} title='알림'>
         정산처리가 완료 되었습니다.
       </ReusableModal>
-    </AgreementWrapper>
+    </View>
   );
 };
 
 export default AgreementSection;
 
-const AgreementWrapper = styled.div`
-  background-color: ${({ theme }) => theme.colors.white};
-  margin-bottom: 20px;
-  width: 100%;
-`;
-
-const AllAgreeWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-`;
-
-const CheckboxWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-`;
-
-const ContentContainer = styled.div`
-  background-color: ${({ theme }) => theme.colors.lightgray};
-  border: 1px solid ${({ theme }) => theme.colors.gray0};
-  padding: 20px;
-`;
-
-const InputWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  background-color: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.gray3};
-  padding: 10px;
-  position: relative;
-`;
-
-const Checkbox = styled.input`
-  margin-bottom: 5px;
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.gray2};
-  border-radius: 3px;
-  cursor: pointer;
-  position: relative;
-
-  &:checked {
-    background-color: ${({ theme }) => theme.colors.white};
-    border-color: ${({ theme }) => theme.colors.gray1};
-  }
-
-  &:checked::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 10px;
-    height: 5px;
-    border-left: 3px solid orange;
-    border-bottom: 3px solid orange;
-    transform: rotate(-45deg);
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const Label = styled.label`
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-
-  color: #000000;
-`;
-
-const RequiredText = styled.span`
-  color: ${({ theme }) => theme.colors.gray2};
-`;
-
-const ViewDetailsButton = styled.button`
-  width: 71px;
-  height: 34px;
-  background-color: ${({ theme }) => theme.colors.black};
-  color: ${({ theme }) => theme.colors.white};
-  border: none;
-  cursor: pointer;
-  font-size: 12px;
-  border-radius: 5px;
-
-  font-weight: 800;
-  text-align: center;
-`;
-
-const DescriptionWrapper = styled.div`
-  display: flex;
-  justify-content: left;
-  align-items: center;
-  flex-grow: 1;
-`;
-
-const Description = styled.p`
-  color: ${({ theme }) => theme.colors.gray};
-  margin: 0;
-
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-`;
-const ReadonlyInput = styled.input`
-  width: 100%;
-  padding: 20px;
-  box-sizing: border-box;
-  background-color: #eee;
-  border: 1px solid #ccc;
-  font-size: 14px;
-
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-
-  color: #000000;
-  cursor: not-allowed;
-`;
+const styles = StyleSheet.create({
+  agreementWrapper: {
+    backgroundColor: '#ffffff',
+    marginBottom: 20,
+    width: '100%',
+  },
+  allAgreeWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  checkboxWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  contentContainer: {
+    backgroundColor: '#f5f5f5',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    padding: 20,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    padding: 10,
+    position: 'relative',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxChecked: {
+    borderColor: '#ff8c00',
+  },
+  checkmark: {
+    width: 10,
+    height: 5,
+    borderLeftWidth: 3,
+    borderBottomWidth: 3,
+    borderColor: '#ff8c00',
+    transform: [{ rotate: '-45deg' }],
+  },
+  label: {
+    fontWeight: '700',
+    fontSize: 12,
+    lineHeight: 13,
+    color: '#000000',
+  },
+  requiredText: {
+    color: '#666666',
+  },
+  viewDetailsButton: {
+    width: 71,
+    height: 34,
+    backgroundColor: '#000000',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  viewDetailsButtonText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  descriptionWrapper: {
+    flex: 1,
+  },
+  description: {
+    fontSize: 12,
+    color: '#666666',
+  },
+  readonlyInput: {
+    backgroundColor: '#f9f9f9',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    padding: 10,
+    fontSize: 14,
+    color: '#333333',
+  },
+});

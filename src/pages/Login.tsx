@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Image,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -30,7 +29,7 @@ type LoginResponse = {
 };
 
 const Login: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [formData, setFormData] = useState<LoginFormValues>({
@@ -75,7 +74,7 @@ const Login: React.FC = () => {
         index: 0,
         routes: [
           {
-            name: 'Home',
+            name: 'Home' as any,
             params: {
               showNotice: true,
               membership,
@@ -105,7 +104,9 @@ const Login: React.FC = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.loginContainer}>
-          <Image source={MelpikLogo} style={styles.logo} />
+          <View style={styles.logo}>
+            <MelpikLogo width={150} height={60} />
+          </View>
 
           <View style={styles.formContainer}>
             <View style={styles.inputFieldRow}>
@@ -169,19 +170,19 @@ const Login: React.FC = () => {
 
           <View style={styles.extraLinks}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('FindId' as never)}
+              onPress={() => navigation.navigate('FindId' as any)}
             >
               <Text style={styles.link}>아이디 찾기</Text>
             </TouchableOpacity>
             <Text style={styles.linkSeparator}>|</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('FindPassword' as never)}
+              onPress={() => navigation.navigate('FindPassword' as any)}
             >
               <Text style={styles.link}>비밀번호 찾기</Text>
             </TouchableOpacity>
             <Text style={styles.linkSeparator}>|</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Signup' as never)}
+              onPress={() => navigation.navigate('Signup' as any)}
             >
               <Text style={styles.link}>회원가입</Text>
             </TouchableOpacity>

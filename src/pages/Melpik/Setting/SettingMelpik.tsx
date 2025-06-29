@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
-import styled, { ThemeProvider } from 'styled-components';
-import Theme from '../../../styles/Theme';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  Linking,
+  Clipboard,
+} from 'react-native';
 import StatsSection from '../../../components/StatsSection';
 import InputField from '../../../components/InputField';
 import ReusableModal from '../../../components/ReusableModal';
@@ -33,15 +41,8 @@ const SettingMelpik: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string>('');
 
   const handleImageChangeClick = () => {
-    document.getElementById('profile-image-input')?.click();
-  };
-
-  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const imageUrl = URL.createObjectURL(file);
-      setProfileImage(imageUrl);
-    }
+    // React Native에서는 이미지 피커를 사용해야 합니다
+    Alert.alert('알림', '이미지 선택 기능은 별도 구현이 필요합니다.');
   };
 
   const maskAccountNumber = (number: string) => {
@@ -82,24 +83,35 @@ const SettingMelpik: React.FC = () => {
     setLinks(links.filter((link) => link.id !== linkId));
   };
 
-  const handleCopyLink = () => {
+  const handleCopyLink = async () => {
     const linkToCopy = `melpick.com/${melpickAddress}`;
 
-    navigator.clipboard
-      .writeText(linkToCopy)
-      .then(() => {})
-      .catch(() => {});
+    try {
+      await Clipboard.setString(linkToCopy);
+      Alert.alert('성공', '링크가 복사되었습니다.');
+    } catch (error) {
+      Alert.alert('오류', '링크 복사에 실패했습니다.');
+    }
+  };
+
+  const handleLinkPress = (url: string) => {
+    Linking.openURL(url).catch(() => {
+      Alert.alert('오류', '링크를 열 수 없습니다.');
+    });
   };
 
   return (
-    <ThemeProvider theme={Theme}>
-      <Container>
-        <Header>
-          <Title>멜픽 설정</Title>
-          <Subtitle>내 채널을 통해 나는 브랜드가 된다</Subtitle>
-        </Header>
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>멜픽 설정</Text>
+          <Text style={styles.subtitle}>내 채널을 통해 나는 브랜드가 된다</Text>
+        </View>
 
-        <StatsRow>
+        <View style={styles.statsRow}>
           <StatsSection
             visits={visits}
             sales={sales}
@@ -107,10 +119,10 @@ const SettingMelpik: React.FC = () => {
             visitLabel={visitLabel}
             salesLabel={salesLabel}
           />
-        </StatsRow>
-        <Divider />
+        </View>
+        <View style={styles.divider} />
 
-        <Section>
+        <View style={styles.section}>
           <InputField
             label='멜픽 주소 (변경불가)'
             id='melpickAddress'
@@ -119,7 +131,7 @@ const SettingMelpik: React.FC = () => {
             required
             maxLength={12}
             prefix='melpick.com/'
-            readOnly
+            editable={false}
             value={melpickAddress}
             buttonLabel='링크복사'
             buttonColor='black'
@@ -140,7 +152,9 @@ const SettingMelpik: React.FC = () => {
             type='text'
             placeholder={
               accountInfo.accountNumber
-                ? `${maskAccountNumber(accountInfo.accountNumber)} (${accountInfo.bank})`
+                ? `${maskAccountNumber(accountInfo.accountNumber)} (${
+                    accountInfo.bank
+                  })`
                 : '등록하실 계좌 정보를 입력하세요'
             }
             buttonLabel='등록/변경'
@@ -161,317 +175,132 @@ const SettingMelpik: React.FC = () => {
             buttonColor='black'
             onButtonClick={() => setLinkModalOpen(true)}
           />
-        </Section>
+        </View>
 
-        <Section>
-          <LinkList>
+        <View style={styles.section}>
+          <View style={styles.linkList}>
             {links.map((link) => (
-              <LinkItem key={link.id}>
-                <Label $isEmpty={links.length === 0}>{link.label}</Label>
-                <LinkContent>
-                  <LinkTitle>{link.title}</LinkTitle>
-                  <Separator>|</Separator>
-                  <LinkUrl
-                    href={link.url}
-                    target='_blank'
-                    rel='noopener noreferrer'
+              <View key={link.id} style={styles.linkItem}>
+                <Text
+                  style={[
+                    styles.label,
+                    links.length === 0 && styles.emptyLabel,
+                  ]}
+                >
+                  {link.label}
+                </Text>
+                <View style={styles.linkContent}>
+                  <Text style={styles.linkTitle}>{link.title}</Text>
+                  <Text style={styles.separator}>|</Text>
+                  <TouchableOpacity onPress={() => handleLinkPress(link.url)}>
+                    <Text style={styles.linkUrl}>{link.url}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleDelete(link.id)}
+                    style={styles.deleteButton}
                   >
-                    {link.url}
-                  </LinkUrl>
-                  <DeleteButton onClick={() => handleDelete(link.id)}>
-                    <img src={DeleteIcon} alt='Delete' />
-                  </DeleteButton>
-                </LinkContent>
-              </LinkItem>
+                    <DeleteIcon width={20} height={20} />
+                  </TouchableOpacity>
+                </View>
+              </View>
             ))}
-          </LinkList>
-        </Section>
+          </View>
+        </View>
+      </ScrollView>
 
-        <ReusableModal
-          isOpen={isAccountModalOpen}
-          onClose={() => setAccountModalOpen(false)}
-          title='정산 계좌등록'
-        >
-          <ModalContent>
-            <InputField
-              label='계좌번호 *'
-              id='account-number'
-              type='text'
-              placeholder='계좌번호를 입력하세요'
-              value={accountInfo.accountNumber}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setAccountInfo({
-                  ...accountInfo,
-                  accountNumber: e.target.value,
-                })
-              }
-            />
-            <FlexRow>
-              <InputField
-                label='은행 선택 *'
-                id='bank-select'
-                options={[
-                  '국민은행',
-                  '신한은행',
-                  '하나은행',
-                  '우리은행',
-                  '카카오뱅크',
-                ]}
-                onSelectChange={(value: string) =>
-                  setAccountInfo({ ...accountInfo, bank: value })
-                }
-                defaultValue={accountInfo.bank}
-              />
-              <InputField
-                label='예금주 입력 *'
-                id='account-owner'
-                type='text'
-                placeholder='예금주를 입력하세요'
-                value={accountInfo.accountOwner}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setAccountInfo({
-                    ...accountInfo,
-                    accountOwner: e.target.value,
-                  })
-                }
-              />
-            </FlexRow>
-          </ModalContent>
-        </ReusableModal>
+      <ReusableModal
+        visible={isAccountModalOpen}
+        onClose={() => setAccountModalOpen(false)}
+        title='계좌 정보'
+      >
+        <Text>계좌 정보를 확인하세요.</Text>
+      </ReusableModal>
 
-        <ReusableModal
-          isOpen={isLinkModalOpen}
-          onClose={() => setLinkModalOpen(false)}
-          title='개인 링크등록'
-        >
-          <ModalContent>
-            <InputField
-              label='링크명 *'
-              id='link-name'
-              type='text'
-              placeholder='등록할 링크명을 입력하세요'
-              value={linkInfo.linkName}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setLinkInfo({ ...linkInfo, linkName: e.target.value })
-              }
-            />
-            <InputField
-              label='URL 입력 *'
-              id='link-url'
-              type='text'
-              placeholder='등록할 URL을 입력하세요'
-              value={linkInfo.linkUrl}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setLinkInfo({ ...linkInfo, linkUrl: e.target.value })
-              }
-            />
-          </ModalContent>
-        </ReusableModal>
-
-        <Section>
-          <ProfileImageLabel>프로필 이미지 수정</ProfileImageLabel>
-          <ProfileImageField>
-            {profileImage ? (
-              <ProfileImageDisplay src={profileImage} alt='프로필 이미지' />
-            ) : (
-              <PlaceholderText>이미지를 추가해 주세요</PlaceholderText>
-            )}
-            <ChangeImageButton type='button' onClick={handleImageChangeClick}>
-              이미지 수정
-            </ChangeImageButton>
-            <HiddenFileInput
-              id='profile-image-input'
-              type='file'
-              accept='image/*'
-              onChange={handleImageFileChange}
-            />
-          </ProfileImageField>
-        </Section>
-      </Container>
-    </ThemeProvider>
+      <ReusableModal
+        visible={isLinkModalOpen}
+        onClose={() => setLinkModalOpen(false)}
+        title='링크 정보'
+      >
+        <Text>링크 정보를 확인하세요.</Text>
+      </ReusableModal>
+    </View>
   );
 };
 
 export default SettingMelpik;
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  background-color: #fff;
-  padding: 1rem;
-`;
-
-const Header = styled.div`
-  width: 100%;
-  margin-bottom: 10px;
-`;
-
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: bold;
-  color: #000;
-`;
-
-const Subtitle = styled.p`
-  font-size: 12px;
-  color: #aaa;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #ddd;
-  margin: 20px 0;
-`;
-
-const Section = styled.div`
-  width: 100%;
-  padding: 10px 0;
-`;
-
-const FlexRow = styled.div`
-  display: flex;
-  gap: 10px;
-`;
-
-const ModalContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
-
-const StatsRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0 20px;
-`;
-
-const LinkList = styled.ul`
-  margin-top: 10px;
-  list-style: none;
-  padding: 0;
-`;
-
-const LinkItem = styled.li`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 10px;
-`;
-
-const Label = styled.label<{ $isEmpty: boolean }>`
-  margin-bottom: 10px;
-
-  font-weight: 900;
-  font-size: 12px;
-  line-height: 16px;
-  color: #000000;
-  text-align: left;
-  flex-shrink: 0;
-`;
-
-const LinkContent = styled.div`
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-  margin-left: 11px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  padding: 10px;
-  border: 1px solid ${Theme.colors.gray1};
-`;
-
-const LinkTitle = styled.span`
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 16px;
-  color: #000000;
-`;
-
-const Separator = styled.span`
-  color: #aaa;
-  margin: 0 5px;
-`;
-
-const LinkUrl = styled.a`
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-block;
-  text-decoration: none;
-
-  font-weight: 800;
-  font-size: 12px;
-  line-height: 16px;
-`;
-
-const DeleteButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding-left: 10px;
-  display: flex;
-  align-items: center;
-  margin-left: auto;
-`;
-
-/* 프로필 이미지 관련 스타일 */
-const ProfileImageLabel = styled.div`
-  font-size: 12px;
-  font-weight: bold;
-  margin-top: 30px;
-  text-align: left;
-
-  margin-bottom: 10px;
-`;
-
-const ProfileImageField = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 20px;
-  gap: 30px;
-  border: 1px solid #ccc;
-  justify-content: center;
-`;
-
-const ProfileImageDisplay = styled.img`
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid #ccc;
-`;
-
-const PlaceholderText = styled.div`
-  width: 60px;
-  height: 60px;
-  border: 1px dashed #ccc;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #999;
-  font-size: 10px;
-  text-align: center;
-`;
-
-const ChangeImageButton = styled.button`
-  padding: 8px 12px;
-  font-size: 12px;
-  background-color: #000;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-`;
-
-const HiddenFileInput = styled.input`
-  display: none;
-`;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  header: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+  },
+  statsRow: {
+    paddingHorizontal: 20,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#E5E5E5',
+    marginVertical: 20,
+  },
+  section: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  linkList: {
+    gap: 15,
+  },
+  linkItem: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+    paddingBottom: 15,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  emptyLabel: {
+    color: '#999',
+  },
+  linkContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
+  linkTitle: {
+    fontSize: 14,
+    color: '#333',
+  },
+  separator: {
+    marginHorizontal: 8,
+    color: '#999',
+  },
+  linkUrl: {
+    fontSize: 14,
+    color: '#007AFF',
+    textDecorationLine: 'underline',
+  },
+  deleteButton: {
+    marginLeft: 'auto',
+    padding: 5,
+  },
+  modalContent: {
+    padding: 20,
+  },
+});

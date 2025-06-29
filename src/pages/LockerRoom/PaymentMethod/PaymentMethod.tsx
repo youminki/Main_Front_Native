@@ -1,11 +1,20 @@
 // src/pages/LockerRoom/PaymentMethod/PaymentMethod.tsx
 
 import React, { useState, useEffect, useCallback } from 'react';
-import styled, { keyframes } from 'styled-components';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  Linking,
+} from 'react-native';
 import StatsSection from '../../../components/StatsSection';
 import Spinner from '../../../components/Spinner';
 import { useMyCards } from '../../../api/default/payment';
 import { CardItem } from '../../../api/default/payment';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface UserInfo {
   userId: string;
@@ -23,22 +32,6 @@ const visitLabel = '결제등록 카드';
 const salesLabel = '시즌';
 const sales = '2025 1분기';
 const dateRange = 'SPRING';
-
-const fadeInUp = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to   { opacity: 1; }
-`;
 
 const PaymentMethod: React.FC = () => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
@@ -61,7 +54,7 @@ const PaymentMethod: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const token = localStorage.getItem('accessToken');
+        const token = await AsyncStorage.getItem('accessToken');
         if (!token) throw new Error('로그인 필요');
         const res = await fetch('https://api.stylewh.com/user/me', {
           headers: { Authorization: `Bearer ${token}` },
@@ -92,35 +85,32 @@ const PaymentMethod: React.FC = () => {
       userEmail: userInfo.userEmail,
     }).toString();
     const url = `/test/AddCardPayple?${params}`;
-    const isMobile = window.innerWidth <= 768;
-    if (isMobile) window.location.href = url;
-    else {
-      const w = 360,
-        h = 600;
-      const left = (window.screen.availWidth - w) / 2;
-      const top = (window.screen.availHeight - h) / 2;
-      const popup = window.open(
-        url,
-        'cardAddPopup',
-        `width=${w},height=${h},left=${left},top=${top},resizable,scrollbars`
-      );
-      if (popup) {
-        const timer = setInterval(() => {
-          if (popup.closed) {
-            clearInterval(timer);
-            window.location.reload();
-          }
-        }, 500);
-      }
-    }
+
+    // React Native에서는 외부 브라우저로 열기
+    Alert.alert('카드 추가', '카드 추가 페이지로 이동하시겠습니까?', [
+      {
+        text: '취소',
+        style: 'cancel',
+      },
+      {
+        text: '확인',
+        onPress: () => {
+          Linking.openURL(url).catch(() => {
+            Alert.alert('오류', '카드 추가 페이지를 열 수 없습니다.');
+          });
+        },
+      },
+    ]);
   }, [userInfo]);
 
   return (
-    <Container>
-      <Header>
-        <Title>결제수단</Title>
-        <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
-      </Header>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>결제수단</Text>
+        <Text style={styles.subtitle}>
+          나에게 맞는 스타일을 찾을 때는 멜픽!
+        </Text>
+      </View>
 
       <StatsSection
         visits={count}
@@ -130,229 +120,209 @@ const PaymentMethod: React.FC = () => {
         salesLabel={salesLabel}
       />
 
-      <Divider />
+      <View style={styles.divider} />
 
       {isLoading ? (
-        <SpinnerWrapper>
+        <View style={styles.spinnerWrapper}>
           <Spinner />
-        </SpinnerWrapper>
+        </View>
       ) : (
         <>
-          <CardsList>
+          <View style={styles.cardsList}>
             {cards.map((card, idx) => (
-              <CardItemBox key={idx}>
-                <Chip />
-                <Content>
-                  <BrandLogo>{card.brand}</BrandLogo>
-                  <CardNumber>{card.cardNumber}</CardNumber>
-                </Content>
-                <DateLabel>{card.registerDate}</DateLabel>
-              </CardItemBox>
+              <View key={idx} style={styles.cardItemBox}>
+                <View style={styles.chip} />
+                <View style={styles.content}>
+                  <Text style={styles.brandLogo}>{card.brand}</Text>
+                  <Text style={styles.cardNumber}>{card.cardNumber}</Text>
+                </View>
+                <Text style={styles.dateLabel}>{card.registerDate}</Text>
+              </View>
             ))}
-            <AddCardBox onClick={registerCard}>
-              <PlusWrapper>
-                <PlusBox>
-                  <PlusLineVert />
-                  <PlusLineHorz />
-                </PlusBox>
-                <AddText>카드 추가</AddText>
-              </PlusWrapper>
-            </AddCardBox>
-          </CardsList>
+            <TouchableOpacity style={styles.addCardBox} onPress={registerCard}>
+              <View style={styles.plusWrapper}>
+                <View style={styles.plusBox}>
+                  <View style={styles.plusLineVert} />
+                  <View style={styles.plusLineHorz} />
+                </View>
+                <Text style={styles.addText}>카드 추가</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
 
-          {error && <ErrorMsg>{error}</ErrorMsg>}
+          {error && <Text style={styles.errorMsg}>{error}</Text>}
 
-          <DotsWrapper>
+          <View style={styles.dotsWrapper}>
             {Array(cards.length + 1)
               .fill(0)
               .map((_, idx) => (
-                <Dot key={idx} $active={idx === 0} />
+                <View
+                  key={idx}
+                  style={[styles.dot, idx === 0 && styles.dotActive]}
+                />
               ))}
-          </DotsWrapper>
+          </View>
         </>
       )}
-    </Container>
+    </ScrollView>
   );
 };
 
 export default PaymentMethod;
 
-// Styled Components
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  padding: 1rem;
-  min-height: 100vh;
-`;
-
-const Header = styled.div`
-  width: 100%;
-  margin-bottom: 12px;
-`;
-
-const Title = styled.h1`
-  font-size: 26px;
-  font-weight: 900;
-  color: #333;
-`;
-
-const Subtitle = styled.p`
-  font-size: 14px;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #e0e0e0;
-  margin: 30px 0;
-`;
-
-const CardsList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  justify-content: center;
-  width: 100%;
-  max-width: 800px;
-`;
-
-const SpinnerWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  padding: 60px 0;
-  animation: ${fadeIn} 0.5s ease-out;
-`;
-
-const CardItemBox = styled.div`
-  position: relative;
-  width: 300px;
-  height: 180px;
-  border-radius: 16px;
-  background: #f6ae24;
-  color: #fff;
-  padding: 20px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  animation: ${fadeInUp} 0.5s ease-out;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-  &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const Chip = styled.div`
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 40px;
-  height: 30px;
-  border-radius: 4px;
-  background: linear-gradient(135deg, #eee 0%, #ccc 100%);
-`;
-
-const Content = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  margin-top: 100px;
-  margin-right: 40px;
-  gap: 8px;
-`;
-
-const BrandLogo = styled.div`
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 9px;
-  color: #ffffff;
-`;
-
-const CardNumber = styled.div`
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 2px;
-`;
-
-const DateLabel = styled.span`
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  font-size: 12px;
-  opacity: 0.8;
-`;
-
-const AddCardBox = styled(CardItemBox)`
-  background: #fff;
-  color: #999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 24px;
-
-  max-width: 800px;
-`;
-
-const PlusWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-`;
-
-const PlusBox = styled.div`
-  position: relative;
-  width: 32px;
-  height: 32px;
-  border: 2px dashed #ccc;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const PlusLineVert = styled.div`
-  position: absolute;
-  width: 2px;
-  height: 14px;
-  background: #ccc;
-`;
-
-const PlusLineHorz = styled.div`
-  position: absolute;
-  width: 14px;
-  height: 2px;
-  background: #ccc;
-`;
-
-const AddText = styled.span`
-  font-size: 16px;
-  font-weight: 700;
-`;
-
-const DotsWrapper = styled.div`
-  display: flex;
-  gap: 8px;
-  margin: 24px 0;
-`;
-
-const Dot = styled.div<{ $active: boolean }>`
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: ${({ $active }) => ($active ? '#F6AE24' : '#ccc')};
- _animation: ${fadeIn} 0.5s ease-out;_
-`;
-
-const ErrorMsg = styled.p`
-  color: #d32f2f;
-  margin-top: 12px;
-`;
+// --- Styles ---
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 16,
+  },
+  header: {
+    width: '100%',
+    marginBottom: 12,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#333',
+  },
+  subtitle: {
+    fontSize: 14,
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#e0e0e0',
+    marginVertical: 30,
+  },
+  cardsList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 24,
+    justifyContent: 'center',
+    width: '100%',
+    maxWidth: 800,
+  },
+  spinnerWrapper: {
+    justifyContent: 'center',
+    paddingVertical: 60,
+  },
+  cardItemBox: {
+    position: 'relative',
+    width: 300,
+    height: 180,
+    borderRadius: 16,
+    backgroundColor: '#f6ae24',
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 8,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chip: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    width: 40,
+    height: 30,
+    borderRadius: 4,
+    backgroundColor: '#ccc',
+  },
+  content: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    marginTop: 100,
+    marginRight: 40,
+    gap: 8,
+  },
+  brandLogo: {
+    fontWeight: '700',
+    fontSize: 14,
+    lineHeight: 9,
+    color: '#ffffff',
+  },
+  cardNumber: {
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: 2,
+    color: '#ffffff',
+  },
+  dateLabel: {
+    position: 'absolute',
+    top: 12,
+    right: 16,
+    fontSize: 12,
+    opacity: 0.8,
+    color: '#ffffff',
+  },
+  addCardBox: {
+    backgroundColor: '#fff',
+    color: '#999',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    gap: 24,
+    maxWidth: 800,
+    borderWidth: 2,
+    borderColor: '#ccc',
+    borderStyle: 'dashed',
+  },
+  plusWrapper: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 8,
+  },
+  plusBox: {
+    position: 'relative',
+    width: 32,
+    height: 32,
+    borderWidth: 2,
+    borderColor: '#ccc',
+    borderStyle: 'dashed',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  plusLineVert: {
+    position: 'absolute',
+    width: 2,
+    height: 14,
+    backgroundColor: '#ccc',
+  },
+  plusLineHorz: {
+    position: 'absolute',
+    width: 14,
+    height: 2,
+    backgroundColor: '#ccc',
+  },
+  addText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#999',
+  },
+  dotsWrapper: {
+    flexDirection: 'row',
+    gap: 8,
+    marginVertical: 24,
+  },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#ccc',
+  },
+  dotActive: {
+    backgroundColor: '#F6AE24',
+  },
+  errorMsg: {
+    color: '#d32f2f',
+    marginTop: 12,
+  },
+});

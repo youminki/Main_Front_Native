@@ -29,7 +29,7 @@ const HEIGHT_OPTIONS = Array.from(
   (_, i) => `${140 + i}`
 );
 const WEIGHT_RANGE = Array.from({ length: 90 - 30 + 1 }, (_, i) => `${30 + i}`);
-const SIZE_OPTIONS = ['44', '55', '66', '77'] as const;
+const SIZE_OPTIONS = ['44', '55', '66', '77'] as string[];
 
 const SIZE_LABELS: Record<(typeof SIZE_OPTIONS)[number], string> = {
   '44': 'S',

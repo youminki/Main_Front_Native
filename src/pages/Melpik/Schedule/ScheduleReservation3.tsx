@@ -1,8 +1,17 @@
 // src/pages/Melpik/Schedule/ScheduleReservation3.tsx
 
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { useNavigate, useLocation } from 'react-router-dom';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Stepper from '../../../components/Melpik/Schedule/Reservation1/Stepper';
 import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBar';
 import { getMyCloset } from '../../../api/closet/closetApi';
@@ -26,22 +35,22 @@ const ItemCard: React.FC<ItemCardProps> = ({
   description,
   onSelect,
 }) => {
-  const navigate = useNavigate();
+  const navigation = useNavigation<any>();
 
   const handleSelect = () => {
     const numId = parseInt(id, 10);
     onSelect(numId);
-    navigate(`/item/${numId}`);
+    navigation.navigate('ItemDetail', { id: numId });
   };
 
   return (
-    <CardContainer>
-      <ImageWrapper onClick={handleSelect}>
-        <Image src={image || ''} alt={brand} />
-      </ImageWrapper>
-      <Brand>{brand}</Brand>
-      <Description>{description}</Description>
-    </CardContainer>
+    <View style={styles.cardContainer}>
+      <TouchableOpacity style={styles.imageWrapper} onPress={handleSelect}>
+        <Image source={{ uri: image || '' }} style={styles.image} />
+      </TouchableOpacity>
+      <Text style={styles.brand}>{brand}</Text>
+      <Text style={styles.description}>{description}</Text>
+    </View>
   );
 };
 
@@ -64,10 +73,10 @@ const ItemList: React.FC<ItemListProps> = ({
   );
 
   return (
-    <ListContainer>
+    <View style={styles.listContainer}>
       <HeaderContainer />
       {filteredItems.length > 0 ? (
-        <ItemsWrapper>
+        <View style={styles.itemsWrapper}>
           {filteredItems.map((ui) => (
             <ItemCard
               key={ui.id}
@@ -78,11 +87,11 @@ const ItemList: React.FC<ItemListProps> = ({
               onSelect={onSelect}
             />
           ))}
-        </ItemsWrapper>
+        </View>
       ) : (
-        <NoItemMessage>선택된 제품이 없습니다.</NoItemMessage>
+        <Text style={styles.noItemMessage}>선택된 제품이 없습니다.</Text>
       )}
-    </ListContainer>
+    </View>
   );
 };
 
@@ -90,10 +99,10 @@ const truncateText = (text: string, limit: number): string =>
   text.length > limit ? text.slice(0, limit) + '...' : text;
 
 const ScheduleReservation3: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  // Reservation2에서 전달된 state: range와 selectedItems
-  const prevState = location.state as {
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  // Reservation2에서 전달된 params: range와 selectedItems
+  const prevState = route.params as {
     range?: [Date, Date];
     selectedItems?: number[];
   } | null;
@@ -120,9 +129,9 @@ const ScheduleReservation3: React.FC = () => {
   // range가 없으면 이전 단계로 리디렉트
   useEffect(() => {
     if (!initialRange) {
-      navigate('/schedule/reservation1');
+      navigation.navigate('ScheduleReservation1');
     }
-  }, [initialRange, navigate]);
+  }, [initialRange, navigation]);
 
   // 내 옷장 전체 아이템 불러오기
   useEffect(() => {
@@ -156,33 +165,33 @@ const ScheduleReservation3: React.FC = () => {
     // 상세 페이지 이동은 ItemCard 내부 handleSelect에서 처리
   };
 
-  const handleSaleMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSaleMethod(e.target.value);
+  const handleSaleMethodChange = (value: string) => {
+    setSaleMethod(value);
   };
 
   // BottomBar onNext에서 호출: 유효성 검사 후 모달 열기
   const handleOpenModal = () => {
     if (!initialRange) {
-      alert('날짜 정보가 없습니다.');
+      Alert.alert('오류', '날짜 정보가 없습니다.');
       return;
     }
     if (selectedItems.length === 0) {
-      alert('하나 이상의 제품을 선택해주세요.');
+      Alert.alert('오류', '하나 이상의 제품을 선택해주세요.');
       return;
     }
     setIsModalOpen(true);
   };
 
-  // 모달에서 “네” 클릭 시 실제 생성 처리
+  // 모달에서 "네" 클릭 시 실제 생성 처리
   const handleCreateSchedule = async () => {
     if (!initialRange) {
       return;
     }
     const [start, end] = initialRange;
     const pad = (n: number) => String(n).padStart(2, '0');
-    const startDate = `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(
-      start.getDate()
-    )}`;
+    const startDate = `${start.getFullYear()}-${pad(
+      start.getMonth() + 1
+    )}-${pad(start.getDate())}`;
     const endDate = `${end.getFullYear()}-${pad(end.getMonth() + 1)}-${pad(
       end.getDate()
     )}`;
@@ -198,17 +207,18 @@ const ScheduleReservation3: React.FC = () => {
         saleType: apiSaleType,
         productIds: selectedItems,
       };
+
       await createSaleSchedule(reqBody); // result 변수 제거
       // 성공 시 알림 후 /sales-schedule로 이동
-      alert('판매 스케줄이 생성되었습니다.');
-      navigate('/sales-schedule');
+      Alert.alert('알림', '판매 스케줄이 생성되었습니다.');
+      navigation.navigate('SalesSchedule');
     } catch (error: any) {
       console.error('스케줄 생성 실패', error);
       const msg =
         error.response?.data?.message ||
         error.message ||
         '스케줄 생성 중 오류가 발생했습니다.';
-      alert(`스케줄 생성 실패: ${msg}`);
+      Alert.alert('오류', msg);
     } finally {
       setSubmitting(false);
       setIsModalOpen(false);
@@ -217,39 +227,43 @@ const ScheduleReservation3: React.FC = () => {
 
   // 날짜 범위 포맷 함수 (뷰 표시용)
   const formatKoreanDate = (date: Date) => {
-    return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+    return `${date.getFullYear()}년 ${
+      date.getMonth() + 1
+    }월 ${date.getDate()}일`;
   };
 
   const ItemContainer: React.FC = () => (
-    <CustomHeader>
-      <Label>
-        예약된 제품목록<GrayText2>(선택)</GrayText2>
-      </Label>
-    </CustomHeader>
+    <View style={styles.customHeader}>
+      <Text style={styles.label}>
+        예약된 제품목록<Text style={styles.grayText2}>(선택)</Text>
+      </Text>
+    </View>
   );
 
   return (
-    <Container>
+    <View style={styles.container}>
       <Stepper currentStep={3} />
 
-      <Summary>
-        <ScheduleInfo>
-          <Label>예약한 스케줄</Label>
-          <InfoText>
+      <View style={styles.summary}>
+        <View style={styles.scheduleInfo}>
+          <Text style={styles.label}>예약한 스케줄</Text>
+          <Text style={styles.infoText}>
             {initialRange
               ? `${formatKoreanDate(initialRange[0])} ~ ${formatKoreanDate(
                   initialRange[1]
                 )}`
               : '날짜 정보 없음'}
-          </InfoText>
-        </ScheduleInfo>
-        <ScheduleInfo>
-          <Label>예약한 제품목록</Label>
-          <InfoText>선택한 제품 수 {selectedItems.length} 개</InfoText>
-        </ScheduleInfo>
-      </Summary>
+          </Text>
+        </View>
+        <View style={styles.scheduleInfo}>
+          <Text style={styles.label}>예약한 제품목록</Text>
+          <Text style={styles.infoText}>
+            선택한 제품 수 {selectedItems.length} 개
+          </Text>
+        </View>
+      </View>
 
-      <Content>
+      <ScrollView style={styles.content}>
         {loadingCloset ? (
           <Spinner />
         ) : (
@@ -260,25 +274,24 @@ const ScheduleReservation3: React.FC = () => {
             onSelect={handleSelect}
           />
         )}
-      </Content>
+      </ScrollView>
 
-      <GrayLine />
+      <View style={styles.grayLine} />
 
-      <FormContainer>
-        <ColumnWrapper>
-          <Label>판매방식 선택 *</Label>
-          <StyledSelect value={saleMethod} onChange={handleSaleMethodChange}>
-            <option value='제품판매'>제품판매</option>
-            <option value='제품대여'>제품대여</option>
-          </StyledSelect>
-        </ColumnWrapper>
-      </FormContainer>
+      <View style={styles.formContainer}>
+        <View style={styles.columnWrapper}>
+          <Text style={styles.label}>판매방식 선택 *</Text>
+          <TouchableOpacity style={styles.styledSelect} onPress={() => {}}>
+            <Text style={styles.selectText}>{saleMethod}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
-      <InfoMessage>
-        <GrayText> ※ 노출일정은</GrayText>
-        <BlackText>스케줄 시작일 기준 2일 이내 </BlackText>
-        <GrayText>까지 가능합니다.</GrayText>
-      </InfoMessage>
+      <Text style={styles.infoMessage}>
+        <Text style={styles.grayText}> ※ 노출일정은</Text>
+        <Text style={styles.blackText}>스케줄 시작일 기준 2일 이내 </Text>
+        <Text style={styles.grayText}>까지 가능합니다.</Text>
+      </Text>
 
       {/* BottomBar: onNext에서 모달 열기 */}
       <BottomBar
@@ -294,13 +307,13 @@ const ScheduleReservation3: React.FC = () => {
         onConfirm={handleCreateSchedule}
         title='판매 스케줄 생성'
       >
-        <ModalMessage>
+        <Text style={styles.modalMessage}>
           선택하신 기간과 제품으로 판매 스케줄을 생성하시겠습니까?
-        </ModalMessage>
+        </Text>
       </ReusableModal2>
 
-      <BeenContainer />
-    </Container>
+      <View style={styles.beenContainer} />
+    </View>
   );
 };
 
@@ -315,178 +328,154 @@ const COLOR_GRAY0 = '#e0e0e0';
 const COLOR_WHITE = '#ffffff';
 const COLOR_BLACK = '#000000';
 
-const Container = styled.div`
-  padding: 1rem;
-  max-width: 600px;
-  margin: auto;
-`;
-
-const Summary = styled.div`
-  margin-top: 30px;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 30px;
-`;
-
-const ScheduleInfo = styled.div`
-  flex: 1;
-`;
-
-const InfoText = styled.div`
-  height: 57px;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1px solid ${COLOR_GRAY4};
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-
-  font-weight: 700;
-  font-size: 13px;
-  line-height: 14px;
-`;
-
-const Content = styled.div`
-  flex: 1;
-  margin-bottom: 20px;
-`;
-
-const GrayLine = styled.hr`
-  border: none;
-  width: 100%;
-  border: 1px solid ${COLOR_GRAY0};
-  margin: 30px 0;
-`;
-
-const FormContainer = styled.div`
-  margin-bottom: 30px;
-  display: flex;
-  gap: 20px;
-`;
-
-const ColumnWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-`;
-
-const Label = styled.label`
-  margin-bottom: 8px;
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-  color: ${COLOR_BLACK};
-`;
-
-const StyledSelect = styled.select`
-  padding: 20px;
-  border-radius: 5px;
-  border: 1px solid ${COLOR_BLACK};
-  font-weight: 800;
-  font-size: 13px;
-  line-height: 14px;
-  color: ${COLOR_BLACK};
-`;
-
-const InfoMessage = styled.p`
-  font-size: 12px;
-  color: ${COLOR_GRAY2};
-  margin-bottom: 20px;
-`;
-
-const GrayText = styled.span`
-  color: ${COLOR_GRAY1};
-  font-size: 12px;
-`;
-
-const BlackText = styled.span`
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-  color: ${COLOR_BLACK};
-`;
-
-const BeenContainer = styled.div`
-  height: 300px;
-`;
-
-const ListContainer = styled.div`
-  background-color: ${COLOR_WHITE};
-  overflow: hidden;
-  margin-bottom: 40px;
-`;
-
-const ItemsWrapper = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const NoItemMessage = styled.div`
-  padding: 20px;
-  text-align: center;
-  color: ${COLOR_GRAY2};
-  font-size: 14px;
-`;
-
-const CardContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin: 6px;
-  position: relative;
-`;
-
-const ImageWrapper = styled.div`
-  position: relative;
-  width: 140px;
-  height: 210px;
-  cursor: pointer;
-`;
-
-const Image = styled.img`
-  object-fit: cover;
-  width: 140px;
-  height: 210px;
-`;
-
-const Brand = styled.h3`
-  margin-top: 10px;
-  font-size: 14px;
-  font-weight: bold;
-`;
-
-const Description = styled.p`
-  margin-top: 5px;
-  font-size: 12px;
-  color: ${COLOR_GRAY2};
-`;
-
-const CustomHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
-`;
-
-const GrayText2 = styled.span`
-  margin-left: 5px;
-  color: ${COLOR_GRAY3};
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-`;
-
-// 모달 내부 메시지 스타일
-const ModalMessage = styled.div`
-  padding: 10px 0;
-  font-size: 14px;
-  text-align: center;
-`;
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    maxWidth: 600,
+    margin: 'auto',
+  },
+  summary: {
+    marginTop: 30,
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: 10,
+    marginBottom: 30,
+  },
+  scheduleInfo: {
+    flex: 1,
+  },
+  infoText: {
+    height: 57,
+    padding: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: COLOR_GRAY4,
+    borderRadius: 5,
+    display: 'flex',
+    alignItems: 'center',
+    fontWeight: '700',
+    fontSize: 13,
+    lineHeight: 14,
+  },
+  content: {
+    flex: 1,
+    marginBottom: 20,
+  },
+  grayLine: {
+    borderWidth: 0,
+    borderColor: COLOR_GRAY0,
+    borderBottomWidth: 1,
+    width: '100%',
+    margin: 30,
+  },
+  formContainer: {
+    marginBottom: 30,
+    display: 'flex',
+    gap: 20,
+  },
+  columnWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
+  },
+  label: {
+    marginBottom: 8,
+    fontWeight: '700',
+    fontSize: 10,
+    lineHeight: 11,
+    color: COLOR_BLACK,
+  },
+  styledSelect: {
+    padding: 20,
+    borderWidth: 1,
+    borderColor: COLOR_BLACK,
+    borderRadius: 5,
+    fontWeight: '800',
+    fontSize: 13,
+    lineHeight: 14,
+    color: COLOR_BLACK,
+  },
+  selectText: {
+    fontWeight: '800',
+    fontSize: 13,
+    lineHeight: 14,
+  },
+  infoMessage: {
+    fontSize: 12,
+    color: COLOR_GRAY2,
+    marginBottom: 20,
+  },
+  grayText: {
+    color: COLOR_GRAY1,
+    fontSize: 12,
+  },
+  blackText: {
+    fontWeight: '700',
+    fontSize: 12,
+    lineHeight: 13,
+    color: COLOR_BLACK,
+  },
+  beenContainer: {
+    height: 300,
+  },
+  listContainer: {
+    backgroundColor: COLOR_WHITE,
+    overflow: 'hidden',
+    marginBottom: 40,
+  },
+  itemsWrapper: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    overflow: 'scroll',
+  },
+  noItemMessage: {
+    padding: 20,
+    textAlign: 'center',
+    color: COLOR_GRAY2,
+    fontSize: 14,
+  },
+  cardContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    margin: 6,
+    position: 'relative',
+  },
+  imageWrapper: {
+    position: 'relative',
+    width: 140,
+    height: 210,
+  },
+  image: {
+    width: 140,
+    height: 210,
+  },
+  brand: {
+    marginTop: 10,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  description: {
+    marginTop: 5,
+    fontSize: 12,
+    color: COLOR_GRAY2,
+  },
+  customHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 10,
+  },
+  grayText2: {
+    marginLeft: 5,
+    color: COLOR_GRAY3,
+    fontWeight: '700',
+    fontSize: 10,
+    lineHeight: 11,
+  },
+  modalMessage: {
+    padding: 10,
+    fontSize: 14,
+    textAlign: 'center',
+  },
+});

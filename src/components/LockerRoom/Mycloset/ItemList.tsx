@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
 import ItemCard from './ItemCard';
+
+const { width } = Dimensions.get('window');
 
 type Item = {
   id: string;
@@ -27,36 +29,50 @@ const ItemList: React.FC<ItemListProps> = ({ items, onDelete }) => {
     onDelete(id);
   };
 
+  const renderItem = ({ item }: { item: Item }) => (
+    <View style={styles.itemContainer}>
+      <ItemCard
+        id={item.id}
+        image={item.image}
+        brand={item.brand}
+        description={item.description}
+        price={item.price}
+        discount={item.discount}
+        onDelete={handleDelete}
+      />
+    </View>
+  );
+
   return (
-    <ListContainer>
-      <ItemsWrapper>
-        {itemList.map((item) => (
-          <ItemCard
-            key={item.id}
-            id={item.id}
-            image={item.image}
-            brand={item.brand}
-            description={item.description}
-            price={item.price}
-            discount={item.discount}
-            onDelete={handleDelete}
-          />
-        ))}
-      </ItemsWrapper>
-    </ListContainer>
+    <View style={styles.listContainer}>
+      <FlatList
+        data={itemList}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.contentContainer}
+      />
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  listContainer: {
+    backgroundColor: '#fff',
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: 16,
+  },
+  row: {
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  itemContainer: {
+    width: (width - 48) / 2, // 48 = paddingHorizontal(32) + gap(16)
+  },
+});
+
 export default ItemList;
-
-const ListContainer = styled.div`
-  background-color: #fff;
-  overflow: hidden;
-`;
-
-const ItemsWrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  justify-items: center;
-`;

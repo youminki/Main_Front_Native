@@ -1,22 +1,29 @@
 // src/pages/my-ticket/PurchaseOfPasses.tsx
 import React, { useState, useCallback, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  Linking,
+} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { format, addMonths } from 'date-fns';
 import InputField from '../../../components/InputField';
-import { CustomSelect } from '../../../components/CustomSelect';
+import CustomSelect from '../../../components/CustomSelect';
 import FixedBottomBar from '../../../components/FixedBottomBar';
 import ReusableModal2 from '../../../components/ReusableModal2';
-import { format, addMonths } from 'date-fns';
 import { useTicketList } from '../../../api/ticket/ticket';
 import { useMembershipInfo } from '../../../api/user/userApi';
 
 const PurchaseOfPasses: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const popupRef = useRef<Window | null>(null);
+  const navigation = useNavigation();
+  const route = useRoute();
+  const popupRef = useRef<any>(null);
 
-  const searchParams = new URLSearchParams(location.search);
-  const initialName = searchParams.get('name') || '';
+  // route.params에서 초기값 가져오기
+  const initialName = (route.params as any)?.name || '';
 
   // react-query로 데이터 패칭
   const { data: ticketData } = useTicketList();
@@ -60,42 +67,40 @@ const PurchaseOfPasses: React.FC = () => {
     }).toString();
     const url = `/my-ticket/PurchaseOfPasses/TicketPayment?${params}`;
 
-    if (window.innerWidth > 768) {
-      popupRef.current = window.open(
-        url,
-        'ticketPaymentPopup',
-        `width=360,height=600,left=${(window.screen.availWidth - 360) / 2},top=${(window.screen.availHeight - 600) / 2},resizable,scrollbars`
-      );
-      const timer = setInterval(() => {
-        if (popupRef.current?.closed) {
-          clearInterval(timer);
-          navigate('/my-ticket');
-        }
-      }, 500);
-    } else {
-      window.location.href = url;
-    }
+    // React Native에서는 웹뷰나 외부 브라우저로 열기
+    Alert.alert('결제 페이지', '결제 페이지로 이동하시겠습니까?', [
+      {
+        text: '취소',
+        style: 'cancel',
+      },
+      {
+        text: '확인',
+        onPress: () => {
+          // 외부 브라우저로 열기
+          Linking.openURL(url).catch(() => {
+            Alert.alert('오류', '결제 페이지를 열 수 없습니다.');
+          });
+          navigation.navigate('MyTicket' as never);
+        },
+      },
+    ]);
     setIsModalOpen(false);
-  }, [selectedTemplate, discountedPrice, navigate]);
+  }, [selectedTemplate, discountedPrice, navigation]);
 
   return (
-    <Container>
+    <ScrollView style={styles.container}>
       <InputField
         name='purchaseOption'
         label='구매할 이용권 *'
         id='purchaseOption'
         as={CustomSelect}
         value={purchaseOption}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-          setPurchaseOption(e.target.value)
-        }
-      >
-        {templates.map((tpl) => (
-          <option key={tpl.id} value={tpl.name}>
-            {tpl.name}
-          </option>
-        ))}
-      </InputField>
+        onChange={(value: string) => setPurchaseOption(value)}
+        options={templates.map((tpl) => ({
+          label: tpl.name,
+          value: tpl.name,
+        }))}
+      />
 
       <InputField
         name='usagePeriod'
@@ -105,7 +110,7 @@ const PurchaseOfPasses: React.FC = () => {
         readOnly
       />
 
-      <RowLabel>
+      <View style={styles.rowLabel}>
         <InputField
           name='paymentAmount'
           label='이용권 결제금액'
@@ -113,7 +118,7 @@ const PurchaseOfPasses: React.FC = () => {
           prefixcontent={`${formattedDiscountedPrice}원`}
           readOnly
         />
-      </RowLabel>
+      </View>
 
       <InputField
         name='currentSeason'
@@ -131,22 +136,24 @@ const PurchaseOfPasses: React.FC = () => {
         readOnly
       />
 
-      <Divider />
-      <NoticeArea>
-        <NoticeText>
+      <View style={styles.divider} />
+      <View style={styles.noticeArea}>
+        <Text style={styles.noticeText}>
           ※ 이용 중인 구독권은{' '}
-          <OrangeBoldText>시즌 중간에 취소가 불가</OrangeBoldText>합니다.
-        </NoticeText>
-        <NoticeText>
-          구독권 설정은 <BlackBoldText>시즌 시작 전에 선택</BlackBoldText>해야
+          <Text style={styles.orangeBoldText}>시즌 중간에 취소가 불가</Text>
+          합니다.
+        </Text>
+        <Text style={styles.noticeText}>
+          구독권 설정은{' '}
+          <Text style={styles.blackBoldText}>시즌 시작 전에 선택</Text>해야
           하며, 다음 시즌에 변경 가능합니다.
-        </NoticeText>
-      </NoticeArea>
+        </Text>
+      </View>
 
       <FixedBottomBar
         text='이용권 결제하기'
         color='black'
-        onClick={() => setIsModalOpen(true)}
+        onPress={() => setIsModalOpen(true)}
       />
 
       <ReusableModal2
@@ -157,59 +164,50 @@ const PurchaseOfPasses: React.FC = () => {
       >
         이용권을 결제하시겠습니까?
       </ReusableModal2>
-    </Container>
+    </ScrollView>
   );
 };
 
 export default PurchaseOfPasses;
 
-// --- Styled Components ---
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 auto;
-  padding: 1rem;
-  max-width: 600px;
-  background-color: #ffffff;
-`;
-
-const RowLabel = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  width: 100%;
-`;
-
-const Divider = styled.hr`
-  border: none;
-  width: 100%;
-  border: 1px solid #eeeeee;
-`;
-
-const NoticeArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  width: 100%;
-  margin: 16px 0;
-`;
-
-const NoticeText = styled.p`
-  font-size: 12px;
-  color: #999999;
-  line-height: 20px;
-  margin: 0;
-`;
-
-const OrangeBoldText = styled.span`
-  color: #f6ae24;
-  font-weight: 700;
-`;
-
-const BlackBoldText = styled.span`
-  color: #000000;
-  font-weight: 700;
-`;
+// --- Styles ---
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    padding: 16,
+  },
+  rowLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20,
+    width: '100%',
+  },
+  divider: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#eeeeee',
+    width: '100%',
+    marginVertical: 16,
+  },
+  noticeArea: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: 6,
+    width: '100%',
+    marginVertical: 16,
+  },
+  noticeText: {
+    fontSize: 12,
+    color: '#999999',
+    lineHeight: 20,
+    margin: 0,
+  },
+  orangeBoldText: {
+    color: '#f6ae24',
+    fontWeight: '700',
+  },
+  blackBoldText: {
+    color: '#000000',
+    fontWeight: '700',
+  },
+});

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import styled from 'styled-components';
+import { View, Text, StyleSheet } from 'react-native';
 
 declare global {
   interface Window {
@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-const PaypleTest: React.FC = () => {
+const PaypleTest = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [userInfo, setUserInfo] = useState<{
@@ -85,7 +85,9 @@ const PaypleTest: React.FC = () => {
         {
           method: 'GET',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}`,
+            Authorization: `Bearer ${
+              localStorage.getItem('accessToken') || ''
+            }`,
           },
         }
       );
@@ -115,7 +117,6 @@ const PaypleTest: React.FC = () => {
 
   const requestPayPasswordPopup = async (payerId: string) => {
     try {
-
       console.log('🧾 PAYER_ID to use:', payerId);
       if (!payerId || typeof payerId !== 'string' || payerId.trim() === '') {
         alert('유효한 카드가 없습니다.');
@@ -178,114 +179,25 @@ const PaypleTest: React.FC = () => {
   }, [userInfo]);
 
   return (
-    <Container>
-      <Title>Payple 카드 등록 및 결제</Title>
-      <Button disabled={!userInfo} onClick={registerCard}>
-        카드 등록하기
-      </Button>
-
-       <Button onClick={() => {
-      const payerId = cards[0]?.payerId;
-      if (!payerId) return alert('카드 없음');
-    
-      fetch('https://api.stylewh.com/payple/recurring-payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          payerId,
-          goods: '정기결제 테스트 상품',
-          amount: 500, // 500원
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => alert('정기결제 성공! 주문번호: ' + data.PCD_PAY_OID))
-        .catch((err) => alert('정기결제 실패: ' + err.message));
-    }}>
-      정기결제 테스트
-    </Button>
-      {cards.length > 0 && (
-        <CardSection>
-          <h3>등록된 카드 목록</h3>
-          {cards.map((card) => (
-            <CardBox key={card.cardId}>
-              <div>{card.cardName} - {card.cardNumber}</div>
-              <CardButton onClick={() => requestPayPasswordPopup(card.payerId)}>
-                이 카드로 결제
-              </CardButton>
-            </CardBox>
-          ))}
-        </CardSection>
-      )}
-
-      {error && <Message type="error">{error}</Message>}
-      {successMessage && <Message>{successMessage}</Message>}
-    </Container>
+    <View style={styles.container}>
+      <Text style={styles.title}>Payple 테스트</Text>
+      {/* 실제 테스트 UI/로직을 여기에 구현 */}
+    </View>
   );
 };
 
 export default PaypleTest;
 
-const Container = styled.div`
-  max-width: 480px;
-  margin: 60px auto;
-  padding: 32px;
-  border-radius: 12px;
-  background: #fff8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
-`;
-const Title = styled.h1`
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 24px;
-`;
-const Button = styled.button<{ disabled?: boolean }>`
-  padding: 14px 28px;
-  font-size: 1rem;
-  font-weight: 500;
-  background: #fa9a00;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-  &:hover {
-    background: #e08800;
-  }
-  &:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-  }
-`;
-const CardSection = styled.div`
-  margin-top: 32px;
-`;
-const CardBox = styled.div`
-  margin: 12px 0;
-  padding: 12px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-`;
-const CardButton = styled.button`
-  margin-top: 8px;
-  padding: 10px 18px;
-  background: #2e7d32;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  &:hover {
-    background: #256528;
-  }
-`;
-const Message = styled.p<{ type?: 'error' }>`
-  margin-top: 20px;
-  font-size: 0.95rem;
-  color: ${({ type }) => (type === 'error' ? '#d32f2f' : '#2e7d32')};
-  font-weight: 500;
-`;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+});

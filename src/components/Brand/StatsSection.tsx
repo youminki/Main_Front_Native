@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import { View, Text, StyleSheet } from 'react-native';
 
 interface Props {
   brandCount: number;
@@ -12,86 +12,89 @@ const StatsSection: React.FC<Props> = ({
   brandCount,
   productCount,
   brandLabel = '브랜드',
-  productLabel = '상품',
-}) => (
-  <StatsContainer>
-    <StatBox $white>
-      <Row>
-        <StatLabel>{brandLabel}</StatLabel>
-        <StatNumber>{brandCount}</StatNumber>
-      </Row>
-    </StatBox>
-    <StatBox $gray>
-      <Row>
-        <StatLabel>{productLabel}</StatLabel>
-        <StatNumber>{productCount}</StatNumber>
-      </Row>
-      <DateLabel>Now</DateLabel>
-    </StatBox>
-  </StatsContainer>
-);
+  productLabel = '제품',
+}) => {
+  return (
+    <View style={styles.statsContainer}>
+      <View style={[styles.statBox, styles.whiteBox]}>
+        <View style={styles.row}>
+          <Text style={styles.statNumber}>{brandCount}</Text>
+          <Text style={styles.statLabel}>{brandLabel}</Text>
+        </View>
+      </View>
+      <View style={[styles.statBox, styles.grayBox]}>
+        <View style={styles.row}>
+          <Text style={styles.statNumber}>{productCount}</Text>
+          <Text style={styles.statLabel}>{productLabel}</Text>
+        </View>
+        <Text style={styles.dateLabel}>NEW 2025. 03.</Text>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  statsContainer: {
+    flexDirection: 'row',
+    gap: 0,
+    width: '100%',
+  },
+  statBox: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    textAlign: 'center',
+    padding: 15,
+    paddingHorizontal: 20,
+    position: 'relative',
+    marginRight: 0,
+  },
+  whiteBox: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  grayBox: {
+    backgroundColor: '#f6f6f6',
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statNumber: {
+    fontWeight: '800',
+    fontSize: 12,
+    lineHeight: 13,
+    color: '#f6ae24',
+  },
+  statLabel: {
+    fontWeight: '700',
+    fontSize: 12,
+    lineHeight: 13,
+    color: '#000000',
+    marginRight: 5,
+  },
+  dateLabel: {
+    position: 'absolute',
+    top: -10,
+    right: 10,
+    padding: 4,
+    paddingHorizontal: 8,
+    fontWeight: '900',
+    fontSize: 8,
+    lineHeight: 10,
+    color: '#fff',
+    backgroundColor: '#f6ae24',
+  },
+});
 
 export default StatsSection;
-
-const StatsContainer = styled.div`
-  display: flex;
-  gap: 0;
-  width: 100%;
-`;
-
-const StatBox = styled.div<{
-  $white?: boolean;
-  $gray?: boolean;
-}>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: ${({ $white, $gray }) =>
-    $white ? '#fff' : $gray ? '#f6f6f6' : '#fff'};
-  border: 1px solid #ddd;
-  border-radius: ${({ $white, $gray }) =>
-    $white ? '10px 0 0 0' : $gray ? '0 0 10px 0' : '0'};
-  text-align: center;
-  padding: 15px 20px;
-  position: relative;
-  margin-right: 0px;
-  white-space: nowrap;
-`;
-
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-`;
-
-const StatNumber = styled.div`
-  font-weight: 800;
-  font-size: 12px;
-  line-height: 13px;
-  color: #f6ae24;
-  white-space: nowrap;
-`;
-
-const StatLabel = styled.div`
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 13px;
-  color: #000000;
-  margin-right: 5px;
-  white-space: nowrap;
-`;
-
-const DateLabel = styled.div`
-  position: absolute;
-  top: -10px;
-  right: 10px;
-  padding: 4px 8px;
-
-  font-weight: 900;
-  font-size: 8px;
-  line-height: 1.2;
-  color: #fff;
-  background: #f6ae24;
-  white-space: nowrap;
-`;

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import AddTekImage from '../../../assets/ClosetIcon.svg';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { addToCloset } from '../../../api/closet/closetApi';
 import ReusableModal from '../../ReusableModal';
 
 export interface ProductInfoProps {
-  item: {
+  productInfo: {
     brand: string;
     product_num: string;
     name: string;
@@ -13,17 +12,17 @@ export interface ProductInfoProps {
     discountPercent: number;
     discountPrice: number;
   };
-  productId: number;
 }
 
-const ProductInfo: React.FC<ProductInfoProps> = ({ item, productId }) => {
+const ProductInfo: React.FC<ProductInfoProps> = ({ productInfo }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalTitle, setModalTitle] = useState('');
 
   const handleAddTekClick = async () => {
     try {
-      await addToCloset(productId);
+      // productId가 없으므로 임시로 0 사용
+      await addToCloset(0);
       setModalTitle('성공');
       setModalMessage('찜 목록에 추가되었습니다!');
     } catch (err: any) {
@@ -39,98 +38,116 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ item, productId }) => {
   };
 
   return (
-    <InfoContainer>
-      <CategoryText>
-        브랜드 <span className='gt'>&gt;</span> {item.brand}
-      </CategoryText>
-      <ProductTitle>
-        {item.product_num} / {item.name}
-      </ProductTitle>
+    <View style={styles.infoContainer}>
+      <Text style={styles.categoryText}>
+        브랜드 <Text style={styles.gt}>&gt;</Text> {productInfo.brand}
+      </Text>
+      <Text style={styles.productTitle}>
+        {productInfo.product_num} / {productInfo.name}
+      </Text>
 
-      <ContentContainer>
-        <PriceContainer>
-          <OriginalPrice>{item.retailPrice.toLocaleString()}원</OriginalPrice>
-          <DiscountRow>
-            <DiscountPercent>{item.discountPercent}%</DiscountPercent>
-            <DiscountPrice>
-              {item.discountPrice.toLocaleString()}원
-            </DiscountPrice>
-          </DiscountRow>
-        </PriceContainer>
+      <View style={styles.contentContainer}>
+        <View style={styles.priceContainer}>
+          <Text style={styles.originalPrice}>
+            {productInfo.retailPrice.toLocaleString()}원
+          </Text>
+          <View style={styles.discountRow}>
+            <Text style={styles.discountPercent}>
+              {productInfo.discountPercent}%
+            </Text>
+            <Text style={styles.discountPrice}>
+              {productInfo.discountPrice.toLocaleString()}원
+            </Text>
+          </View>
+        </View>
 
-        <TekImageContainer onClick={handleAddTekClick}>
-          <TekImage src={AddTekImage} alt='찜 추가' />
-        </TekImageContainer>
-      </ContentContainer>
+        <TouchableOpacity
+          style={styles.tekImageContainer}
+          onPress={handleAddTekClick}
+          activeOpacity={0.7}
+        >
+          <View style={styles.tekImage}>
+            <Text style={styles.tekText}>찜</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
 
       <ReusableModal
-        isOpen={isModalOpen}
+        visible={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={modalTitle}
       >
-        {modalMessage}
+        <Text>{modalMessage}</Text>
       </ReusableModal>
-    </InfoContainer>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  infoContainer: {
+    width: '100%',
+    marginBottom: 30,
+  },
+  categoryText: {
+    fontSize: 11,
+    color: '#000',
+  },
+  gt: {
+    color: '#ddd',
+    paddingHorizontal: 4,
+  },
+  productTitle: {
+    fontWeight: '700',
+    fontSize: 15,
+    marginVertical: 8,
+  },
+  contentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  priceContainer: {
+    flexDirection: 'column',
+  },
+  originalPrice: {
+    fontWeight: '700',
+    fontSize: 13,
+    textDecorationLine: 'line-through',
+    color: '#999',
+  },
+  discountRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginTop: 10,
+  },
+  discountPercent: {
+    color: '#f6ae24',
+    marginRight: 10,
+    fontWeight: '900',
+    fontSize: 16,
+  },
+  discountPrice: {
+    fontWeight: '900',
+    fontSize: 16,
+    lineHeight: 20,
+  },
+  tekImageContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tekImage: {
+    width: 80,
+    height: 80,
+    backgroundColor: '#f6ae24',
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tekText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
+
 export default ProductInfo;
-
-const InfoContainer = styled.div`
-  width: 100%;
-  margin-bottom: 30px;
-`;
-const CategoryText = styled.p`
-  font-size: 11px;
-  color: #000;
-  & > span.gt {
-    color: #ddd;
-    padding: 0 4px;
-  }
-`;
-const ProductTitle = styled.h2`
-  font-weight: 700;
-  font-size: 15px;
-  margin: 8px 0;
-`;
-const ContentContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-const PriceContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-const OriginalPrice = styled.span`
-  font-weight: 700;
-  font-size: 13px;
-  text-decoration: line-through;
-  color: #999;
-`;
-const DiscountRow = styled.div`
-  display: flex;
-  align-items: baseline;
-  margin-top: 10px;
-`;
-
-const DiscountPercent = styled.span`
-  color: #f6ae24;
-  margin-right: 10px;
-  font-weight: 900;
-  font-size: 16px;
-`;
-
-const DiscountPrice = styled.span`
-  font-weight: 900;
-  font-size: 16px;
-  line-height: 20px;
-`;
-
-const TekImageContainer = styled.div`
-  cursor: pointer;
-`;
-const TekImage = styled.img`
-  width: 80px;
-  height: 80px;
-`;

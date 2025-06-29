@@ -1,11 +1,17 @@
 // src/pages/Melpik/Schedule/ScheduleConfirmation.tsx
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import Theme from '../../../styles/Theme';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  Alert,
+  Modal,
+} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import BottomBar from '../../../components/BottomNav2';
-import DeleteButtonIcon from '../../../assets/DeleteButtonIcon.svg';
-import checkIcon from '../../../assets/checkIcon.svg';
-import { useNavigate, useParams } from 'react-router-dom';
 import {
   getSaleScheduleDetail,
   SaleScheduleDetailResponse,
@@ -20,13 +26,14 @@ import Summary from '../../../components/Melpik/Schedule/Reservation1/Summary';
 // 내 옷장 API & 타입 import
 import { getMyCloset } from '../../../api/closet/closetApi';
 import { UIItem } from '../../../components/Home/MyclosetItemList';
+import SearchIcon from '../../assets/BottomNav/SearchIcon.svg';
 
 const MAX_SELECTION = 6;
 
 // 색상 상수
-
 const COLOR_WHITE = '#ffffff';
 const COLOR_GRAY2 = '#757575';
+const COLOR_GRAY4 = '#e0e0e0';
 
 const truncateText = (text: string, limit: number): string =>
   text.length > limit ? text.slice(0, limit) + '...' : text;
@@ -62,27 +69,28 @@ const ItemCard: React.FC<ItemCardProps> = ({
   const handleSelect = () => onSelect(id);
 
   return (
-    <CardContainer>
-      <ImageWrapper onClick={handleSelect}>
-        <Image src={image} alt={brand} />
+    <View style={styles.cardContainer}>
+      <TouchableOpacity style={styles.imageWrapper} onPress={handleSelect}>
+        <Image source={{ uri: image }} style={styles.image} />
         {$isSelected && (
-          <SelectionOverlay>
-            <CircularSelection>
-              <CheckIconImg src={checkIcon} alt='Check Icon' />
-            </CircularSelection>
-            <SelectText>제품선택</SelectText>
-          </SelectionOverlay>
+          <View style={styles.selectionOverlay}>
+            <View style={styles.circularSelection}>
+              <Text style={styles.checkIconText}>✓</Text>
+            </View>
+            <Text style={styles.selectText}>제품선택</Text>
+          </View>
         )}
-      </ImageWrapper>
-      <Brand>{brand}</Brand>
-      <Description>{description}</Description>
-    </CardContainer>
+      </TouchableOpacity>
+      <Text style={styles.brand}>{brand}</Text>
+      <Text style={styles.description}>{description}</Text>
+    </View>
   );
 };
 
 const ScheduleConfirmation: React.FC = () => {
-  const navigate = useNavigate();
-  const { scheduleId } = useParams<{ scheduleId: string }>();
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const { scheduleId } = route.params as { scheduleId: string };
 
   const [detail, setDetail] = useState<SaleScheduleDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -153,15 +161,15 @@ const ScheduleConfirmation: React.FC = () => {
       prev.includes(id)
         ? prev.filter((x) => x !== id)
         : prev.length < MAX_SELECTION
-          ? [...prev, id]
-          : prev
+        ? [...prev, id]
+        : prev
     );
   };
 
   const handleDelete = async () => {
     if (!scheduleId) return;
     await deleteSaleSchedule(Number(scheduleId));
-    navigate('/sale-schedule');
+    navigation.navigate('SaleSchedule');
   };
 
   // 수정하기: 날짜·타이틀·선택 제품 모두 저장
@@ -178,7 +186,7 @@ const ScheduleConfirmation: React.FC = () => {
     const updated = await getSaleScheduleDetail(Number(scheduleId));
     setDetail(updated);
     setSelectedItems(updated.products.map((p) => String(p.id)));
-    alert('스케줄이 저장되었습니다.');
+    Alert.alert('알림', '스케줄이 저장되었습니다.');
   };
 
   // 모달 내 날짜 선택 로직
@@ -213,22 +221,26 @@ const ScheduleConfirmation: React.FC = () => {
     if (!editRange || !detail) return;
     const [s, e] = editRange;
     const pad = (n: number) => `${n}`.padStart(2, '0');
-    const newRangeStr = `${s.getFullYear()}-${pad(s.getMonth() + 1)}-${pad(s.getDate())} ~ ${e.getFullYear()}-${pad(e.getMonth() + 1)}-${pad(e.getDate())}`;
+    const newRangeStr = `${s.getFullYear()}-${pad(s.getMonth() + 1)}-${pad(
+      s.getDate()
+    )} ~ ${e.getFullYear()}-${pad(e.getMonth() + 1)}-${pad(e.getDate())}`;
     setDetail({ ...detail, dateRange: newRangeStr });
     setShowModal(false);
   };
 
   if (loading)
     return (
-      <Container>
+      <View style={styles.container}>
         <Spinner />
-      </Container>
+      </View>
     );
   if (error || !detail)
     return (
-      <Container>
-        <ErrorMessage>{error || '정보를 불러올 수 없습니다.'}</ErrorMessage>
-      </Container>
+      <View style={styles.container}>
+        <Text style={styles.errorMessage}>
+          {error || '정보를 불러올 수 없습니다.'}
+        </Text>
+      </View>
     );
 
   // 실제 예약된 목록 대신, 현재 선택된 내 옷장 제품으로 표시
@@ -237,51 +249,67 @@ const ScheduleConfirmation: React.FC = () => {
   );
 
   return (
-    <Container>
-      <Content>
-        <Label>스케줄 타이틀</Label>
-        <TextBox>{detail.title}</TextBox>
+    <View style={styles.container}>
+      <ScrollView style={styles.content}>
+        <Text style={styles.label}>스케줄 타이틀</Text>
+        <View style={styles.textBox}>
+          <Text style={styles.textBoxText}>{detail.title}</Text>
+        </View>
 
-        <Label>스케줄 예약일자</Label>
-        <ClickableBox onClick={() => setShowModal(true)}>
-          {detail.dateRange
-            .split('~')
-            .map((d) => formatDateWithDay(d.trim()))
-            .join(' ~ ')}
-        </ClickableBox>
+        <Text style={styles.label}>스케줄 예약일자</Text>
+        <TouchableOpacity
+          style={styles.clickableBox}
+          onPress={() => setShowModal(true)}
+        >
+          <Text style={styles.clickableBoxText}>
+            {detail.dateRange
+              .split('~')
+              .map((d) => formatDateWithDay(d.trim()))
+              .join(' ~ ')}
+          </Text>
+        </TouchableOpacity>
 
-        <RowContainer>
-          <Column>
-            <Label>선택된 제품</Label>
-            <TextBox>
-              {reservedItems.length} / {MAX_SELECTION}개
-            </TextBox>
-          </Column>
-        </RowContainer>
+        <View style={styles.rowContainer}>
+          <View style={styles.column}>
+            <Text style={styles.label}>선택된 제품</Text>
+            <View style={styles.textBox}>
+              <Text style={styles.textBoxText}>
+                {reservedItems.length} / {MAX_SELECTION}개
+              </Text>
+            </View>
+          </View>
+        </View>
 
-        <ConnectorLine />
+        <View style={styles.connectorLine} />
 
-        <Label>예약된 제품목록</Label>
+        <Text style={styles.label}>예약된 제품목록</Text>
         {reservedItems.length === 0 ? (
-          <TextBox>아직 예약된 제품이 없습니다.</TextBox>
+          <View style={styles.textBox}>
+            <Text style={styles.textBoxText}>아직 예약된 제품이 없습니다.</Text>
+          </View>
         ) : (
-          <ProductList>
+          <ScrollView horizontal style={styles.productList}>
             {reservedItems.map((item) => (
-              <Product key={item.id}>
-                <ProductImage src={item.image} alt={item.description} />
-                <ProductLabel>{item.brand}</ProductLabel>
-                <ProductName>{truncateText(item.description, 15)}</ProductName>
-              </Product>
+              <View key={item.id} style={styles.product}>
+                <Image
+                  source={{ uri: item.image }}
+                  style={styles.productImage}
+                />
+                <Text style={styles.productLabel}>{item.brand}</Text>
+                <Text style={styles.productName}>
+                  {truncateText(item.description, 15)}
+                </Text>
+              </View>
             ))}
-          </ProductList>
+          </ScrollView>
         )}
 
-        <Label>내 옷장 제품목록</Label>
+        <Text style={styles.label}>내 옷장 제품목록</Text>
         {loadingCloset ? (
           <Spinner />
         ) : (
-          <ListContainer>
-            <ItemsWrapper>
+          <View style={styles.listContainer}>
+            <ScrollView horizontal style={styles.itemsWrapper}>
               {closetItems.map((item) => {
                 const sel = selectedItems.includes(item.id);
                 return (
@@ -296,245 +324,244 @@ const ScheduleConfirmation: React.FC = () => {
                   />
                 );
               })}
-            </ItemsWrapper>
-          </ListContainer>
+            </ScrollView>
+          </View>
         )}
-      </Content>
+      </ScrollView>
 
-      <BottomBar
-        imageSrc={DeleteButtonIcon}
-        cartOnClick={handleDelete}
-        buttonText='수정하기'
-        onClick={handleEdit}
-      />
+      <BottomBar onPress={handleEdit} />
 
-      {showModal && editRange && (
-        <ModalOverlay onClick={() => setShowModal(false)}>
-          <ModalContent onClick={(e) => e.stopPropagation()}>
-            <ModalHeader>
+      <Modal visible={showModal} transparent animationType='fade'>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
               <DateSelection
                 year={modalYear}
                 month={modalMonth}
-                onYearChange={(e) => setModalYear(Number(e.target.value))}
-                onMonthChange={(e) => setModalMonth(Number(e.target.value))}
-              />
-              <CloseBtn onClick={() => setShowModal(false)}>✕</CloseBtn>
-            </ModalHeader>
+                onYearChange={(value: any) => setModalYear(Number(value))}
+                onMonthChange={(value: any) => setModalMonth(Number(value))}
+              />{' '}
+              as any
+              <TouchableOpacity
+                style={styles.closeBtn}
+                onPress={() => setShowModal(false)}
+              >
+                <Text style={styles.closeBtnText}>✕</Text>
+              </TouchableOpacity>
+            </View>
             <Calendar
-              year={modalYear}
-              month={modalMonth}
-              startDate={editRange[0]}
-              endDate={editRange[1]}
-              onDateClick={handleDateClick}
-              onIncrease={() => adjustEnd(1)}
-              onDecrease={() => adjustEnd(-1)}
-              today={today}
+              {...({
+                year: modalYear,
+                month: modalMonth,
+                startDate: editRange?.[0],
+                endDate: editRange?.[1],
+                onDateClick: handleDateClick,
+                onIncrease: () => adjustEnd(1),
+                onDecrease: () => adjustEnd(-1),
+                today,
+              } as any)}
             />
-            <ModalFooter>
+            <View style={styles.modalFooter}>
               <Summary
                 range={editRange}
                 seasonProgress={{ total: 6, completed: 2, pending: 0 }}
               />
-              <ApplyBtn onClick={applyModal}>적용하기</ApplyBtn>
-            </ModalFooter>
-          </ModalContent>
-        </ModalOverlay>
-      )}
-    </Container>
+              <TouchableOpacity style={styles.applyBtn} onPress={applyModal}>
+                <Text style={styles.applyBtnText}>적용하기</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 };
 
 export default ScheduleConfirmation;
 
-/* Styled Components */
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  background-color: #fff;
-  padding: 1rem;
-  max-width: 600px;
-  margin: auto;
-`;
-const Content = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-const Label = styled.label`
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-`;
-const TextBox = styled.div`
-  padding: 21px 10px;
-  border: 1px solid ${Theme.colors.gray4};
-  border-radius: 5px;
-  font-weight: 800;
-  font-size: 13px;
-  line-height: 14px;
-`;
-const ClickableBox = styled(TextBox)`
-  cursor: pointer;
-`;
-const RowContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-`;
-const Column = styled.div`
-  flex: 1;
-`;
-const ConnectorLine = styled.div`
-  border: 1px solid ${Theme.colors.gray4};
-  margin: 20px 0;
-`;
-const ProductList = styled.div`
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-const Product = styled.div`
-  flex-shrink: 0;
-`;
-const ProductImage = styled.img`
-  width: 140px;
-  height: 210px;
-  object-fit: cover;
-`;
-const ProductLabel = styled.div`
-  font-size: 12px;
-  font-weight: bold;
-`;
-const ProductName = styled.div`
-  margin-top: 5px;
-  font-size: 12px;
-  line-height: 13px;
-  color: #999;
-`;
-const ErrorMessage = styled.div`
-  padding: 20px;
-  text-align: center;
-  color: red;
-`;
-const ListContainer = styled.div`
-  background-color: ${COLOR_WHITE};
-  overflow: hidden;
-  margin-bottom: 40px;
-`;
-const ItemsWrapper = styled.div`
-  display: flex;
-  overflow-x: auto;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-const CardContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin: 6px;
-  position: relative;
-`;
-const ImageWrapper = styled.div`
-  position: relative;
-  width: 140px;
-  height: 210px;
-  cursor: pointer;
-`;
-const Image = styled.img`
-  object-fit: cover;
-  width: 140px;
-  height: 210px;
-`;
-const SelectionOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 140px;
-  height: 210px;
-  background: rgba(246, 174, 36, 0.95);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-const CircularSelection = styled.div`
-  width: 58px;
-  height: 58px;
-  background-color: ${COLOR_WHITE};
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-const CheckIconImg = styled.img`
-  width: 30px;
-  height: 22px;
-`;
-const SelectText = styled.div`
-  margin-top: 10px;
-  font-weight: 700;
-  font-size: 12px;
-  color: ${COLOR_WHITE};
-`;
-const Brand = styled.h3`
-  margin-top: 10px;
-  font-size: 14px;
-  font-weight: bold;
-`;
-const Description = styled.p`
-  margin-top: 5px;
-  font-size: 12px;
-  color: ${COLOR_GRAY2};
-`;
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-const ModalContent = styled.div`
-  background: #fff;
-  width: 90%;
-  max-width: 500px;
-  border-radius: 8px;
-  overflow: hidden;
-`;
-const ModalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-`;
-const CloseBtn = styled.button`
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-`;
-const ModalFooter = styled.div`
-  padding: 12px;
-  border-top: 1px solid #eee;
-`;
-const ApplyBtn = styled.button`
-  width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  background: #000;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-weight: 700;
-  cursor: pointer;
-`;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 16,
+  },
+  content: {
+    flex: 1,
+    gap: 10,
+  },
+  label: {
+    fontWeight: '700',
+    fontSize: 10,
+    lineHeight: 11,
+  },
+  textBox: {
+    paddingVertical: 21,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: COLOR_GRAY4,
+    borderRadius: 5,
+  },
+  textBoxText: {
+    fontWeight: '800',
+    fontSize: 13,
+    lineHeight: 14,
+  },
+  clickableBox: {
+    paddingVertical: 21,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: COLOR_GRAY4,
+    borderRadius: 5,
+  },
+  clickableBoxText: {
+    fontWeight: '800',
+    fontSize: 13,
+    lineHeight: 14,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 20,
+  },
+  column: {
+    flex: 1,
+  },
+  connectorLine: {
+    borderWidth: 1,
+    borderColor: COLOR_GRAY4,
+    marginVertical: 20,
+  },
+  productList: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  product: {
+    flexShrink: 0,
+  },
+  productImage: {
+    width: 140,
+    height: 210,
+  },
+  productLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  productName: {
+    marginTop: 5,
+    fontSize: 12,
+    lineHeight: 13,
+    color: '#999',
+  },
+  errorMessage: {
+    padding: 20,
+    textAlign: 'center',
+    color: 'red',
+  },
+  listContainer: {
+    backgroundColor: COLOR_WHITE,
+    overflow: 'hidden',
+    marginBottom: 40,
+  },
+  itemsWrapper: {
+    flexDirection: 'row',
+  },
+  cardContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    margin: 6,
+    position: 'relative',
+  },
+  imageWrapper: {
+    position: 'relative',
+    width: 140,
+    height: 210,
+  },
+  image: {
+    width: 140,
+    height: 210,
+  },
+  selectionOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 140,
+    height: 210,
+    backgroundColor: 'rgba(246, 174, 36, 0.95)',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  circularSelection: {
+    width: 58,
+    height: 58,
+    backgroundColor: COLOR_WHITE,
+    borderRadius: 29,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkIconText: {
+    fontSize: 24,
+    color: '#000',
+    fontWeight: 'bold',
+  },
+  selectText: {
+    marginTop: 10,
+    fontWeight: '700',
+    fontSize: 12,
+    color: COLOR_WHITE,
+  },
+  brand: {
+    marginTop: 10,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  description: {
+    marginTop: 5,
+    fontSize: 12,
+    color: COLOR_GRAY2,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    width: '90%',
+    maxWidth: 500,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  closeBtn: {
+    padding: 8,
+  },
+  closeBtnText: {
+    fontSize: 18,
+  },
+  modalFooter: {
+    padding: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  applyBtn: {
+    width: '100%',
+    padding: 12,
+    marginTop: 8,
+    backgroundColor: '#000',
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  applyBtnText: {
+    color: '#fff',
+    fontWeight: '700',
+  },
+});

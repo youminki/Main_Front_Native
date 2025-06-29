@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { useForm, Controller, FieldErrors } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import styled from 'styled-components';
 import Button from '../components/Button01';
 import InputField from '../components/InputField';
 import ReusableModal from '../components/ReusableModal';
@@ -88,9 +94,9 @@ const FindPassword: React.FC = () => {
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <Container>
-      <Form onSubmit={handleSubmit(onSubmit, onError)}>
-        <Row>
+    <ScrollView style={styles.container}>
+      <View style={styles.form}>
+        <View style={styles.row}>
           <Controller
             name='name'
             control={control}
@@ -101,11 +107,8 @@ const FindPassword: React.FC = () => {
                 placeholder='홍길동'
                 error={errors.name}
                 {...field}
-                onInput={(e: React.FormEvent<HTMLInputElement>) => {
-                  const onlyKorean = e.currentTarget.value.replace(
-                    /[^가-힣]/g,
-                    ''
-                  );
+                onChangeText={(text: string) => {
+                  const onlyKorean = text.replace(/[^가-힣]/g, '');
                   field.onChange(onlyKorean);
                 }}
               />
@@ -124,7 +127,7 @@ const FindPassword: React.FC = () => {
               />
             )}
           />
-        </Row>
+        </View>
 
         <Controller
           name='phone'
@@ -136,8 +139,8 @@ const FindPassword: React.FC = () => {
               placeholder='010-1234-5678'
               error={errors.phone}
               value={field.value}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+              onChangeText={(text: string) => {
+                const digits = text.replace(/\D/g, '').slice(0, 11);
                 const part1 = digits.slice(0, 3);
                 const part2 = digits.length > 3 ? digits.slice(3, 7) : '';
                 const part3 = digits.length > 7 ? digits.slice(7, 11) : '';
@@ -181,47 +184,68 @@ const FindPassword: React.FC = () => {
         />
 
         {/* API 에러 메시지 */}
-        {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+        {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
 
-        <Button type='submit' disabled={!isValid || isSubmitting}>
-          {isSubmitting ? '조회 중...' : '비밀번호 변경'}
-        </Button>
-      </Form>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            (!isValid || isSubmitting) && styles.buttonDisabled,
+          ]}
+          onPress={handleSubmit(onSubmit, onError)}
+          disabled={!isValid || isSubmitting}
+        >
+          <Text style={styles.buttonText}>
+            {isSubmitting ? '조회 중...' : '비밀번호 변경'}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <ReusableModal
-        isOpen={isModalOpen}
+        visible={isModalOpen}
         onClose={closeModal}
         title='비밀번호 찾기 결과'
       >
-        <p>{successMessage}</p>
+        <Text>{successMessage}</Text>
       </ReusableModal>
-    </Container>
+    </ScrollView>
   );
 };
 
 export default FindPassword;
 
-// 스타일 정의
-const Container = styled.div`
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 1rem;
-  background: #ffffff;
-  border-radius: 8px;
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Row = styled.div`
-  display: flex;
-  gap: 1rem;
-`;
-
-const ErrorText = styled.div`
-  color: #e74c3c;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-`;
+// --- Styles ---
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    padding: 16,
+  },
+  form: {
+    flexDirection: 'column',
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  errorText: {
+    color: '#e74c3c',
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  buttonDisabled: {
+    backgroundColor: '#ccc',
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});

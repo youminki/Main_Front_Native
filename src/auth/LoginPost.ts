@@ -1,4 +1,4 @@
-import { Axios } from '../api/Axios.ts';
+import { Axios } from '../api/Axios';
 
 interface LoginResponse {
   accessToken: string;

@@ -1,57 +1,52 @@
-import styled from 'styled-components';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
 const Footer = () => {
   return (
-    <FooterContainer>
-      <Divider />
-      <FooterText>
-        <span className='highlight'> (주) 팀리프트 </span> | 235-87-01284 |
-        2020-서울금천-0973
-        <br />
+    <View style={styles.footerContainer}>
+      <View style={styles.divider} />
+      <Text style={styles.footerText}>
+        <Text style={styles.highlight}> (주) 팀리프트 </Text> | 235-87-01284 |
+        2020-서울금천-0973{'\n'}
         서울 금천구 디지털로9길 41, 1008호
-      </FooterText>
-      <FooterCopyright>© 2024 MELPICK. All Rights Reserved.</FooterCopyright>
-    </FooterContainer>
+      </Text>
+      <Text style={styles.footerCopyright}>
+        © 2024 MELPICK. All Rights Reserved.
+      </Text>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  footerContainer: {
+    width: '100%',
+    flexDirection: 'column',
+  },
+  divider: {
+    width: '100%',
+    borderTopWidth: 1,
+    borderTopColor: '#eeeeee',
+    marginBottom: 20,
+  },
+  footerText: {
+    fontWeight: '400',
+    fontSize: 12,
+    lineHeight: 20,
+    color: '#999999',
+  },
+  highlight: {
+    fontWeight: '400',
+    fontSize: 12,
+    lineHeight: 20,
+    color: '#000000',
+  },
+  footerCopyright: {
+    marginTop: 20,
+    fontWeight: '400',
+    fontSize: 12,
+    lineHeight: 20,
+    color: '#f6ae24',
+  },
+});
+
 export default Footer;
-
-const FooterContainer = styled.footer`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  border-top: 1px solid #eeeeee;
-  margin-bottom: 20px;
-`;
-
-const FooterText = styled.div`
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 20px;
-
-  color: #999999;
-
-  .highlight {
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 20px;
-
-    color: #000000;
-  }
-`;
-
-const FooterCopyright = styled.div`
-  margin-top: 20px;
-
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 20px;
-  /* or 167% */
-
-  color: #f6ae24;
-`;

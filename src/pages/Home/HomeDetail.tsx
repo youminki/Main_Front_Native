@@ -10,6 +10,8 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../AppLayout';
 import {
   useProductInfo,
   ProductDetail as APIProductDetail,
@@ -60,9 +62,10 @@ type HomeDetailProps = { id?: string };
 
 const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
   const [cartModalOpen, setCartModalOpen] = useState(false);
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute();
-  const id = propId || route.params?.id;
+  const id = propId || (route.params as any)?.id;
   const { data, isLoading, isError } = useProductInfo(Number(id));
 
   const product = useMemo(() => {
@@ -226,7 +229,7 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
     }
 
     // 결제 페이지로 이동
-    navigation.navigate('Payment', { itemData } as never);
+    navigation.navigate('Payment' as any, { itemData } as any);
   };
 
   return (
@@ -267,8 +270,8 @@ const HomeDetail: React.FC<HomeDetailProps> = ({ id: propId }) => {
         <PaymentMethod />
 
         <SizeInfo
-          sizePicture={product.size_picture}
-          sizeLabelGuide={product.size_label_guide}
+          size_picture={product.size_picture}
+          size_label_guide={product.size_label_guide}
         />
 
         <MaterialInfo fabricComposition={product.fabricComposition} />

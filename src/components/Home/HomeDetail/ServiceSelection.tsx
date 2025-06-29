@@ -1,66 +1,92 @@
 import React from 'react';
-import styled from 'styled-components';
-import Theme from '../../../styles/Theme';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-export interface ServiceSelectionProps {
-  selectedService: string;
-  setSelectedService: (service: string) => void;
+interface ServiceSelectionProps {
+  selectedService: '' | 'rental' | 'purchase';
+  onServiceChange: (service: string) => void;
 }
 
 const ServiceSelection: React.FC<ServiceSelectionProps> = ({
   selectedService,
-  setSelectedService,
+  onServiceChange,
 }) => {
   return (
-    <ServiceContainer>
-      <label>서비스 방식 (선택)</label>
-      <Select
-        value={selectedService}
-        onChange={(e) => setSelectedService(e.target.value)}
-      >
-        <option value=''>서비스 선택 (대여 or 구매)</option>
-        <option value='rental'>대여</option>
-        <option value='purchase' disabled>
-          구매 (준비중)
-        </option>
-      </Select>
-    </ServiceContainer>
+    <View style={styles.container}>
+      <Text style={styles.title}>서비스 선택</Text>
+      <View style={styles.optionsContainer}>
+        <TouchableOpacity
+          style={[
+            styles.optionButton,
+            selectedService === 'rental' && styles.selectedOption,
+          ]}
+          onPress={() => onServiceChange('rental')}
+        >
+          <Text
+            style={[
+              styles.optionText,
+              selectedService === 'rental' && styles.selectedOptionText,
+            ]}
+          >
+            대여
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.optionButton,
+            selectedService === 'purchase' && styles.selectedOption,
+          ]}
+          onPress={() => onServiceChange('purchase')}
+        >
+          <Text
+            style={[
+              styles.optionText,
+              selectedService === 'purchase' && styles.selectedOptionText,
+            ]}
+          >
+            구매
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  optionsContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  optionButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  selectedOption: {
+    backgroundColor: '#f6ac36',
+    borderColor: '#f6ac36',
+  },
+  optionText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+  },
+  selectedOptionText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+});
+
 export default ServiceSelection;
-
-const ServiceContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-
-  label {
-    font-weight: 700;
-    font-size: 12px;
-    margin-bottom: 10px;
-    display: block;
-  }
-`;
-
-const Select = styled.select`
-  width: 100%;
-  height: 57px;
-  padding: 8px;
-  box-sizing: border-box;
-  border: 1px solid ${Theme.colors.black};
-  border-radius: 4px;
-  background-color: ${Theme.colors.white};
-  font-size: 16px;
-  color: ${Theme.colors.black};
-
-  &:focus {
-    outline: none;
-    border-color: ${Theme.colors.black};
-  }
-
-  // disabled 상태 스타일링 (선택사항)
-  option:disabled {
-    color: ${Theme.colors.gray};
-  }
-`;

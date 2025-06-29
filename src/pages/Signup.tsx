@@ -211,7 +211,7 @@ const Signup: React.FC = () => {
     }
 
     try {
-      await verifyPhone(formData.phoneNumber);
+      const response = await verifyPhone({ phoneNumber: formData.phoneNumber });
       setIsPhoneVerificationSent(true);
       setPhoneVerificationButtonText('재전송');
       setPhoneApiError('');
@@ -228,14 +228,16 @@ const Signup: React.FC = () => {
     }
 
     try {
-      await verifyCode(formData.phoneNumber, verificationCode);
+      const response = await verifyCode({
+        phoneNumber: formData.phoneNumber,
+        code: verificationCode,
+      });
       setIsPhoneVerified(true);
       setPhoneVerificationButtonText('인증완료');
       setPhoneApiError('');
       if (timerRef.current !== null) clearInterval(timerRef.current);
-      setTimer(0);
     } catch (error: any) {
-      setPhoneApiError(error.message || '인증번호가 올바르지 않습니다.');
+      setPhoneApiError(error.message || '인증번호 확인에 실패했습니다.');
     }
   };
 
@@ -291,7 +293,7 @@ const Signup: React.FC = () => {
         melpickAddress: formData.melpickAddress,
       };
 
-      await signUpUser(signupData);
+      await signUpUser(signupData as any);
       setIsSignupSuccess(true);
       setSignupResult('회원가입이 완료되었습니다!');
       setShowSignupResultModal(true);

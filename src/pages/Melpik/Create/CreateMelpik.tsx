@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import StatsSection from '../../../components/StatsSection';
 import ContentList from '../../../components/Melpik/CreateMelpik/ContentList';
 
@@ -11,11 +11,11 @@ const dateRange = 'Now';
 
 const CreateMelpik: React.FC = () => {
   return (
-    <CreateMelpikContainer>
-      <Header>
-        <Title>멜픽 생성</Title>
-        <Subtitle>내 채널을 통해 나는 브랜드가 된다</Subtitle>
-      </Header>
+    <ScrollView style={styles.createMelpikContainer}>
+      <View style={styles.header}>
+        <Text style={styles.title}>멜픽 생성</Text>
+        <Text style={styles.subtitle}>내 채널을 통해 나는 브랜드가 된다</Text>
+      </View>
 
       <StatsSection
         visits={visits}
@@ -24,60 +24,50 @@ const CreateMelpik: React.FC = () => {
         visitLabel={visitLabel}
         salesLabel={salesLabel}
       />
-      <Divider />
-      <ContentWrapper>
+      <View style={styles.divider} />
+      <View style={styles.contentWrapper}>
         <ContentList />
-      </ContentWrapper>
-    </CreateMelpikContainer>
+      </View>
+    </ScrollView>
   );
 };
 
 export default CreateMelpik;
 
-const CreateMelpikContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  background-color: #fff;
-  padding: 1rem;
-`;
-
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  margin-bottom: 6px;
-`;
-
-const Title = styled.h1`
-  font-weight: 800;
-  font-size: 24px;
-  line-height: 27px;
-
-  color: #000000;
-  margin-bottom: 0px;
-`;
-
-const Subtitle = styled.p`
-  font-size: 12px;
-  font-weight: 400;
-  color: #ccc;
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  overflow-x: hidden;
-  position: relative;
-  margin-top: 30px;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #dddddd;
-  margin-top: 30px;
-`;
+// --- Styles ---
+const styles = StyleSheet.create({
+  createMelpikContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 16,
+  },
+  header: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    width: '100%',
+    marginBottom: 6,
+  },
+  title: {
+    fontWeight: '800',
+    fontSize: 24,
+    lineHeight: 27,
+    color: '#000000',
+    marginBottom: 0,
+  },
+  subtitle: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#ccc',
+  },
+  contentWrapper: {
+    flexDirection: 'column',
+    width: '100%',
+    marginTop: 30,
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#dddddd',
+    marginTop: 30,
+  },
+});

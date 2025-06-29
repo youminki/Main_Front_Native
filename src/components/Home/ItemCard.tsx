@@ -1,9 +1,18 @@
 // src/components/ItemCard.tsx
 import React, { useState } from 'react';
-import styled, { keyframes, css } from 'styled-components';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+} from 'react-native';
 import { HeartIcon } from '../../assets/library/HeartIcon';
 import { addToCloset, removeFromCloset } from '../../api/closet/closetApi';
 import ReusableModal from '../ReusableModal2';
+
+const { width } = Dimensions.get('window');
 
 type ItemCardProps = {
   id: string;
@@ -18,12 +27,6 @@ type ItemCardProps = {
 };
 
 type ConfirmAction = 'add' | 'remove' | null;
-
-const heartbeat = keyframes`
-  0% { transform: scale(1); }
-  30% { transform: scale(1.4); }
-  100% { transform: scale(1); }
-`;
 
 function ItemCard({
   id,
@@ -47,8 +50,7 @@ function ItemCard({
     : description;
 
   const handleCardClick = () => onOpenModal(id);
-  const handleLikeClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleLikeClick = () => {
     setConfirmAction(liked ? 'remove' : 'add');
   };
 
@@ -85,8 +87,8 @@ function ItemCard({
       status === 409
         ? '이미 찜한 상품입니다.'
         : status === 401
-          ? '로그인이 필요합니다.'
-          : '찜 처리 중 오류가 발생했습니다.';
+        ? '로그인이 필요합니다.'
+        : '찜 처리 중 오류가 발생했습니다.';
     setErrorMsg(msg);
     setErrorModalOpen(true);
   };
@@ -105,23 +107,37 @@ function ItemCard({
 
   return (
     <>
-      <Card onClick={handleCardClick}>
-        <ImageWrapper>
-          <Image src={image.split('#')[0] || '/default.jpg'} alt={brand} />
-          <LikeButton $animating={animating} onClick={handleLikeClick}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={handleCardClick}
+        activeOpacity={0.8}
+      >
+        <View style={styles.imageWrapper}>
+          <Image
+            source={{
+              uri: image.split('#')[0] || 'https://via.placeholder.com/300x450',
+            }}
+            style={styles.image}
+            resizeMode='cover'
+          />
+          <TouchableOpacity
+            style={[styles.likeButton, animating && styles.animating]}
+            onPress={handleLikeClick}
+            activeOpacity={0.7}
+          >
             <HeartIcon filled={liked} />
-          </LikeButton>
-        </ImageWrapper>
-        <Brand>{brand}</Brand>
-        <Description>{displayDescription}</Description>
-        <PriceWrapper>
-          <OriginalPrice>{price.toLocaleString()}원</OriginalPrice>
-          <SubPrice>
-            <NowLabel>NOW</NowLabel>
-            <DiscountLabel>{discount}%</DiscountLabel>
-          </SubPrice>
-        </PriceWrapper>
-      </Card>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.brand}>{brand}</Text>
+        <Text style={styles.description}>{displayDescription}</Text>
+        <View style={styles.priceWrapper}>
+          <Text style={styles.originalPrice}>{price.toLocaleString()}원</Text>
+          <View style={styles.subPrice}>
+            <Text style={styles.nowLabel}>NOW</Text>
+            <Text style={styles.discountLabel}>{discount}%</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
 
       <ReusableModal
         isOpen={confirmAction !== null}
@@ -129,7 +145,7 @@ function ItemCard({
         onConfirm={handleConfirm}
         title={modalTitle}
       >
-        <p>{modalMessage}</p>
+        <Text>{modalMessage}</Text>
       </ReusableModal>
 
       <ReusableModal
@@ -137,132 +153,93 @@ function ItemCard({
         onClose={() => setErrorModalOpen(false)}
         title='오류'
       >
-        <p>{errorMsg}</p>
+        <Text>{errorMsg}</Text>
       </ReusableModal>
     </>
   );
 }
 
+const styles = StyleSheet.create({
+  card: {
+    position: 'relative',
+    marginBottom: 12,
+  },
+  imageWrapper: {
+    position: 'relative',
+    width: '100%',
+    aspectRatio: 2 / 3,
+    minHeight: 240,
+    backgroundColor: '#f5f5f5',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    minHeight: 240,
+  },
+  likeButton: {
+    position: 'absolute',
+    bottom: 6,
+    right: 6,
+    width: 24,
+    height: 24,
+    padding: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  animating: {
+    transform: [{ scale: 1.4 }],
+  },
+  brand: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginTop: 8,
+  },
+  description: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+  },
+  priceWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  originalPrice: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#000',
+  },
+  subPrice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  nowLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#FF6B6B',
+    marginRight: 4,
+  },
+  discountLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FF6B6B',
+  },
+});
+
 export default ItemCard;
-
-const Card = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  margin-bottom: 12px;
-`;
-
-const ImageWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  aspect-ratio: 2/3;
-  min-height: 240px;
-  background: #f5f5f5;
-  border: 1px solid #ccc;
-
-  overflow: hidden;
-  @supports not (aspect-ratio: 2/3) {
-    min-height: 240px;
-    height: 360px;
-  }
-`;
-
-const Image = styled.img`
-  width: 100%;
-  height: 100%;
-  min-height: 240px;
-  aspect-ratio: 2/3;
-  object-fit: cover;
-  display: block;
-
-  background: #f5f5f5;
-`;
-
-const LikeButton = styled.div<{ $animating: boolean }>`
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  width: 24px;
-  height: 24px;
-  padding: 2px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-
-  /* 클릭으로 $animating=true 일 때 한 번 뛰기 */
-  ${({ $animating }) =>
-    $animating &&
-    css`
-      animation: ${heartbeat} 0.3s ease-out;
-    `}
-
-  /* 호버 시에도 계속 뛰는 효과 */
-  &:hover {
-    animation: ${heartbeat} 0.6s ease-out infinite;
-    transform: scale(1.1);
-  }
-
-  & svg {
-    width: 16px;
-    height: 16px;
-  }
-`;
-
-const Brand = styled.h3`
-  margin: 10px 0 0 0;
-  font-size: 10px;
-  font-weight: 900;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-`;
-
-const Description = styled.p`
-  margin: 5px 0 0 0;
-  font-size: 11px;
-  color: #999;
-  margin-bottom: 4px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-`;
-
-const PriceWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 5px;
-  margin-left: 10px;
-
-  @media (max-width: 768px) {
-    margin-top: 5px;
-    margin-left: 5px;
-  }
-`;
-
-const OriginalPrice = styled.span`
-  font-weight: 900;
-  font-size: 14px;
-`;
-
-const SubPrice = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-`;
-
-const NowLabel = styled.span`
-  font-size: 9px;
-`;
-
-const DiscountLabel = styled.span`
-  font-weight: 800;
-  font-size: 11px;
-  color: #f6ae24;
-`;

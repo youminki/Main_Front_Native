@@ -1,8 +1,13 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 
 // Landing & Auth Screens
 import Landing from './pages/Landing';
@@ -88,39 +93,58 @@ import AddCardPayple from './Test/AddCardPayple';
 import Link from './pages/Link';
 
 const Stack = createStackNavigator();
-const queryClient = new QueryClient();
 
 // 간단한 테스트 화면들
 const HomeScreen = ({ navigation }: any) => (
-  <View style={styles.container}>
-    <Text style={styles.title}>🎉 React Native 변환 성공!</Text>
-    <Text style={styles.subtitle}>웹 → React Native 변환이 완료되었습니다</Text>
+  <ScrollView style={styles.container}>
+    <View style={styles.content}>
+      <Text style={styles.title}>🎉 React Native 변환 성공!</Text>
+      <Text style={styles.subtitle}>
+        웹 → React Native 변환이 완료되었습니다
+      </Text>
 
-    <View style={styles.buttonContainer}>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('Test')}
-      >
-        <Text style={styles.buttonText}>테스트 페이지로 이동</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('Test')}
+        >
+          <Text style={styles.buttonText}>테스트 페이지로 이동</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('Payment')}
-      >
-        <Text style={styles.buttonText}>결제 페이지 테스트</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('Payment')}
+        >
+          <Text style={styles.buttonText}>결제 페이지 테스트</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('Components')}
+        >
+          <Text style={styles.buttonText}>컴포넌트 테스트</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.features}>
+        <Text style={styles.featureTitle}>✅ 완료된 기능들:</Text>
+        <Text style={styles.feature}>• React Navigation 설정</Text>
+        <Text style={styles.feature}>• TypeScript 지원</Text>
+        <Text style={styles.feature}>• Expo 개발 환경</Text>
+        <Text style={styles.feature}>• 기본 컴포넌트 변환</Text>
+        <Text style={styles.feature}>• 스타일링 시스템</Text>
+        <Text style={styles.feature}>• 네비게이션 시스템</Text>
+      </View>
+
+      <View style={styles.status}>
+        <Text style={styles.statusTitle}>📱 현재 상태:</Text>
+        <Text style={styles.statusItem}>• Metro 서버: 실행 중</Text>
+        <Text style={styles.statusItem}>• Expo Go: 연결 가능</Text>
+        <Text style={styles.statusItem}>• iOS 시뮬레이터: 빌드 중</Text>
+        <Text style={styles.statusItem}>• Android 에뮬레이터: 설정 필요</Text>
+      </View>
     </View>
-
-    <View style={styles.features}>
-      <Text style={styles.featureTitle}>✅ 완료된 기능들:</Text>
-      <Text style={styles.feature}>• React Navigation 설정</Text>
-      <Text style={styles.feature}>• TypeScript 지원</Text>
-      <Text style={styles.feature}>• Expo 개발 환경</Text>
-      <Text style={styles.feature}>• 기본 컴포넌트 변환</Text>
-      <Text style={styles.feature}>• 스타일링 시스템</Text>
-    </View>
-  </View>
+  </ScrollView>
 );
 
 const TestScreen = () => (
@@ -140,179 +164,109 @@ const TestScreen = () => (
       <View style={styles.testBox}>
         <Text style={styles.testText}>React Navigation</Text>
       </View>
+
+      <View style={styles.testBox}>
+        <Text style={styles.testText}>ScrollView</Text>
+      </View>
     </View>
   </View>
 );
 
-// 간단한 Payment 테스트 화면
 const PaymentTestScreen = () => (
-  <View style={styles.container}>
-    <Text style={styles.title}>💳 결제 페이지 테스트</Text>
-    <Text style={styles.subtitle}>변환된 Payment 컴포넌트</Text>
+  <ScrollView style={styles.container}>
+    <View style={styles.content}>
+      <Text style={styles.title}>💳 결제 페이지 테스트</Text>
+      <Text style={styles.subtitle}>변환된 Payment 컴포넌트</Text>
 
-    <View style={styles.paymentForm}>
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>수령인</Text>
-        <View style={styles.input} />
+      <View style={styles.paymentForm}>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>수령인</Text>
+          <View style={styles.input} />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>주소</Text>
+          <View style={styles.input} />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>연락처</Text>
+          <View style={styles.input} />
+        </View>
+
+        <TouchableOpacity style={styles.paymentButton}>
+          <Text style={styles.paymentButtonText}>결제하기</Text>
+        </TouchableOpacity>
       </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>주소</Text>
-        <View style={styles.input} />
-      </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>연락처</Text>
-        <View style={styles.input} />
-      </View>
-
-      <TouchableOpacity style={styles.paymentButton}>
-        <Text style={styles.paymentButtonText}>결제하기</Text>
-      </TouchableOpacity>
     </View>
-  </View>
+  </ScrollView>
+);
+
+const ComponentsTestScreen = () => (
+  <ScrollView style={styles.container}>
+    <View style={styles.content}>
+      <Text style={styles.title}>🔧 컴포넌트 테스트</Text>
+      <Text style={styles.subtitle}>React Native 기본 컴포넌트들</Text>
+
+      <View style={styles.componentGrid}>
+        <View style={styles.componentBox}>
+          <Text style={styles.componentTitle}>View</Text>
+          <View style={styles.componentDemo}>
+            <Text>기본 컨테이너</Text>
+          </View>
+        </View>
+
+        <View style={styles.componentBox}>
+          <Text style={styles.componentTitle}>Text</Text>
+          <Text style={styles.componentDemo}>텍스트 표시</Text>
+        </View>
+
+        <View style={styles.componentBox}>
+          <Text style={styles.componentTitle}>TouchableOpacity</Text>
+          <TouchableOpacity style={styles.componentDemo}>
+            <Text>터치 가능</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.componentBox}>
+          <Text style={styles.componentTitle}>ScrollView</Text>
+          <ScrollView style={styles.componentDemo} nestedScrollEnabled>
+            <Text>스크롤 가능</Text>
+            <Text>여러 줄</Text>
+            <Text>텍스트</Text>
+          </ScrollView>
+        </View>
+      </View>
+    </View>
+  </ScrollView>
 );
 
 const App: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName='Home'
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          {/* Landing & Auth */}
-          <Stack.Screen name='Landing' component={Landing} />
-          <Stack.Screen name='Login' component={Login} />
-          <Stack.Screen name='ReadyLogin' component={ReadyLogin} />
-          <Stack.Screen name='TestLogin' component={TestLogin} />
-          <Stack.Screen name='PersonalLink' component={PersonalLink} />
-          <Stack.Screen name='Link' component={Link} />
-
-          {/* Test Screens */}
-          <Stack.Screen name='PaypleTest' component={PaypleTest} />
-          <Stack.Screen name='AddCardPayple' component={AddCardPayple} />
-
-          {/* Main App */}
-          <Stack.Screen name='AppLayout' component={AppLayout} />
-          <Stack.Screen name='Signup' component={Signup} />
-          <Stack.Screen name='FindId' component={FindId} />
-          <Stack.Screen name='FindPassword' component={FindPassword} />
-
-          {/* User Pages */}
-          <Stack.Screen name='MyinfoList' component={MyinfoList} />
-          <Stack.Screen name='MyStyle' component={MyStyle} />
-
-          {/* Main */}
-          <Stack.Screen name='Home' component={HomeScreen} />
-          <Stack.Screen name='HomeDetail' component={HomeDetail} />
-          <Stack.Screen name='Analysis' component={Analysis} />
-          <Stack.Screen name='Basket' component={Basket} />
-          <Stack.Screen name='Alarm' component={Alarm} />
-          <Stack.Screen name='Payment' component={PaymentTestScreen} />
-          <Stack.Screen name='PaymentComplete' component={PaymentComplete} />
-          <Stack.Screen name='PaymentFail' component={PaymentFail} />
-
-          {/* Brand */}
-          <Stack.Screen name='Brand' component={Brand} />
-          <Stack.Screen name='BrandDetail' component={BrandDetail} />
-
-          {/* Melpik */}
-          <Stack.Screen name='Melpik' component={Melpik} />
-          <Stack.Screen name='CreateMelpik' component={CreateMelpik} />
-          <Stack.Screen
-            name='ContemporarySettings'
-            component={ContemporarySettings}
-          />
-          <Stack.Screen name='SettingMelpik' component={SettingMelpik} />
-
-          {/* Settlement */}
-          <Stack.Screen name='SalesSettlement' component={SalesSettlement} />
-          <Stack.Screen
-            name='SalesSettlementDetail'
-            component={SalesSettlementDetail}
-          />
-          <Stack.Screen
-            name='SettlementRequest'
-            component={SettlementRequest}
-          />
-
-          {/* Schedule */}
-          <Stack.Screen name='Scedule' component={Scedule} />
-          <Stack.Screen
-            name='ScheduleConfirmation'
-            component={ScheduleConfirmation}
-          />
-          <Stack.Screen
-            name='ScheduleReservation1'
-            component={ScheduleReservation1}
-          />
-          <Stack.Screen
-            name='ScheduleReservation2'
-            component={ScheduleReservation2}
-          />
-          <Stack.Screen
-            name='ScheduleReservation3'
-            component={ScheduleReservation3}
-          />
-
-          {/* LockerRoom */}
-          <Stack.Screen name='LockerRoom' component={LockerRoom} />
-          <Stack.Screen name='UsageHistory' component={UsageHistory} />
-          <Stack.Screen name='Point' component={Point} />
-          <Stack.Screen name='MyCloset' component={MyCloset} />
-          <Stack.Screen name='MyTicket' component={MyTicket} />
-          <Stack.Screen name='PurchaseOfPasses' component={PurchaseOfPasses} />
-          <Stack.Screen name='TicketPayment' component={TicketPayment} />
-          <Stack.Screen name='TicketDetail' component={TicketDetail} />
-
-          {/* PaymentMethod & Reviews */}
-          <Stack.Screen name='PaymentMethod' component={PaymentMethod} />
-          <Stack.Screen name='AddCard' component={AddCard} />
-          <Stack.Screen name='ProductReview' component={ProductReview} />
-          <Stack.Screen
-            name='ProductReviewWrite'
-            component={ProductReviewWrite}
-          />
-
-          {/* CustomerService */}
-          <Stack.Screen name='CustomerService' component={CustomerService} />
-          <Stack.Screen
-            name='FrequentlyAskedQuestions'
-            component={FrequentlyAskedQuestions}
-          />
-          <Stack.Screen name='Notice' component={Notice} />
-          <Stack.Screen name='NoticeDetail' component={NoticeDetail} />
-          <Stack.Screen
-            name='PersonalInformationProcessingPolicy'
-            component={PersonalInformationProcessingPolicy}
-          />
-          <Stack.Screen
-            name='PersonalInformationProcessingPolicyDetail'
-            component={PersonalInformationProcessingPolicyDetail}
-          />
-          <Stack.Screen
-            name='TermsAndConditionsOfUse'
-            component={TermsAndConditionsOfUse}
-          />
-          <Stack.Screen
-            name='TermsAndConditionsOfUseDetail'
-            component={TermsAndConditionsOfUseDetail}
-          />
-
-          {/* Profile */}
-          <Stack.Screen name='UpdateProfile' component={UpdateProfile} />
-          <Stack.Screen name='ChangePassword' component={ChangePassword} />
-          <Stack.Screen
-            name='DeliveryManagement'
-            component={DeliveryManagement}
-          />
-          <Stack.Screen name='EditAddress' component={EditAddress} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </QueryClientProvider>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName='Home'>
+        <Stack.Screen
+          name='Home'
+          component={HomeScreen}
+          options={{ title: 'Melpik Native' }}
+        />
+        <Stack.Screen
+          name='Test'
+          component={TestScreen}
+          options={{ title: '테스트' }}
+        />
+        <Stack.Screen
+          name='Payment'
+          component={PaymentTestScreen}
+          options={{ title: '결제 테스트' }}
+        />
+        <Stack.Screen
+          name='Components'
+          component={ComponentsTestScreen}
+          options={{ title: '컴포넌트 테스트' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
@@ -320,8 +274,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  content: {
     padding: 20,
-    justifyContent: 'center',
+    flex: 1,
   },
   title: {
     fontSize: 24,
@@ -355,6 +311,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
     padding: 20,
     borderRadius: 8,
+    marginBottom: 20,
   },
   featureTitle: {
     fontSize: 18,
@@ -367,8 +324,25 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: '#666',
   },
+  status: {
+    backgroundColor: '#e3f2fd',
+    padding: 20,
+    borderRadius: 8,
+  },
+  statusTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#1976d2',
+  },
+  statusItem: {
+    fontSize: 14,
+    marginBottom: 5,
+    color: '#1976d2',
+  },
   testComponents: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-around',
     marginTop: 20,
   },
@@ -377,6 +351,8 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
+    marginBottom: 10,
+    width: '45%',
   },
   testText: {
     fontSize: 12,
@@ -416,6 +392,34 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  componentGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  componentBox: {
+    width: '48%',
+    marginBottom: 20,
+    backgroundColor: '#f8f9fa',
+    padding: 15,
+    borderRadius: 8,
+  },
+  componentTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
+  componentDemo: {
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    minHeight: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

@@ -1,126 +1,166 @@
 import React, { memo } from 'react';
-import { useSwipeable, SwipeableHandlers } from 'react-swipeable';
-import styled from 'styled-components';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import {
+  View,
+  Image,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
+
+const { width } = Dimensions.get('window');
 
 export interface ImageSliderProps {
   images: string[];
-  currentImageIndex: number;
-  handleSwipeLeft: () => void;
-  handleSwipeRight: () => void;
-  handleMouseDown: (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => void;
+  currentIndex: number;
+  onSwipeLeft: () => void;
+  onSwipeRight: () => void;
+  handleMouseDown?: () => void;
 }
 
 const ImageSlider: React.FC<ImageSliderProps> = memo(
-  ({
-    images,
-    currentImageIndex,
-    handleSwipeLeft,
-    handleSwipeRight,
-    handleMouseDown,
-  }) => {
-    const handlers: SwipeableHandlers = useSwipeable({
-      onSwipedLeft: handleSwipeLeft,
-      onSwipedRight: handleSwipeRight,
-      preventScrollOnSwipe: true,
-      trackMouse: true,
-    });
+  ({ images, currentIndex, onSwipeLeft, onSwipeRight }) => {
+    const onGestureEvent = (event: any) => {
+      if (event.nativeEvent.state === State.END) {
+        const { translationX } = event.nativeEvent;
+        if (translationX > 50) {
+          onSwipeRight();
+        } else if (translationX < -50) {
+          onSwipeLeft();
+        }
+      }
+    };
 
     return (
-      <Container {...handlers} onMouseDown={handleMouseDown}>
-        <ArrowLeft onClick={handleSwipeRight}>
-          <FiChevronLeft />
-        </ArrowLeft>
+      <View style={styles.container}>
+        <PanGestureHandler onGestureEvent={onGestureEvent}>
+          <View style={styles.slidesWrapper}>
+            <TouchableOpacity
+              style={styles.arrowLeft}
+              onPress={onSwipeRight}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.arrowText}>‹</Text>
+            </TouchableOpacity>
 
-        <SlidesWrapper $currentIndex={currentImageIndex}>
-          {images.map((src, idx) => (
-            <Slide key={idx}>
-              <Image src={src} alt={`Slide ${idx + 1}`} loading='lazy' />
-            </Slide>
-          ))}
-        </SlidesWrapper>
+            <View
+              style={[
+                styles.slidesContainer,
+                { transform: [{ translateX: -currentIndex * width }] },
+              ]}
+            >
+              {images.map((src, idx) => (
+                <View key={idx} style={styles.slide}>
+                  <Image
+                    source={{ uri: src }}
+                    style={styles.image}
+                    resizeMode='contain'
+                  />
+                </View>
+              ))}
+            </View>
 
-        <ArrowRight onClick={handleSwipeLeft}>
-          <FiChevronRight />
-        </ArrowRight>
+            <TouchableOpacity
+              style={styles.arrowRight}
+              onPress={onSwipeLeft}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.arrowText}>›</Text>
+            </TouchableOpacity>
 
-        <Indicators>
-          {images.map((_, idx) => (
-            <Dot key={idx} $active={idx === currentImageIndex} />
-          ))}
-        </Indicators>
-      </Container>
+            <View style={styles.indicators}>
+              {images.map((_, idx) => (
+                <View
+                  key={idx}
+                  style={[styles.dot, idx === currentIndex && styles.activeDot]}
+                />
+              ))}
+            </View>
+          </View>
+        </PanGestureHandler>
+      </View>
     );
   }
 );
 
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+    overflow: 'hidden',
+    backgroundColor: '#f5f5f5',
+    height: 500,
+  },
+  slidesWrapper: {
+    flex: 1,
+    position: 'relative',
+  },
+  slidesContainer: {
+    flexDirection: 'row',
+    width: width * 100, // 충분한 너비
+  },
+  slide: {
+    width: width,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    maxWidth: '100%',
+    maxHeight: 500,
+    width: '100%',
+    height: '100%',
+  },
+  arrowLeft: {
+    position: 'absolute',
+    top: '50%',
+    left: 8,
+    transform: [{ translateY: -24 }],
+    zIndex: 10,
+    opacity: 0.7,
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 24,
+  },
+  arrowRight: {
+    position: 'absolute',
+    top: '50%',
+    right: 8,
+    transform: [{ translateY: -24 }],
+    zIndex: 10,
+    opacity: 0.7,
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 24,
+  },
+  arrowText: {
+    fontSize: 48,
+    color: '#333',
+    fontWeight: 'bold',
+  },
+  indicators: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
+    flexDirection: 'row',
+  },
+  dot: {
+    width: 12,
+    height: 12,
+    marginHorizontal: 4,
+    borderRadius: 6,
+    backgroundColor: '#FFF',
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  activeDot: {
+    backgroundColor: '#FFD700',
+  },
+});
+
 export default ImageSlider;
-
-const Container = styled.div`
-  position: relative;
-  overflow: hidden;
-  background-color: #f5f5f5;
-`;
-
-const arrowStyles = `
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  cursor: pointer;
-  opacity: 0.7;
-  font-size: 48px;
-  &:hover { opacity: 1; }
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
-const ArrowLeft = styled.div`
-  ${arrowStyles}
-  left: 8px;
-`;
-
-const ArrowRight = styled.div`
-  ${arrowStyles}
-  right: 8px;
-`;
-
-const SlidesWrapper = styled.div<{ $currentIndex: number }>`
-  display: flex;
-  transform: translateX(-${(p) => p.$currentIndex * 100}%);
-  transition: transform 0.4s ease;
-`;
-
-const Slide = styled.div`
-  flex: 0 0 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: grab;
-`;
-
-const Image = styled.img`
-  max-width: 100%;
-  max-height: 500px;
-  object-fit: contain;
-`;
-
-const Indicators = styled.div`
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  display: flex;
-`;
-
-const Dot = styled.div<{ $active: boolean }>`
-  width: 12px;
-  height: 12px;
-  margin: 0 4px;
-  border-radius: 50%;
-  background-color: ${(p) => (p.$active ? '#FFD700' : '#FFF')};
-  border: 1px solid #ccc;
-`;

@@ -1,53 +1,59 @@
 // src/components/FilterContainer.tsx
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import FilterIcon from '../../assets/FilterIcon.svg';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import ReusableModal from '../../components/ReusableModal';
 
 const FilterContainer: React.FC = () => {
   const [isFeatureModalOpen, setFeatureModalOpen] = useState(false);
 
   return (
-    <Container>
-      <FilterIconContainer onClick={() => setFeatureModalOpen(true)}>
-        <img src={FilterIcon} alt='필터' />
-      </FilterIconContainer>
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.filterIconContainer}
+        onPress={() => setFeatureModalOpen(true)}
+        activeOpacity={0.7}
+      >
+        <View style={styles.filterIcon}>
+          <Text style={styles.filterText}>필터</Text>
+        </View>
+      </TouchableOpacity>
 
       <ReusableModal
-        isOpen={isFeatureModalOpen}
+        visible={isFeatureModalOpen}
         onClose={() => setFeatureModalOpen(false)}
         title='준비 중입니다'
       >
-        아직 구현 전인 기능이에요.
+        <Text>아직 구현 전인 기능이에요.</Text>
       </ReusableModal>
-    </Container>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  filterIconContainer: {
+    alignItems: 'center',
+  },
+  filterIcon: {
+    width: 34,
+    height: 34,
+    padding: 6,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: '#f9f9f9',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  filterText: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '500',
+  },
+});
+
 export default FilterContainer;
-
-const Container = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const FilterIconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-
-  img {
-    width: 22px;
-    height: 22px;
-    padding: 6px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    transition: background-color 0.3s ease;
-  }
-
-  &:hover img {
-    background-color: #e6e6e6;
-  }
-`;

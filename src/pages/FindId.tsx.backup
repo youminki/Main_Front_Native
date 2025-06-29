@@ -16,7 +16,7 @@ import { Picker } from '@react-native-picker/picker';
 import Button from '../components/Button01';
 import InputField from '../components/InputField';
 import ReusableModal from '../components/ReusableModal';
-import CustomSelect from '../components/CustomSelect';
+import { CustomSelect } from '../components/CustomSelect';
 import { findEmail } from '../api/user/userApi';
 
 // 전화번호 포맷 함수
@@ -163,15 +163,14 @@ const FindId: React.FC = () => {
         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
 
         <Button
-          disabled={!isValid || isSubmitting}
+          title={isSubmitting ? '조회 중...' : '아이디 찾기'}
           onPress={handleSubmit(handleFindAccount)}
-        >
-          {isSubmitting ? '조회 중...' : '아이디 찾기'}
-        </Button>
+          disabled={!isValid || isSubmitting}
+        />
       </View>
 
       <ReusableModal
-        visible={isModalOpen}
+        isOpen={isModalOpen}
         onClose={closeModal}
         title='아이디 찾기 결과'
       >
@@ -216,10 +215,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   emailText: {
-    fontSize: 16,
     fontWeight: 'bold',
-    color: '#f5ab35',
     marginTop: 8,
+    fontSize: 18,
+    color: '#2ecc71',
   },
 });
 

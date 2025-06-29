@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Calendar from '../../../components/Melpik/Schedule/Reservation1/Calendar';
 import Stepper from '../../../components/Melpik/Schedule/Reservation1/Stepper';
 import Summary from '../../../components/Melpik/Schedule/Reservation1/Summary';
@@ -8,7 +8,7 @@ import DateSelection from '../../../components/Melpik/Schedule/Reservation1/Date
 import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBar';
 
 const ScheduleReservation1: React.FC = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
 
   // 오늘 날짜 기준
   const today = new Date();
@@ -29,19 +29,15 @@ const ScheduleReservation1: React.FC = () => {
     const end = new Date(start);
     end.setMonth(start.getMonth() + 1);
     setRange([start, end]);
-    // 캘린더 view는 start 월로 유지
     setYear(start.getFullYear());
     setMonth(start.getMonth() + 1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 연/월 변경 시 range 유지
-  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newYear = Number(e.target.value);
+  const handleYearChange = (newYear: number) => {
     setYear(newYear);
   };
-  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newMonth = Number(e.target.value);
+  const handleMonthChange = (newMonth: number) => {
     setMonth(newMonth);
   };
 
@@ -55,8 +51,6 @@ const ScheduleReservation1: React.FC = () => {
     const newEnd = new Date(newStart);
     newEnd.setMonth(newStart.getMonth() + 1);
     setRange([newStart, newEnd]);
-
-    // 캘린더 view 이동: start 월
     setYear(newStart.getFullYear());
     setMonth(newStart.getMonth() + 1);
   };
@@ -67,13 +61,8 @@ const ScheduleReservation1: React.FC = () => {
     const [start, end] = range;
     const newEnd = new Date(end);
     newEnd.setDate(end.getDate() + offsetDays);
-
-    // newEnd가 start 이전이면 무시
     if (newEnd.getTime() <= start.getTime()) return;
-
     setRange([start, newEnd]);
-
-    // 마지막 날짜가 속한 달로 캘린더 view 이동
     const neYear = newEnd.getFullYear();
     const neMonth = newEnd.getMonth() + 1;
     setYear(neYear);
@@ -81,44 +70,44 @@ const ScheduleReservation1: React.FC = () => {
   };
 
   const handleBottomClick = () => {
-    navigate('/schedule/reservation2', { state: { range } });
+    navigation.navigate('ScheduleReservation2' as never, { range } as any);
   };
 
   const seasonProgress = { total: 6, completed: 2, pending: 0 };
 
   return (
-    <Container>
-      <Stepper currentStep={1} />
-
-      <DateSelection
-        year={year}
-        month={month}
-        onYearChange={handleYearChange}
-        onMonthChange={handleMonthChange}
-      />
-
-      <Calendar
-        year={year}
-        month={month}
-        startDate={range?.[0]}
-        endDate={range?.[1]}
-        onDateClick={handleDateClick}
-        onIncrease={() => adjustEnd(1)}
-        onDecrease={() => adjustEnd(-1)}
-        today={today}
-      />
-
-      <Summary range={range} seasonProgress={seasonProgress} />
-
+    <View style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Stepper currentStep={1} />
+        <DateSelection
+          year={year}
+          month={month}
+          onYearChange={handleYearChange}
+          onMonthChange={handleMonthChange}
+        />
+        <Calendar
+          year={year}
+          month={month}
+          startDate={range?.[0]}
+          endDate={range?.[1]}
+          onDateClick={handleDateClick}
+          onIncrease={() => adjustEnd(1)}
+          onDecrease={() => adjustEnd(-1)}
+          today={today}
+        />
+        <Summary range={range} seasonProgress={seasonProgress} />
+      </ScrollView>
       <BottomBar onNext={handleBottomClick} />
-    </Container>
+    </View>
   );
 };
 
 export default ScheduleReservation1;
 
-const Container = styled.div`
-  padding: 1rem;
-  max-width: 600px;
-  margin: auto;
-`;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 16,
+  },
+});

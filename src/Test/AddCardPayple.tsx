@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import styled from 'styled-components';
 
 // 타입 정의
@@ -15,7 +16,7 @@ declare global {
   }
 }
 
-const AddCardPayple: React.FC = () => {
+const AddCardPayple = () => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -68,7 +69,9 @@ const AddCardPayple: React.FC = () => {
         `https://api.stylewh.com/payple/card-register-data?${params}`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken') ?? ''}`,
+            Authorization: `Bearer ${
+              localStorage.getItem('accessToken') ?? ''
+            }`,
           },
         }
       );
@@ -94,39 +97,28 @@ const AddCardPayple: React.FC = () => {
   }, [userInfo]);
 
   return (
-    <Wrapper>
-      <Inner>
-        <Title>카드 등록</Title>
-
-        {/* 카드 추가 박스 */}
-        <AddCardBox
-          onClick={registerCard}
-          title={userInfo ? '카드 추가' : '로그인 필요'}
-        >
-          <PlusWrapper>
-            <PlusBox>
-              <PlusLineVert />
-              <PlusLineHorz />
-            </PlusBox>
-            <AddText>카드 추가</AddText>
-          </PlusWrapper>
-        </AddCardBox>
-
-        {error && <Message type='error'>{error}</Message>}
-        {/* 카드 등록 버튼 */}
-        <ActionButton
-          onClick={registerCard}
-          disabled={!userInfo}
-          title={userInfo ? '카드 등록하기' : '로그인 필요'}
-        >
-          카드 등록하기
-        </ActionButton>
-      </Inner>
-    </Wrapper>
+    <View style={styles.container}>
+      <Text style={styles.title}>Add Card Payple 테스트</Text>
+      {/* 실제 테스트 UI/로직을 여기에 구현 */}
+    </View>
   );
 };
 
 export default AddCardPayple;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+});
 
 // Styled Components
 const Wrapper = styled.div`

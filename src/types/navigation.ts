@@ -123,16 +123,62 @@ export type CommonStackParamList = {
 
 // 루트 네비게이션 파라미터
 export type RootStackParamList = {
-  MainTabs: NavigatorScreenParams<MainTabParamList>;
-  Auth: NavigatorScreenParams<AuthStackParamList>;
-  Common: NavigatorScreenParams<CommonStackParamList>;
+  Home: undefined;
+  Login: undefined;
+  Signup: undefined;
+  FindId: undefined;
+  FindPassword: undefined;
+  Basket: undefined;
+  Payment: { itemData: any[] };
+  Brand: undefined;
+  BrandDetail: { brandId: string };
+  LockerRoom: undefined;
+  MyCloset: undefined;
+  MyTicket: undefined;
+  TicketDetail: { ticketId: string };
+  PurchaseOfPasses: { name: string };
+  TicketPayment: { name: string; discountedPrice: string };
+  PaymentMethod: undefined;
+  AddCard: undefined;
+  Point: undefined;
+  ProductReview: undefined;
+  ProductReviewWrite: undefined;
+  UsageHistory: undefined;
+  CustomerService: undefined;
+  Notice: undefined;
+  NoticeDetail: undefined;
+  FrequentlyAskedQuestions: undefined;
+  TermsAndConditionsOfUse: undefined;
+  TermsAndConditionsOfUseDetail: undefined;
+  PersonalInformationProcessingPolicy: undefined;
+  PersonalInformationProcessingPolicyDetail: undefined;
+  Melpik: undefined;
+  CreateMelpik: undefined;
+  CreateMelpikSettings: undefined;
+  Schedule: undefined;
+  ScheduleReservation1: undefined;
+  ScheduleReservation2: { range: any };
+  ScheduleReservation3: undefined;
+  ScheduleConfirmation: undefined;
+  SettingMelpik: undefined;
+  SalesSettlement: undefined;
+  SalesSettlementDetail: { id: string };
+  SettlementRequest: undefined;
+  MyInfoList: undefined;
+  Mystyle: undefined;
+  ChangePassword: undefined;
+  DeliveryManagement: undefined;
+  EditAddress: undefined;
+  UpdateProfile: undefined;
+  Analysis: undefined;
+  Alarm: undefined;
 };
 
 // 네비게이션 타입들
-export type NavigationProps = {
-  navigate: (screen: string, params?: any) => void;
+export type NavigationProp = {
+  navigate: (screen: keyof RootStackParamList, params?: any) => void;
   goBack: () => void;
-  canGoBack: () => boolean;
+  reset: (state: any) => void;
 };
 
 // 라우트 타입들

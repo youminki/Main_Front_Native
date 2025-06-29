@@ -1,16 +1,26 @@
 // src/pages/LockerRoom/MyCloset/MyCloset.tsx
 
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import { FaTshirt } from 'react-icons/fa';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+  Dimensions,
+  SafeAreaView,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useMyCloset } from '../../../api/closet/closetApi';
 
 import StatsSection from '../../../components/StatsSection';
 import ItemList, { UIItem } from '../../../components/Home/MyclosetItemList';
 import HomeDetail from '../../Home/HomeDetail';
-import Spinner from '../../../components/Spinner'; // Spinner import 추가
-import CancleIconIcon from '../../../assets/Header/CancleIcon.svg';
+import Spinner from '../../../components/Spinner';
+import theme from '../../../styles/Theme';
+
+const { width, height } = Dimensions.get('window');
 
 const salesLabel = '시즌';
 const sales = '2025 1분기';
@@ -19,7 +29,7 @@ const dateRange = 'SPRING';
 const MyCloset: React.FC = () => {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const navigate = useNavigate();
+  const navigation = useNavigation();
 
   // react-query로 옷장 데이터 패칭
   const { data, isLoading } = useMyCloset();
@@ -34,13 +44,6 @@ const MyCloset: React.FC = () => {
       isLiked: true,
     })) ?? [];
 
-  useEffect(() => {
-    document.body.style.overflow = isModalOpen ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isModalOpen]);
-
   const handleDelete = () => {};
 
   const handleOpenDetail = (id: string) => {
@@ -54,197 +57,148 @@ const MyCloset: React.FC = () => {
   };
 
   const goToLocker = () => {
-    navigate('/home');
+    navigation.navigate('Home' as never);
   };
 
   return (
-    <Container>
-      <Header>
-        <Title>내 옷장</Title>
-        <Subtitle>나에게 맞는 스타일을 찾을 때는 멜픽!</Subtitle>
-      </Header>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.header}>
+          <Text style={styles.title}>내 옷장</Text>
+          <Text style={styles.subtitle}>
+            나에게 맞는 스타일을 찾을 때는 멜픽!
+          </Text>
+        </View>
 
-      <StatsSection
-        visits={items.length}
-        sales={sales}
-        dateRange={dateRange}
-        visitLabel='담긴 제품들'
-        salesLabel={salesLabel}
-      />
+        <StatsSection
+          visits={items.length}
+          sales={sales}
+          dateRange={dateRange}
+          visitLabel='담긴 제품들'
+          salesLabel={salesLabel}
+        />
 
-      <Divider />
+        <View style={styles.divider} />
 
-      <Content>
-        {isLoading ? (
-          <Spinner /> // 로딩 중 스피너 표시
-        ) : items.length === 0 ? (
-          <EmptyState>
-            <EmptyMessage>내옷장에 보관한 옷이 없습니다.</EmptyMessage>
-            <AddButton onClick={goToLocker}>
-              <FaTshirt size={48} />
-              <ButtonText>옷 추가하러 가기</ButtonText>
-            </AddButton>
-          </EmptyState>
-        ) : (
-          <ItemList
-            items={items}
-            onDelete={handleDelete}
-            onItemClick={handleOpenDetail}
-          />
-        )}
-      </Content>
+        <View style={styles.content}>
+          {isLoading ? (
+            <Spinner />
+          ) : items.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyMessage}>
+                내옷장에 보관한 옷이 없습니다.
+              </Text>
+              <TouchableOpacity style={styles.addButton} onPress={goToLocker}>
+                <Text style={styles.buttonText}>옷 추가하러 가기</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <ItemList
+              items={items}
+              onDelete={handleDelete}
+              onItemClick={handleOpenDetail}
+            />
+          )}
+        </View>
+      </ScrollView>
 
-      {isModalOpen && selectedItemId && (
-        <ModalOverlay>
-          <ModalBox>
-            <ModalHeaderWrapper>
-              <ModalHeaderContainer>
-                <LeftSection>
-                  <CancelIcon
-                    src={CancleIconIcon}
-                    alt='닫기'
-                    onClick={handleCloseDetail}
-                  />
-                </LeftSection>
-                <CenterSection />
-                <RightSection />
-              </ModalHeaderContainer>
-            </ModalHeaderWrapper>
-            <ModalBody>
-              <HomeDetail id={selectedItemId} />
-            </ModalBody>
-          </ModalBox>
-        </ModalOverlay>
-      )}
-    </Container>
+      <Modal
+        visible={isModalOpen}
+        animationType='slide'
+        presentationStyle='pageSheet'
+        onRequestClose={handleCloseDetail}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity
+              onPress={handleCloseDetail}
+              style={styles.cancelButton}
+            >
+              <Text style={styles.cancelText}>닫기</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.modalBody}>
+            {selectedItemId && <HomeDetail id={selectedItemId} />}
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    width: '100%',
+    marginBottom: 6,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '800',
+    margin: 0,
+  },
+  subtitle: {
+    fontSize: 12,
+    color: '#666',
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#ddd',
+    marginVertical: 30,
+  },
+  content: {
+    width: '100%',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 64,
+    paddingHorizontal: 16,
+  },
+  emptyMessage: {
+    fontSize: 16,
+    color: '#999',
+    marginBottom: 24,
+  },
+  addButton: {
+    alignItems: 'center',
+    padding: 16,
+  },
+  buttonText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#333',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  cancelButton: {
+    padding: 8,
+  },
+  cancelText: {
+    fontSize: 16,
+    color: '#007AFF',
+  },
+  modalBody: {
+    flex: 1,
+  },
+});
+
 export default MyCloset;
-
-// 이하 styled-components 정의 (변경 없음)
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #fff;
-  padding: 1rem;
-`;
-
-const Header = styled.div`
-  width: 100%;
-  margin-bottom: 6px;
-`;
-
-const Title = styled.h1`
-  margin: 0;
-  font-size: 24px;
-  font-weight: 800;
-`;
-
-const Subtitle = styled.p`
-  font-size: 12px;
-  color: #666;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #ddd;
-  margin: 30px 0;
-`;
-
-const Content = styled.div`
-  width: 100%;
-`;
-
-const EmptyState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 4rem 1rem;
-`;
-
-const EmptyMessage = styled.p`
-  font-size: 16px;
-  color: #999;
-  margin-bottom: 1.5rem;
-`;
-
-const AddButton = styled.button`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-`;
-
-const ButtonText = styled.span`
-  margin-top: 0.5rem;
-  font-size: 14px;
-  color: #333;
-`;
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  inset: 0;
-  z-index: 3000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const ModalBox = styled.div`
-  background: #fff;
-  width: 100%;
-  max-width: 1000px;
-  height: 100%;
-  position: relative;
-  overflow-y: auto;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const ModalHeaderWrapper = styled.div`
-  position: fixed;
-  top: 0;
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  background: #fff;
-  z-index: 3100;
-`;
-
-const ModalHeaderContainer = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 60px;
-  padding: 0 1rem;
-`;
-
-const ModalBody = styled.div`
-  padding-top: 60px;
-  padding: 1rem;
-`;
-
-const LeftSection = styled.div`
-  cursor: pointer;
-`;
-
-const CenterSection = styled.div`
-  flex: 1;
-`;
-
-const RightSection = styled.div`
-  width: 24px;
-`;
-
-const CancelIcon = styled.img`
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-`;

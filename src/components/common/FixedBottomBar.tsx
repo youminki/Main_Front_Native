@@ -1,37 +1,49 @@
-// src/components/Melpik/Schedule/Reservation1/BottomBar.tsx
-
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-interface BottomBarProps {
-  onNext?: () => void;
-  onPress?: () => void;
-  buttonText?: string;
+interface FixedBottomBarProps {
+  text: string;
+  color: 'black' | 'yellow';
+  onPress: () => void;
   disabled?: boolean;
+  type?: string;
+  onClick?: () => void;
 }
 
-const BottomBar: React.FC<BottomBarProps> = ({
-  onNext,
+const FixedBottomBar: React.FC<FixedBottomBarProps> = ({
+  text,
+  color,
   onPress,
-  buttonText = '다음',
   disabled = false,
+  type,
+  onClick,
 }) => {
   const handlePress = () => {
-    if (onNext) onNext();
     if (onPress) onPress();
+    if (onClick) onClick();
   };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={[styles.button, disabled && styles.buttonDisabled]}
+        style={[
+          styles.button,
+          color === 'black' ? styles.blackButton : styles.yellowButton,
+          disabled && styles.buttonDisabled,
+        ]}
         onPress={handlePress}
         disabled={disabled}
       >
         <Text
-          style={[styles.buttonText, disabled && styles.buttonTextDisabled]}
+          style={[
+            styles.buttonText,
+            color === 'black'
+              ? styles.blackButtonText
+              : styles.yellowButtonText,
+            disabled && styles.buttonTextDisabled,
+          ]}
         >
-          {buttonText}
+          {text}
         </Text>
       </TouchableOpacity>
     </View>
@@ -51,23 +63,33 @@ const styles = StyleSheet.create({
     borderTopColor: '#eee',
   },
   button: {
-    backgroundColor: '#f6ae24',
     height: 56,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  blackButton: {
+    backgroundColor: '#000',
+  },
+  yellowButton: {
+    backgroundColor: '#f6ae24',
+  },
   buttonDisabled: {
     backgroundColor: '#ccc',
   },
   buttonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  blackButtonText: {
+    color: '#fff',
+  },
+  yellowButtonText: {
+    color: '#000',
   },
   buttonTextDisabled: {
     color: '#999',
   },
 });
 
-export default BottomBar;
+export default FixedBottomBar;

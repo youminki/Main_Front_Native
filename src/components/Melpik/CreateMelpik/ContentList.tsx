@@ -1,13 +1,22 @@
 import React from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../pages/AppLayout';
 import Theme from '../../../styles/Theme';
-import CreateMelpik1 from '../../../assets/Melpik/Inventory1.svg';
-import CreateMelpik2 from '../../../assets/Melpik/Inventory1.svg';
-import SettingIcon from '../../../assets/Melpik/Setting.svg';
+import CreateMelpik1 from '../../../assets/Landing/CreateMelpik1.svg';
+import CreateMelpik2 from '../../../assets/Landing/CreateMelpik2.svg';
+import SettingIcon from '../../../assets/Landing/SettingIcon.svg';
 
 interface ContentItem {
-  image: string;
+  image: any;
   imgtitle: string;
   title: string;
   dressSize: string;
@@ -19,65 +28,66 @@ interface ContentItem {
 }
 
 const Content: React.FC<{ item: ContentItem }> = ({ item }) => {
-  const navigate = useNavigate();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleClick = () => {
     if (item.imgtitle === '컨템포러리') {
-      navigate('/createMelpik/settings');
+      navigation.navigate('CreateMelpikSettings' as any);
     }
   };
 
   return (
-    <ContentContainer onClick={handleClick}>
-      <ImageWrapper>
-        <ImageContainer>
-          <Image src={item.image} alt='Item' />
-          <TextOverlay>
-            <SmallText>Fashion Brand</SmallText>
-            <LargeText>{item.imgtitle}</LargeText>
-          </TextOverlay>
-          <SettingsIcon src={SettingIcon} alt='Settings' />
-        </ImageContainer>
-        <DescriptionBox>
-          <Title>{item.title}</Title>
-          <Details>
-            <Container>
-              <DescriptionLine>
-                <Label>원피스</Label>
-                <Data>{item.dressSize}</Data>
-              </DescriptionLine>
-              <Separator>|</Separator>
-              <DescriptionLine>
-                <Label>상의</Label>
-                <Data>{item.topSize}</Data>
-              </DescriptionLine>
-              <Separator>|</Separator>
-              <DescriptionLine>
-                <Label>하의</Label>
-                <Data>{item.bottomSize}</Data>
-              </DescriptionLine>
-            </Container>
-            <Container>
-              <DescriptionLine>
-                <Label>브랜드</Label>
-                <Data>{item.brand}</Data>
-              </DescriptionLine>
-            </Container>
-            <Container>
-              <DescriptionLine>
-                <Label>상품 노출수</Label>
-                <Data>{item.exposure}회</Data>
-              </DescriptionLine>
-              <Separator>|</Separator>
-              <DescriptionLine>
-                <Label>노출기간</Label>
-                <Data>월 {item.period}회</Data>
-              </DescriptionLine>
-            </Container>
-          </Details>
-        </DescriptionBox>
-      </ImageWrapper>
-    </ContentContainer>
+    <TouchableOpacity style={styles.contentContainer} onPress={handleClick}>
+      <View style={styles.imageWrapper}>
+        <View style={styles.imageContainer}>
+          <Image source={item.image} style={styles.image} />
+          <View style={styles.textOverlay}>
+            <Text style={styles.smallText}>Fashion Brand</Text>
+            <Text style={styles.largeText}>{item.imgtitle}</Text>
+          </View>
+          <SettingIcon width={40} height={40} style={styles.settingsIcon} />
+        </View>
+        <View style={styles.descriptionBox}>
+          <Text style={styles.title}>{item.title}</Text>
+          <View style={styles.details}>
+            <View style={styles.containerRow}>
+              <View style={styles.descriptionLine}>
+                <Text style={styles.label}>원피스</Text>
+                <Text style={styles.data}>{item.dressSize}</Text>
+              </View>
+              <Text style={styles.separator}>|</Text>
+              <View style={styles.descriptionLine}>
+                <Text style={styles.label}>상의</Text>
+                <Text style={styles.data}>{item.topSize}</Text>
+              </View>
+              <Text style={styles.separator}>|</Text>
+              <View style={styles.descriptionLine}>
+                <Text style={styles.label}>하의</Text>
+                <Text style={styles.data}>{item.bottomSize}</Text>
+              </View>
+            </View>
+            <View style={styles.containerRow}>
+              <View style={styles.descriptionLine}>
+                <Text style={styles.label}>브랜드</Text>
+                <Text style={styles.data}>{item.brand}</Text>
+              </View>
+            </View>
+            <View style={styles.containerRow}>
+              <View style={styles.descriptionLine}>
+                <Text style={styles.label}>상품 노출수</Text>
+                <Text style={styles.data}>{item.exposure}회</Text>
+              </View>
+              <Text style={styles.separator}>|</Text>
+              <View style={styles.descriptionLine}>
+                <Text style={styles.label}>노출기간</Text>
+                <Text style={styles.data}>월 {item.period}회</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -108,143 +118,113 @@ const ContentList: React.FC = () => {
   ];
 
   return (
-    <ScrollableContent>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={styles.scrollableContent}
+    >
       {data.map((item, index) => (
         <Content key={index} item={item} />
       ))}
-    </ScrollableContent>
+    </ScrollView>
   );
 };
 
 export default ContentList;
 
-const ScrollableContent = styled.div`
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const ContentContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-width: 300px;
-  max-width: 300px;
-  height: 100%;
-  margin-right: 20px;
-  box-sizing: border-box;
-  overflow: hidden;
-`;
-
-const ImageWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-`;
-
-const ImageContainer = styled.div`
-  position: relative;
-  width: 100%;
-`;
-
-const Image = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
-const TextOverlay = styled.div`
-  position: absolute;
-  bottom: 150px;
-  left: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-`;
-
-const SmallText = styled.div`
-  font-weight: 900;
-  font-size: 10px;
-  color: #000000;
-`;
-
-const LargeText = styled.div`
-  font-weight: 350;
-  font-size: 30px;
-  line-height: 33px;
-
-  color: #ffffff;
-`;
-
-const SettingsIcon = styled.img`
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-`;
-const DescriptionLine = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const Label = styled.span`
-  font-weight: 400;
-  color: #000;
-`;
-
-const Data = styled.span`
-  font-weight: 900;
-  font-size: 12px;
-  line-height: 13px;
-
-  color: #000000;
-  margin-left: 5px;
-`;
-
-const Separator = styled.span`
-  margin: 0 10px;
-  color: ${Theme.colors.gray1};
-`;
-
-const DescriptionBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-top: 20px;
-  width: 100%;
-`;
-
-const Details = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-size: 12px;
-  border-left: 1px solid ${Theme.colors.gray1};
-  border-right: 1px solid ${Theme.colors.gray1};
-  border-top: 1px solid ${Theme.colors.gray1};
-`;
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 13px;
-  border-bottom: 1px solid ${Theme.colors.gray1};
-`;
-
-const Title = styled.h1`
-  font-weight: 800;
-  font-size: 14px;
-  line-height: 15px;
-  color: #000000;
-
-  margin-bottom: 10px;
-`;
+const styles = StyleSheet.create({
+  scrollableContent: {
+    flexDirection: 'row',
+  },
+  contentContainer: {
+    flexDirection: 'column',
+    width: 300,
+    minWidth: 300,
+    maxWidth: 300,
+    height: '100%',
+    marginRight: 20,
+    overflow: 'hidden',
+  },
+  imageWrapper: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+  },
+  imageContainer: {
+    position: 'relative',
+    width: '100%',
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'cover',
+  },
+  textOverlay: {
+    position: 'absolute',
+    bottom: 150,
+    left: 20,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  smallText: {
+    fontWeight: '900',
+    fontSize: 10,
+    color: '#000000',
+  },
+  largeText: {
+    fontWeight: '300',
+    fontSize: 30,
+    lineHeight: 33,
+    color: '#ffffff',
+  },
+  settingsIcon: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 40,
+    height: 40,
+  },
+  descriptionBox: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    width: '100%',
+  },
+  title: {
+    fontWeight: '700',
+    fontSize: 18,
+    marginBottom: 8,
+  },
+  details: {
+    flexDirection: 'column',
+    gap: 4,
+  },
+  containerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  descriptionLine: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  label: {
+    fontWeight: '400',
+    fontSize: 13,
+    color: '#888',
+    marginRight: 4,
+  },
+  data: {
+    fontWeight: '600',
+    fontSize: 13,
+    color: '#222',
+  },
+  separator: {
+    marginHorizontal: 6,
+    color: '#ccc',
+  },
+});

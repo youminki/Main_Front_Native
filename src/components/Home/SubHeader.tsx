@@ -1,220 +1,188 @@
 // src/components/Header/SubHeader.tsx
 import React, { useRef, useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { useSearchParams } from 'react-router-dom';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Spinner from '../Spinner';
 
-import All from '../../assets/SubHeader/Entire.svg';
-import MiniDress from '../../assets/SubHeader/MiniDress.svg';
-import MidiDress from '../../assets/SubHeader/MidiDress.svg';
-import LongDress from '../../assets/SubHeader/LongDress.svg';
-import TowDress from '../../assets/SubHeader/TowDress.svg';
-import JumpSuit from '../../assets/SubHeader/JumpSuit.svg';
-import Blouse from '../../assets/SubHeader/Blouse.svg';
-import KnitTop from '../../assets/SubHeader/KnitTop.svg';
-import ShirtTop from '../../assets/SubHeader/ShirtTop.svg';
-import MiniSkirt from '../../assets/SubHeader/MiniSkirt.svg';
-import MidiSkirt from '../../assets/SubHeader/MidiSkirt.svg';
-import LongSkirt from '../../assets/SubHeader/LongSkirt.svg';
-import Pants from '../../assets/SubHeader/Pants.svg';
-import Jacket from '../../assets/SubHeader/Jacket.svg';
-import Coat from '../../assets/SubHeader/Coat.svg';
-import Top from '../../assets/SubHeader/Top.svg';
-import Tshirt from '../../assets/SubHeader/Tshirt.svg';
-import Cardigan from '../../assets/SubHeader/Cardigan.svg';
-import Best from '../../assets/SubHeader/Best.svg';
-import Padding from '../../assets/SubHeader/Padding.svg';
+const { width } = Dimensions.get('window');
 
 const homeIcons = [
-  { src: All, alt: '전체', category: 'All' },
-  { src: MiniDress, alt: '미니원피스', category: 'MiniDress' },
-  { src: MidiDress, alt: '미디원피스', category: 'MidiDress' },
-  { src: LongDress, alt: '롱 원피스', category: 'LongDress' },
-  { src: TowDress, alt: '투피스', category: 'TowDress' },
-  { src: JumpSuit, alt: '점프수트', category: 'JumpSuit' },
-  { src: Blouse, alt: '블라우스', category: 'Blouse' },
-  { src: KnitTop, alt: '니트 상의', category: 'KnitTop' },
-  { src: ShirtTop, alt: '셔츠 상의', category: 'ShirtTop' },
-  { src: MiniSkirt, alt: '미니 스커트', category: 'MiniSkirt' },
-  { src: MidiSkirt, alt: '미디 스커트', category: 'MidiSkirt' },
-  { src: LongSkirt, alt: '롱 스커트', category: 'LongSkirt' },
-  { src: Pants, alt: '팬츠', category: 'Pants' },
-  { src: Jacket, alt: '자켓', category: 'Jacket' },
-  { src: Coat, alt: '코트', category: 'Coat' },
-  { src: Top, alt: '탑', category: 'Top' },
-  { src: Tshirt, alt: '티셔츠', category: 'Tshirt' },
-  { src: Cardigan, alt: '가디건', category: 'Cardigan' },
-  { src: Best, alt: '베스트', category: 'Best' },
-  { src: Padding, alt: '패딩', category: 'Padding' },
+  { name: '전체', category: 'All' },
+  { name: '미니원피스', category: 'MiniDress' },
+  { name: '미디원피스', category: 'MidiDress' },
+  { name: '롱 원피스', category: 'LongDress' },
+  { name: '투피스', category: 'TowDress' },
+  { name: '점프수트', category: 'JumpSuit' },
+  { name: '블라우스', category: 'Blouse' },
+  { name: '니트 상의', category: 'KnitTop' },
+  { name: '셔츠 상의', category: 'ShirtTop' },
+  { name: '미니 스커트', category: 'MiniSkirt' },
+  { name: '미디 스커트', category: 'MidiSkirt' },
+  { name: '롱 스커트', category: 'LongSkirt' },
+  { name: '팬츠', category: 'Pants' },
+  { name: '자켓', category: 'Jacket' },
+  { name: '코트', category: 'Coat' },
+  { name: '탑', category: 'Top' },
+  { name: '티셔츠', category: 'Tshirt' },
+  { name: '가디건', category: 'Cardigan' },
+  { name: '베스트', category: 'Best' },
+  { name: '패딩', category: 'Padding' },
 ];
 
 interface SubHeaderProps {
   selectedCategory: string;
-  setSelectedCategory: (category: string) => void;
-  onCategoryClick: () => void;
+  onCategoryChange?: (category: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
 }
 
 const ICON_WIDTH = 80;
-const INDICATOR_WIDTH = 50;
 
 const SubHeader: React.FC<SubHeaderProps> = ({
   selectedCategory,
-  setSelectedCategory,
-  onCategoryClick,
+  onCategoryChange,
+  searchQuery = '',
+  onSearchChange,
 }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const iconsRef = useRef<HTMLDivElement>(null);
-  const initialPos = (ICON_WIDTH - INDICATOR_WIDTH) / 2;
-  const [indicatorPos, setIndicatorPos] = useState(initialPos);
+  const navigation = useNavigation();
+  const scrollViewRef = useRef<ScrollView>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    if (!iconsRef.current) return;
-    const container = iconsRef.current;
-    const selectedEl = container.querySelector<HTMLElement>(
-      `[data-category="${selectedCategory}"]`
-    );
-    if (selectedEl) {
-      const offsetLeft = selectedEl.offsetLeft;
-      const centerOffset = (ICON_WIDTH - INDICATOR_WIDTH) / 2;
-      setIndicatorPos(offsetLeft + centerOffset);
+  const handleClick = (category: string) => {
+    onCategoryChange?.(category);
+  };
+
+  const scrollToCategory = (category: string) => {
+    const index = homeIcons.findIndex((icon) => icon.category === category);
+    if (index !== -1 && scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({
+        x: index * ICON_WIDTH,
+        animated: true,
+      });
     }
+  };
+
+  useEffect(() => {
+    scrollToCategory(selectedCategory);
   }, [selectedCategory]);
 
-  const handleClick = (category: string) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    // 'All' 선택 시에는 category 파라미터 제거
-    if (category === 'All') {
-      newParams.delete('category');
-    } else {
-      newParams.set('category', category);
-    }
-    // 검색어는 초기화
-    newParams.delete('search');
-    setSearchParams(newParams, { replace: true });
-    setSelectedCategory(category);
-    onCategoryClick();
-  };
-
-  const scroll = (dir: 'left' | 'right') => {
-    if (!iconsRef.current) return;
-    const amount = ICON_WIDTH * 3;
-    iconsRef.current.scrollBy({
-      left: dir === 'left' ? -amount : amount,
-      behavior: 'smooth',
-    });
-  };
+  if (loading) {
+    return (
+      <View style={styles.subHeaderWrapper}>
+        <View style={styles.contentWrapper}>
+          <Spinner />
+        </View>
+        <View style={styles.divider} />
+      </View>
+    );
+  }
 
   return (
-    <SubHeaderWrapper>
-      <ContentWrapper>
-        {loading ? (
-          <Spinner />
-        ) : (
-          <>
-            <ArrowButtonWrapper onClick={() => scroll('left')}>
-              <FiChevronLeft size={24} />
-            </ArrowButtonWrapper>
-
-            <IconsWrapper ref={iconsRef}>
-              {homeIcons.map((icon, idx) => {
-                const isSelected = icon.category === selectedCategory;
-                return (
-                  <IconContainer
-                    key={idx}
-                    data-category={icon.category}
-                    selected={isSelected}
-                    onClick={() => handleClick(icon.category)}
-                  >
-                    <Icon src={icon.src} alt={icon.alt} />
-                    <IconText selected={isSelected}>{icon.alt}</IconText>
-                  </IconContainer>
-                );
-              })}
-              <Indicator position={indicatorPos} />
-            </IconsWrapper>
-
-            <ArrowButtonWrapper onClick={() => scroll('right')}>
-              <FiChevronRight size={24} />
-            </ArrowButtonWrapper>
-          </>
-        )}
-      </ContentWrapper>
-      <Divider />
-    </SubHeaderWrapper>
+    <View style={styles.subHeaderWrapper}>
+      <View style={styles.contentWrapper}>
+        <ScrollView
+          ref={scrollViewRef}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.iconsWrapper}
+          style={styles.scrollView}
+        >
+          {homeIcons.map((icon, idx) => {
+            const isSelected = icon.category === selectedCategory;
+            return (
+              <TouchableOpacity
+                key={idx}
+                style={[
+                  styles.iconContainer,
+                  isSelected && styles.selectedIcon,
+                ]}
+                onPress={() => handleClick(icon.category)}
+                activeOpacity={0.7}
+              >
+                <View
+                  style={[styles.icon, isSelected && styles.selectedIconBg]}
+                >
+                  <Text style={styles.iconText}>{icon.name.charAt(0)}</Text>
+                </View>
+                <Text
+                  style={[styles.iconText, isSelected && styles.selectedText]}
+                >
+                  {icon.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
+      <View style={styles.divider} />
+    </View>
   );
 };
 
-export default SubHeader;
+const styles = StyleSheet.create({
+  subHeaderWrapper: {
+    position: 'relative',
+    width: '100%',
+    backgroundColor: '#fff',
+  },
+  contentWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  iconsWrapper: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+  },
+  iconContainer: {
+    width: ICON_WIDTH,
+    alignItems: 'center',
+    paddingVertical: 10,
+    opacity: 0.6,
+  },
+  selectedIcon: {
+    opacity: 1,
+  },
+  icon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 5,
+  },
+  selectedIconBg: {
+    backgroundColor: '#f6ae24',
+  },
+  iconText: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+  },
+  selectedText: {
+    color: '#f6ae24',
+    fontWeight: '600',
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#eee',
+  },
+});
 
-// Styled Components
-const SubHeaderWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  background: #fff;
-`;
-const ContentWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-`;
-const ArrowButtonWrapper = styled.div`
-  display: none;
-  @media (min-width: 1024px) {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    padding: 0 8px;
-  }
-`;
-const IconsWrapper = styled.div`
-  position: relative;
-  display: flex;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-const IconContainer = styled.div<{ selected: boolean }>`
-  flex: 0 0 auto;
-  width: ${ICON_WIDTH}px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  padding: 10px 0;
-  opacity: ${({ selected }) => (selected ? 1 : 0.6)};
-`;
-const Icon = styled.img`
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  margin-bottom: 5px;
-`;
-const IconText = styled.span<{ selected: boolean }>`
-  font-size: 11px;
-  color: ${({ selected }) => (selected ? '#000' : '#666')};
-`;
-const Indicator = styled.div<{ position: number }>`
-  position: absolute;
-  bottom: 0;
-  left: ${({ position }) => position}px;
-  width: ${INDICATOR_WIDTH}px;
-  height: 3px;
-  background-color: #000;
-  border-radius: 3px;
-  transition: left 0.3s ease-in-out;
-`;
-const Divider = styled.div`
-  width: 100%;
-  border-bottom: 1px solid #eeeeee;
-  margin-top: 4px;
-`;
+export default SubHeader;

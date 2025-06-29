@@ -1,14 +1,19 @@
 // src/pages/Melpik/Schedule/ScheduleReservation2.tsx
 
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { useNavigate, useLocation } from 'react-router-dom';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  Alert,
+} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-import { FaTshirt } from 'react-icons/fa'; // 아이콘 import
 import Stepper from '../../../components/Melpik/Schedule/Reservation1/Stepper';
 import BottomBar from '../../../components/Melpik/Schedule/Reservation1/BottomBar';
-
-import checkIcon from '../../../assets/checkIcon.svg';
 
 import { getMyCloset } from '../../../api/closet/closetApi';
 import Spinner from '../../../components/Spinner';
@@ -38,21 +43,24 @@ const ItemCard: React.FC<ItemCardProps> = ({
   };
 
   return (
-    <CardContainer>
-      <ImageWrapper onClick={handleSelect}>
-        <Image src={image} alt={brand} />
+    <View style={styles.cardContainer}>
+      <TouchableOpacity style={styles.imageWrapper} onPress={handleSelect}>
+        <Image source={{ uri: image }} style={styles.image} />
         {$isSelected && (
-          <SelectionOverlay>
-            <CircularSelection>
-              <CheckIconImg src={checkIcon} alt='Check Icon' />
-            </CircularSelection>
-            <SelectText>제품선택</SelectText>
-          </SelectionOverlay>
+          <View style={styles.selectionOverlay}>
+            <View style={styles.circularSelection}>
+              <Image
+                source={require('../../../assets/checkIcon.svg')}
+                style={styles.checkIconImg}
+              />
+            </View>
+            <Text style={styles.selectText}>제품선택</Text>
+          </View>
         )}
-      </ImageWrapper>
-      <Brand>{brand}</Brand>
-      <Description>{description}</Description>
-    </CardContainer>
+      </TouchableOpacity>
+      <Text style={styles.brand}>{brand}</Text>
+      <Text style={styles.description}>{description}</Text>
+    </View>
   );
 };
 
@@ -74,9 +82,9 @@ const ItemList: React.FC<ItemListProps> = ({
   onSelect,
 }) => {
   return (
-    <ListContainer>
+    <View style={styles.listContainer}>
       <HeaderContainer />
-      <ItemsWrapper>
+      <View style={styles.itemsWrapper}>
         {items.map((item) => {
           const numericId = Number(item.id);
           const isSel = selectedItems.includes(numericId);
@@ -92,16 +100,16 @@ const ItemList: React.FC<ItemListProps> = ({
             />
           );
         })}
-      </ItemsWrapper>
-    </ListContainer>
+      </View>
+    </View>
   );
 };
 
 const ScheduleReservation2: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  // Reservation1에서 전달된 range: location.state가 있을 때 타입 단언
-  const prevState = location.state as { range?: [Date, Date] } | null;
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  // Reservation1에서 전달된 range: route.params가 있을 때 타입 단언
+  const prevState = route.params as { range?: [Date, Date] } | null;
   const initialRange = prevState?.range;
 
   // selectedItems를 number[]로 관리
@@ -114,9 +122,9 @@ const ScheduleReservation2: React.FC = () => {
   // 선택된 날짜 범위가 없다면 이전 페이지로 이동
   useEffect(() => {
     if (!initialRange) {
-      navigate('/schedule/reservation1');
+      navigation.navigate('ScheduleReservation1');
     }
-  }, [initialRange, navigate]);
+  }, [initialRange, navigation]);
 
   // 내 옷장 아이템 불러오기
   useEffect(() => {
@@ -160,47 +168,54 @@ const ScheduleReservation2: React.FC = () => {
 
   const handleBottomClick = () => {
     // Reservation3로 range와 selectedItems 전달 (number[] 그대로)
-    navigate('/schedule/reservation3', {
-      state: { range: initialRange, selectedItems },
+    navigation.navigate('ScheduleReservation3', {
+      range: initialRange,
+      selectedItems,
     });
   };
 
   const ItemContainer: React.FC = () => (
-    <CustomHeader>
-      <div>
-        <Label>
-          내 옷장 - 제품목록 <GrayText2>(선택)</GrayText2>
-        </Label>
-      </div>
-    </CustomHeader>
+    <View style={styles.customHeader}>
+      <View>
+        <Text style={styles.label}>
+          내 옷장 - 제품목록 <Text style={styles.grayText2}>(선택)</Text>
+        </Text>
+      </View>
+    </View>
   );
 
   return (
-    <Container>
+    <View style={styles.container}>
       <Stepper currentStep={2} />
 
-      <Summary>
-        <ScheduleInfo>
-          <Label>예약할 제품 목록</Label>
-          <InfoText>
-            <GrayText>선택 가능한 갯수 {MAX_SELECTION}개</GrayText>
-            <GrayDivider>/</GrayDivider>
+      <View style={styles.summary}>
+        <View style={styles.scheduleInfo}>
+          <Text style={styles.label}>예약할 제품 목록</Text>
+          <View style={styles.infoText}>
+            <Text style={styles.grayText}>
+              선택 가능한 갯수 {MAX_SELECTION}개
+            </Text>
+            <Text style={styles.grayDivider}>/</Text>
             선택한 제품 수 {selectedItems.length} 개
-          </InfoText>
-        </ScheduleInfo>
-      </Summary>
+          </View>
+        </View>
+      </View>
 
-      <Content>
+      <ScrollView style={styles.content}>
         {loadingCloset ? (
           <Spinner />
         ) : closetItems.length === 0 ? (
-          <EmptyState>
-            <EmptyMessage>내 옷장에 보관한 옷이 없습니다.</EmptyMessage>
-            <AddButton onClick={() => navigate('/home')}>
-              <FaTshirt size={48} />
-              <ButtonText>옷 추가하러 가기</ButtonText>
-            </AddButton>
-          </EmptyState>
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyMessage}>
+              내 옷장에 보관한 옷이 없습니다.
+            </Text>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => navigation.navigate('Home')}
+            >
+              <Text style={styles.addButtonText}>옷장에 추가하기</Text>
+            </TouchableOpacity>
+          </View>
         ) : (
           <ItemList
             HeaderContainer={ItemContainer}
@@ -209,309 +224,212 @@ const ScheduleReservation2: React.FC = () => {
             onSelect={handleSelect}
           />
         )}
-      </Content>
+      </ScrollView>
 
-      <BottomBar onNext={handleBottomClick} />
+      {/* BottomBar: onNext에서 Reservation3로 이동 */}
+      <BottomBar onPress={handleBottomClick} />
 
-      {isModalOpen && (
-        <WarningModal>
-          <WarningModalContent>
-            <ModalHeader>
-              <ModalTitle>알림</ModalTitle>
-              <GrayLine />
-            </ModalHeader>
-            <WarningMessage>
-              최대 {MAX_SELECTION}개의 제품만 선택 가능합니다.
-            </WarningMessage>
-            <GrayLine />
-            <ButtonRow>
-              <CancelButton onClick={closeWarningModal}>닫기</CancelButton>
-            </ButtonRow>
-          </WarningModalContent>
-        </WarningModal>
-      )}
-
-      <BeenContainer />
-    </Container>
+      {/* 경고 모달 */}
+      <View style={[styles.modal, { display: isModalOpen ? 'flex' : 'none' }]}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>선택 제한</Text>
+          <Text style={styles.modalMessage}>
+            최대 {MAX_SELECTION}개까지만 선택할 수 있습니다.
+          </Text>
+          <TouchableOpacity
+            style={styles.modalButton}
+            onPress={closeWarningModal}
+          >
+            <Text style={styles.modalButtonText}>확인</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
 };
 
 export default ScheduleReservation2;
 
-// 색상 코드 예시 (프로젝트 디자인에 맞춰 변경하세요)
-const COLOR_GRAY4 = '#bdbdbd';
-const COLOR_GRAY3 = '#9e9e9e';
-const COLOR_GRAY2 = '#757575';
-const COLOR_GRAY1 = '#616161';
-const COLOR_GRAY0 = '#e0e0e0';
-const COLOR_WHITE = '#ffffff';
-const COLOR_BLACK = '#000000';
-
-const Container = styled.div`
-  padding: 1rem;
-  max-width: 600px;
-  margin: auto;
-`;
-
-const Label = styled.label`
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-`;
-
-const Summary = styled.div`
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 30px;
-`;
-
-const ScheduleInfo = styled.div`
-  flex: 1;
-`;
-
-const InfoText = styled.div`
-  height: 57px;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1px solid ${COLOR_GRAY4};
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-
-  font-weight: 700;
-  font-size: 13px;
-  line-height: 14px;
-`;
-
-const GrayText = styled.span`
-  font-weight: 700;
-  font-size: 13px;
-  line-height: 14px;
-  color: ${COLOR_GRAY1};
-  margin-right: 5px;
-`;
-
-const GrayDivider = styled.span`
-  margin: 0 4px;
-  color: ${COLOR_GRAY4};
-`;
-
-const BeenContainer = styled.div`
-  height: 300px;
-`;
-
-const Content = styled.div`
-  flex: 1;
-`;
-
-const CustomHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
-`;
-
-const GrayText2 = styled.span`
-  margin-left: 5px;
-  color: ${COLOR_GRAY3};
-
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-`;
-
-const ListContainer = styled.div`
-  background-color: ${COLOR_WHITE};
-  overflow: hidden;
-  margin-bottom: 40px;
-`;
-
-const ItemsWrapper = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const Brand = styled.h3`
-  margin-top: 10px;
-  font-size: 14px;
-  font-weight: bold;
-`;
-
-const Description = styled.p`
-  margin-top: 5px;
-  font-size: 12px;
-  color: ${COLOR_GRAY2};
-`;
-
-const CardContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin: 6px;
-  position: relative;
-`;
-
-const ImageWrapper = styled.div`
-  position: relative;
-  width: 140px;
-  height: 210px;
-  cursor: pointer;
-`;
-
-const Image = styled.img`
-  object-fit: cover;
-  width: 140px;
-  height: 210px;
-`;
-
-const SelectionOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 140px;
-  height: 210px;
-  background: rgba(246, 174, 36, 0.95);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
-const CircularSelection = styled.div`
-  width: 58px;
-  height: 58px;
-  background-color: ${COLOR_WHITE};
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const CheckIconImg = styled.img`
-  width: 30px;
-  height: 22px;
-`;
-
-const SelectText = styled.div`
-  margin-top: 10px;
-  font-weight: 700;
-  font-size: 12px;
-  color: ${COLOR_WHITE};
-`;
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 27px;
-`;
-
-const ModalContent = styled.div`
-  background-color: ${COLOR_WHITE};
-  padding: 20px;
-  max-width: 500px;
-  width: 100%;
-  height: 670px;
-  display: flex;
-  flex-direction: column;
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ModalTitle = styled.p`
-  font-weight: 800;
-  font-size: 16px;
-`;
-
-const GrayLine = styled.hr`
-  border: none;
-  width: 100%;
-  border: 1px solid ${COLOR_GRAY0};
-  margin: 20px 0;
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  margin-top: auto;
-`;
-
-const CancelButton = styled.button`
-  width: 100%;
-  height: 56px;
-  background-color: ${COLOR_GRAY1};
-  color: ${COLOR_WHITE};
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-
-  font-weight: 800;
-  font-size: 16px;
-`;
-
-const WarningModal = styled(ModalOverlay)`
-  background-color: rgba(0, 0, 0, 0.7);
-`;
-
-const WarningModalContent = styled(ModalContent)`
-  max-width: 376px;
-  height: 329px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-`;
-
-const WarningMessage = styled.p`
-  color: ${COLOR_BLACK};
-  font-weight: 400;
-  font-size: 14px;
-  text-align: center;
-  margin: 0;
-`;
-
-const EmptyState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 4rem 1rem;
-`;
-
-const EmptyMessage = styled.p`
-  font-size: 16px;
-  color: #999;
-  margin-bottom: 1.5rem;
-`;
-
-const AddButton = styled.button`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-`;
-
-const ButtonText = styled.span`
-  margin-top: 0.5rem;
-  font-size: 14px;
-  color: #333;
-`;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 16,
+  },
+  summary: {
+    marginTop: 30,
+    marginBottom: 30,
+  },
+  scheduleInfo: {
+    flex: 1,
+  },
+  label: {
+    marginBottom: 8,
+    fontWeight: '700',
+    fontSize: 10,
+    lineHeight: 11,
+    color: '#000',
+  },
+  infoText: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 57,
+    padding: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#eee',
+    borderRadius: 5,
+  },
+  grayText: {
+    color: '#999',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  grayDivider: {
+    color: '#999',
+    marginHorizontal: 8,
+  },
+  content: {
+    flex: 1,
+    marginBottom: 20,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+  },
+  emptyMessage: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  addButton: {
+    backgroundColor: '#000',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  listContainer: {
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+    marginBottom: 40,
+  },
+  itemsWrapper: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+  },
+  cardContainer: {
+    width: '33.33%',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  imageWrapper: {
+    position: 'relative',
+    width: 100,
+    height: 150,
+    marginBottom: 8,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+  },
+  selectionOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  circularSelection: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  checkIconImg: {
+    width: 20,
+    height: 20,
+  },
+  selectText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  brand: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  description: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+  },
+  customHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 10,
+  },
+  grayText2: {
+    marginLeft: 5,
+    color: '#999',
+    fontWeight: '700',
+    fontSize: 10,
+    lineHeight: 11,
+  },
+  modal: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 8,
+    margin: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalButton: {
+    backgroundColor: '#000',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+});

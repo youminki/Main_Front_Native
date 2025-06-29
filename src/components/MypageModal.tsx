@@ -10,8 +10,10 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../pages/AppLayout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ReusableModal2 from '../components/ReusableModal2';
+import ReusableModal2 from './ReusableModal2';
 import { logoutUser } from '../api/user/userApi';
 import { Axios } from '../api/Axios';
 
@@ -33,7 +35,8 @@ type MypageModalProps = {
 
 const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleLogoutConfirm = async () => {
     try {
@@ -53,7 +56,7 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
       onClose();
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Login' }],
+        routes: [{ name: 'Login' as keyof RootStackParamList }],
       });
     }
   };
@@ -82,7 +85,7 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
                 style={styles.imageContainer}
                 onPress={() => {
                   onClose();
-                  navigation.navigate('MyInfoList');
+                  navigation.navigate('Mystyle' as any);
                 }}
               >
                 <View style={styles.placeholderImage}>
@@ -94,7 +97,7 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
                 style={styles.imageContainer}
                 onPress={() => {
                   onClose();
-                  navigation.navigate('Mystyle');
+                  navigation.navigate('Mystyle' as any);
                 }}
               >
                 <View style={styles.placeholderImage}>
@@ -118,11 +121,10 @@ const MypageModal: React.FC<MypageModalProps> = ({ isOpen, onClose }) => {
       {isLogoutModalOpen && (
         <ReusableModal2
           isOpen={isLogoutModalOpen}
-          onClose={() => setLogoutModalOpen(false)}
-          onConfirm={handleLogoutConfirm}
-          title='알림'
+          onClose={handleLogoutConfirm}
+          title='로그아웃'
         >
-          로그아웃을 하시겠습니까?
+          <Text>로그아웃 하시겠습니까?</Text>
         </ReusableModal2>
       )}
     </>

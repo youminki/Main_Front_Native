@@ -1,12 +1,13 @@
 // src/pages/LockerRoom/TicketDetail.tsx
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import Spinner from '../../../components/Spinner';
 import { getUserTickets, TicketItem } from '../../../api/ticket/ticket';
 
 const TicketDetail: React.FC = () => {
-  const { ticketId } = useParams<{ ticketId: string }>();
+  const route = useRoute();
+  const ticketId = (route.params as any)?.ticketId as string;
   const [ticket, setTicket] = useState<TicketItem | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -30,19 +31,21 @@ const TicketDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <SpinnerWrapper>
+      <View style={styles.spinnerWrapper}>
         <Spinner />
-      </SpinnerWrapper>
+      </View>
     );
   }
 
   if (!ticket) {
     return (
-      <Container>
-        <ContentArea>
-          <ErrorText>해당하는 이용권을 찾을 수 없습니다.</ErrorText>
-        </ContentArea>
-      </Container>
+      <ScrollView style={styles.container}>
+        <View style={styles.contentArea}>
+          <Text style={styles.errorText}>
+            해당하는 이용권을 찾을 수 없습니다.
+          </Text>
+        </View>
+      </ScrollView>
     );
   }
 
@@ -57,190 +60,194 @@ const TicketDetail: React.FC = () => {
   } = ticket;
 
   return (
-    <Container>
-      <ContentArea>
+    <ScrollView style={styles.container}>
+      <View style={styles.contentArea}>
         {/* 이용권 이름 */}
-        <Section>
-          <SectionTitle>이용권 이름</SectionTitle>
-          <ReadOnlyBox>{name}</ReadOnlyBox>
-        </Section>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>이용권 이름</Text>
+          <View style={styles.readOnlyBox}>
+            <Text style={styles.readOnlyText}>{name}</Text>
+          </View>
+        </View>
 
         {/* 사용기간 */}
-        <Section>
-          <SectionTitle>사용기간</SectionTitle>
-          <ReadOnlyBox>
-            {formatDate(startDate)} ~ {formatDate(endDate)}{' '}
-            <GrayText>(유효기간)</GrayText>
-          </ReadOnlyBox>
-        </Section>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>사용기간</Text>
+          <View style={styles.readOnlyBox}>
+            <Text style={styles.readOnlyText}>
+              {formatDate(startDate)} ~ {formatDate(endDate)}{' '}
+              <Text style={styles.grayText}>(유효기간)</Text>
+            </Text>
+          </View>
+        </View>
 
         {/* 결제일시 */}
-        <Section>
-          <SectionTitle>결제일시</SectionTitle>
-          <ReadOnlyBox>
-            {formatDate(purchasedAt)}{' '}
-            <GrayText>({formatTime(purchasedAt)})</GrayText>
-          </ReadOnlyBox>
-        </Section>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>결제일시</Text>
+          <View style={styles.readOnlyBox}>
+            <Text style={styles.readOnlyText}>
+              {formatDate(purchasedAt)}{' '}
+              <Text style={styles.grayText}>({formatTime(purchasedAt)})</Text>
+            </Text>
+          </View>
+        </View>
 
         {/* 사용 가능 개월 수 */}
-        <Section>
-          <SectionTitle>사용 가능 개월 수</SectionTitle>
-          <ReadOnlyBox>{durationMonths}개월</ReadOnlyBox>
-        </Section>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>사용 가능 개월 수</Text>
+          <View style={styles.readOnlyBox}>
+            <Text style={styles.readOnlyText}>{durationMonths}개월</Text>
+          </View>
+        </View>
 
         {/* 가격 */}
-        <Section>
-          <SectionTitle>가격 (원)</SectionTitle>
-          <ReadOnlyBox>{price.toLocaleString()}원</ReadOnlyBox>
-        </Section>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>가격 (원)</Text>
+          <View style={styles.readOnlyBox}>
+            <Text style={styles.readOnlyText}>{price.toLocaleString()}원</Text>
+          </View>
+        </View>
 
         {/* 잔여횟수: isUlimited가 false일 때만 */}
         {!isUlimited && (
-          <Section>
-            <SectionTitle>잔여횟수</SectionTitle>
-            <ReadOnlyBoxGray>
-              <SeasonValue>{remainingRentals}회</SeasonValue>
-            </ReadOnlyBoxGray>
-          </Section>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>잔여횟수</Text>
+            <View style={styles.readOnlyBoxGray}>
+              <Text style={styles.seasonValue}>{remainingRentals}회</Text>
+            </View>
+          </View>
         )}
 
         {/* 다음 결제일 & 자동연장 */}
-        <Section>
-          <Row>
-            <HalfSection>
-              <SectionTitle>다음 결제일</SectionTitle>
-              <ReadOnlyBox>
-                {nextBillingDate ? formatDate(nextBillingDate) : '—'}
-              </ReadOnlyBox>
-            </HalfSection>
-            <HalfSection>
-              <SectionTitle>자동연장</SectionTitle>
-              <ReadOnlyBox>{autoRenewal ? '사용 중' : '해제됨'}</ReadOnlyBox>
-            </HalfSection>
-          </Row>
-        </Section>
+        <View style={styles.section}>
+          <View style={styles.row}>
+            <View style={styles.halfSection}>
+              <Text style={styles.sectionTitle}>다음 결제일</Text>
+              <View style={styles.readOnlyBox}>
+                <Text style={styles.readOnlyText}>
+                  {nextBillingDate ? formatDate(nextBillingDate) : '—'}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.halfSection}>
+              <Text style={styles.sectionTitle}>자동연장</Text>
+              <View style={styles.readOnlyBox}>
+                <Text style={styles.readOnlyText}>
+                  {autoRenewal ? '사용 중' : '해제됨'}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
 
-        <Divider />
+        <View style={styles.divider} />
 
         {/* 안내문 */}
-        <NoticeArea>
-          <NoticeText>
+        <View style={styles.noticeArea}>
+          <Text style={styles.noticeText}>
             ※ 이용 중인 구독권은 시즌 중간에는{' '}
-            <OrangeBold>취소가 불가</OrangeBold>합니다.
-          </NoticeText>
-          <NoticeText>
+            <Text style={styles.orangeBold}>취소가 불가</Text>합니다.
+          </Text>
+          <Text style={styles.noticeText}>
             만약, 취소가 필요할 경우는 서비스팀에 문의해 주시기 바랍니다.
-          </NoticeText>
-        </NoticeArea>
-      </ContentArea>
-    </Container>
+          </Text>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
 export default TicketDetail;
 
-// ─── Styled Components ─────────────────────────────────────────────
-
-const SpinnerWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 300px; /* 스피너 위치 조정용 높이 */
-`;
-
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 1rem;
-  max-width: 600px;
-  margin: 0 auto;
-  background-color: #ffffff;
-`;
-
-const ContentArea = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-`;
-
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const SectionTitle = styled.div`
-  font-size: 12px;
-  font-weight: 700;
-  color: #333;
-  margin-bottom: 5px;
-`;
-
-const ReadOnlyBox = styled.div`
-  height: 50px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  font-size: 14px;
-  font-weight: 600;
-`;
-
-const ReadOnlyBoxGray = styled(ReadOnlyBox)`
-  justify-content: space-between;
-`;
-
-const Row = styled.div`
-  display: flex;
-  gap: 20px;
-`;
-
-const HalfSection = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: #eee;
-`;
-
-const NoticeArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const NoticeText = styled.p`
-  font-size: 12px;
-  color: #888;
-  margin: 0;
-`;
-
-const ErrorText = styled.p`
-  font-size: 14px;
-  color: #f00;
-  text-align: center;
-`;
-
-const GrayText = styled.span`
-  font-size: 12px;
-  color: #999;
-  margin-left: 4px;
-`;
-
-const OrangeBold = styled.span`
-  color: #f6ae24;
-  font-weight: 700;
-`;
-
-const SeasonValue = styled.span`
-  font-size: 14px;
-  font-weight: 700;
-`;
+// --- Styles ---
+const styles = StyleSheet.create({
+  spinnerWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 300,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    padding: 16,
+  },
+  contentArea: {
+    width: '100%',
+    flexDirection: 'column',
+    gap: 24,
+  },
+  section: {
+    flexDirection: 'column',
+    gap: 8,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 5,
+  },
+  readOnlyBox: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  readOnlyText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  readOnlyBoxGray: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 20,
+  },
+  halfSection: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#eee',
+  },
+  noticeArea: {
+    flexDirection: 'column',
+    gap: 4,
+  },
+  noticeText: {
+    fontSize: 12,
+    color: '#888',
+    margin: 0,
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#f00',
+    textAlign: 'center',
+  },
+  grayText: {
+    fontSize: 12,
+    color: '#999',
+    marginLeft: 4,
+  },
+  orangeBold: {
+    color: '#f6ae24',
+    fontWeight: '700',
+  },
+  seasonValue: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+});

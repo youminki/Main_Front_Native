@@ -1,6 +1,12 @@
 import React from 'react';
-import styled from 'styled-components';
-import { useParams } from 'react-router-dom';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
 
 // 타입 정의
@@ -73,208 +79,244 @@ function useSettlementDetail(id: string) {
 }
 
 const SalesSettlementDetail: React.FC = () => {
-  const { id = '' } = useParams<{ id: string }>();
+  const route = useRoute();
+  const { id = '' } = route.params as { id: string };
   const { data: settlement, isLoading } = useSettlementDetail(id);
 
-  if (isLoading) return <Container>로딩 중...</Container>;
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size='large' color='#000' />
+        <Text style={styles.loadingText}>로딩 중...</Text>
+      </View>
+    );
+  }
+
   if (!settlement) {
-    return <Container>정산 내역을 찾을 수 없습니다.</Container>;
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>정산 내역을 찾을 수 없습니다.</Text>
+      </View>
+    );
   }
 
   return (
-    <Container>
-      <Section>
-        <InputField>
-          <Label>정산회차</Label>
-          <Input readOnly value={settlement.date} />
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.section}>
+          <View style={styles.inputField}>
+            <Text style={styles.label}>정산회차</Text>
+            <View style={styles.input}>
+              <Text style={styles.inputText}>{settlement.date}</Text>
+            </View>
+          </View>
 
-          <InputField>
-            <Label>정산일시</Label>
-            <Input readOnly value={settlement.time} />
-          </InputField>
+          <View style={styles.inputField}>
+            <Text style={styles.label}>정산일시</Text>
+            <View style={styles.input}>
+              <Text style={styles.inputText}>{settlement.time}</Text>
+            </View>
+          </View>
 
-          <InputField>
-            <Label>정산금액</Label>
-            <Input readOnly value={settlement.amount} />
-          </InputField>
-        </InputField>
+          <View style={styles.inputField}>
+            <Text style={styles.label}>정산금액</Text>
+            <View style={styles.input}>
+              <Text style={styles.inputText}>{settlement.amount}</Text>
+            </View>
+          </View>
+        </View>
 
-        <SectionRow>
-          <InputField>
-            <Label>정산금액</Label>
-            <Input readOnly value={settlement.amount} />
-          </InputField>
+        <View style={styles.sectionRow}>
+          <View style={styles.inputField}>
+            <Text style={styles.label}>정산금액</Text>
+            <View style={styles.input}>
+              <Text style={styles.inputText}>{settlement.amount}</Text>
+            </View>
+          </View>
 
-          <InputField>
-            <Label>공제세액 (4%)</Label>
-            <Input readOnly value={settlement.deduction} />
-          </InputField>
-        </SectionRow>
-      </Section>
+          <View style={styles.inputField}>
+            <Text style={styles.label}>공제세액 (4%)</Text>
+            <View style={styles.input}>
+              <Text style={styles.inputText}>{settlement.deduction}</Text>
+            </View>
+          </View>
+        </View>
 
-      <Note>
-        ※ 정산금액은 세액 공제 및 신고비용을 제외한 나머지 금액입니다.
-      </Note>
+        <Text style={styles.note}>
+          ※ 정산금액은 세액 공제 및 신고비용을 제외한 나머지 금액입니다.
+        </Text>
 
-      <Divider />
+        <View style={styles.divider} />
 
-      <TableWrapper>
-        <Table>
-          <thead>
-            <tr>
-              <ThRight>판매제품 / 구매자 정보</ThRight>
-              <ThLeft>결제금액 / 정산금액</ThLeft>
-            </tr>
-          </thead>
-          <tbody>
-            {settlement.salesList.map((sale, index) => (
-              <tr key={index}>
-                <TdLeft>
-                  <ProductName isBold={sale.product.includes('JNS2219')}>
-                    {sale.product}
-                  </ProductName>
-                  <SubInfo>{`${settlement.date} - (구매자: ${sale.buyer})`}</SubInfo>
-                </TdLeft>
-                <TdRight>
-                  {sale.price}
-                  <SubInfo isBold>{sale.settlement}</SubInfo>
-                </TdRight>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </TableWrapper>
-    </Container>
+        <View style={styles.tableWrapper}>
+          <View style={styles.tableHeader}>
+            <Text style={styles.thRight}>판매제품 / 구매자 정보</Text>
+            <Text style={styles.thLeft}>결제금액 / 정산금액</Text>
+          </View>
+
+          {settlement.salesList.map((sale, index) => (
+            <View key={index} style={styles.tableRow}>
+              <View style={styles.tdLeft}>
+                <Text
+                  style={[
+                    styles.productName,
+                    sale.product.includes('JNS2219') && styles.boldText,
+                  ]}
+                >
+                  {sale.product}
+                </Text>
+                <Text style={styles.subInfo}>
+                  {`${settlement.date} - (구매자: ${sale.buyer})`}
+                </Text>
+              </View>
+              <View style={styles.tdRight}>
+                <Text style={styles.price}>{sale.price}</Text>
+                <Text style={[styles.subInfo, styles.boldText]}>
+                  {sale.settlement}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
 export default SalesSettlementDetail;
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: #fff;
-  padding: 1rem;
-`;
-
-const SectionRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 20px;
-`;
-
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const InputField = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-  margin-top: 30px;
-`;
-
-const Label = styled.label`
-  font-weight: 700;
-  font-size: 10px;
-  color: #000;
-  margin-bottom: 10px;
-`;
-
-const Input = styled.input`
-  padding: 21px 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-weight: 800;
-  font-size: 13px;
-  color: #000;
-  background: #f9f9f9;
-`;
-
-const Note = styled.p`
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 13px;
-  color: #999999;
-  margin-top: 20px;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #dddddd;
-  margin: 30px 0;
-`;
-
-const TableWrapper = styled.div`
-  width: 100%;
-  overflow-x: auto;
-`;
-
-const Table = styled.table`
-  width: 100%;
-  margin-top: 20px;
-  border-collapse: collapse;
-`;
-
-const ThRight = styled.th`
-  white-space: nowrap;
-  text-align: left;
-  font-weight: 800;
-  font-size: 10px;
-  padding: 15px 20px;
-  color: #000;
-  background-color: #dddddd;
-`;
-
-const ThLeft = styled.th`
-  white-space: nowrap;
-  text-align: right;
-  font-weight: 800;
-  font-size: 10px;
-  padding: 15px 20px;
-  color: #000;
-  background-color: #dddddd;
-`;
-
-const TdLeft = styled.td`
-  white-space: nowrap;
-  padding: 20px;
-  border: 1px solid #dddddd;
-  text-align: left;
-
-  font-weight: 800;
-  font-size: 12px;
-  line-height: 13px;
-  color: #000000;
-`;
-
-const TdRight = styled.td`
-  white-space: nowrap;
-  padding: 20px;
-  border: 1px solid #dddddd;
-
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 13px;
-  text-align: right;
-  color: #000000;
-`;
-
-const ProductName = styled.span<{ isBold?: boolean }>`
-  font-weight: ${({ isBold }) => (isBold ? 800 : 400)};
-`;
-
-const SubInfo = styled.p<{ isBold?: boolean }>`
-  white-space: nowrap;
-
-  font-weight: ${({ isBold }) => (isBold ? 800 : 400)};
-  font-size: 12px;
-  line-height: 13px;
-  color: #000;
-  margin-top: 4px;
-`;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+    padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  section: {
+    marginBottom: 20,
+  },
+  sectionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 20,
+    marginBottom: 20,
+  },
+  inputField: {
+    flex: 1,
+    marginTop: 30,
+  },
+  label: {
+    fontWeight: '700',
+    fontSize: 10,
+    color: '#000',
+    marginBottom: 10,
+  },
+  input: {
+    padding: 21,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    backgroundColor: '#f9f9f9',
+  },
+  inputText: {
+    fontWeight: '800',
+    fontSize: 13,
+    color: '#000',
+  },
+  note: {
+    fontWeight: '400',
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 20,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#E5E5E5',
+    marginVertical: 20,
+  },
+  tableWrapper: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: '#f5f5f5',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  thRight: {
+    flex: 1,
+    padding: 12,
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'right',
+    color: '#333',
+  },
+  thLeft: {
+    flex: 1,
+    padding: 12,
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'left',
+    color: '#333',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  tdLeft: {
+    flex: 1,
+    padding: 12,
+    alignItems: 'flex-end',
+  },
+  tdRight: {
+    flex: 1,
+    padding: 12,
+    alignItems: 'flex-start',
+  },
+  productName: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 4,
+  },
+  price: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 4,
+  },
+  subInfo: {
+    fontSize: 12,
+    color: '#666',
+  },
+  boldText: {
+    fontWeight: 'bold',
+  },
+});

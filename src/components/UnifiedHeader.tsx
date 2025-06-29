@@ -268,7 +268,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
       <View style={styles.header}>{renderHeader()}</View>
 
       <MypageModal
-        visible={showMypageModal}
+        isOpen={showMypageModal}
         onClose={() => setShowMypageModal(false)}
       />
 

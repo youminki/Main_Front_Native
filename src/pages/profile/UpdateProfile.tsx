@@ -1,12 +1,11 @@
 // src/pages/Profile/UpdateProfile.tsx
 
 import React, { useEffect, useState } from 'react';
-import styled, { ThemeProvider } from 'styled-components';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
 
 import InputField from '../../components/InputField';
-import { CustomSelect } from '../../components/CustomSelect';
-import Theme from '../../styles/Theme';
+import CustomSelect from '../../components/CustomSelect';
 import FixedBottomBar from '../../components/FixedBottomBar';
 import ReusableModal from '../../components/ReusableModal';
 import { regionDistrictData } from '../../components/Signup/regionDistrictData';
@@ -53,28 +52,6 @@ const UpdateProfile: React.FC = () => {
 
   // react-query로 내 정보 패칭
   const { data: myInfo, isLoading } = useMyInfo();
-
-  // 모바일 키보드 열림 감지 (원래 로직 그대로 유지)
-  const initialHeight = window.visualViewport
-    ? window.visualViewport.height
-    : window.innerHeight;
-  useEffect(() => {
-    const handleResize = () => {
-      // 키보드 열림 상태는 사용하지 않으므로 제거
-    };
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleResize);
-    } else {
-      window.addEventListener('resize', handleResize);
-    }
-    return () => {
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', handleResize);
-      } else {
-        window.removeEventListener('resize', handleResize);
-      }
-    };
-  }, [initialHeight]);
 
   // 백엔드에서 /user/my-info 가져와서 폼 초기화
   useEffect(() => {
@@ -142,8 +119,8 @@ const UpdateProfile: React.FC = () => {
         (err as any).response?.data?.message
           ? (err as any).response.data.message
           : err instanceof Error
-            ? err.message
-            : '알 수 없는 오류';
+          ? err.message
+          : '알 수 없는 오류';
       setSignupResult(`❌ 업데이트 중 오류가 발생했습니다: ${msg}`);
       setShowResultModal(true);
     }
@@ -160,166 +137,162 @@ const UpdateProfile: React.FC = () => {
 
   if (isLoading) {
     return (
-      <ThemeProvider theme={Theme}>
-        <Container>
-          <div>프로필 정보를 불러오는 중...</div>
-        </Container>
-      </ThemeProvider>
+      <View style={styles.container}>
+        <Text>프로필 정보를 불러오는 중...</Text>
+      </View>
     );
   }
 
   return (
-    <ThemeProvider theme={Theme}>
-      <FormProvider {...methods}>
-        <Container>
-          <Form onSubmit={(e) => e.preventDefault()}>
-            {/* 이메일 아이디 (읽기 전용) */}
-            <RowLabel>
-              <InputField
-                label='이메일 아이디'
-                id='emailId'
-                type='text'
-                readOnly
-                {...register('emailId')}
-              />
-              <span>@</span>
-              <InputField
-                label='이메일 도메인'
-                id='emailDomain'
-                type='text'
-                readOnly
-                {...register('emailDomain')}
-              />
-            </RowLabel>
-
-            {/* 닉네임 (편집 가능) */}
+    <FormProvider {...methods}>
+      <ScrollView style={styles.container}>
+        <View style={styles.form}>
+          {/* 이메일 아이디 (읽기 전용) */}
+          <View style={styles.rowLabel}>
             <InputField
-              label='닉네임'
-              id='nickname'
-              type='text'
-              placeholder='닉네임을 입력하세요'
-              {...register('nickname')}
-              maxLength={8}
-            />
-
-            {/* 이름 & 태어난 해 (읽기 전용) */}
-            <RowLabel>
-              <InputField
-                label='이름'
-                id='name'
-                type='text'
-                readOnly
-                {...register('name')}
-              />
-
-              <InputField
-                label='태어난 해'
-                id='birthYear'
-                type='text'
-                readOnly
-                {...register('birthYear')}
-              />
-            </RowLabel>
-
-            {/* 전화번호 (읽기 전용) */}
-            <InputField
-              label='전화번호'
-              id='phoneNumber'
+              label='이메일 아이디'
+              id='emailId'
               type='text'
               readOnly
-              {...register('phoneNumber')}
+              {...register('emailId')}
             />
-
-            {/* 성별 (읽기 전용) */}
+            <Text style={styles.atSymbol}>@</Text>
             <InputField
-              label='성별'
-              id='gender'
-              as={CustomSelect}
+              label='이메일 도메인'
+              id='emailDomain'
+              type='text'
               readOnly
-              {...register('gender')}
-            >
-              <option value='여성'>여성</option>
-              <option value='남성'>남성</option>
-            </InputField>
+              {...register('emailDomain')}
+            />
+          </View>
 
-            {/* 시/도 & 구/군 */}
-            <RowLabel>
-              <InputField
-                label='시/도'
-                id='region'
-                as={CustomSelect}
-                {...register('region')}
-              >
-                <option value=''>시/도를 선택하세요</option>
-                {Object.keys(regionDistrictData).map((region) => (
-                  <option key={region} value={region}>
-                    {region}
-                  </option>
-                ))}
-              </InputField>
-
-              <InputField
-                label='구/군'
-                id='district'
-                as={CustomSelect}
-                {...register('district')}
-              >
-                <option value=''>구/군을 선택하세요</option>
-                {watch('region') &&
-                  regionDistrictData[
-                    watch('region') as keyof typeof regionDistrictData
-                  ]?.map((district) => (
-                    <option key={district} value={district}>
-                      {district}
-                    </option>
-                  ))}
-              </InputField>
-            </RowLabel>
-          </Form>
-
-          <FixedBottomBar
-            text='저장'
-            color='black'
-            onClick={onSaveClick}
-            disabled={isSubmitting}
+          {/* 닉네임 (편집 가능) */}
+          <InputField
+            label='닉네임'
+            id='nickname'
+            type='text'
+            placeholder='닉네임을 입력하세요'
+            {...register('nickname')}
+            maxLength={8}
           />
 
-          <ReusableModal
-            isOpen={showResultModal}
-            onClose={handleResultModalClose}
-            title='회원정보 수정'
+          {/* 이름 & 태어난 해 (읽기 전용) */}
+          <View style={styles.rowLabel}>
+            <InputField
+              label='이름'
+              id='name'
+              type='text'
+              readOnly
+              {...register('name')}
+            />
+
+            <InputField
+              label='태어난 해'
+              id='birthYear'
+              type='text'
+              readOnly
+              {...register('birthYear')}
+            />
+          </View>
+
+          {/* 전화번호 (읽기 전용) */}
+          <InputField
+            label='전화번호'
+            id='phoneNumber'
+            type='text'
+            readOnly
+            {...register('phoneNumber')}
+          />
+
+          {/* 성별 (읽기 전용) */}
+          <InputField
+            label='성별'
+            id='gender'
+            as={CustomSelect}
+            readOnly
+            {...register('gender')}
           >
-            {signupResult}
-          </ReusableModal>
-        </Container>
-      </FormProvider>
-    </ThemeProvider>
+            <option value='여성'>여성</option>
+            <option value='남성'>남성</option>
+          </InputField>
+
+          {/* 시/도 & 구/군 */}
+          <View style={styles.rowLabel}>
+            <InputField
+              label='시/도'
+              id='region'
+              as={CustomSelect}
+              {...register('region')}
+            >
+              <option value=''>시/도를 선택하세요</option>
+              {Object.keys(regionDistrictData).map((region) => (
+                <option key={region} value={region}>
+                  {region}
+                </option>
+              ))}
+            </InputField>
+
+            <InputField
+              label='구/군'
+              id='district'
+              as={CustomSelect}
+              {...register('district')}
+            >
+              <option value=''>구/군을 선택하세요</option>
+              {watch('region') &&
+                regionDistrictData[
+                  watch('region') as keyof typeof regionDistrictData
+                ]?.map((district) => (
+                  <option key={district} value={district}>
+                    {district}
+                  </option>
+                ))}
+            </InputField>
+          </View>
+        </View>
+
+        <FixedBottomBar
+          text='저장'
+          color='black'
+          onPress={onSaveClick}
+          disabled={isSubmitting}
+        />
+
+        <ReusableModal
+          visible={showResultModal}
+          onClose={handleResultModalClose}
+          title='회원정보 수정'
+        >
+          {signupResult}
+        </ReusableModal>
+      </ScrollView>
+    </FormProvider>
   );
 };
 
 export default UpdateProfile;
 
-/* ========== Styled Components ========== */
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 auto;
-  padding: 1rem;
-  max-width: 600px;
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  width: 100%;
-`;
-
-const RowLabel = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-`;
+// --- Styles ---
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    padding: 16,
+  },
+  form: {
+    flexDirection: 'column',
+    gap: 15,
+    width: '100%',
+  },
+  rowLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    width: '100%',
+  },
+  atSymbol: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: '#000000',
+  },
+});

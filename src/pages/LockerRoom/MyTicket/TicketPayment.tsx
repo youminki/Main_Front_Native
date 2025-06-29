@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  Alert,
+  Linking,
+} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { format, addMonths } from 'date-fns';
 
 import InputField from '../../../components/InputField';
@@ -11,10 +19,6 @@ import {
   postRecurringPayment,
 } from '../../../api/default/payment';
 
-import PaymentAmountIcon from '../../../assets/LockerRoom/PaymentAmount.svg';
-import TicketPaymentSeaSonIcon from '../../../assets/LockerRoom/TicketPaymentSeaSon.svg';
-import TicketPaymentRightIcon from '../../../assets/LockerRoom/TicketPaymentRightIcon.svg';
-
 export interface CardItem {
   cardId: number;
   payerId: string;
@@ -24,13 +28,12 @@ export interface CardItem {
 }
 
 const TicketPayment: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigation = useNavigation();
+  const route = useRoute();
 
-  // URL 쿼리에서 파라미터 추출
-  const searchParams = new URLSearchParams(location.search);
-  const name = searchParams.get('name') || '';
-  const discountedPriceParam = searchParams.get('discountedPrice') || '0';
+  // route.params에서 파라미터 추출
+  const name = (route.params as any)?.name || '';
+  const discountedPriceParam = (route.params as any)?.discountedPrice || '0';
   const discountedPrice = parseFloat(discountedPriceParam);
   const roundedPrice = isNaN(discountedPrice) ? 0 : Math.round(discountedPrice);
   const formattedDiscountedPrice = roundedPrice.toLocaleString();
@@ -45,20 +48,17 @@ const TicketPayment: React.FC = () => {
   const formattedToday = format(today, 'yyyy.MM.dd');
   const formattedOneMonthLater = format(addMonths(today, 1), 'MM.dd');
 
-  // 팝업 윈도우에서 결제 결과를 부모 윈도우에 전달 (1회 결제용)
+  // React Native에서는 웹뷰나 외부 브라우저로 결제 처리
   useEffect(() => {
-    (window as any).PCD_PAY_CALLBACK = (result: any) => {
-      if (window.opener) {
-        window.opener.postMessage(
-          {
-            paymentStatus: result?.status === 'success' ? 'success' : 'failure',
-          },
-          window.location.origin
-        );
+    // 결제 콜백 설정 (웹뷰에서 사용할 수 있도록)
+    (global as any).PCD_PAY_CALLBACK = (result: any) => {
+      if (result?.status === 'success') {
+        navigation.navigate('PaymentComplete' as never);
+      } else {
+        navigation.navigate('PaymentFail' as never);
       }
-      window.close();
     };
-  }, []);
+  }, [navigation]);
 
   useEffect(() => {
     (async () => {
@@ -92,7 +92,7 @@ const TicketPayment: React.FC = () => {
 
   const handleSelectChange = (val: string) => {
     if (val === '카드 추가하기') {
-      navigate('/payment-method');
+      navigation.navigate('PaymentMethod' as never);
       return;
     }
     setSelectedPaymentMethod(val);
@@ -104,7 +104,7 @@ const TicketPayment: React.FC = () => {
 
     const payerId = extractPayerId(selectedPaymentMethod);
     if (!payerId) {
-      alert('결제할 카드를 선택해주세요.');
+      Alert.alert('알림', '결제할 카드를 선택해주세요.');
       setIsProcessing(false);
       return;
     }
@@ -114,7 +114,24 @@ const TicketPayment: React.FC = () => {
     try {
       if (name === '1회 이용권') {
         const response = await postInitPayment(requestData);
-        (window as any).PaypleCpayAuthCheck(response.data);
+        // React Native에서는 웹뷰나 외부 브라우저로 결제 페이지 열기
+        Alert.alert('결제 페이지', '결제 페이지로 이동하시겠습니까?', [
+          {
+            text: '취소',
+            style: 'cancel',
+          },
+          {
+            text: '확인',
+            onPress: () => {
+              // 외부 브라우저로 결제 페이지 열기
+              Linking.openURL(
+                (response.data as any).paymentUrl || 'https://payment.example.com'
+              ).catch(() => {
+                Alert.alert('오류', '결제 페이지를 열 수 없습니다.');
+              });
+            },
+          },
+        ]);
       } else if (
         name === '정기 구독권(4회권)' ||
         name === '정기 구독권(무제한)'
@@ -122,69 +139,79 @@ const TicketPayment: React.FC = () => {
         const response = await postRecurringPayment(requestData);
         const payResult = response.data.PCD_PAY_RST;
         if (payResult === 'success') {
-          navigate('/payment-complete');
+          navigation.navigate('PaymentComplete' as never);
         } else {
-          navigate('/payment-fail');
+          navigation.navigate('PaymentFail' as never);
         }
       } else {
-        alert('알 수 없는 이용권 유형입니다.');
+        Alert.alert('오류', '알 수 없는 이용권 유형입니다.');
         setIsProcessing(false);
       }
     } catch (error: any) {
       console.error('결제 실패:', error);
       const errMsg =
         error.response?.data?.message || error.message || '알 수 없는 오류';
-      alert(`결제 실패: ${errMsg}`);
-      navigate('/payment-fail');
+      Alert.alert('결제 실패', errMsg);
+      navigation.navigate('PaymentFail' as never);
     }
   };
 
   return (
-    <Container>
-      <ProductInfo>
-        <Title>결제할 이용권</Title>
-        <Divider />
+    <ScrollView style={styles.container}>
+      <View style={styles.productInfo}>
+        <Text style={styles.title}>결제할 이용권</Text>
+        <View style={styles.divider} />
 
-        <ProductHeader>
-          <LeftSide>
-            <SubscriptionLabel>이용권 결제</SubscriptionLabel>
-            <ProductTitle>
-              <MainTitle>{name}</MainTitle>
-            </ProductTitle>
+        <View style={styles.productHeader}>
+          <View style={styles.leftSide}>
+            <Text style={styles.subscriptionLabel}>이용권 결제</Text>
+            <View style={styles.productTitle}>
+              <Text style={styles.mainTitle}>{name}</Text>
+            </View>
 
-            <Row>
-              <IconImg src={TicketPaymentSeaSonIcon} alt='시즌 아이콘' />
-              <RowTextContainer>
-                <RowLabel>
-                  시즌 -<RowValue> 2025 SPRING</RowValue>
-                </RowLabel>
-                <RowPeriod>{`${formattedToday} ~ ${formattedOneMonthLater}`}</RowPeriod>
-              </RowTextContainer>
-            </Row>
+            <View style={styles.row}>
+              <Image
+                source={require('../../../assets/LockerRoom/TicketPaymentSeaSon.png')}
+                style={styles.iconImg}
+              />
+              <View style={styles.rowTextContainer}>
+                <Text style={styles.rowLabel}>
+                  시즌 -<Text style={styles.rowValue}> 2025 SPRING</Text>
+                </Text>
+                <Text
+                  style={styles.rowPeriod}
+                >{`${formattedToday} ~ ${formattedOneMonthLater}`}</Text>
+              </View>
+            </View>
 
-            <Row>
-              <IconImg src={PaymentAmountIcon} alt='결제금액 아이콘' />
-              <RowTextContainer>
-                <RowLabel>
-                  결제금액 -<RowValue>{formattedDiscountedPrice}원</RowValue>
-                </RowLabel>
-              </RowTextContainer>
-            </Row>
-          </LeftSide>
+            <View style={styles.row}>
+              <Image
+                source={require('../../../assets/LockerRoom/PaymentAmount.png')}
+                style={styles.iconImg}
+              />
+              <View style={styles.rowTextContainer}>
+                <Text style={styles.rowLabel}>
+                  결제금액 -
+                  <Text style={styles.rowValue}>
+                    {formattedDiscountedPrice}원
+                  </Text>
+                </Text>
+              </View>
+            </View>
+          </View>
 
-          <RightSideImage>
-            <img
-              src={TicketPaymentRightIcon}
-              alt='정기 구독권 예시 이미지'
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          <View style={styles.rightSideImage}>
+            <Image
+              source={require('../../../assets/LockerRoom/TicketPaymentRightIcon.png')}
+              style={styles.rightImage}
             />
-          </RightSideImage>
-        </ProductHeader>
-      </ProductInfo>
+          </View>
+        </View>
+      </View>
 
-      <Divider />
+      <View style={styles.divider} />
 
-      <Section>
+      <View style={styles.section}>
         <InputField
           label='결제방식 *'
           id='paymentMethod'
@@ -192,173 +219,151 @@ const TicketPayment: React.FC = () => {
           value={selectedPaymentMethod}
           onSelectChange={handleSelectChange}
         />
-      </Section>
+      </View>
 
-      <Divider />
+      <View style={styles.divider} />
 
-      <Section>
-        <CustomLabel>총 결제금액 (VAT 포함)</CustomLabel>
-        <PaymentAmountWrapper>
-          <PaymentAmount>{formattedDiscountedPrice}원</PaymentAmount>
-        </PaymentAmountWrapper>
-      </Section>
+      <View style={styles.section}>
+        <Text style={styles.customLabel}>총 결제금액 (VAT 포함)</Text>
+        <View style={styles.paymentAmountWrapper}>
+          <Text style={styles.paymentAmount}>{formattedDiscountedPrice}원</Text>
+        </View>
+      </View>
 
       <FixedBottomBar
         text={isProcessing ? '결제중...' : '결제하기'}
         color='yellow'
-        onClick={handlePaymentClick}
+        onPress={handlePaymentClick}
         disabled={isProcessing}
       />
-    </Container>
+    </ScrollView>
   );
 };
 
 export default TicketPayment;
 
-// styled-components 정의
-const Container = styled.div`
-  position: relative;
-  background: #ffffff;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  max-width: 600px;
-  min-height: 100vh;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #dddddd;
-`;
-
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin: 20px 0;
-`;
-
-const CustomLabel = styled.div`
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 11px;
-  color: #000000;
-  margin-bottom: 8px;
-`;
-
-const PaymentAmountWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  width: 100%;
-  height: 57px;
-  box-sizing: border-box;
-  background: #ffffff;
-  border: 1px solid #eeeeee;
-  border-radius: 4px;
-  padding: 0 16px;
-`;
-
-const PaymentAmount = styled.span`
-  font-weight: 900;
-  font-size: 16px;
-  line-height: 18px;
-  text-align: right;
-  color: #000000;
-`;
-
-const ProductInfo = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 20px;
-`;
-
-const Title = styled.div`
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 11px;
-  color: #000000;
-  margin-bottom: 10px;
-`;
-
-const ProductHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding-top: 20px;
-`;
-
-const LeftSide = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const SubscriptionLabel = styled.div`
-  font-weight: 900;
-  font-size: 12px;
-  line-height: 11px;
-  color: #000000;
-  margin-bottom: 10px;
-`;
-
-const ProductTitle = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  margin-bottom: 20px;
-`;
-
-const MainTitle = styled.span`
-  font-weight: 900;
-  font-size: 18px;
-  line-height: 22px;
-  color: #000000;
-`;
-
-const RightSideImage = styled.div`
-  width: 169px;
-  height: 210px;
-  background: #d9d9d9;
-  overflow: hidden;
-  border-radius: 4px;
-`;
-
-const Row = styled.div`
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 8px;
-`;
-
-const IconImg = styled.img`
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
-`;
-
-const RowTextContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const RowLabel = styled.span`
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 22px;
-  color: #000000;
-`;
-
-const RowValue = styled.span`
-  font-weight: 900;
-  font-size: 14px;
-  line-height: 22px;
-  color: #000000;
-`;
-
-const RowPeriod = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  color: #000000;
-`;
+// --- Styles ---
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    padding: 16,
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#dddddd',
+  },
+  section: {
+    flexDirection: 'column',
+    marginVertical: 20,
+  },
+  customLabel: {
+    fontWeight: '700',
+    fontSize: 12,
+    lineHeight: 11,
+    color: '#000000',
+    marginBottom: 8,
+  },
+  paymentAmountWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    width: '100%',
+    height: 57,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#eeeeee',
+    borderRadius: 4,
+    paddingHorizontal: 16,
+  },
+  paymentAmount: {
+    fontWeight: '900',
+    fontSize: 16,
+    lineHeight: 18,
+    textAlign: 'right',
+    color: '#000000',
+  },
+  productInfo: {
+    width: '100%',
+    flexDirection: 'column',
+    paddingBottom: 20,
+  },
+  title: {
+    fontWeight: '700',
+    fontSize: 12,
+    lineHeight: 11,
+    color: '#000000',
+    marginBottom: 10,
+  },
+  productHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingTop: 20,
+  },
+  leftSide: {
+    flexDirection: 'column',
+  },
+  subscriptionLabel: {
+    fontWeight: '900',
+    fontSize: 12,
+    lineHeight: 11,
+    color: '#000000',
+    marginBottom: 10,
+  },
+  productTitle: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
+    marginBottom: 20,
+  },
+  mainTitle: {
+    fontWeight: '900',
+    fontSize: 18,
+    lineHeight: 22,
+    color: '#000000',
+  },
+  rightSideImage: {
+    width: 169,
+    height: 210,
+    backgroundColor: '#d9d9d9',
+    overflow: 'hidden',
+    borderRadius: 4,
+  },
+  rightImage: {
+    width: '100%',
+    height: '100%',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  iconImg: {
+    width: 20,
+    height: 20,
+    marginRight: 8,
+  },
+  rowTextContainer: {
+    flexDirection: 'column',
+  },
+  rowLabel: {
+    fontWeight: '700',
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#000000',
+  },
+  rowValue: {
+    fontWeight: '900',
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#000000',
+  },
+  rowPeriod: {
+    fontWeight: '400',
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#000000',
+  },
+});

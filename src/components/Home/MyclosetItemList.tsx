@@ -1,6 +1,8 @@
 import React from 'react';
-import styled from 'styled-components';
+import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
 import ItemCard from './ItemCard';
+
+const { width } = Dimensions.get('window');
 
 export interface UIItem {
   id: string;
@@ -14,7 +16,6 @@ export interface UIItem {
 
 type MyclosetItemListProps = {
   items: UIItem[];
-  /** PC columns count (>=768px) */
   columns?: number;
   onItemClick?: (id: string) => void;
   onDelete?: (id: string) => void;
@@ -22,45 +23,49 @@ type MyclosetItemListProps = {
 
 const MyclosetItemList: React.FC<MyclosetItemListProps> = ({
   items,
-  columns = 5,
+  columns = 2,
   onItemClick,
   onDelete,
 }) => {
   const handleOpen = onItemClick ?? (() => {});
   const handleDelete = onDelete ?? (() => {});
 
+  const renderItem = ({ item }: { item: UIItem }) => (
+    <View style={styles.itemContainer}>
+      <ItemCard {...item} onOpenModal={handleOpen} onDelete={handleDelete} />
+    </View>
+  );
+
   return (
-    <ListContainer>
-      <ItemsWrapper columns={columns}>
-        {items.map((item) => (
-          <ItemCard
-            key={item.id}
-            {...item}
-            onOpenModal={handleOpen}
-            onDelete={handleDelete}
-          />
-        ))}
-      </ItemsWrapper>
-    </ListContainer>
+    <View style={styles.listContainer}>
+      <FlatList
+        data={items}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        numColumns={columns}
+        columnWrapperStyle={styles.row}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.contentContainer}
+      />
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  listContainer: {
+    backgroundColor: '#fff',
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: 16,
+  },
+  row: {
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  itemContainer: {
+    width: (width - 48) / 2, // 48 = paddingHorizontal(32) + gap(16)
+  },
+});
+
 export default MyclosetItemList;
-
-const ListContainer = styled.div`
-  background-color: #fff;
-  margin: 0 auto;
-  box-sizing: border-box;
-`;
-
-const ItemsWrapper = styled.div<{ columns: number }>`
-  display: grid;
-  gap: 16px;
-  /* 모바일(폭 < 768px) 고정 2열 */
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-
-  @media (min-width: 768px) {
-    /* PC에서는 지정된 columns */
-    grid-template-columns: repeat(${({ columns }) => columns}, minmax(0, 1fr));
-  }
-`;

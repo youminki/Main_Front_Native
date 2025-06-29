@@ -1,8 +1,8 @@
 // src/components/Brand/BrandItem.tsx
 
 import React from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 /**
  * BrandType: BrandList에서 내려주는 로컬 브랜드 타입
@@ -21,69 +21,59 @@ interface BrandItemProps {
 }
 
 const BrandItem: React.FC<BrandItemProps> = ({ brand }) => {
-  const navigate = useNavigate();
+  const navigation = useNavigation<any>();
 
   const handleClick = () => {
-    navigate(`/brand/${brand.id}`);
+    navigation.navigate('BrandDetail', { brandId: brand.id });
   };
 
   return (
-    <Container onClick={handleClick}>
-      <BrandDetails>
-        <BrandName>{brand.name}</BrandName>
-        {brand.group && <GroupName>{brand.group}</GroupName>}
-      </BrandDetails>
+    <TouchableOpacity style={styles.container} onPress={handleClick}>
+      <View style={styles.brandDetails}>
+        <Text style={styles.brandName}>{brand.name}</Text>
+        {brand.group && <Text style={styles.groupName}>{brand.group}</Text>}
+      </View>
       {brand.category ? (
-        <BrandCategoryWrapper>
-          <BrandCategory>{brand.category}</BrandCategory>
-        </BrandCategoryWrapper>
+        <View style={styles.brandCategoryWrapper}>
+          <Text style={styles.brandCategory}>{brand.category}</Text>
+        </View>
       ) : null}
-    </Container>
+    </TouchableOpacity>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  brandDetails: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  brandName: {
+    fontWeight: '900',
+    fontSize: 15,
+    color: '#000',
+    marginBottom: 4,
+  },
+  groupName: {
+    fontWeight: '400',
+    fontSize: 12,
+    color: '#666',
+  },
+  brandCategoryWrapper: {
+    marginLeft: 'auto',
+    alignItems: 'center',
+  },
+  brandCategory: {
+    fontWeight: '400',
+    fontSize: 13,
+    color: '#999',
+  },
+});
+
 export default BrandItem;
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #ddd;
-  cursor: pointer;
-  transition: background 0.2s;
-
-  &:hover {
-    background: #f9f9f9;
-  }
-`;
-
-const BrandDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const BrandName = styled.span`
-  font-weight: 900;
-  font-size: 15px;
-  color: #000;
-  margin-bottom: 4px;
-`;
-
-const GroupName = styled.span`
-  font-weight: 400;
-  font-size: 12px;
-  color: #666;
-`;
-
-const BrandCategoryWrapper = styled.div`
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-`;
-
-const BrandCategory = styled.span`
-  font-weight: 400;
-  font-size: 13px;
-  color: #999;
-  white-space: nowrap;
-`;

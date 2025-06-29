@@ -1,8 +1,14 @@
-// src/components/Melpik/CreateMelpik/Settings/Modal.tsx
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  ScrollView,
+} from 'react-native';
 import Theme from '../../../../styles/Theme';
-import ReusableModal2 from '../../../../components/ReusableModal2.tsx';
+import ReusableModal2 from '../../../../components/ReusableModal2';
 
 interface ModalProps {
   isOpen: boolean;
@@ -11,7 +17,7 @@ interface ModalProps {
   selectedBrands: string[]; // 부모에서 내려오는 현재 저장된 brands
 }
 
-const Modal: React.FC<ModalProps> = ({
+const BrandSelectionModal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   onSelect,
@@ -77,40 +83,65 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <>
-      {isOpen && (
-        <ModalOverlay>
-          <ModalContent>
-            <ModalHeader>
-              <ModalTitle>
-                브랜드 선택 <GrayText>(3가지 선택)</GrayText>
-              </ModalTitle>
-              <GrayLine />
-            </ModalHeader>
+      <Modal
+        visible={isOpen}
+        transparent
+        animationType='fade'
+        onRequestClose={onClose}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                브랜드 선택 <Text style={styles.grayText}>(3가지 선택)</Text>
+              </Text>
+              <View style={styles.grayLine} />
+            </View>
 
-            <ModalBody>
-              <BrandSelectionGrid>
+            <ScrollView style={styles.modalBody}>
+              <View style={styles.brandSelectionGrid}>
                 {brands.map((brand) => (
-                  <BrandOption
+                  <TouchableOpacity
                     key={brand}
-                    selected={selectedBrands.includes(brand)}
-                    onClick={() => handleBrandSelect(brand)}
+                    style={[
+                      styles.brandOption,
+                      selectedBrands.includes(brand) &&
+                        styles.brandOptionSelected,
+                    ]}
+                    onPress={() => handleBrandSelect(brand)}
                   >
-                    {brand}
-                  </BrandOption>
+                    <Text
+                      style={[
+                        styles.brandOptionText,
+                        selectedBrands.includes(brand) &&
+                          styles.brandOptionTextSelected,
+                      ]}
+                    >
+                      {brand}
+                    </Text>
+                  </TouchableOpacity>
                 ))}
-              </BrandSelectionGrid>
-            </ModalBody>
+              </View>
+            </ScrollView>
 
-            <GrayLine />
-            <ButtonRow>
-              <CancelButton onClick={handleCancelClick}>취소</CancelButton>
-              <CompleteButton onClick={handleCompleteSelection}>
-                선택완료
-              </CompleteButton>
-            </ButtonRow>
-          </ModalContent>
-        </ModalOverlay>
-      )}
+            <View style={styles.grayLine} />
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={handleCancelClick}
+              >
+                <Text style={styles.cancelButtonText}>취소</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.completeButton}
+                onPress={handleCompleteSelection}
+              >
+                <Text style={styles.completeButtonText}>선택완료</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* 경고 모달 */}
       <ReusableModal2
@@ -118,7 +149,7 @@ const Modal: React.FC<ModalProps> = ({
         onClose={() => setWarningModalVisible(false)}
         title='경고'
       >
-        <p>3가지 브랜드를 선택해야 합니다.</p>
+        <Text>3가지 브랜드를 선택해야 합니다.</Text>
       </ReusableModal2>
 
       {/* 취소 확인 모달 */}
@@ -128,110 +159,109 @@ const Modal: React.FC<ModalProps> = ({
         onConfirm={onClose}
         title='선택 취소'
       >
-        <p>설정하신 내용을 취소 하시겠습니까?</p>
+        <Text>설정하신 내용을 취소 하시겠습니까?</Text>
       </ReusableModal2>
     </>
   );
 };
 
-export default Modal;
+export default BrandSelectionModal;
 
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 27px;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background-color: ${Theme.colors.white};
-  padding: 20px;
-  width: 100%;
-  max-width: 500px;
-
-  /* 최대 높이 제한 및 내부 스크롤 */
-  max-height: 60vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ModalTitle = styled.p`
-  font-weight: 800;
-  font-size: 16px;
-`;
-
-const GrayText = styled.span`
-  color: ${Theme.colors.gray1};
-`;
-
-const GrayLine = styled.hr`
-  border: none;
-  width: 100%;
-  border: 1px solid ${Theme.colors.gray0};
-`;
-
-const ModalBody = styled.div`
-  flex: 1;
-  overflow-y: auto;
-`;
-
-const BrandSelectionGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-`;
-
-const BrandOption = styled.div<{ selected: boolean }>`
-  padding: 10px;
-  background-color: ${Theme.colors.white};
-  color: ${(props) =>
-    props.selected ? Theme.colors.yellow : Theme.colors.black};
-  border: ${(props) =>
-    props.selected
-      ? `3px solid ${Theme.colors.yellow}`
-      : `1px solid ${Theme.colors.gray1}`};
-  text-align: center;
-  cursor: pointer;
-  font-weight: 800;
-  font-size: 12px;
-  line-height: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  margin-top: 10px;
-`;
-
-const CancelButton = styled.button`
-  width: 100%;
-  height: 56px;
-  background-color: ${Theme.colors.gray1};
-  color: ${Theme.colors.white};
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 800;
-  font-size: 16px;
-`;
-
-const CompleteButton = styled(CancelButton)`
-  background-color: ${Theme.colors.black};
-`;
+const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 27,
+  },
+  modalContent: {
+    backgroundColor: Theme.colors.white,
+    padding: 20,
+    width: '100%',
+    maxWidth: 500,
+    maxHeight: '60%',
+    flexDirection: 'column',
+  },
+  modalHeader: {
+    flexDirection: 'column',
+  },
+  modalTitle: {
+    fontWeight: '800',
+    fontSize: 16,
+  },
+  grayText: {
+    color: Theme.colors.gray1,
+  },
+  grayLine: {
+    borderWidth: 1,
+    borderColor: Theme.colors.gray0,
+    width: '100%',
+    marginVertical: 10,
+  },
+  modalBody: {
+    flex: 1,
+  },
+  brandSelectionGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  brandOption: {
+    padding: 10,
+    backgroundColor: Theme.colors.white,
+    borderWidth: 1,
+    borderColor: Theme.colors.gray1,
+    borderRadius: 5,
+    marginBottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  brandOptionSelected: {
+    backgroundColor: Theme.colors.yellow,
+    borderWidth: 3,
+    borderColor: Theme.colors.yellow,
+  },
+  brandOptionText: {
+    color: Theme.colors.black,
+    fontWeight: '800',
+    fontSize: 12,
+    lineHeight: 13,
+    textAlign: 'center',
+  },
+  brandOptionTextSelected: {
+    color: Theme.colors.black,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 20,
+    marginTop: 10,
+  },
+  cancelButton: {
+    flex: 1,
+    height: 56,
+    backgroundColor: Theme.colors.gray1,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    color: Theme.colors.white,
+    fontWeight: '800',
+    fontSize: 16,
+  },
+  completeButton: {
+    flex: 1,
+    height: 56,
+    backgroundColor: Theme.colors.black,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  completeButtonText: {
+    color: Theme.colors.white,
+    fontWeight: '800',
+    fontSize: 16,
+  },
+});

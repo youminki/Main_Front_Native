@@ -1,67 +1,73 @@
 import React from 'react';
-import styled from 'styled-components';
-import LandingLogoIcon from '../../assets/Landing/LandingLogoIcon.svg';
-import ShareIcon from '../../assets/Landing/ShareIcon.svg';
+import {
+  View,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Share,
+  Platform,
+} from 'react-native';
 
 const Header: React.FC = () => {
   const handleShare = async () => {
     const shareUrl = 'https://me1pik.com';
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          url: shareUrl,
-        });
-      } catch (error) {
-        console.error('공유 중 에러 발생:', error);
-      }
-    } else {
-      alert('이 브라우저는 공유 기능을 지원하지 않습니다.');
+    try {
+      await Share.share({
+        url: shareUrl,
+        message: `멜픽에서 나만의 스타일을 찾아보세요! ${shareUrl}`,
+      });
+    } catch (error) {
+      console.error('공유 중 에러 발생:', error);
     }
   };
 
   return (
-    <HeaderContainer>
-      <Logo src={LandingLogoIcon} alt='Landing Logo' />
-      <ShareButton onClick={handleShare}>
-        <Icons src={ShareIcon} alt='Share Icon' />
-      </ShareButton>
-    </HeaderContainer>
+    <View style={styles.headerContainer}>
+      <Image
+        source={require('../../assets/Landing/LandingLogoIcon.png')}
+        style={styles.logo}
+        resizeMode='contain'
+      />
+      <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
+        <Image
+          source={require('../../assets/Landing/ShareIcon.png')}
+          style={styles.icon}
+          resizeMode='contain'
+        />
+      </TouchableOpacity>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  headerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    zIndex: 1000,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    paddingHorizontal: 20,
+  },
+  logo: {
+    height: 24,
+    width: 100,
+  },
+  shareButton: {
+    position: 'absolute',
+    right: 20,
+    padding: 8,
+  },
+  icon: {
+    height: 20,
+    width: 20,
+  },
+});
+
 export default Header;
-
-const HeaderContainer = styled.header`
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 1000px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #ffffff;
-  z-index: 1000;
-  border-bottom: 1px solid #eee;
-`;
-
-const Logo = styled.img`
-  height: 24px;
-  width: auto;
-`;
-
-const ShareButton = styled.button`
-  position: absolute;
-  right: 20px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-`;
-
-const Icons = styled.img`
-  height: 20px;
-  width: auto;
-`;

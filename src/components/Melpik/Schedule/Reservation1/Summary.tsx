@@ -1,6 +1,6 @@
 // src/components/Melpik/Schedule/Reservation1/Summary.tsx
 import React from 'react';
-import styled from 'styled-components';
+import { View, Text, StyleSheet } from 'react-native';
 
 interface SummaryProps {
   range: [Date, Date] | null;
@@ -23,59 +23,58 @@ const Summary: React.FC<SummaryProps> = ({ range, seasonProgress }) => {
   };
 
   return (
-    <SummaryContainer>
-      <ScheduleInfo>
-        <Label>선택된 스케줄</Label>
-        <InfoBox>
-          <InfoText>{formatRangeText()}</InfoText>
-        </InfoBox>
-      </ScheduleInfo>
-      <ScheduleInfo>
-        <Label>시즌 진행 회차</Label>
-        <InfoBox>
-          <InfoText>
+    <View style={styles.summaryContainer}>
+      <View style={styles.scheduleInfo}>
+        <Text style={styles.label}>선택된 스케줄</Text>
+        <View style={styles.infoBox}>
+          <Text style={styles.infoText}>{formatRangeText()}</Text>
+        </View>
+      </View>
+      <View style={styles.scheduleInfo}>
+        <Text style={styles.label}>시즌 진행 회차</Text>
+        <View style={styles.infoBox}>
+          <Text style={styles.infoText}>
             총 {seasonProgress.total}회 / 완료 {seasonProgress.completed}회
-          </InfoText>
-        </InfoBox>
-      </ScheduleInfo>
-    </SummaryContainer>
+          </Text>
+        </View>
+      </View>
+    </View>
   );
 };
 
+const styles = StyleSheet.create({
+  summaryContainer: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+    width: '100%',
+  },
+  scheduleInfo: {
+    flex: 1,
+  },
+  label: {
+    fontWeight: '700',
+    fontSize: 10,
+    lineHeight: 11,
+    color: '#000000',
+  },
+  infoBox: {
+    marginTop: 10,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 5,
+    minHeight: 57,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoText: {
+    fontWeight: '800',
+    fontSize: 13,
+    lineHeight: 14,
+    color: '#000000',
+  },
+});
+
 export default Summary;
-
-const SummaryContainer = styled.div`
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-`;
-
-const ScheduleInfo = styled.div`
-  flex: 1;
-`;
-
-const Label = styled.label`
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 11px;
-  color: #000000;
-`;
-
-const InfoBox = styled.div`
-  margin-top: 10px;
-  padding: 0 10px;
-  border: 1px solid #cccccc; /* 연회색 테두리 */
-  border-radius: 5px;
-  min-height: 57px;
-  display: flex;
-  align-items: center;
-`;
-
-const InfoText = styled.div`
-  font-weight: 800;
-  font-size: 13px;
-  line-height: 14px;
-  color: #000000;
-`;

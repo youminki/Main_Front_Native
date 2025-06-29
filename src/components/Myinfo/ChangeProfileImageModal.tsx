@@ -1,13 +1,14 @@
 // src/components/Myinfo/ChangeProfileImageModal.tsx
-import React, {
-  useState,
-  ChangeEvent,
-  FormEvent,
-  useEffect,
-  useRef,
-} from 'react';
-import styled from 'styled-components';
-import { FaTimes, FaUserCircle } from 'react-icons/fa';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 interface ChangeProfileImageModalProps {
   isOpen: boolean;
@@ -18,239 +19,168 @@ const ChangeProfileImageModal: React.FC<ChangeProfileImageModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageUri, setImageUri] = useState<string | null>(null);
 
-  // 모달 오픈/닫기 시 상태 초기화
-  useEffect(() => {
-    if (!isOpen) {
-      setFile(null);
-      setPreviewUrl(null);
-    }
-  }, [isOpen]);
-
-  // Escape 키로 모달 닫기
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, onClose]);
-
-  // 파일 선택 시 미리보기 생성
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      setFile(selectedFile);
-
-      // 미리보기 URL 생성
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(selectedFile);
+  const handlePickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setImageUri(result.assets[0].uri);
     }
   };
 
-  // Avatar 클릭 시 파일 입력 트리거
-  const handleAvatarClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  // 폼 제출 핸들러
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!file) {
+  const handleSubmit = () => {
+    if (!imageUri) {
       alert('이미지를 선택해주세요.');
       return;
     }
-    // TODO: API 연동 로직 (file) 추가
-    console.log({ file });
+    // TODO: API 연동 로직 (imageUri) 추가
     onClose();
-    setFile(null);
-    setPreviewUrl(null);
+    setImageUri(null);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <Overlay onClick={onClose}>
-      <ModalWrapper onClick={(e) => e.stopPropagation()}>
-        {/* 헤더 */}
-        <Header>
-          <Title>프로필 이미지 변경</Title>
-          <CloseButton onClick={onClose}>
-            <FaTimes />
-          </CloseButton>
-        </Header>
+    <Modal
+      visible={isOpen}
+      transparent
+      animationType='fade'
+      onRequestClose={onClose}
+    >
+      <View style={styles.overlay}>
+        <View style={styles.modalWrapper}>
+          {/* 헤더 */}
+          <View style={styles.header}>
+            <Text style={styles.title}>프로필 이미지 변경</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <Text style={{ fontSize: 20 }}>×</Text>
+            </TouchableOpacity>
+          </View>
 
-        {/* 본문 */}
-        <Body>
-          {/* Avatar & PlusBadge */}
-          <AvatarContainer>
-            <AvatarWrapper onClick={handleAvatarClick}>
-              {previewUrl ? (
-                <AvatarImg src={previewUrl} alt='프로필 미리보기' />
-              ) : (
-                <FaUserCircle size={70} color='#999' />
-              )}
-            </AvatarWrapper>
-            <HelperText>클릭하여 이미지 선택</HelperText>
-          </AvatarContainer>
-
-          {/* 실제 파일 입력(input) - 숨김 */}
-          <HiddenFileInput
-            ref={fileInputRef}
-            type='file'
-            accept='image/*'
-            onChange={handleFileChange}
-          />
-
-          {/* 구분선 */}
-          <Divider />
-
-          {/* 제출 버튼 */}
-          <SubmitBtn onClick={handleSubmit} disabled={!file}>
-            이미지 변경
-          </SubmitBtn>
-        </Body>
-      </ModalWrapper>
-    </Overlay>
+          {/* 본문 */}
+          <View style={styles.body}>
+            {/* Avatar & PlusBadge */}
+            <View style={styles.avatarContainer}>
+              <TouchableOpacity
+                style={styles.avatarWrapper}
+                onPress={handlePickImage}
+              >
+                {imageUri ? (
+                  <Image source={{ uri: imageUri }} style={styles.avatarImg} />
+                ) : (
+                  <Text style={styles.avatarPlaceholder}>👤</Text>
+                )}
+              </TouchableOpacity>
+              <Text style={styles.helperText}>클릭하여 이미지 선택</Text>
+            </View>
+            <View style={styles.divider} />
+            <TouchableOpacity
+              style={[styles.submitBtn, !imageUri && styles.submitBtnDisabled]}
+              onPress={handleSubmit}
+              disabled={!imageUri}
+            >
+              <Text style={styles.submitBtnText}>이미지 변경</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 };
 
 export default ChangeProfileImageModal;
 
-/* Styled Components */
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-const ModalWrapper = styled.div`
-  width: 100%;
-  max-width: 320px;
-  background: #fff;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-`;
-
-const Header = styled.div`
-  position: relative;
-  padding: 12px 16px;
-  background-color: #fffcfc;
-  border-bottom: 1px solid #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Title = styled.h2`
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: #000;
-  text-align: center;
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  right: 16px;
-  background: transparent;
-  border: none;
-  color: #000;
-  cursor: pointer;
-  padding: 0;
-  font-size: 20px;
-  line-height: 1;
-`;
-
-const Body = styled.div`
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-/* Avatar 영역 */
-const AvatarContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const AvatarWrapper = styled.div`
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  background: #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  cursor: pointer;
-  overflow: hidden;
-`;
-
-const AvatarImg = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
-/* 도우미 텍스트 */
-const HelperText = styled.div`
-  margin-top: 8px;
-  font-size: 12px;
-  color: #666;
-`;
-
-/* 숨김 파일 입력 */
-const HiddenFileInput = styled.input`
-  display: none;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: #ccc;
-  margin: 24px 0;
-`;
-
-const SubmitBtn = styled.button`
-  width: 100%;
-  padding: 12px 0;
-  background: #000;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 800;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-
-  &:disabled {
-    background: #999;
-    cursor: not-allowed;
-  }
-
-  &:hover:not(:disabled) {
-    background: #dfa11d;
-  }
-`;
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalWrapper: {
+    width: 320,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  header: {
+    position: 'relative',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#fffcfc',
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#000',
+    textAlign: 'center',
+    flex: 1,
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 16,
+    top: 12,
+    padding: 0,
+    zIndex: 2,
+  },
+  body: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  avatarWrapper: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#eee',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+    overflow: 'hidden',
+  },
+  avatarImg: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+  },
+  avatarPlaceholder: {
+    fontSize: 48,
+    color: '#999',
+  },
+  helperText: {
+    fontSize: 12,
+    color: '#888',
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#eee',
+    marginVertical: 16,
+  },
+  submitBtn: {
+    width: '100%',
+    backgroundColor: '#f5ab35',
+    borderRadius: 6,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  submitBtnDisabled: {
+    backgroundColor: '#ccc',
+  },
+  submitBtnText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+});

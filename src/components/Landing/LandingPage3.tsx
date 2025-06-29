@@ -1,270 +1,287 @@
-import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Image, Animated } from 'react-native';
 
 import Ion1Src from '../../assets/Landing/LandingPage3_ion1.svg';
 import Ion2Src from '../../assets/Landing/LandingPage3_ion2.svg';
-import SampleJacket from '../../assets/Landing/SampleJacket.jpg';
-
-const cycleDuration = '8s';
 
 const LandingPage3: React.FC = () => {
+  const fadeInLeftAnim = useRef(new Animated.Value(0)).current;
+  const fadeInRightAnim = useRef(new Animated.Value(0)).current;
+  const box2Anim = useRef(new Animated.Value(0)).current;
+  const box3Anim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Ion1 애니메이션
+    Animated.timing(fadeInLeftAnim, {
+      toValue: 1,
+      duration: 800,
+      useNativeDriver: true,
+    }).start();
+
+    // Ion2 애니메이션 (0.2초 지연)
+    setTimeout(() => {
+      Animated.timing(fadeInRightAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }).start();
+    }, 200);
+
+    // 박스 애니메이션 (8초 주기)
+    const startBoxAnimations = () => {
+      // Box2: 25%에서 나타남
+      setTimeout(() => {
+        Animated.timing(box2Anim, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+        }).start();
+      }, 2000);
+
+      // Box3: 50%에서 나타남
+      setTimeout(() => {
+        Animated.timing(box3Anim, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+        }).start();
+      }, 4000);
+
+      // 8초 후 리셋
+      setTimeout(() => {
+        box2Anim.setValue(0);
+        box3Anim.setValue(0);
+        startBoxAnimations();
+      }, 8000);
+    };
+
+    startBoxAnimations();
+  }, []);
+
   return (
-    <Container>
-      <TopSection>
-        <BulletIcon>/</BulletIcon>
-        <MatchingTitle>AI Matching System </MatchingTitle>
-        <MainTitle>
-          당신의 스타일을
-          <br />
+    <View style={styles.container}>
+      <View style={styles.topSection}>
+        <Text style={styles.bulletIcon}>/</Text>
+        <Text style={styles.matchingTitle}>AI Matching System</Text>
+        <Text style={styles.mainTitle}>
+          당신의 스타일을{'\n'}
           알아서 매칭해드립니다
-        </MainTitle>
-      </TopSection>
+        </Text>
+      </View>
 
-      <MiddleSection>
-        <ImageWrapper>
-          <Ion1 src={Ion1Src} alt='아이온1' />
-          <Ion2 src={Ion2Src} alt='아이온2' />
-          <StyledImage src={SampleJacket} alt='Sample Jacket' />
+      <View style={styles.middleSection}>
+        <View style={styles.imageWrapper}>
+          <Animated.View
+            style={[
+              styles.ion1,
+              {
+                opacity: fadeInLeftAnim,
+                transform: [
+                  {
+                    translateX: fadeInLeftAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-30, 0],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <Ion1Src width={47} height={36} />
+          </Animated.View>
+          <Animated.View
+            style={[
+              styles.ion2,
+              {
+                opacity: fadeInRightAnim,
+                transform: [
+                  {
+                    translateX: fadeInRightAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [30, 0],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <Ion2Src width={47} height={36} />
+          </Animated.View>
+          <View style={styles.styledImage} />
 
-          <SmallBoxesContainer>
-            <SmallBox style={{ top: '200px', right: '110px' }}>
-              <SmallBoxText1>당신은 스포티한 스타일입니다</SmallBoxText1>
-            </SmallBox>
-            <SmallBox2 style={{ top: '245px', right: '135px' }}>
-              <SmallBoxText2>활동적인 옷을 좋아하네요</SmallBoxText2>
-            </SmallBox2>
-            <SmallBox3 style={{ bottom: '50px', left: '120px' }}>
-              <SmallBoxText3>블랙&화이트 컬러가 많아요</SmallBoxText3>
-            </SmallBox3>
-          </SmallBoxesContainer>
-        </ImageWrapper>
-      </MiddleSection>
+          <View style={styles.smallBoxesContainer}>
+            <View style={[styles.smallBox, { top: 200, right: 110 }]}>
+              <Text style={styles.smallBoxText1}>
+                당신은 스포티한 스타일입니다
+              </Text>
+            </View>
+            <Animated.View
+              style={[
+                styles.smallBox2,
+                { top: 245, right: 135 },
+                { opacity: box2Anim },
+              ]}
+            >
+              <Text style={styles.smallBoxText2}>활동적인 옷을 좋아하네요</Text>
+            </Animated.View>
+            <Animated.View
+              style={[
+                styles.smallBox3,
+                { bottom: 50, left: 120 },
+                { opacity: box3Anim },
+              ]}
+            >
+              <Text style={styles.smallBoxText3}>
+                블랙&화이트 컬러가 많아요
+              </Text>
+            </Animated.View>
+          </View>
+        </View>
+      </View>
 
-      <BottomComment>
-        멜픽은 이용자와 브랜드 제품을
-        <br />
+      <Text style={styles.bottomComment}>
+        멜픽은 이용자와 브랜드 제품을{'\n'}
         분석하는 AI 기반 매칭 서비스 입니다.
-      </BottomComment>
-    </Container>
+      </Text>
+    </View>
   );
 };
 
 export default LandingPage3;
 
-const Container = styled.div`
-  height: 760px;
-  margin: 0 auto;
-  background: #fbe5e1;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-`;
-
-const BulletIcon = styled.div`
-  font-size: 35px;
-  margin-bottom: 10px;
-  color: #fff;
-  transform: rotate(10deg);
-`;
-
-const TopSection = styled.div`
-  width: 100%;
-  text-align: center;
-  margin-top: 30px;
-`;
-
-const MatchingTitle = styled.div`
-  font-weight: 700;
-  font-size: 15px;
-  line-height: 40px;
-  text-align: center;
-  color: #f5ab35;
-  margin-bottom: 10px;
-`;
-
-const MainTitle = styled.h1`
-  font-weight: 700;
-  font-size: 23px;
-  line-height: 30px;
-  text-align: center;
-  color: #000000;
-`;
-
-const MiddleSection = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-`;
-
-const ImageWrapper = styled.div`
-  position: relative;
-  width: 228px;
-  height: 400px;
-  background: #ececec;
-  border: 5px solid #ffffff;
-  border-radius: 20px;
-`;
-
-const StyledImage = styled.img`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 20px;
-`;
-
-const SmallBox = styled.div`
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 5px 10px;
-`;
-
-const box2Anim = keyframes`
-  0%, 25% { opacity: 0; }
-  25.1%, 100% { opacity: 1; }
-`;
-
-const SmallBox2 = styled(SmallBox)`
-  opacity: 0;
-  animation: ${box2Anim} ${cycleDuration} steps(1, end) infinite;
-`;
-
-const box3Anim = keyframes`
-  0%, 50% { opacity: 0; }
-  50.1%, 100% { opacity: 1; }
-`;
-
-const SmallBox3 = styled(SmallBox)`
-  opacity: 0;
-  animation: ${box3Anim} ${cycleDuration} steps(1, end) infinite;
-`;
-
-const BottomComment = styled.div`
-  font-weight: 400;
-  font-size: 17px;
-  line-height: 23px;
-  text-align: center;
-  color: #040404;
-  margin-top: auto;
-  margin-bottom: 43px;
-`;
-
-const fadeInLeft = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-`;
-
-const fadeInRight = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-`;
-
-const Ion1 = styled.img`
-  position: absolute;
-  top: 30px;
-  left: -50px;
-  width: 47px;
-  height: 36px;
-  animation: ${fadeInLeft} 0.8s ease-out forwards;
-`;
-
-const Ion2 = styled.img`
-  position: absolute;
-  bottom: 230px;
-  right: -35px;
-  width: 47px;
-  height: 36px;
-  z-index: 1;
-  animation: ${fadeInRight} 0.8s ease-out 0.2s forwards;
-`;
-
-const blinkCaret = keyframes`
-  from, to { border-color: transparent; }
-  50% { border-color: #040404; }
-`;
-
-const text1Anim = keyframes`
-  0% { width: 0; }
-  25% { width: 100%; }
-  100% { width: 100%; }
-`;
-
-const text2Anim = keyframes`
-  0%, 25% { width: 0; }
-  50% { width: 100%; }
-  100% { width: 100%; }
-`;
-
-const text3Anim = keyframes`
-  0%, 50% { width: 0; }
-  75% { width: 100%; }
-  100% { width: 100%; }
-`;
-
-const SmallBoxText1 = styled.span`
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 23px;
-  color: #040404;
-  display: inline-block;
-  overflow: hidden;
-  white-space: nowrap;
-  border-right: 2px solid #040404;
-  animation:
-    ${text1Anim} ${cycleDuration} steps(30, end) infinite,
-    ${blinkCaret} 0.75s step-end infinite;
-`;
-
-const SmallBoxText2 = styled.span`
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 23px;
-  color: #040404;
-  display: inline-block;
-  overflow: hidden;
-  white-space: nowrap;
-  border-right: 2px solid #040404;
-  animation:
-    ${text2Anim} ${cycleDuration} steps(30, end) infinite,
-    ${blinkCaret} 0.75s step-end infinite;
-`;
-
-const SmallBoxText3 = styled.span`
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 23px;
-  color: #040404;
-  display: inline-block;
-  overflow: hidden;
-  white-space: nowrap;
-  border-right: 2px solid #040404;
-  animation:
-    ${text3Anim} ${cycleDuration} steps(30, end) infinite,
-    ${blinkCaret} 0.75s step-end infinite;
-`;
-
-const SmallBoxesContainer = styled.div`
-  position: absolute;
-  inset: 0;
-`;
+const styles = StyleSheet.create({
+  container: {
+    height: 760,
+    margin: 0,
+    backgroundColor: '#fbe5e1',
+    borderRadius: 20,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  bulletIcon: {
+    fontSize: 35,
+    marginBottom: 10,
+    color: '#fff',
+    transform: [{ rotate: '10deg' }],
+  },
+  topSection: {
+    width: '100%',
+    textAlign: 'center',
+    marginTop: 30,
+  },
+  matchingTitle: {
+    fontWeight: '700',
+    fontSize: 15,
+    lineHeight: 40,
+    textAlign: 'center',
+    color: '#f5ab35',
+    marginBottom: 10,
+  },
+  mainTitle: {
+    fontWeight: '700',
+    fontSize: 23,
+    lineHeight: 30,
+    textAlign: 'center',
+    color: '#000000',
+  },
+  middleSection: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  imageWrapper: {
+    position: 'relative',
+    width: 228,
+    height: 400,
+    backgroundColor: '#ececec',
+    borderWidth: 5,
+    borderColor: '#ffffff',
+    borderRadius: 20,
+  },
+  styledImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    borderRadius: 20,
+  },
+  ion1: {
+    position: 'absolute',
+    top: 30,
+    left: -50,
+    width: 47,
+    height: 36,
+  },
+  ion2: {
+    position: 'absolute',
+    bottom: 230,
+    right: -35,
+    width: 47,
+    height: 36,
+    zIndex: 1,
+  },
+  smallBoxesContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  smallBox: {
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  smallBox2: {
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  smallBox3: {
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  smallBoxText1: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#000',
+  },
+  smallBoxText2: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#000',
+  },
+  smallBoxText3: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#000',
+  },
+  bottomComment: {
+    fontWeight: '400',
+    fontSize: 17,
+    lineHeight: 23,
+    textAlign: 'center',
+    color: '#040404',
+    marginTop: 'auto',
+    marginBottom: 43,
+  },
+});
