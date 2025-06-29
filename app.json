@@ -4,32 +4,27 @@
     "slug": "melpik-native",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.youminki.melpiknative"
+      "bundleIdentifier": "com.liftcomma.melpiknative",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.youminki.melpiknative"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "package": "com.liftcomma.melpiknative"
     },
     "extra": {
       "eas": {
         "projectId": "9d1f401f-2b81-4175-8c6b-dbef6886975e"
       }
-    }
+    },
+    "plugins": ["expo-asset"]
   }
 }
