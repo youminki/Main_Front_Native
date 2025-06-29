@@ -11,7 +11,10 @@ module.exports = tseslint.config(
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        // 필요하다면 node, es6 등 추가
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
